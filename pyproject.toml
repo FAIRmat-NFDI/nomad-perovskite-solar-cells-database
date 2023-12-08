@@ -1,0 +1,42 @@
+[build-system]
+requires = [
+    "setuptools>=61.0.0",
+    "setuptools-scm>=8.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nomad-measurements"
+dynamic = ["version"]
+description = "Perovskite solar cell data schema plugin for NOMAD."
+readme = "README.md"
+authors = [
+    {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
+    {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
+    ]
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "nomad-lab>=1.2.1",
+    "pytest",
+    "structlog==22.3.0",
+]
+
+[project.license]
+file = "LICENSE"
+
+# todo need to add the correct url
+[project.urls]
+"Homepage" = "https://github.com/FAIRmat-NFDI/nomad-measurements"
+"Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-measurements/issues"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]
+[tool.setuptools_scm]

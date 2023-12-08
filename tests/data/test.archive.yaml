@@ -1,0 +1,11 @@
+data:
+  # m_def: nomad.datamodel.data.EntryData
+  m_def: perovskite_plugin.PerovskiteSolarCell
+  ref: {}
+  substrate:
+    stack_sequence: Au | Ni | Al | Ti | GaN
+    thickness: nan | 140.0
+    area: 1
+
+
+
