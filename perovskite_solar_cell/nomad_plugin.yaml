@@ -1,0 +1,4 @@
+plugin_type: schema
+name: perovskite_solar_cell
+description: |
+  This is a schema

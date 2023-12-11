@@ -7,7 +7,7 @@ plugins:
   # loaded. Many build in plugins require more dependencies. Install nomad-lab[parsing]
   # to make all default plugins work.
   include: 
-    - 'schemas/perovskite'
+    - 'schemas/perovskite_solar_Cell'
   options:
     schemas/perovskite:
-      python_package: perovskite
+      python_package: perovskite_solar_Cell

@@ -1,7 +1,6 @@
 import os.path
 from nomad.client import parse, normalize_all
-import perovskite
-from nomad.metainfo import Quantity
+
 def test_schema():
     test_file = os.path.join(os.path.dirname(__file__), 'data', 'example.archive.json')
     entry_archive = parse(test_file)[0]
