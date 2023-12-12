@@ -143,10 +143,3 @@ class MyEncoder(json.JSONEncoder):
             return obj.isoformat()
         else:
             return super(MyEncoder, self).default(obj)
-
-
-if __name__ == '__main__':
-    csv_database_path = './Perovskite_database.csv'
-    target_dir = './database/data_old'
-    perovskite_entry_writer = PerovskiteEntryWriter(csv_database_path)
-    perovskite_entry_writer.entry_writer(target_dir)

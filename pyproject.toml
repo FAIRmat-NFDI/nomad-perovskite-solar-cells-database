@@ -6,7 +6,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nomad-measurements"
+name = "nomad-perovskite-solar-cells-database"
 dynamic = ["version"]
 description = "Perovskite solar cell data schema plugin for NOMAD."
 readme = "README.md"
@@ -30,10 +30,10 @@ dependencies = [
 [project.license]
 file = "LICENSE"
 
-# todo need to add the correct url
+# TODO need to add the correct url
 [project.urls]
-"Homepage" = "https://github.com/FAIRmat-NFDI/nomad-measurements"
-"Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-measurements/issues"
+# "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-measurements"
+# "Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-measurements/issues"
 
 [tool.setuptools.packages.find]
 where = [

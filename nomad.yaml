@@ -9,5 +9,5 @@ plugins:
   include: 
     - 'schemas/perovskite_solar_Cell'
   options:
-    schemas/perovskite:
-      python_package: perovskite_solar_Cell
+    schemas/perovskite_solar_cell:
+      python_package: perovskite_solar_cell
