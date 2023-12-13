@@ -203,7 +203,7 @@ class EQE(PlotSection, ArchiveSection):
                     """)
 
     def normalize(self, archive, logger):
-        from perovskite_solar_cell.perovskite_parser import EQEAnalyzer
+        from perovskite_solar_cell_database.data_tools import EQEAnalyzer
         if (self.eqe_data_file):
             with archive.m_context.raw_file(self.eqe_data_file) as f:
                 eqe_dict = EQEAnalyzer(f.name, header_lines=self.header_lines).eqe_dict()

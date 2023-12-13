@@ -1,5 +1,5 @@
 import numpy as np
-from perovskite_solar_cell.perovskite_sections.utils import add_solar_cell
+from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell
 from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
 from .vars import cell_enum_edit_quantity_suggestions

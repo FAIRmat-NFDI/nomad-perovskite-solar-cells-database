@@ -702,7 +702,7 @@ Potential biasing
     jv_curve = SubSection(section_def=JVcurve, repeats=True)
 
     def normalize(self, archive, logger):
-        from perovskite_solar_cell.perovskite_parser import jv_dict_generator
+        from perovskite_solar_cell_database.data_tools import jv_dict_generator
         if (self.data_file):
             with archive.m_context.raw_file(self.data_file) as f:
                 jv_dict = jv_dict_generator(f.name)

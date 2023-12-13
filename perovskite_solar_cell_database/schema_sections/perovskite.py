@@ -1,4 +1,4 @@
-from perovskite_solar_cell.perovskite_sections.utils import add_band_gap, add_solar_cell
+from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell, add_band_gap
 from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
 from .result import Material
