@@ -117,7 +117,7 @@ class PerovskiteEntryWriter():
                 target_dict["data"]
                 # old m_ef in the source code:
                 #  target_dict["data"]["m_def"] = "nomad.datamodel.metainfo.eln.perovskite_solar_cell_database.PerovskiteSolarCell"
-                target_dict["data"]["m_def"] = "perovskite_solar_cell.schema.PerovskiteSolarCell"
+                target_dict["data"]["m_def"] = "perovskite_solar_cell_database.schema.PerovskiteSolarCell"
                 if not pd.isnull(self.df_db.iloc[row][column]):
                     target_dict["data"][self.sections[column]][self.quantities_list[column]] = self.df_db.iloc[row][column]
                 target_dict = dict(target_dict)
