@@ -1,7 +1,8 @@
 from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell, add_band_gap
 from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
-from .result import Material
+from nomad.datamodel.results import Material
+
 
 class Perovskite(ArchiveSection):
     """
@@ -444,7 +445,7 @@ Ozone
     def normalize(self, archive, logger):
         from .formula_normalizer import PerovskiteFormulaNormalizer
         from nomad.atomutils import Formula
-        from .result import Symmetry
+        from nomad.datamodel.results import Symmetry
 
         add_solar_cell(archive)
         add_band_gap(archive, self.band_gap)
