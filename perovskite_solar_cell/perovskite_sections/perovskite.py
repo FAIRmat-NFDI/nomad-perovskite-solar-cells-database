@@ -1,8 +1,9 @@
 from perovskite_solar_cell.perovskite_sections.utils import add_band_gap, add_solar_cell
-from nomad.metainfo import MSection, Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 from .result import Material
 
-class Perovskite(MSection):
+class Perovskite(ArchiveSection):
     """
     This section contains information about the properties of the absorber layer. It describes
     the `chemical formula`, the `dimensionality`, the `bandgap`,

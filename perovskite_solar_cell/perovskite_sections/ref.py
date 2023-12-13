@@ -1,8 +1,8 @@
 import numpy as np
 from nomad.metainfo import (
-    MSection, Quantity, Datetime, Section)
-
-class Ref(MSection):
+    Quantity, Datetime, Section)
+from nomad.datamodel.data import ArchiveSection
+class Ref(ArchiveSection):
     """Information about the source of the data. It describes who curated the data,
      the journal in which the data was published,
      the DOI number of the publication, the lead author and the publication date."""

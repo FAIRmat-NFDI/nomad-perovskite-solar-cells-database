@@ -15,5 +15,5 @@ from .eqe import EQE
 from .stability import Stability
 from .outdoor import Outdoor
 from .utils import add_band_gap, add_solar_cell
-from formula_normalizer import PerovskiteFormulaNormalizer
+from .formula_normalizer import PerovskiteFormulaNormalizer
 from .result import Material

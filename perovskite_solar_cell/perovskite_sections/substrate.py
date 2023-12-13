@@ -1,9 +1,10 @@
 
 import numpy as np
 from .utils import add_solar_cell
-from nomad.metainfo import MSection,Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
-class Substrate(MSection):
+class Substrate(ArchiveSection):
     """
     Information about the substrate used in the device. It describes the `substrate stack sequence`,
     the `substrate area`, the `substrate thickness`, and its provenance or fabrication method.

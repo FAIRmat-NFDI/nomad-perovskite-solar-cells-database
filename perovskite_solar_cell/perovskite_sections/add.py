@@ -1,8 +1,9 @@
 import numpy as np
-from nomad.metainfo import MSection, Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
 
-class Add(MSection):
+class Add(ArchiveSection):
     """
     A section to describe **additional layers** present in the device besides the
     *Substrate*, *ETL*, *Perovskite*, *HTL* and *back contact*.

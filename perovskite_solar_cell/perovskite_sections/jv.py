@@ -2,9 +2,9 @@ import numpy as np
 from .utils import add_solar_cell
 from nomad.datamodel.metainfo.plot import PlotSection
 from nomad.units import ureg
-from nomad.metainfo import Section, MSection, Quantity, SubSection
-
-class JVcurve(PlotSection, MSection):
+from nomad.metainfo import Section, Quantity, SubSection
+from nomad.datamodel.data import ArchiveSection
+class JVcurve(PlotSection, ArchiveSection):
     '''
     Section describing a current density, voltage curve.
     '''
@@ -43,7 +43,7 @@ class JVcurve(PlotSection, MSection):
         description='Voltage array of the of the *JV* curve.')
 
 
-class JV(MSection):
+class JV(ArchiveSection):
     """
     This section descirbes the current density *J* and voltage *V* characteristics
     of the solar cell. It includes the device parameters and information about how the

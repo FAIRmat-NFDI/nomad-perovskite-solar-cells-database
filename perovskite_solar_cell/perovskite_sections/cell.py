@@ -1,10 +1,11 @@
 import numpy as np
 from perovskite_solar_cell.perovskite_sections.utils import add_solar_cell
-from nomad.metainfo import MSection, Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 from .vars import cell_enum_edit_quantity_suggestions
 from nomad.datamodel.results import Properties
 
-class Cell(MSection):
+class Cell(ArchiveSection):
     """
     General information about the solar cell. It includes information about the device area,
     the layer stack sequence and the device architecture.
@@ -141,7 +142,7 @@ Example:
                     """)
 
     def normalize(self, archive, logger):
-        # add_solar_cell(archive)
+        add_solar_cell(archive)
         if not archive.results.properties:
             archive.results.properties = Properties()
         if self.stack_sequence:

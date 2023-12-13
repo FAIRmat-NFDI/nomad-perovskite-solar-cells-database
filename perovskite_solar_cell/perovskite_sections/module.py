@@ -1,7 +1,8 @@
 import numpy as np
-from nomad.metainfo import MSection, Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
-class Module(MSection):
+class Module(ArchiveSection):
     """
     Specific section containing information if the reported device is a module.
     """

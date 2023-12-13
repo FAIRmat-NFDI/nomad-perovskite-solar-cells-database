@@ -1,7 +1,8 @@
 from perovskite_solar_cell.perovskite_sections.utils import add_solar_cell
-from nomad.metainfo import  MSection, Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
-class HTL(MSection):
+class HTL(ArchiveSection):
     """
     A section to describe information related to the Hole Transport Layer (**HTL**).
     """

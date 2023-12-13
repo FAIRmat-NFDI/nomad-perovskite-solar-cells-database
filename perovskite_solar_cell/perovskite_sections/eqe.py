@@ -1,10 +1,11 @@
 import numpy as np
 from nomad.datamodel.metainfo.plot import PlotSection
-from nomad.metainfo import MSection, Quantity, Section
+from nomad.metainfo import Quantity, Section
+from nomad.datamodel.data import ArchiveSection
 from .perovskite import Perovskite
 from nomad.units import ureg
 
-class EQE(PlotSection, MSection):
+class EQE(PlotSection, ArchiveSection):
     """
     A section describing the External Quantum Efficiency **EQE** of the solar cell
     and additional parameteres derived from it. If used as an ELN, a file containing
@@ -200,7 +201,7 @@ class EQE(PlotSection, MSection):
     A link to where the data file for the EQE measurement is stored
 - This is a beta feature. The plan is to create a file repository where the raw files for IV data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw IV-data.
                     """)
-    
+
     def normalize(self, archive, logger):
         from perovskite_solar_cell.perovskite_parser import EQEAnalyzer
         if (self.eqe_data_file):

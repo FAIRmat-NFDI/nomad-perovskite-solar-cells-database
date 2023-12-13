@@ -1,7 +1,8 @@
 import numpy as np
-from nomad.metainfo import MSection,Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
-class Stability(MSection):
+class Stability(ArchiveSection):
     """
     A section decsirbing the stability measurements performed in the device.
     """

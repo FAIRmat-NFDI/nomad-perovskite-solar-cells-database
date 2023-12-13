@@ -1,8 +1,9 @@
 import numpy as np
-from nomad.metainfo import MSection, Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
 
-class Encapsulation(MSection):
+class Encapsulation(ArchiveSection):
     """A section to describe information about the encapsulation of the device."""
 
     Encapsulation = Quantity(

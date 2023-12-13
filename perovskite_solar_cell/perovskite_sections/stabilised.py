@@ -1,8 +1,9 @@
 
 import numpy as np
-from nomad.metainfo import MSection,Quantity
+from nomad.metainfo import Quantity
+from nomad.datamodel.data import ArchiveSection
 
-class Stabilised(MSection):
+class Stabilised(ArchiveSection):
     """
     A section describing if a stabilised efficiency has been measured in the solar cell.
     """
