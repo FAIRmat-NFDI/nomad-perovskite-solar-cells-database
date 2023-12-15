@@ -9,6 +9,8 @@ def test_schema():
    
     assert entry_archive.data.substrate.stack_sequence == "SLG | ITO"
     assert entry_archive.data.perovskite.composition_inorganic == False
-    # check more
-    # assert entry_archive.data.cell.area_measured == 0.09
-    # check m_def contains  section: nomad.datamodel.metainfo.eln.perovskite_solar_cell_database.PerovskiteSolarCell:Section
+    assert entry_archive.metadata.entry_type == 'PerovskiteSolarCell'
+    assert entry_archive.results.properties.optoelectronic.solar_cell.efficiency > -1
+    assert len(entry_archive.data.jv.jv_curve[0].current_density) > -1
+    assert len(entry_archive.results.material.chemical_formula_reduced) > 0
+    assert entry_archive.results.properties.electronic.band_gap[0].value > 0 
