@@ -24,7 +24,6 @@ classifiers = [
 dependencies = [
     "nomad-lab>=1.2.1",
     "pytest",
-    "structlog==22.3.0",
 ]
 
 [project.license]
@@ -37,6 +36,6 @@ file = "LICENSE"
 
 [tool.setuptools.packages.find]
 where = [
-    "src",
+    "perovskite_solar_cell_database",
 ]
 [tool.setuptools_scm]
