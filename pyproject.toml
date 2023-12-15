@@ -1,41 +1,18 @@
-[build-system]
-requires = [
-    "setuptools>=61.0.0",
-    "setuptools-scm>=8.0",
-]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "nomad-perovskite-solar-cells-database"
-dynamic = ["version"]
+version = "1.0.0"
 description = "Perovskite solar cell data schema plugin for NOMAD."
-readme = "README.md"
 authors = [
-    {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
-    {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
-    ]
-requires-python = ">=3.9"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "License :: OSI Approved :: Apache Software License",
+    "Jose Marquez <jose.marquez@physik.hu-berlin.de>",
+    "Yaru Wang <yaru.wang@physik.hu-berlin.de>"
 ]
-dependencies = [
-    "nomad-lab>=1.2.1",
-    "pytest",
-]
+readme = "README.md"
 
-[project.license]
-file = "LICENSE"
+[tool.poetry.dependencies]
+python = "^3.9"
+pytest = "^5.2"
+nomad-lab = { git = "https://github.com/nomad-coe/nomad.git", branch = "develop" }
 
-# TODO need to add the correct url
-[project.urls]
-# "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-measurements"
-# "Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-measurements/issues"
-
-[tool.setuptools.packages.find]
-where = [
-    "perovskite_solar_cell_database",
-]
-[tool.setuptools_scm]
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
