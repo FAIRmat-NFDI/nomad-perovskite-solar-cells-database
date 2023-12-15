@@ -5,7 +5,7 @@ from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, Pero
 from nomad.metainfo import Package, Section, SubSection
 
 
-m_package = Package(name='perovskite_database')
+m_package = Package(name='perovskite_solar_cell_database')
 
 class PerovskiteSolarCell(EntryData):
     """
