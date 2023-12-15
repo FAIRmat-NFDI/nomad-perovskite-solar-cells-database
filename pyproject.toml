@@ -22,7 +22,7 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
 ]
 dependencies = [
-    "nomad-lab@git+https://github.com/nomad-coe/nomad.git@develop",
+    "nomad-lab>=1.2.1",
     "pytest",
 ]
 
