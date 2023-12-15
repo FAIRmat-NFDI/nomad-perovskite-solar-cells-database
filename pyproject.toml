@@ -33,7 +33,3 @@ file = "LICENSE"
 [project.urls]
 "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
 
-[tool.setuptools.packages.find]
-where = [
-    "perovskite_solar_cell_database",
-]
