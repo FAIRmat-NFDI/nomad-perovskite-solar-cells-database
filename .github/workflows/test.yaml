@@ -12,6 +12,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
+        pip install nomad-lab --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
         pip install --no-cache-dir -r requirements.txt --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
     - name: Test with pytest
       run: |
