@@ -35,7 +35,7 @@ jobs:
     - name: Install the package
       run: |
         pip install nomad-lab --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
-
+        pip show nomad-lab
     - name: Test with nomad
       run: |
         python -m nomad.cli parse tests/data/test.archive.yaml
