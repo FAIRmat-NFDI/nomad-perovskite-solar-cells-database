@@ -1,20 +1,38 @@
-# nomad-perovskite-solar-cells-database
-A NOMAD plugin containing the schema for the Perovskite Solar Cell Database.
+# NOMAD Perovskite Solar Cells Database
+<img src="image.png" width="200">
+<img src="docs/assets/perovskite_database_project.png" width="250">
 
-This plugin creates a NOMAD schema of the perovskite solar cell. You can find the paper of the original work of the perovskite database in this [link](https://www.nature.com/articles/s41560-021-00941-3).
+## Introduction
+Welcome to the NOMAD plugin for the Perovskite Solar Cell Database. This project aims to provide an open-access interface for the perovskite solar cells database in NOMAD making the data accessible and interoperable with many other materials science datasets.
+The data can be accessed via the NOMAD API and explore in the [NOMAD Solar Cell APP](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
 
-## Run this plugin in NOMAD
+![Alt text](docs/assets/screenshot_nomad_app.png)
+Information about the original database is available at [perovskitedatabase.com](https://www.perovskitedatabase.com/).
 
-To run this plugin in a NOMAD installation, you need to include in the `nomad.yaml`
-file the following lines:
 
-```yaml
-plugins:
-  include:
-    - 'schemas/perovskite_solar_cell_database'
-  options:
-    schemas/perovskite_solar_cell_database:
-      python_package: perovskite_solar_cell_database
-```
+## Key Features
+- Detailed schema of perovskite solar cells.
+- Integration with NOMAD for data exploration and access via the API.
+- Augmented (meta)data including the elements of the perovskite absolbers and several staandarized chemical formulas, enabling and easy featurization of the composition for ML applications.
 
-See more documentation in NOMAD plugins in the [NOMAD documentation](https://nomad-lab.eu/prod/v1/staging/docs/index.html).
+## Installation
+To integrate this plugin with your NOMAD installation:
+1. Add the following lines to your `nomad.yaml` file in your NOMAD installation:
+
+    ```yaml
+    plugins:
+      include:
+        - 'schemas/perovskite_solar_cell_database'
+      options:
+        schemas/perovskite_solar_cell_database:
+          python_package: perovskite_solar_cell_database
+    ```
+
+2. For more detailed installation instructions, visit our [docs for NOMAD plugins](https://nomad-lab.eu/prod/v1/staging/docs/plugins/plugins.html).
+
+### Acknowledgments
+Special thanks to Jinzhao Li and all contributors who have made this project possible.
+
+## Related Resources
+[Original Paper on Nature Energy](https://www.nature.com/articles/s41560-021-00941-3)
+[NOMAD Documentation](https://nomad-lab.eu/prod/v1/staging/docs/)
