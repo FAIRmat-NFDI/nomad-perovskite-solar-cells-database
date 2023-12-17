@@ -1,0 +1,13 @@
+normalize:
+  normalizers:
+    include:
+      - MetainfoNormalizer
+plugins:
+  # We only include our schema here. Without the explicit include, all plugins will be
+  # loaded. Many build in plugins require more dependencies. Install nomad-lab[parsing]
+  # to make all default plugins work.
+  include:
+    - 'schemas/perovskite_solar_cell_database'
+  options:
+    schemas/perovskite_solar_cell_database:
+      python_package: perovskite_solar_cell_database

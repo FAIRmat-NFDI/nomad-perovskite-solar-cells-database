@@ -1,0 +1,4 @@
+__pycache__/
+.pyenv/
+.py39env/
+.vscode/
