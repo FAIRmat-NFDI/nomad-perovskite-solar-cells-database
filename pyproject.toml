@@ -29,7 +29,6 @@ dependencies = [
 [project.license]
 file = "LICENSE"
 
-# TODO need to add the correct url
 [project.urls]
 "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
 
