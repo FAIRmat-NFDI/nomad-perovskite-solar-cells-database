@@ -3,12 +3,15 @@
 ![](https://img.shields.io/pypi/l/nomad-measurements)
 
 # NOMAD Perovskite Solar Cells Database
-<img src="docs/assets/nomad_plugin_logo.png" width="200">
-<img src="docs/assets/perovskite_database_project.png" width="250">
+  [<img src="docs/assets/nomad_plugin_logo.png" width="200">](https://nomad-lab.eu/prod/v1/staging/docs/plugins/plugins.html)
+
+  [<img width="280" alt="image" src="docs/assets/perovskite_database_project.png">](https://www.perovskitedatabase.com/)
+
+
 
 ## Introduction
 Welcome to the NOMAD plugin for the Perovskite Solar Cell Database. This project aims to provide an open-access interface for the perovskite solar cells database in NOMAD making the data accessible and interoperable with many other materials science datasets.
-The data can be accessed via the NOMAD API and explore in the [NOMAD Solar Cell APP](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
+The data can be accessed via the NOMAD API and explored in the [NOMAD Solar Cell APP](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
 
 ![Alt text](docs/assets/screenshot_nomad_app.png)
 Information about the original database is available at [perovskitedatabase.com](https://www.perovskitedatabase.com/).
