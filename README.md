@@ -38,5 +38,5 @@ To integrate this plugin with your NOMAD installation:
 Special thanks to Jinzhao Li and all contributors who have made this project possible.
 
 ## Related Resources
-[Original Paper on Nature Energy](https://www.nature.com/articles/s41560-021-00941-3)
-[NOMAD Documentation](https://nomad-lab.eu/prod/v1/staging/docs/)
+- [Original Paper on Nature Energy](https://www.nature.com/articles/s41560-021-00941-3)  
+- [NOMAD Documentation](https://nomad-lab.eu/prod/v1/staging/docs/)
