@@ -1,5 +1,9 @@
+![](https://github.com/FAIRmat-NFDI/nomad-measurements/actions/workflows/publish.yml/badge.svg)
+![](https://img.shields.io/pypi/pyversions/nomad-measurements)
+![](https://img.shields.io/pypi/l/nomad-measurements)
+
 # NOMAD Perovskite Solar Cells Database
-<img src="image.png" width="200">
+<img src="docs/assets/nomad_plugin_logo.png" width="200">
 <img src="docs/assets/perovskite_database_project.png" width="250">
 
 ## Introduction
