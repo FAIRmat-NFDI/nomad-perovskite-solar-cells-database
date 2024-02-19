@@ -1,5 +1,6 @@
 from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell, add_band_gap
-from nomad.metainfo import Quantity
+from perovskite_solar_cell_database.schema_sections.ions.ion import IonA, IonB, IonC
+from nomad.metainfo import Quantity, SubSection
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.results import Material
 
@@ -101,121 +102,11 @@ Example
         a_eln=dict(
             component='BoolEditQuantity'))
 
-    composition_a_ions = Quantity(
-        type=str,
-        shape=[],
-        description="""
-    List of the A-site ions in the perovskite structure
-- We have experimented with letting users write the perovskite structure and from that extract ions and coefficients. Due to the multitude of formatting variations, that has not worked out very well, wherefor we now define the perovskite ion by ion.
-- List all the A-site ions in alphabetic order and separate them by semicolons
-- For ions which labels are three characters or longer, enclose them in parenthesis. That improves readability and simplifies downstream data treatment.
-- In case of a layered perovskite structure, separate layers by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-- Only include ions that go into the perovskite structure. Ions that only are found in secondary phases, or amorphous grain boundaries, or that disappears during synthesis, should instead be added as dopants/additives in the field dedicated to dopants and additives.
-o On example is Rb in MAFAPbBrI-perovskites. As far as we know, Rb does not go into the perovskite structure, even if that was believed to be the case in the beginning, but rather form secondary phases. For MAFAPbBrI-perovskites, Rb should thus not be considered as a A-site cation, but as a dopant/additive.
-Example:
-MA
-FA; MA
-Cs; FA; MA
-(5-AVA); MA
-Cs; FA; MA | (PEA)
-                    """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=sorted(['', '(TFEA); Cs; FA; MA', '(PEA) | Cs; FA; MA | (PEA)', 'HA; MA', '(CHMA); MA', 'FA; HA', 'Cs | BA; Cs', 'MA | Cs | Cs | Cs | Cs', '(ALA); BA; MA', '(TEA); MA', '(PGA); BA; MA', 'BA; Cs; FA; MA', 'Cs; FA; MA | (PEA)', 'EA; MA; PEA', 'Cs; FA | Cs', '(BYA); MA', 'Cs; FA; K; MA', 'MA | Cs | Cs', '(PEI); MA', '(PEA); MA | MA', 'MA; PA', '(NMA); MA', '(BZA); (HAD); MA', 'Bi', '(PDA); MA', 'Cu', '(BzDA); Cs; FA; MA', '(TBA); MA', 'Cs; (DMA); MA', '(CPEA); MA', 'FA; MA | (A43)', '(Anyl)', 'BA; Cs; MA', '(HdA)', 'HA', 'FA; MA | DA', '(TMA)', '(CIEA); MA', 'MA | FA', '(HEA); Cs; FA', '(BZA)', '(BdA)', 'BA; FA', '(OdA)', 'K; BA', 'Rb', '(5-AVA); MA', '(ALA); MA', 'Cs; FA; GU', 'DI; FA', '(iPA)', 'FA; MA | (MIC3)', '(5-AVAI); Cs; FA', 'FA; MA | (MIC2)', 'Cs; FA; PDA', 'Cs; FA | Cs; FA', 'Cs; MA', '(mF1PEA); MA', 'Cs; FA; MA | PA', '(PDMA)', 'Cs; FA; MA | (FPEA)', 'EA; FA', 'MA | (BEA)', 'FA | (ODA)', '(ImEA)', 'MA | BA', 'BA; MA', 'Cs; FA; MA | (mFPEA)', '(C6H4NH2)', 'MA | Cs | Cs | Cs', '(IEA); MA', 'FA; K; MA', '(PMA)', 'Cs; FA; MA | (pFPEA)', 'IM', 'Cs; HA', 'FA; PN', 'Cs; FA; GU; MA', '(ThMA); MA', 'FA', '(DPA); MA; PA; PA', 'FA; MA | (C8H17NH3)', 'AN; FA; MA', '(DMA); MA', 'Cs; FA; MA | (oFPEA)', '(3AMP); FA; MA', 'Bi; La', 'Cs; MA; FA | BA', 'AN; Cs; MA', '(BZA); MA', '(Ace); MA', 'MA | (PPEA)', 'FA; MA | (C4H9NH3)', '((CH3)3S)', 'MA | MA', '(4ApyH)', '(Br-PEA); MA', 'FA; GU', 'IA; MA', '(DMA)', 'BA; GA; MA', 'FA | Cs', '(PBA); MA', 'Aa; MA', 'Ag', '(PMA); MA', '(DAP)', '(MTEA); MA', 'MA | Cs', 'AN; MA', 'BU; FA', '(CHMA); Cs; MA', 'Cs | Cs', 'Cs', '(PDMA); MA', 'FA; MA | PEA', 'MA | (MIC1)', '(PEA); FA; MA', '(3AMPY); MA', 'Cs; EA; FA', '(PTA); MA', '(PEA) | MA', 'MA | CA', '(PEA); Cs', '(N-EtPy)', 'MA | (EU-pyP)', 'GU; MA', '(PEA); BA; FA', 'Cs; FA; MA | BA', '(PEA); (F5PEA); Cs; FA; MA', 'Cs; FA; nan', '(n-C3H7NH3)', '(PGA); MA', 'FA; MA | (PEA)', '(PEA); BA; MA', '(PEA); FA', '(F-PEA); MA', 'Ba; K', 'Cs; Rb', 'Cs; FA; MA | Cs', 'Ca; MA', 'BA', 'Cs; Li', '(iso-BA); MA', '(PyrEA)', 'Cs; FA; MA | (CH3)3S', 'Cs; FA; Rb', 'BA; Cs', '(BEA); MA', 'Cs; FA; MA | (EPA)', '(NEA); BA; MA', 'FA; MA | (HTAB); FA; MA', 'FA | EDA', '(1.3-Pr(NH3)2)', 'FA; MA | BA; FA', '(BEA); Cs; FA; MA', '(PEI)', 'MA | (BI)', 'MA | (PEA)', 'MA | (C4H9N2H6)', '(NH4)', 'K', '(ThFA); MA', 'Ag; Cs; Rb', 'EA', 'EDA; FA', 'FA; Rb', 'Cs; FA; MA | (FEA)', '(TBA); Cs; FA; MA', 'Cs; Ag', 'Cs | MA', '(NH4); FA; MA', '(Anyl); MA', '(PEA); MA', 'Cs; Na', 'IM; MA', '(4AMP); MA', '(F3EA); BA; MA', 'BA; FA; MA; PMA', '(EDA); FA; MA', 'MA | (PPA)', 'HDA', 'Sr', '(pF1PEA); MA', 'MA | BA; MA', 'BE; FA', '(4AMPY); MA', 'FA; MA | (C6H13NH3)', 'Cs; FA | (PA)', 'Cs; FA | (PEA)', 'GA; MA', 'FA; MA | TA', '(oF1PEA); MA', 'EA; MA; NEA', '(BDA); MA', 'BA; Cs; FA', 'Cs; FA; MA', '(H-PEA); MA', 'Cs; K', '(PEA); Cs; FA; MA', 'Cs; FA | (PMA)', 'GU', '(PBA); BA; MA', 'FA | (PEA)', '(3AMP); MA', '(PEA); (F5PEA)', 'BA; FA; MA', '(ThMA); FA', 'BDA; Cs', '(BIM); MA', '(CH3ND3)', '(GABA); MA', 'FA; MA | (FEA)', 'La', 'FA; OA', 'FA; MA | (NH4); FA', '(APMim)', '(F5PEA); Cs; FA; MA', 'Cs; FA; GA', 'FA; MA | (MIC1)', 'Cs; FA; MA | (A43)', 'Ag; Cs', 'Cs | FA', '(PDMA); FA', 'FA; MA', 'DA; FA', '(PEA); Cs; MA', 'FA; MA | OA', 'Cs; FA; MA | NMABr', 'MA', 'FA; TN', 'Cs; FA; MA | HA', '(f-PEA)', 'Cs; FA; MA; Rb', 'Bn', '(Ada); FA', 'Ca; FA; MA', '(AVA) | MA | (BI)', '(PEA); Cs; FA', 'Cs; FA; MA | (PEI)', '(6-ACA); MA', '(DAT); MA', '(5-AVA); FA', '(PEA) | MA | (PEA)', '(BDA)', '(PyEA); MA', '(F5PEA)', '(THM); MA', 'MA | (MIC3)', '(PDA); Cs; FA', '(5-AVA); Cs; MA', 'FA; GU; MA', 'FA; MA | BA', 'Cs; FA', '(Cl-PEA); MA', '(AVA); MA', '(PMA); FA', 'PA', 'EA; MA', 'FA; PR', '(AVA) | MA', '(4FPEA); MA', '(PEA)', 'MA | (MIC2)', 'BA; GU; MA']))))
+    composition_a_ions = SubSection(section_def=IonA)
 
-    composition_a_ions_coefficients = Quantity(
-        type=str,
-        shape=[],
-        description="""
-    A list of the perovskite coefficients for the A-site ions
-- The list of coefficients must line up with the list of the A-site ions
-- If a coefficient is unknown, state that with an ‘x’
-- If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-- A common notation is ‘1-x’. Write that as x
-- If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-Examples:
-1
-0.83; 0.17
-0.05; 0.79; 0.16
-1.5; 0.5
-                    """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['1', '0.2', '0.83; 0.17'])))
+    composition_b_ions = SubSection(section_def=IonB)
 
-    composition_b_ions = Quantity(
-        type=str,
-        shape=[],
-        description="""
-    List of the B-site ions in the perovskite structure
-- We have experimented with letting users write the perovskite structure and from that extract ions and coefficients. Due to the multitude of formatting variations, that has not worked out very well, wherefor we now define the perovskite ion by ion.
-- List all the B-site ions in alphabetic order and separate them by semicolons
-- In case of a layered perovskite structure, separate layers by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-- Only include ions that go into the perovskite structure. Ions that only are found in secondary phases, or amorphous grain boundaries, or that disappears during synthesis, should instead be added as dopants/additives in the field dedicated to dopants and additives.
-Example:
-Pb
-Sn
-Pb; Sn
-Bi
-Pb | Pb
-                    """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Pb; Sn | Pb; Sn', 'Ni; Pb', 'Al', 'Pb; Sm', 'Cu; Sb', 'Ag; Bi', 'Pb | Pb | Pb', 'Pb | Pb | Pb | Pb | Pb', 'Bi; Te', 'Mn; Pb', 'Pb; Zn', 'Y', 'Au', 'Pb; Sr', 'Fe', 'Sn', 'Cu', 'Bi', 'Hg; Pb', 'Ca; Pb', 'Sn | Sn', 'Cu; Pb; Sn', 'Ge; Pb', 'Pb | Pb', 'Ni', 'Bi; Pb', 'Cu; Pb', 'Sb', 'Mg; Pb', 'Hg', 'Co; Pb', 'Ge; Sn', 'Pb; Tb', 'Pb; Sn', 'Pb', 'Pb; Sb', 'Sb; Sn', 'Pb | Ba; Pb', 'Mn', 'Sn | Pb', 'Fe; Pb', 'Ti', 'In; Pb', 'La; Pb', 'Nb; Ni', 'Pb | Pb | Pb | Pb', 'Ge; Sb', 'Bi; Fe; Cr', 'Bi; Sb', 'Ge', 'Ba; Pb', 'Eu; Pb'])))
-
-    composition_b_ions_coefficients = Quantity(
-        type=str,
-        shape=[],
-        description="""
-    A list of the perovskite coefficients for the B-site ions
-- The list of coefficients must line up with the list of the B-site ions
-- If a coefficient is unknown, mark that with an ‘x’
-- If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-- A common notation is ‘1-x’. Write that as x
-- If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-Examples:
-1
-0.83; 0.17
-x; x
-0.5; 0.5 | 1
-                    """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', '7.8', '0.008; 0.992', '0.625; 0.375', '9', '0.6; 0.6', '0.1; 0.9', '0.875; 0.125', '1', '0.05; 0.85; 0.1', '2', '0.85', '0.6', '0.85; 0.15', '0.93', '1.2; 0.8', '0.93; 0.07', '41', '0.9999; 0.0001', '2.4; 1.8', '0.98', '0.5; 0.5', '0.45 | 9', '0.003; 0.997', '0.97; 0.03', '0.07; 0.93', '11', '1 | 1; 1', '0.95; 0.1', '0.995', '2.6', '1 | 3', '0.025; 0.975', '0.2; 0.8', '0.016; 0.984', '0.748; 0.252', '0; 0.19', '4.0', '1 | 1 | 1 | 1', '0.0118; 0.9882', '4.8; 3.6', '0.99', '0.6; 0.4', '0.02; 0.98', '0.031; 0.969', '0.4; 0.6', '0.875', '0.94; 0.06', '0.99; 0.01', '0.05', '0.99999; 0.00001', '1.4; 0.6', '0.09; 0.91', '0.664; 0.336', '0.54', '100', '0.999; 0.001', '0.075; 0.925', '7', '0.25; 0.75', '20', '0.96; 0.04', '8', '0.15; 0.85', '0.5; 0.500', '0.05; 0.95', '0.063; 0.937', '0.57', '1 | 1 | 1', '1 | 2', '0.20; 0.80', '1.0', '6.1', '0.05; 0.9; 0.05', '11.2', '1 | 1', '0.01; 0.99', '4', '0.05; 0.8; 0.15', '10', '0.997; 0.003', '29', '3', '0.916; 0.084', '0.014; 0.986', '1.8; 0.2', '3.14', '0.8; 0.2', '0.95; 0.05', '2.7', '6', '0.10; 0.90', '40', '0.50; 0.50', '1; 0.6', '0.7; 0.3', '0.08; 0.92', '0.25', '0.4; 0.6 | 0.4; 0.6', '23', '0.84; 0.84', '0.005; 0.995', '0.98; 0.02', '3; 2.4', '0.832; 0.168', '3; 1', '1.8; 1.2', '1; 3', '0.995; 0.005', '61', '1.9; 0.1', '0.88; 0.12', '0.95', 'x', '2.2', '0.7; 0.255', '2; 1; 1', '0.06; 0.94', '0.38; 0.62', '0.97', '0.03; 0.97', '5', '0.125; 0.875', '1; 1', '0.9; 0.1', '0.66; 0.33', '80', '0.9', '0.375; 0.625', '0.58; 0.42', '12.9', '0.997', '1.1', '60', '0.3; 0.7', '30', '0.04; 0.96', '0.92; 0.08', '1.6; 0.4', '9.5', '0.75; 0.25', '0.45', '4 | 1', '0.0094; 0.9906', '0.37; 0.6255', '0.93; 0.03', '0.65; 0.35', '1 | 1 | 1 | 1 | 1', '4.4'])))
-
-    composition_c_ions = Quantity(
-        type=str,
-        shape=[],
-        description="""
-    List of the C-site ions in the perovskite structure
-- We have experimented with letting users write the perovskite structure and from that extract ions and coefficients. Due to the multitude of formatting variations, that has not worked out very well, wherefor we now define the perovskite ion by ion.
-- List all the A-site ions in alphabetic order and separate them by semicolons
-- For ions which labels are three characters or longer, enclose them in parenthesis. That improves readability and simplifies downstream data treatment.
-- In case of a layered perovskite structure, separate layers by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-- Only include ions that go into the perovskite structure. Ions that only are found in secondary phases, or amorphous grain boundaries, or that disappears during synthesis, should instead be added as dopants/additives in the field dedicated to dopants and additives.
-o One example is chloride in MAPbI3. As far as we know, Cl does not go into the perovskite structure even if that was believed to be the case in the beginning. For MAPbI3 Cl should thus not be considered as a C-site cation, but as a dopant/additive.
-Example:
-I
-Br; I
-Br
-Br; I| I
-                    """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Br; I | Br; I', '', '(BF4); I', 'O', 'I | Br; I | I', 'S', 'Br | Br; I', 'Cl', 'Br', 'I | Br', 'I | I; Br', 'Br | I', 'Br; I | I', 'Br; F; I', 'Br; I', 'I | I | Br; I | Br; I', '(PF6); PF6', '(SCN); I', 'I | I', 'F; I', 'Cl; I', 'I', 'I; (SCN)', 'I | I | I', 'Cl; I | Cl', 'Br; Cl', 'I; SCN', 'Br | Br', 'I | I | Br; I', 'I | I | Br; I | Br; I | Br; I', 'I | I; (PF6)', 'Br; Cl; I', 'Br | Br; Cl', 'I | Br; I'])))
-
-    composition_c_ions_coefficients = Quantity(
-        type=str,
-        shape=[],
-        description="""
-    A list of the perovskite coefficients for the C-site ions
-- The list of coefficients must line up with the list of the C-site ions
-- If a coefficient is unknown, mark that with an ‘x’
-- If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-- A common notation is ‘1-x’. Write that as x
-- If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-Examples:
-3
-0.51; 2.49
-0.51; 2.49 | x
-                    """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+    composition_c_ions = SubSection(section_def=IonC)
 
     composition_none_stoichiometry_components_in_excess = Quantity(
         type=str,
