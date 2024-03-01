@@ -3,14 +3,13 @@ from nomad.metainfo import Quantity, MEnum
 import openpyxl
 import os
 from perovskite_solar_cell_database.schema_sections.ions.ion_vars import ion_a, ion_b, ion_c, ion_a_coefficients, ion_b_coefficients, ion_c_coefficients
-from ase.visualize import view
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from nomad.datamodel.results import Material, System
 from nomad.atomutils import Formula
 from ase import Atoms
-from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.results import Results
+
 
 class Ion(PureSubstanceSection):
     """
@@ -98,13 +97,16 @@ class Ion(PureSubstanceSection):
             if not archive.results.material:
                 archive.results.material = Material()
             from nomad.normalizing.topology import add_system_info
-            system = System(atoms=atoms, system_id='results/material/topology/0', label='original')
+            system = System(atoms=atoms, system_id='results/material/topology/0', label='original') # todo this sysmtem_id is not unique
             add_system_info(system, None)
-            archive.results.material.topology = [system]
+            if not archive.results.material.topology:
+                archive.results.material.topology = []
+            archive.results.material.topology.append(system)
             # Let's also add the formula information and augment it with the Formula class
             if ase_atoms is not None:
                 formula = Formula(ase_atoms.get_chemical_formula())
-                formula.populate(archive.results.material)
+                if not archive.results.material.elements:
+                    formula.populate(archive.results.material)
 
 
 class IonA(Ion):
@@ -307,6 +309,7 @@ def get_all_ions_names(ions):
             ion_names.extend(ion.alternative_names)
 
     return ion_names
+
 
 def convert_rdkit_mol_to_ase_atoms(rdkit_mol):
     """
