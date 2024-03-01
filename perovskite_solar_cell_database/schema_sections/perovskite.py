@@ -1,8 +1,9 @@
 from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell, add_band_gap
-from perovskite_solar_cell_database.schema_sections.ions.ion import IonA, IonB, IonC
+from perovskite_solar_cell_database.schema_sections.ions.ion import IonA, IonB, IonC, optimize_molecule
 from nomad.metainfo import Quantity, SubSection
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.results import Material
+from nomad.datamodel.results import System
 
 
 class Perovskite(ArchiveSection):
@@ -334,6 +335,8 @@ Ozone
             component='EnumEditQuantity', props=dict(suggestions=['', 'UV', 'Ar plasma'])))
 
     def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
         from .formula_normalizer import PerovskiteFormulaNormalizer
         from nomad.atomutils import Formula
         from nomad.datamodel.results import Symmetry
@@ -370,13 +373,15 @@ Ozone
             if archive.results.material.functional_type is None:
                 archive.results.material.functional_type = ['semiconductor', 'solar cell']
 
+            # todo check here, the result is populated by ions or composition_long_form?
             formula_cleaner = PerovskiteFormulaNormalizer(self.composition_long_form)
             final_formula = formula_cleaner.clean_formula()
             try:
                 formula = Formula(final_formula[0])
-                formula.populate(archive.results.material)
+                formula.populate(archive.results.material) # todo will this overwrite the ions ?
                 archive.results.material.chemical_formula_descriptive = formula_cleaner.pre_process_formula()
             except Exception as e:
                 logger.warn('could not analyse chemical formula', exc_info=e)
             archive.results.material.elements = final_formula[1]
+
 

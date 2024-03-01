@@ -3,7 +3,14 @@ from nomad.metainfo import Quantity, MEnum
 import openpyxl
 import os
 from perovskite_solar_cell_database.schema_sections.ions.ion_vars import ion_a, ion_b, ion_c, ion_a_coefficients, ion_b_coefficients, ion_c_coefficients
-
+from ase.visualize import view
+from rdkit import Chem
+from rdkit.Chem import AllChem
+from nomad.datamodel.results import Material, System
+from nomad.atomutils import Formula
+from ase import Atoms
+from nomad.datamodel.data import ArchiveSection
+from nomad.datamodel.results import Results
 
 class Ion(PureSubstanceSection):
     """
@@ -14,9 +21,6 @@ class Ion(PureSubstanceSection):
         shape=[],
         a_eln=dict(
             component='EnumEditQuantity',
-            # props=dict(
-            #     suggestions=ion_a,
-            # )
         ),
         description='Name of the ion.',
     )
@@ -84,6 +88,24 @@ class Ion(PureSubstanceSection):
             self.source_compound_cas = ion.source_compound_cas
             self.source_compound_formula = ion.source_compound_formula
 
+        if self.smile:
+            ase_atoms = optimize_molecule(self.smile)
+            from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+            atoms = nomad_atoms_from_ase_atoms(ase_atoms)
+            # let's plug this into the results section in the archive
+            if not archive.results:
+                archive.results = Results()
+            if not archive.results.material:
+                archive.results.material = Material()
+            from nomad.normalizing.topology import add_system_info
+            system = System(atoms=atoms, system_id='results/material/topology/0', label='original')
+            add_system_info(system, None)
+            archive.results.material.topology = [system]
+            # Let's also add the formula information and augment it with the Formula class
+            if ase_atoms is not None:
+                formula = Formula(ase_atoms.get_chemical_formula())
+                formula.populate(archive.results.material)
+
 
 class IonA(Ion):
     ion_type = 'A'
@@ -133,7 +155,6 @@ class IonA(Ion):
         a_eln=dict(component='EnumEditQuantity',
                    props=dict(suggestions=ion_a_coefficients))
     )
-
 
 
 class IonB(Ion):
@@ -286,7 +307,42 @@ def get_all_ions_names(ions):
             ion_names.extend(ion.alternative_names)
 
     return ion_names
-# #
+
+def convert_rdkit_mol_to_ase_atoms(rdkit_mol):
+    """
+    Convert an RDKit molecule to an ASE atoms object.
+
+    Args:
+        rdkit_mol (rdkit.Chem.Mol): RDKit molecule object.
+
+    Returns:
+        ase.Atoms: ASE atoms object.
+    """
+    positions = rdkit_mol.GetConformer().GetPositions()
+    atomic_numbers = [atom.GetAtomicNum() for atom in rdkit_mol.GetAtoms()]
+    ase_atoms = Atoms(numbers=atomic_numbers, positions=positions)
+    return ase_atoms
+
+
+def optimize_molecule(smiles):
+    try:
+        # Convert SMILES to molecule and add hydrogens
+        m = Chem.MolFromSmiles(smiles)
+        m = Chem.AddHs(m)
+
+        # Embed the molecule in 3D space and optimize its structure
+        AllChem.EmbedMolecule(m)
+        AllChem.MMFFOptimizeMolecule(m)
+
+        # Instead of writing to and reading from a file, handle the molecule directly in memory
+        # Convert the RDKit molecule to an ASE atoms object (or any other format you need)
+        ase_atoms = convert_rdkit_mol_to_ase_atoms(m)  # Define this function as per your requirement
+
+        # Further processing
+        # ...
+        return ase_atoms
+    except Exception as e:
+        print(f"An error occurred: {e}")
 # ic = get_all_ions_names(read_ions_from_xlsx('A'))
 # print(len(ic))
 # print(len(set(ion_a)))

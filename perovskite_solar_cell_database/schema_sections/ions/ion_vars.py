@@ -30,4 +30,5 @@ ion_b_coefficients = ['', '7.8', '0.08; 0.992', '0.625; 0.375', '9', '0.6; 0.6',
  '0.45', '4 | 1', '0.0094; 0.9906', '0.37; 0.6255', '0.93; 0.03', '0.65; 0.35',
  '1 | 1 | 1 | 1 | 1', '4.4']
 
+#  TODO this should be empty or can be float ? if this can be any float, then we should allow user to input any float
 ion_c_coefficients = ['']
