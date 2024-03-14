@@ -15,52 +15,37 @@ class Ion(PureSubstanceSection):
     """
     A section describing the ions used in the solar cell.
     """
-    name = Quantity(
-        type=str,
-        shape=[],
-        a_eln=dict(
-            component='EnumEditQuantity',
-        ),
-        description='Name of the ion.',
-    )
-
-    iupac_name = Quantity(
-        type=str,
-        description='IUPAC name.',
-    )
-    molecular_formula = Quantity(
-        type=str,
-        description='Molecular formula.',
-    )
-    smile = Quantity(
-        type=str,
-        description='Smile.',
-    )
     common_name = Quantity(
         type=str,
         description='Common name.',
-    )
-    cas_number = Quantity(
-        type=str,
-        description='CAS number.',
+        a_eln=dict(
+            component='StringEditQuantity'),
     )
     alternative_names = Quantity(
         type=str,
         shape=['*'],
         # repeats=True,
+        a_eln=dict(
+            component='StringEditQuantity'),
       )
 
     common_source_compound = Quantity(
         type=str,
         shape=[],
+        a_eln=dict(
+            component='StringEditQuantity'),
     )
     source_compound_cas = Quantity(
         type=str,
         shape=[],
+        a_eln=dict(
+            component='StringEditQuantity'),
     )
     source_compound_formula = Quantity(
         type=str,
         shape=[],
+        a_eln=dict(
+            component='StringEditQuantity'),
     )
 
     coefficients = Quantity(
@@ -77,16 +62,22 @@ class Ion(PureSubstanceSection):
         ion = find_ion_by_name(self.name, ions)
         if ion is not None:
             self.name = ion.name
-            self.iupac_name = ion.iupac_name
-            self.molecular_formula = ion.molecular_formula
-            self.smile = ion.smile
-            self.cas_number = ion.cas_number
-        if ion.alternative_names is not None:
-            self.alternative_names = ion.alternative_names
-            self.common_source_compound = ion.common_source_compound
-            self.source_compound_cas = ion.source_compound_cas
-            self.source_compound_formula = ion.source_compound_formula
-
+            if self.iupac_name is None:
+                self.iupac_name = ion.iupac_name
+            if self.molecular_formula is None:
+                self.molecular_formula = ion.molecular_formula
+            if self.smile is None:
+                self.smile = ion.smile
+            if self.cas_number is None:
+                self.cas_number = ion.cas_number
+            if ion.alternative_names is None:
+                self.alternative_names = ion.alternative_names
+            if self.common_source_compound is None:
+                self.common_source_compound = ion.common_source_compound
+            if self.source_compound_cas is None:
+                self.source_compound_cas = ion.source_compound_cas
+            if self.source_compound_formula is None:
+                self.source_compound_formula = ion.source_compound_formula
         if self.smile:
             ase_atoms = optimize_molecule(self.smile)
             from nomad.normalizing.common import nomad_atoms_from_ase_atoms
