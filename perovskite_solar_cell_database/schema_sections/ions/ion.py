@@ -97,16 +97,19 @@ class Ion(PureSubstanceSection):
             if not archive.results.material:
                 archive.results.material = Material()
             from nomad.normalizing.topology import add_system_info
-            system = System(atoms=atoms, system_id='results/material/topology/0', label='original') # todo this sysmtem_id is not unique
-            add_system_info(system, None)
+
             if not archive.results.material.topology:
                 archive.results.material.topology = []
+            index = len(archive.results.material.topology)
+            system = System(atoms=atoms, system_id=f'results/material/topology/{index}', label='original')
+            add_system_info(system, None)
+
             archive.results.material.topology.append(system)
             # Let's also add the formula information and augment it with the Formula class
-            if ase_atoms is not None:
-                formula = Formula(ase_atoms.get_chemical_formula())
-                if not archive.results.material.elements:
-                    formula.populate(archive.results.material)
+            # if ase_atoms is not None:
+            #     formula = Formula(ase_atoms.get_chemical_formula())
+            #     if not archive.results.material.elements:
+            #         formula.populate(archive.results.material)
 
 
 class IonA(Ion):
@@ -351,3 +354,6 @@ def optimize_molecule(smiles):
 # print(len(set(ion_a)))
 # print(len(ion_a))
 # print(set(ion_a))
+
+
+# https://nomad-lab.eu/prod/v1/gui/search/entries/entry/id/fwqLspHijvgbmSCMC5fRDFD8_XIz

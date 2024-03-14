@@ -373,15 +373,13 @@ Ozone
             if archive.results.material.functional_type is None:
                 archive.results.material.functional_type = ['semiconductor', 'solar cell']
 
-            # todo check here, the result is populated by ions or composition_long_form?
             formula_cleaner = PerovskiteFormulaNormalizer(self.composition_long_form)
             final_formula = formula_cleaner.clean_formula()
-            # try:
-            #     formula = Formula(final_formula[0])
-            #     formula.populate(archive.results.material) # todo will this overwrite the ions ?
-            #     archive.results.material.chemical_formula_descriptive = formula_cleaner.pre_process_formula()
-            # except Exception as e:
-            #     logger.warn('could not analyse chemical formula', exc_info=e)
-            # archive.results.material.elements = final_formula[1]
-
+            try:
+                formula = Formula(final_formula[0])
+                formula.populate(archive.results.material)
+                archive.results.material.chemical_formula_descriptive = formula_cleaner.pre_process_formula()
+            except Exception as e:
+                logger.warn('could not analyse chemical formula', exc_info=e)
+            archive.results.material.elements = final_formula[1]
 
