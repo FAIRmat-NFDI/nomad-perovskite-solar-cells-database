@@ -383,3 +383,79 @@ Ozone
                 logger.warn('could not analyse chemical formula', exc_info=e)
             archive.results.material.elements = final_formula[1]
 
+            from nomad.datamodel.results import Results
+            # if not archive.results:
+            #     archive.results = Results()
+            # if not archive.results.material:
+            #     archive.results.material = Material()
+            from nomad.normalizing.topology import add_system_info, add_system
+
+            # if not archive.results.material.topology:
+            topology = {}
+            # else:
+            #     topology = archive.results.material.topology
+            # system = System(atoms=atoms, system_id=f'results/material/topology/{index}', label='original')
+            # add_system_info(system, None)
+
+            # archive.results.material.topology.append(system)
+
+            # Dictionary containing all topology items
+
+            # Add original system
+            from ase.build import molecule
+            from nomad.datamodel.results import Relation
+            from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+            atoms_root = nomad_atoms_from_ase_atoms(molecule('H2O'))
+            parent_system = System(
+                method='parser',
+                label='original',
+                description='A representative system chosen from the original simulation.',
+                system_relation=Relation(type='root'),
+                atoms=atoms_root,
+            )
+            add_system(parent_system, topology)
+            add_system_info(parent_system, topology)
+
+            if self.composition_a_ions.smile:
+                ase_atoms = optimize_molecule(self.smile)
+                from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+                atoms = nomad_atoms_from_ase_atoms(ase_atoms)
+                child_system = System(
+                    label='Molecule',
+                    method='parser',
+                    atoms=atoms,
+                )
+
+                add_system(child_system, topology, parent_system)
+                add_system_info(child_system, topology)
+
+            if self.composition_b_ions.smile:
+                ase_atoms = optimize_molecule(self.smile)
+                from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+                atoms = nomad_atoms_from_ase_atoms(ase_atoms)
+                child_system = System(
+                    label='Molecule',
+                    method='parser',
+                    atoms=atoms,
+                )
+
+                add_system(child_system, topology, parent_system)
+                add_system_info(child_system, topology)
+
+            if self.composition_c_ions.smile:
+                ase_atoms = optimize_molecule(self.smile)
+                from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+                atoms = nomad_atoms_from_ase_atoms(ase_atoms)
+                child_system = System(
+                    label='Molecule',
+                    method='parser',
+                    atoms=atoms,
+                )
+
+                add_system(child_system, topology, parent_system)
+                add_system_info(child_system, topology)
+
+            # Add topology to the archive
+            material = archive.m_setdefault('results.material')
+            for system in topology.values():
+                material.m_add_sub_section(Material.topology, system)

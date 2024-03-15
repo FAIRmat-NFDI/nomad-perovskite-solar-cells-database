@@ -78,30 +78,30 @@ class Ion(PureSubstanceSection):
                 self.source_compound_cas = ion.source_compound_cas
             if self.source_compound_formula is None:
                 self.source_compound_formula = ion.source_compound_formula
-        if self.smile:
-            ase_atoms = optimize_molecule(self.smile)
-            from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-            atoms = nomad_atoms_from_ase_atoms(ase_atoms)
-            # let's plug this into the results section in the archive
-            if not archive.results:
-                archive.results = Results()
-            if not archive.results.material:
-                archive.results.material = Material()
-            from nomad.normalizing.topology import add_system_info
-
-            if not archive.results.material.topology:
-                archive.results.material.topology = []
-            index = len(archive.results.material.topology)
-            system = System(atoms=atoms, system_id=f'results/material/topology/{index}', label='original')
-            add_system_info(system, None)
-
-            archive.results.material.topology.append(system)
-            # Let's also add the formula information and augment it with the Formula class
-            # if ase_atoms is not None:
-            #     formula = Formula(ase_atoms.get_chemical_formula())
-            #     if not archive.results.material.elements:
-            #         formula.populate(archive.results.material)
-
+        # if self.smile:
+        #     ase_atoms = optimize_molecule(self.smile)
+        #     from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+        #     atoms = nomad_atoms_from_ase_atoms(ase_atoms)
+        #     # let's plug this into the results section in the archive
+        #     if not archive.results:
+        #         archive.results = Results()
+        #     if not archive.results.material:
+        #         archive.results.material = Material()
+        #     from nomad.normalizing.topology import add_system_info
+        #
+        #     if not archive.results.material.topology:
+        #         archive.results.material.topology = []
+        #     index = len(archive.results.material.topology)
+        #     system = System(atoms=atoms, system_id=f'results/material/topology/{index}', label='original')
+        #     add_system_info(system, None)
+        #
+        #     archive.results.material.topology.append(system)
+        #     # Let's also add the formula information and augment it with the Formula class
+        #     # if ase_atoms is not None:
+        #     #     formula = Formula(ase_atoms.get_chemical_formula())
+        #     #     if not archive.results.material.elements:
+        #     #         formula.populate(archive.results.material)
+        #
 
 class IonA(Ion):
     ion_type = 'A'
