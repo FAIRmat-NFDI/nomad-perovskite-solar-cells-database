@@ -383,63 +383,55 @@ Ozone
                 logger.warn('could not analyse chemical formula', exc_info=e)
             archive.results.material.elements = final_formula[1]
 
-            from nomad.normalizing.topology import add_system_info, add_system
+        from nomad.normalizing.topology import add_system_info, add_system
+        from nomad.datamodel.results import Relation
+        from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+        topology = {}
+        # Add original system
+        # atoms_root cannot be none, so use atoms_a as a placeholder
+        if self.composition_a_ions and self.composition_a_ions.smile:
+            ase_atoms_a = optimize_molecule(self.composition_a_ions.smile)
+            atoms_a = nomad_atoms_from_ase_atoms(ase_atoms_a)
 
-            topology = {}
-            # Add original system
-            from ase.build import molecule
-            from nomad.datamodel.results import Relation
-            from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-            atoms_root = nomad_atoms_from_ase_atoms(molecule('H2O'))
-            from nomad.normalizing.common import Atoms
             parent_system = System(
                 method='parser',
-                label='original',
+                label='original', # this label has to be original
                 description='A representative system chosen from the original simulation.',
                 system_relation=Relation(type='root'),
-                atoms=atoms_root,
+                atoms=atoms_a,
             )
             add_system(parent_system, topology)
             add_system_info(parent_system, topology)
 
-            if self.composition_a_ions.smile:
-                ase_atoms = optimize_molecule(self.composition_a_ions.smile)
-                from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-                atoms = nomad_atoms_from_ase_atoms(ase_atoms)
-                child_system = System(
-                    label='Molecule',
+            child_system_a = System(
+                label='composition_a_ions',
+                method='parser',
+                atoms=atoms_a,
+            )
+            add_system(child_system_a, topology, parent_system)
+            add_system_info(child_system_a, topology)
+
+            if self.composition_b_ions and self.composition_b_ions.smile:
+                ase_atoms_b = optimize_molecule(self.composition_b_ions.smile)
+                atoms_b = nomad_atoms_from_ase_atoms(ase_atoms_b)
+                child_system_b = System(
+                    label='composition_b_ions',
                     method='parser',
-                    atoms=atoms,
+                    atoms=atoms_b,
                 )
+                add_system(child_system_b, topology, parent_system)
+                add_system_info(child_system_b, topology)
 
-                add_system(child_system, topology, parent_system)
-                add_system_info(child_system, topology)
-
-            if self.composition_b_ions.smile:
-                ase_atoms = optimize_molecule(self.composition_b_ions.smile)
-                from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-                atoms = nomad_atoms_from_ase_atoms(ase_atoms)
-                child_system = System(
-                    label='Molecule',
+            if self.composition_c_ions and self.composition_c_ions.smile:
+                ase_atoms_c = optimize_molecule(self.composition_c_ions.smile)
+                atoms_c = nomad_atoms_from_ase_atoms(ase_atoms_c)
+                child_system_c = System(
+                    label='composition_c_ions',
                     method='parser',
-                    atoms=atoms,
+                    atoms=atoms_c,
                 )
-
-                add_system(child_system, topology, parent_system)
-                add_system_info(child_system, topology)
-
-            if self.composition_c_ions.smile:
-                ase_atoms = optimize_molecule(self.composition_c_ions.smile)
-                from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-                atoms = nomad_atoms_from_ase_atoms(ase_atoms)
-                child_system = System(
-                    label='Molecule',
-                    method='parser',
-                    atoms=atoms,
-                )
-
-                add_system(child_system, topology, parent_system)
-                add_system_info(child_system, topology)
+                add_system(child_system_c, topology, parent_system)
+                add_system_info(child_system_c, topology)
 
             # Add topology to the archive
             material = archive.m_setdefault('results.material')
