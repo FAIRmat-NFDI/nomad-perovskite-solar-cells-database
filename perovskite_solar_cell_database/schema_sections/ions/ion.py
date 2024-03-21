@@ -1,20 +1,24 @@
 from nomad.datamodel.metainfo.basesections import PureSubstanceSection
-from nomad.metainfo import Quantity, MEnum
+from nomad.metainfo import Quantity
 import openpyxl
 import os
-from perovskite_solar_cell_database.schema_sections.ions.ion_vars import ion_a, ion_b, ion_c, ion_a_coefficients, ion_b_coefficients, ion_c_coefficients
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from nomad.datamodel.results import Material, System
-from nomad.atomutils import Formula
 from ase import Atoms
-from nomad.datamodel.results import Results
 
 
 class Ion(PureSubstanceSection):
     """
     A section describing the ions used in the solar cell.
     """
+    ion_type = Quantity(
+        type=str,
+        shape=[],
+        description='Type of the ion.',
+        a_eln=dict(
+            component='StringEditQuantity')
+    )
+
     common_name = Quantity(
         type=str,
         description='Common name.',
@@ -24,7 +28,6 @@ class Ion(PureSubstanceSection):
     alternative_names = Quantity(
         type=str,
         shape=['*'],
-        # repeats=True,
         a_eln=dict(
             component='StringEditQuantity'),
       )
@@ -58,202 +61,24 @@ class Ion(PureSubstanceSection):
 
     def normalize(self, archive, logger: None) -> None:
         super().normalize(archive, logger)
+
         ions = read_ions_from_xlsx(self.ion_type)
-        ion = find_ion_by_name(self.name, ions)
-        if ion is not None:
-            self.name = ion.name
-            if self.iupac_name is None:
-                self.iupac_name = ion.iupac_name
-            if self.molecular_formula is None:
-                self.molecular_formula = ion.molecular_formula
-            if self.smile is None:
-                self.smile = ion.smile
-            if self.cas_number is None:
-                self.cas_number = ion.cas_number
-            if ion.alternative_names is None:
-                self.alternative_names = ion.alternative_names
-            if self.common_source_compound is None:
-                self.common_source_compound = ion.common_source_compound
-            if self.source_compound_cas is None:
-                self.source_compound_cas = ion.source_compound_cas
-            if self.source_compound_formula is None:
-                self.source_compound_formula = ion.source_compound_formula
-        # if self.smile:
-        #     ase_atoms = optimize_molecule(self.smile)
-        #     from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-        #     atoms = nomad_atoms_from_ase_atoms(ase_atoms)
-        #     # let's plug this into the results section in the archive
-        #     if not archive.results:
-        #         archive.results = Results()
-        #     if not archive.results.material:
-        #         archive.results.material = Material()
-        #     from nomad.normalizing.topology import add_system_info
-        #
-        #     if not archive.results.material.topology:
-        #         archive.results.material.topology = []
-        #     index = len(archive.results.material.topology)
-        #     system = System(atoms=atoms, system_id=f'results/material/topology/{index}', label='original')
-        #     add_system_info(system, None)
-        #
-        #     archive.results.material.topology.append(system)
-        #     # Let's also add the formula information and augment it with the Formula class
-        #     # if ase_atoms is not None:
-        #     #     formula = Formula(ase_atoms.get_chemical_formula())
-        #     #     if not archive.results.material.elements:
-        #     #         formula.populate(archive.results.material)
-        #
-
-class IonA(Ion):
-    ion_type = 'A'
-
-    name = Quantity(
-        type=str,
-        shape=[],
-        a_eln=dict(
-            component='EnumEditQuantity',
-            props=dict(
-                suggestions=ion_a,
-            )
-        ),
-        description="""
-        List of the A-site ions in the perovskite structure
-        - We have experimented with letting users write the perovskite structure and from that extract ions and coefficients. Due to the multitude of formatting variations, that has not worked out very well, wherefor we now define the perovskite ion by ion.
-        - List all the A-site ions in alphabetic order and separate them by semicolons
-        - For ions which labels are three characters or longer, enclose them in parenthesis. That improves readability and simplifies downstream data treatment.
-        - In case of a layered perovskite structure, separate layers by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-        - Only include ions that go into the perovskite structure. Ions that only are found in secondary phases, or amorphous grain boundaries, or that disappears during synthesis, should instead be added as dopants/additives in the field dedicated to dopants and additives.
-        o On example is Rb in MAFAPbBrI-perovskites. As far as we know, Rb does not go into the perovskite structure, even if that was believed to be the case in the beginning, but rather form secondary phases. For MAFAPbBrI-perovskites, Rb should thus not be considered as a A-site cation, but as a dopant/additive.
-        Example:
-        MA
-        FA; MA
-        Cs; FA; MA
-        (5-AVA); MA
-        Cs; FA; MA | (PEA)
-        """,
-    )
-
-    coefficients = Quantity(
-        type=str,
-        shape=[],
-        description="""
-            A list of the perovskite coefficients for the A-site ions
-        - The list of coefficients must line up with the list of the A-site ions
-        - If a coefficient is unknown, state that with an ‘x’
-        - If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-        - A common notation is ‘1-x’. Write that as x
-        - If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-        Examples:
-        1
-        0.83; 0.17
-        0.05; 0.79; 0.16
-        1.5; 0.5
-        """,
-        a_eln=dict(component='EnumEditQuantity',
-                   props=dict(suggestions=ion_a_coefficients))
-    )
-
-
-class IonB(Ion):
-    ion_type = 'B'
-    name = Quantity(
-        type=str,
-        shape=[],
-        description="""
-        List of the B-site ions in the perovskite structure
-        - We have experimented with letting users write the perovskite structure and from that extract ions and coefficients. Due to the multitude of formatting variations, that has not worked out very well, wherefor we now define the perovskite ion by ion.
-        - List all the B-site ions in alphabetic order and separate them by semicolons
-        - In case of a layered perovskite structure, separate layers by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-        - Only include ions that go into the perovskite structure. Ions that only are found in secondary phases, or amorphous grain boundaries, or that disappears during synthesis, should instead be added as dopants/additives in the field dedicated to dopants and additives.
-        Example:
-        Pb
-        Sn
-        Pb; Sn
-        Bi
-        Pb | Pb
-        """,
-        a_eln=dict(
-            component='EnumEditQuantity',
-            props=dict(
-                suggestions=ion_b,
-            )
-        ),
-    )
-    coefficients = Quantity(
-        type=str,
-        shape=[],
-        description="""
-            A list of the perovskite coefficients for the B-site ions
-        - The list of coefficients must line up with the list of the B-site ions
-        - If a coefficient is unknown, mark that with an ‘x’
-        - If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-        - A common notation is ‘1-x’. Write that as x
-        - If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-        Examples:
-        1
-        0.83; 0.17
-        x; x
-        0.5; 0.5 | 1
-        """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(
-                suggestions=ion_b_coefficients
-            ),
-        )
-    )
-
-
-class IonC(Ion):
-    ion_type = 'C'
-    name = Quantity(
-        type=str,
-        shape=[],
-        description="""
-        List of the C-site ions in the perovskite structure
-        - We have experimented with letting users write the perovskite structure and from that extract ions and coefficients. Due to the multitude of formatting variations, that has not worked out very well, wherefor we now define the perovskite ion by ion.
-        - List all the A-site ions in alphabetic order and separate them by semicolons
-        - For ions which labels are three characters or longer, enclose them in parenthesis. That improves readability and simplifies downstream data treatment.
-        - In case of a layered perovskite structure, separate layers by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-        - Only include ions that go into the perovskite structure. Ions that only are found in secondary phases, or amorphous grain boundaries, or that disappears during synthesis, should instead be added as dopants/additives in the field dedicated to dopants and additives.
-        o One example is chloride in MAPbI3. As far as we know, Cl does not go into the perovskite structure even if that was believed to be the case in the beginning. For MAPbI3 Cl should thus not be considered as a C-site cation, but as a dopant/additive.
-        Example:
-        I
-        Br; I
-        Br
-        Br; I| I
-        """,
-        a_eln=dict(
-            component='EnumEditQuantity',
-            props=dict(
-                suggestions=ion_c,
-            )
-        ),
-    )
-    coefficients = Quantity(
-        type=str,
-        shape=[],
-        description="""
-        A list of the perovskite coefficients for the C-site ions
-        - The list of coefficients must line up with the list of the C-site ions
-        - If a coefficient is unknown, mark that with an ‘x’
-        - If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-        - A common notation is ‘1-x’. Write that as x
-        - If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-        Examples:
-        3
-        0.51; 2.49
-        0.51; 2.49 | x
-        """,
-        a_eln=dict(
-            component='EnumEditQuantity',
-            props=dict(
-                suggestions=ion_c_coefficients,
-            )
-        ),
-    )
+        ion_match = find_ion_by_name(self.name, ions)
+        if ion_match is not None:
+            self.name = ion_match.name
+            print(self.name)
+            self.iupac_name = ion_match.iupac_name
+            self.molecular_formula = ion_match.molecular_formula
+            self.smile = ion_match.smile
+            self.cas_number = ion_match.cas_number
+            self.alternative_names = ion_match.alternative_names
+            self.common_source_compound = ion_match.common_source_compound
+            self.source_compound_cas = ion_match.source_compound_cas
+            self.source_compound_formula = ion_match.source_compound_formula
 
 
 def read_ions_from_xlsx(ion_type):
-    ions = []
+    ions_candidates = []
     file_name = f'{ion_type}-ion_data.xlsx'
     current_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -268,28 +93,32 @@ def read_ions_from_xlsx(ion_type):
          _, _) = row[:15]
 
         # todo: parent_* are not used.
-        ion = Ion()
-        ion.name = abbreviation
+        ion_candidate = Ion()
+        ion_candidate.name = abbreviation
         if alternative_abbreviations is not None:
-            ion.alternative_names = [el.strip() for el in alternative_abbreviations.split(',')]
+            ion_candidate.alternative_names = [el.strip() for el in alternative_abbreviations.split(',')]
         else:
-            ion.alternative_names = []
-        ion.molecular_formula = molecular_formula
-        ion.smile = smile
-        ion.common_name = common_name
-        ion.iupac_name = iupac_name
-        ion.cas_number = cas
-        ion.common_source_compound = common_source_compound
-        ion.source_compound_cas = source_compound_cas
+            ion_candidate.alternative_names = []
+        ion_candidate.molecular_formula = molecular_formula
+        ion_candidate.smile = smile
+        ion_candidate.common_name = common_name
+        ion_candidate.iupac_name = iupac_name
+        ion_candidate.cas_number = cas
+        ion_candidate.common_source_compound = common_source_compound
+        ion_candidate.source_compound_cas = source_compound_cas
 
-        ions.append(ion)
+        ions_candidates.append(ion_candidate)
 
-    return ions
+    return ions_candidates
 
 
-def find_ion_by_name(ion_name, ions):
-    for ion in ions:
-        if (ion.name == ion_name or ion_name in ion.alternative_names):
+def find_ion_by_name(ion_name, ions_candidates):
+    if ion_name[0] == '(' and ion_name[-1] == ')':
+        ion_name_clean = ion_name[1:-1]
+    else:
+        ion_name_clean = ion_name
+    for ion in ions_candidates:
+        if ion_name_clean == ion.name or ion_name_clean in ion.alternative_names:
             return ion
     return None
 

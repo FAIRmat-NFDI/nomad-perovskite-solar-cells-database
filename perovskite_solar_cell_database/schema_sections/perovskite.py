@@ -1,9 +1,10 @@
 from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell, add_band_gap
-from perovskite_solar_cell_database.schema_sections.ions.ion import IonA, IonB, IonC, optimize_molecule
+from perovskite_solar_cell_database.schema_sections.ions.ion import Ion, optimize_molecule
 from nomad.metainfo import Quantity, SubSection
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.results import Material
 from nomad.datamodel.results import System
+from ase.build import molecule
 
 
 class Perovskite(ArchiveSection):
@@ -292,11 +293,10 @@ Example
         a_eln=dict(
             component='EnumEditQuantity', props=dict(suggestions=[''])))
 
-    composition_a_ions = SubSection(section_def=IonA)
-
-    composition_b_ions = SubSection(section_def=IonB)
-
-    composition_c_ions = SubSection(section_def=IonC)
+    ions = SubSection(
+        section_def=Ion,
+        repeats=True,
+    )
 
     composition_none_stoichiometry_components_in_excess = Quantity(
         type=str,
@@ -572,57 +572,76 @@ Ozone
                 logger.warn('could not analyse chemical formula', exc_info=e)
             archive.results.material.elements = final_formula[1]
 
+        ions = []
+        a_ions_names = []
+        a_ions_coefficients = []
+        if self.composition_a_ions is not None:
+            a_ions_names = self.composition_a_ions.split("; ")
+        if self.composition_a_ions_coefficients is not None:
+            a_ions_coefficients = [float(c) for c in self.composition_a_ions_coefficients.split("; ")]
+
+        if len(a_ions_names) != 0 and len(a_ions_names) == len(a_ions_coefficients):
+           for i in range(len(a_ions_names)):
+               ion_a = Ion(name=a_ions_names[i], coefficients=a_ions_coefficients[i], ion_type='A')
+               ion_a.normalize(self, archive)
+               ions.append(ion_a)
+
+        b_ions_names = []
+        b_ions_coefficients = []
+        if self.composition_b_ions is not None:
+            b_ions_names = self.composition_b_ions.split("; ")
+        if self.composition_b_ions_coefficients is not None:
+            b_ions_coefficients = [float(c) for c in self.composition_b_ions_coefficients.split("; ")]
+
+        if len(b_ions_names) != 0 and len(b_ions_names) == len(b_ions_coefficients):
+           for i in range(len(b_ions_names)):
+                ion_b = Ion(name=b_ions_names[i], coefficients=b_ions_coefficients[i], ion_type='B')
+                ion_b.normalize(self, archive)
+                ions.append(ion_b)
+
+        c_ions_names = []
+        c_ions_coefficients = []
+        if self.composition_c_ions is not None:
+            c_ions_names = self.composition_c_ions.split("; ")
+        if self.composition_c_ions_coefficients is not None:
+            c_ions_coefficients = [float(c) for c in self.composition_c_ions_coefficients.split("; ")]
+        if len(c_ions_names) != 0 and len(c_ions_names) == len(c_ions_coefficients):
+           for i in range(len(c_ions_names)):
+               ion_c = Ion(name=c_ions_names[i], coefficients=c_ions_coefficients[i], ion_type='C')
+               ion_c.normalize(self, archive)
+               ions.append(ion_c)
+
+        self.ions = ions
+
         from nomad.normalizing.topology import add_system_info, add_system
         from nomad.datamodel.results import Relation
         from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+
         topology = {}
         # Add original system
-        # atoms_root cannot be none, so use atoms_a as a placeholder
-        if self.composition_a_ions and self.composition_a_ions.smile:
-            ase_atoms_a = optimize_molecule(self.composition_a_ions.smile)
-            atoms_a = nomad_atoms_from_ase_atoms(ase_atoms_a)
+        atoms = nomad_atoms_from_ase_atoms(molecule('H2O'))
+        parent_system = System(
+            method='parser',
+            label='original',
+            description='A representative system chosen from the original simulation.',
+            system_relation=Relation(type='root'),
+            atoms=atoms,
+        )
+        add_system(parent_system, topology)
+        add_system_info(parent_system, topology)
 
-            parent_system = System(
-                method='parser',
-                label='original', # this label has to be original
-                description='A representative system chosen from the original simulation.',
-                system_relation=Relation(type='root'),
-                atoms=atoms_a,
-            )
-            add_system(parent_system, topology)
-            add_system_info(parent_system, topology)
-
+        for ion in self.ions:
+            ase_atoms = optimize_molecule(ion.smile)
+            atoms = nomad_atoms_from_ase_atoms(ase_atoms)
             child_system_a = System(
-                label='composition_a_ions',
+                label=f'ion_{ion.ion_type}_{ion.name}',
                 method='parser',
-                atoms=atoms_a,
+                atoms=atoms,
             )
             add_system(child_system_a, topology, parent_system)
             add_system_info(child_system_a, topology)
 
-            if self.composition_b_ions and self.composition_b_ions.smile:
-                ase_atoms_b = optimize_molecule(self.composition_b_ions.smile)
-                atoms_b = nomad_atoms_from_ase_atoms(ase_atoms_b)
-                child_system_b = System(
-                    label='composition_b_ions',
-                    method='parser',
-                    atoms=atoms_b,
-                )
-                add_system(child_system_b, topology, parent_system)
-                add_system_info(child_system_b, topology)
+        material = archive.m_setdefault('results.material')
+        for system in topology.values():
+            material.m_add_sub_section(Material.topology, system)
 
-            if self.composition_c_ions and self.composition_c_ions.smile:
-                ase_atoms_c = optimize_molecule(self.composition_c_ions.smile)
-                atoms_c = nomad_atoms_from_ase_atoms(ase_atoms_c)
-                child_system_c = System(
-                    label='composition_c_ions',
-                    method='parser',
-                    atoms=atoms_c,
-                )
-                add_system(child_system_c, topology, parent_system)
-                add_system_info(child_system_c, topology)
-
-            # Add topology to the archive
-            material = archive.m_setdefault('results.material')
-            for system in topology.values():
-                material.m_add_sub_section(Material.topology, system)
