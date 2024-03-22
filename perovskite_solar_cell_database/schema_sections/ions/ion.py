@@ -66,7 +66,6 @@ class Ion(PureSubstanceSection):
         ion_match = find_ion_by_name(self.name, ions)
         if ion_match is not None:
             self.name = ion_match.name
-            print(self.name)
             self.iupac_name = ion_match.iupac_name
             self.molecular_formula = ion_match.molecular_formula
             self.smile = ion_match.smile

@@ -1707,8 +1707,8 @@ Ozone
         # Add original system
         parent_system = System(
             method='parser',
-            label='original',
-            description='A representative system chosen from the original simulation.',
+            label='absorber material',
+            description='A system describing the chemistry and components of the absorber material.',
             system_relation=Relation(type='root'),
         )
         add_system(parent_system, topology)
@@ -1717,8 +1717,12 @@ Ozone
         for ion in self.ions:
             ase_atoms = optimize_molecule(ion.smile)
             atoms = nomad_atoms_from_ase_atoms(ase_atoms)
+            if ion.ion_type != 'C':
+                label = f'{ion.ion_type} Cation: {ion.molecular_formula}'
+            else:
+                label = f'{ion.ion_type} Anion: {ion.molecular_formula}'
             child_system_a = System(
-                label=f'ion_{ion.ion_type}_{ion.name}',
+                label=label,
                 method='parser',
                 atoms=atoms,
             )
