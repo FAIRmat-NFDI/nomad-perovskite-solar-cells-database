@@ -152,28 +152,16 @@ def convert_rdkit_mol_to_ase_atoms(rdkit_mol):
 
 def optimize_molecule(smiles):
     try:
-        # Convert SMILES to molecule and add hydrogens
         m = Chem.MolFromSmiles(smiles)
         m = Chem.AddHs(m)
 
-        # Embed the molecule in 3D space and optimize its structure
         AllChem.EmbedMolecule(m)
         AllChem.MMFFOptimizeMolecule(m)
 
-        # Instead of writing to and reading from a file, handle the molecule directly in memory
-        # Convert the RDKit molecule to an ASE atoms object (or any other format you need)
-        ase_atoms = convert_rdkit_mol_to_ase_atoms(m)  # Define this function as per your requirement
+        ase_atoms = convert_rdkit_mol_to_ase_atoms(m)
 
         # Further processing
         # ...
         return ase_atoms
     except Exception as e:
         print(f"An error occurred: {e}")
-# ic = get_all_ions_names(read_ions_from_xlsx('A'))
-# print(len(ic))
-# print(len(set(ion_a)))
-# print(len(ion_a))
-# print(set(ion_a))
-
-
-# https://nomad-lab.eu/prod/v1/gui/search/entries/entry/id/fwqLspHijvgbmSCMC5fRDFD8_XIz
