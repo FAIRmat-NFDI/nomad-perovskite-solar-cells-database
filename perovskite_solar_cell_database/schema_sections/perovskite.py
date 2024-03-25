@@ -1724,9 +1724,9 @@ Ozone
             ase_atoms = optimize_molecule(ion.smile)
             atoms = nomad_atoms_from_ase_atoms(ase_atoms)
             if ion.ion_type != 'C':
-                label = f'{ion.ion_type} Cation: {ion.molecular_formula}'
+                label = f'{ion.ion_type} Cation: {ion.name}'
             else:
-                label = f'{ion.ion_type} Anion: {ion.molecular_formula}'
+                label = f'{ion.ion_type} Anion: {ion.name}'
             child_system = System(
                 label=label,
                 method='parser',
