@@ -1711,6 +1711,12 @@ Ozone
             description='A system describing the chemistry and components of the absorber material.',
             system_relation=Relation(type='root'),
         )
+
+        parent_system.structural_type = archive.results.material.structural_type
+        parent_system.chemical_formula_hill = archive.results.material.chemical_formula_hill
+        parent_system.elements = archive.results.material.elements
+        parent_system.chemical_formula_iupac = archive.results.material.chemical_formula_iupac
+
         add_system(parent_system, topology)
         add_system_info(parent_system, topology)
 
