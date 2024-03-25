@@ -1721,13 +1721,19 @@ Ozone
                 label = f'{ion.ion_type} Cation: {ion.molecular_formula}'
             else:
                 label = f'{ion.ion_type} Anion: {ion.molecular_formula}'
-            child_system_a = System(
+            child_system = System(
                 label=label,
                 method='parser',
                 atoms=atoms,
             )
-            add_system(child_system_a, topology, parent_system)
-            add_system_info(child_system_a, topology)
+
+            if len(ase_atoms) == 1:
+                child_system.structural_type = 'atom'
+            elif len(ase_atoms) > 1:
+                child_system.structural_type = 'molecule / cluster'
+
+            add_system(child_system, topology, parent_system)
+            add_system_info(child_system, topology)
 
         material = archive.m_setdefault('results.material')
         for system in topology.values():
