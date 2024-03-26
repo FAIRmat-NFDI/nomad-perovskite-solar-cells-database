@@ -1706,7 +1706,6 @@ Ozone
         topology = {}
         # Add original system
         parent_system = System(
-            method='parser',
             label='absorber material',
             description='A system describing the chemistry and components of the absorber material.',
             system_relation=Relation(type='root'),
@@ -1744,3 +1743,8 @@ Ozone
         material = archive.m_setdefault('results.material')
         for system in topology.values():
             material.m_add_sub_section(Material.topology, system)
+
+        # topology contains an extra parent
+        if len(self.ions) == len(material.topology) - 1:
+            for i in range(len(self.ions)):
+                material.topology[i+1].chemical_formula_descriptive = self.ions[i].name
