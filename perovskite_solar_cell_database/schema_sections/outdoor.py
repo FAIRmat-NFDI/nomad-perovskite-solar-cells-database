@@ -2,6 +2,7 @@ import numpy as np
 from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
 
+
 class Outdoor(ArchiveSection):
     """A section describing measurements performed in outdoor conditions"""
 

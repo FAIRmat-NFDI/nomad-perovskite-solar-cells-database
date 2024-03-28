@@ -35,6 +35,7 @@ jobs:
     - name: Install the package
       run: |
         pip install dist/*.tar.gz --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+        pip install -r requirements.txt --extra-index-url https://gitlab.mpcdf.mpg
     - name: Test with nomad
       run: |
         python -m nomad.cli parse tests/data/example.archive.json

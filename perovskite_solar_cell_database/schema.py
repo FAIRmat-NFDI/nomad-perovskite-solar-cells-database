@@ -7,6 +7,7 @@ from nomad.metainfo import Package, Section, SubSection
 
 m_package = Package(name='perovskite_solar_cell_database')
 
+
 class PerovskiteSolarCell(EntryData):
     """
     This schema is adapted to map the data in the [Perovskite Solar Cell Database
