@@ -2,3 +2,4 @@ nomad-lab>=1.2.2.dev
 pytest
 rdkit
 openpyxl
+lxml_html_clean
