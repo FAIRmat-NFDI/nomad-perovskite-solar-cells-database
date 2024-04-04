@@ -1,2 +1,4 @@
 nomad-lab>=1.2.2.dev
 pytest
+rdkit
+openpyxl

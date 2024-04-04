@@ -4,6 +4,8 @@ from nomad.datamodel.metainfo.plot import PlotSection
 from nomad.units import ureg
 from nomad.metainfo import Section, Quantity, SubSection
 from nomad.datamodel.data import ArchiveSection
+
+
 class JVcurve(PlotSection, ArchiveSection):
     '''
     Section describing a current density, voltage curve.
