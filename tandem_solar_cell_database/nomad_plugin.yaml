@@ -1,0 +1,4 @@
+plugin_type: schema
+name: tandem_solar_cell_database
+description: |
+  A NOMAD plugin containing the schema for the Tandem Solar Cell Database.
