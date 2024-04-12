@@ -3,6 +3,16 @@
         "m_def": "tandem_solar_cell_database.schema.TandemSolarCell",
         "reference": {
             "DOI_number": "10.1016/j.orgel.2017.05.025"
-        }
+        },
+        "layers": [
+            {
+                "functionality": "HTL",
+                "thickness": 0.1
+            },
+            {
+                "material": "Absorber",
+                "thickness": 0.1
+            }
+        ]
     }
 }

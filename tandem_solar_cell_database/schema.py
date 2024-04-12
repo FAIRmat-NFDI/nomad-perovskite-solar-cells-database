@@ -1,6 +1,7 @@
 from nomad.datamodel.data import EntryData, UseCaseElnCategory
 
 from perovskite_solar_cell_database.schema_sections import Ref
+from .schema_sections import Layer, Tandem
 from nomad.metainfo import Package, Section, SubSection
 
 
@@ -19,6 +20,8 @@ class TandemSolarCell(EntryData):
     )
 
     reference = SubSection(section_def=Ref)
+    tandem_device = SubSection(section_def=Tandem)
+    layers = SubSection(section_def=Layer, repeats=True)
 
 
 m_package.__init_metainfo__()
