@@ -1,6 +1,6 @@
 import numpy as np
-from nomad.metainfo import Quantity, Datetime, Section, MEnum
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import MEnum, Quantity, Section
 
 
 class Layer(ArchiveSection):
@@ -48,8 +48,5 @@ class Layer(ArchiveSection):
     )
 
     def normalize(self, archive, logger):
-        from nomad.datamodel.datamodel import EntryMetadata
-        import requests
-        import dateutil.parser
 
         pass

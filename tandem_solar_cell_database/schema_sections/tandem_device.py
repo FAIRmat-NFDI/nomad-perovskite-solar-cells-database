@@ -1,6 +1,6 @@
 import numpy as np
-from nomad.metainfo import Quantity, Datetime, Section
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import Quantity, Section
 
 
 class Tandem(ArchiveSection):
@@ -72,8 +72,5 @@ class Tandem(ArchiveSection):
     )
 
     def normalize(self, archive, logger):
-        from nomad.datamodel.datamodel import EntryMetadata
-        import requests
-        import dateutil.parser
 
         pass

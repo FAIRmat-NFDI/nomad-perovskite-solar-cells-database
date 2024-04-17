@@ -1,7 +1,8 @@
 import numpy as np
-from nomad.metainfo import (
-    Quantity, Datetime, Section)
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import Datetime, Quantity, Section
+
+
 class Ref(ArchiveSection):
     """Information about the source of the data. It describes who curated the data,
      the journal in which the data was published,
@@ -106,9 +107,9 @@ Unpublished
                     """)
 
     def normalize(self, archive, logger):
-        from nomad.datamodel.datamodel import EntryMetadata
-        import requests
         import dateutil.parser
+        import requests
+        from nomad.datamodel.datamodel import EntryMetadata
 
         # Parse journal name, lead author and publication date from crossref
         if self.DOI_number:

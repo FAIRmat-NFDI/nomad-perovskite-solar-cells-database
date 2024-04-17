@@ -1,9 +1,9 @@
 from nomad.datamodel.data import EntryData, UseCaseElnCategory
-
-from perovskite_solar_cell_database.schema_sections import Ref
-from .schema_sections import Layer, Tandem
 from nomad.metainfo import Package, Section, SubSection
 
+from perovskite_solar_cell_database.schema_sections import Ref
+
+from .schema_sections import Layer, Tandem
 
 m_package = Package(name='tandem_solar_cell_database')
 
