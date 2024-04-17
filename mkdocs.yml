@@ -1,0 +1,57 @@
+site_name: Documentation
+site_description: |
+  The documentation for NOMAD schema plugin example
+site_author: The NOMAD Authors
+repo_url: https://github.com/nomad-coe/nomad-schema-plugin-example
+
+nav:
+  - Home: index.md
+  - Tutorial: tutorial/tutorial.md
+  - How-to guides:
+      - Install this Plugin: how_to/install_this_plugin.md
+      - Use this Plugin: how_to/use_this_plugin.md
+      - Contribute to this plugin: how_to/contribute_to_this_plugin.md
+      - Contribute to the documentation: how_to/contribute_to_the_documentation.md
+  - Explanation: explanation/explanation.md
+  - Reference: reference/references.md
+plugins:
+  - search
+theme:
+  name: material
+  palette:
+    primary: "#2A4CDF"
+    accent: "#008A67"
+  font:
+    text: "Titillium Web"
+  logo: assets/nomad-plugin-logo.png
+  favicon: assets/favicon.png
+  features:
+    - navigation.instant
+  custom_dir: docs/theme
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - toc:
+      permalink: True
+  - pymdownx.arithmatex:
+      generic: true
+  - attr_list
+  - mkdocs-click
+  - pymdownx.extra
+extra:
+  generator: false
+  homepage: https://nomad-lab.eu
+use_directory_urls: false
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascript.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
