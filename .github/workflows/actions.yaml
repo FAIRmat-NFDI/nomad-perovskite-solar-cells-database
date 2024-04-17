@@ -12,20 +12,13 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
-        pip install coverage coveralls
+        pip install -r requirements.txt --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
     - name: Test with pytest
       run: |
-        python -m coverage run -m pytest -sv
-    - name: Submit to coveralls
-      continue-on-error: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        coveralls --service=github
+        python -m pytest -sv tests
     - name: Test with nomad
       run: |
-        python -m nomad.cli parse tests/data/test.archive.yaml
+        python -m nomad.cli parse tests/data/example.archive.json
   build-and-install:
     runs-on: ubuntu-latest
     steps:
@@ -41,24 +34,8 @@ jobs:
         python -m build --sdist
     - name: Install the package
       run: |
-        pip install dist/*.tar.gz --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+        pip install dist/*.tar.gz --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+        pip install -r requirements.txt --extra-index-url https://gitlab.mpcdf.mpg
     - name: Test with nomad
       run: |
-        python -m nomad.cli parse tests/data/test.archive.yaml
-  ruff-linting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: chartboost/ruff-action@v1
-        with:
-          args: "check ."
-          version: 0.1.8
-  # to enable auto-formatting check, uncomment the following lines below           
-  # ruff-formatting:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: chartboost/ruff-action@v1
-  #       with:
-  #         args: "format . --check"
-  #         version: 0.1.8
+        python -m nomad.cli parse tests/data/example.archive.json
