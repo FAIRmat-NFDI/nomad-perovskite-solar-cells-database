@@ -1,7 +1,10 @@
-from .vars import etl_enum_edit_quantity_suggestions
-from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell
-from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import Quantity
+
+from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell
+
+from .vars import etl_enum_edit_quantity_suggestions
+
 
 class ETL(ArchiveSection):
     """

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright The NOMAD Authors.
 #
@@ -17,6 +16,7 @@
 # limitations under the License.
 
 import re
+
 from pymatgen.core import Composition
 
 preprocess_rules = {
@@ -151,7 +151,7 @@ cation_dict_miss = {
     '(ThFA)': ''}
 
 
-class PerovskiteFormulaNormalizer():
+class PerovskiteFormulaNormalizer:
 
     def __init__(self, input_formula: str):
         """

@@ -1,6 +1,7 @@
-from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell
-from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import Quantity
+
+from perovskite_solar_cell_database.schema_sections.utils import add_solar_cell
 
 
 class Backcontact(ArchiveSection):

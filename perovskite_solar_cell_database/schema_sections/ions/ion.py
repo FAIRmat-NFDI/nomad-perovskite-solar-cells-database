@@ -1,5 +1,11 @@
+import os
+
+import openpyxl
+from ase import Atoms
 from nomad.datamodel.metainfo.basesections import PureSubstanceSection
 from nomad.metainfo import Quantity
+from rdkit import Chem
+from rdkit.Chem import AllChem
 import openpyxl
 import os
 from ase import Atoms

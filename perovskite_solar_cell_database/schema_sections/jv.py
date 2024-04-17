@@ -1,9 +1,10 @@
 import numpy as np
-from .utils import add_solar_cell
-from nomad.datamodel.metainfo.plot import PlotSection
-from nomad.units import ureg
-from nomad.metainfo import Section, Quantity, SubSection
 from nomad.datamodel.data import ArchiveSection
+from nomad.datamodel.metainfo.plot import PlotSection
+from nomad.metainfo import Quantity, Section, SubSection
+from nomad.units import ureg
+
+from .utils import add_solar_cell
 
 
 class JVcurve(PlotSection, ArchiveSection):

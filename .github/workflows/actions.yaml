@@ -39,3 +39,11 @@ jobs:
     - name: Test with nomad
       run: |
         python -m nomad.cli parse tests/data/example.archive.json
+  ruff-linting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: chartboost/ruff-action@v1
+      with:
+        args: "check ."
+        version: 0.1.8

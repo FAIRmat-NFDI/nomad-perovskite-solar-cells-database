@@ -1,9 +1,11 @@
 import numpy as np
+from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.plot import PlotSection
 from nomad.metainfo import Quantity, Section
-from nomad.datamodel.data import ArchiveSection
-from .perovskite import Perovskite
 from nomad.units import ureg
+
+from .perovskite import Perovskite
+
 
 class EQE(PlotSection, ArchiveSection):
     """

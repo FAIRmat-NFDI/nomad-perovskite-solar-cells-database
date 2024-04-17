@@ -1,9 +1,25 @@
 
 from nomad.datamodel.data import EntryData, UseCaseElnCategory
-
-from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, PerovskiteDeposition, HTL, Backcontact, Add, Encapsulation, JV, Stabilised, EQE, Stability, Outdoor
 from nomad.metainfo import Package, Section, SubSection
 
+from .schema_sections import (
+    EQE,
+    ETL,
+    HTL,
+    JV,
+    Add,
+    Backcontact,
+    Cell,
+    Encapsulation,
+    Module,
+    Outdoor,
+    Perovskite,
+    PerovskiteDeposition,
+    Ref,
+    Stabilised,
+    Stability,
+    Substrate,
+)
 
 m_package = Package(name='perovskite_solar_cell_database')
 

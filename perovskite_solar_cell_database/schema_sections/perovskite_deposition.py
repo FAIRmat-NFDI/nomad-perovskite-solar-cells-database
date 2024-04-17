@@ -1,7 +1,10 @@
 import numpy as np
-from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import Quantity
+
 from .utils import add_solar_cell
+
+
 class PerovskiteDeposition(ArchiveSection):
     """
     This section contains information about the deposition of the perovskite layer.
