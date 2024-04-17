@@ -6,6 +6,9 @@ from nomad.datamodel.metainfo.basesections import PureSubstanceSection
 from nomad.metainfo import Quantity
 from rdkit import Chem
 from rdkit.Chem import AllChem
+import openpyxl
+import os
+from ase import Atoms
 
 
 class Ion(PureSubstanceSection):
@@ -151,6 +154,8 @@ def convert_rdkit_mol_to_ase_atoms(rdkit_mol):
 
 
 def optimize_molecule(smiles):
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
     try:
         m = Chem.MolFromSmiles(smiles)
         m = Chem.AddHs(m)
