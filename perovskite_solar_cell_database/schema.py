@@ -1,7 +1,7 @@
 
 from nomad.datamodel.data import EntryData, UseCaseElnCategory
 
-from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, PerovskiteDeposition, HTL, Backcontact, Add, Encapsulation, JV, Stabilised, EQE, Stability, Outdoor
+from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, PerovskiteDeposition, HTL, Backcontact, Add, Encapsulation, JV, Stabilised, EQE, Stability, Outdoor, LLM
 from nomad.metainfo import Package, Section, SubSection
 
 
@@ -20,6 +20,7 @@ class PerovskiteSolarCell(EntryData):
         a_eln=dict(lane_width='400px'),
         categories=[UseCaseElnCategory])
 
+    llm = SubSection(section_def=LLM)
     ref = SubSection(section_def=Ref)
     cell = SubSection(section_def=Cell)
     module = SubSection(section_def=Module)

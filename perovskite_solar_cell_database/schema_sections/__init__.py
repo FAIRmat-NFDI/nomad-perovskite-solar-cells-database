@@ -1,3 +1,4 @@
+from .llm import LLM
 from .ref import Ref
 from .cell import Cell
 from .module import Module
