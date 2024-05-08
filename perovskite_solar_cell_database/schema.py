@@ -46,13 +46,17 @@ from nomad.metainfo import (
 from nomad.datamodel.data import ArchiveSection
 from nomad.units import ureg
 
-class LLM(ArchiveSection):
+
+class LLM(EntryData):
     """Information about the source of the data. It describes who curated the data,
      the journal in which the data was published,
      the DOI number of the publication, the lead author and the publication date."""
 
     m_def = Section(
-        a_eln=dict(lane_width='800px'))
+        label='LLM',
+        a_eln=dict(lane_width='800px'),
+        categories=[UseCaseElnCategory])
+
 
     doi = Quantity(
         type=str,
