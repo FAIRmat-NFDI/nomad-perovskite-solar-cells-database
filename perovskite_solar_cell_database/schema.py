@@ -223,6 +223,7 @@ class LLM(EntryData):
 
 
         for i, device in enumerate(resp['devices']):
+            solarcell = PerovskiteSolarCell()
             solarcell.jv = JV()
             solarcell.jv.default_Voc = device.get("voc").get("value")
             solarcell.jv.default_Jsc = device.get("jsc").get("value")
