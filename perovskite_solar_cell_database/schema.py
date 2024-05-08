@@ -1,9 +1,10 @@
 
 from nomad.datamodel.data import EntryData, UseCaseElnCategory
 
-from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, PerovskiteDeposition, HTL, Backcontact, Add, Encapsulation, JV, Stabilised, EQE, Stability, Outdoor, LLM
+from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, PerovskiteDeposition, HTL, Backcontact, Add, Encapsulation, JV, Stabilised, EQE, Stability, Outdoor
 from nomad.metainfo import Package, Section, SubSection
-
+import json
+from .schema_sections.utils import create_archive
 
 m_package = Package(name='perovskite_solar_cell_database')
 
@@ -20,7 +21,6 @@ class PerovskiteSolarCell(EntryData):
         a_eln=dict(lane_width='400px'),
         categories=[UseCaseElnCategory])
 
-    llm = SubSection(section_def=LLM)
     ref = SubSection(section_def=Ref)
     cell = SubSection(section_def=Cell)
     module = SubSection(section_def=Module)
@@ -63,107 +63,169 @@ class LLM(ArchiveSection):
             component='FileEditQuantity'))
 
     def normalize(self, archive, logger):
-        schema = """
-            Here is the schema in JSON:
-            {
-                "devices": [
-                {
-                    "device_stack": [
-                    "string"
-                    ],
-                    "perovskite_absorber_chemical_formula": string,
-                    "scan_direction": valid-choices-only-from: {['forward', 'reversed']},
-                    "pce": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "jsc": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "voc": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "ff": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "active_area": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "light_intensity": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "bandgap": {
-                    "value": float,
-                    "unit": "string",
-                    "extra_info": "string"
-                    },
-                    "substrate": "string",
-                    "backcontact": "string",
-                    "hole_transport_layer": "string",
-                    "electron_transport_layer": "string | string",
-                    "extra_info": "string"
-                }
-                ]
-            }          
-            """
-        prompt = (
-            "Can you list out the different solar cell devices mentioned in the text below. Try to fill all the values in the schema. Only provide a JSON output.")
-        import requests
-        import json
+        print("****************************")
+        # schema = """
+        #     Here is the schema in JSON:
+        #     {
+        #         "devices": [
+        #         {
+        #             "device_stack": [
+        #             "string"
+        #             ],
+        #             "perovskite_absorber_chemical_formula": string,
+        #             "scan_direction": valid-choices-only-from: {['forward', 'reversed']},
+        #             "pce": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "jsc": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "voc": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "ff": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "active_area": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "light_intensity": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "bandgap": {
+        #             "value": float,
+        #             "unit": "string",
+        #             "extra_info": "string"
+        #             },
+        #             "substrate": "string",
+        #             "backcontact": "string",
+        #             "hole_transport_layer": "string",
+        #             "electron_transport_layer": "string | string",
+        #             "extra_info": "string"
+        #         }
+        #         ]
+        #     }
+        #     """
+        # prompt = (
+        #     "Can you list out the different solar cell devices mentioned in the text below. Try to fill all the values in the schema. Only provide a JSON output.")
+        # import requests
+        # import json
+        #
+        # from chemdataextractor import Document
+        #
+        # f = open('tests/data/10.3390--nano9010121.pdf', 'rb')
+        # doc = Document.from_file(f)
+        #
+        # for item in doc.elements:
+        #     if "References" in str(item):
+        #         index_to_delete = doc.elements.index(item)
+        #         del doc.elements[index_to_delete:]
+        #
+        # paper_text = ' '.join(map(str, doc.elements))
+        #
+        # url = "http://172.28.105.30/backend/api/generate"
+        # # llama_messages=[
+        # # {
+        # #     'role': 'system',
+        # #     'content': 'You are a solar cell scientist. You only give answers in valid JSON with extracted data given a schema.'
+        # # },
+        # # {
+        # #     'role': 'user',
+        # #     'content': prompt + "\n" + schema + "\n" + paper_text,
+        # # },]
+        #
+        # response = requests.post(url, json={
+        #     "model": "llama3:70b",
+        #     "seed": 42,
+        #     "options": {"temperature": 0},
+        #     "stream": False,
+        #     "prompt": paper_text + "\n" + prompt + "\n" + schema,
+        #     # "messages": llama_messages
+        # })
+        #
+        # resp = json.loads(response.content)["response"]
 
-        from chemdataextractor import Document
-
-        f = open('tests/data/10.3390--nano9010121.pdf', 'rb')
-        doc = Document.from_file(f)
-
-        for item in doc.elements:
-            if "References" in str(item):
-                index_to_delete = doc.elements.index(item)
-                del doc.elements[index_to_delete:]
-
-        paper_text = ' '.join(map(str, doc.elements))
-
-        url = "http://172.28.105.30/backend/api/generate"
-        # llama_messages=[
-        # {
-        #     'role': 'system',
-        #     'content': 'You are a solar cell scientist. You only give answers in valid JSON with extracted data given a schema.'
-        # },
-        # {
-        #     'role': 'user',
-        #     'content': prompt + "\n" + schema + "\n" + paper_text,
-        # },]
-
-        response = requests.post(url, json={
-            "model": "llama3:70b",
-            "seed": 42,
-            "options": {"temperature": 0},
-            "stream": False,
-            "prompt": paper_text + "\n" + prompt + "\n" + schema,
-            # "messages": llama_messages
-        })
-
-        resp = json.loads(response.content)["response"]
+        data = """
+        {
+  "devices": [
+    {
+      "device_stack": ["MAPbI3"],
+      "perovskite_absorber_chemical_formula": "MAPbI3",
+      "scan_direction": "forward",
+      "pce": {"value": 4.27, "unit": "%", "extra_info": ""},
+      "jsc": {"value": 11, "unit": "mA/cm2", "extra_info": ""},
+      "voc": {"value": 0.9, "unit": "V", "extra_info": ""},
+      "ff": {"value": 53, "unit": "%", "extra_info": ""},
+      "active_area": {"value": null, "unit": null, "extra_info": ""},
+      "light_intensity": {"value": 100, "unit": "mW/cm2", "extra_info": "AM1.5"},
+      "bandgap": {"value": null, "unit": null, "extra_info": ""},
+      "substrate": "",
+      "backcontact": "",
+      "hole_transport_layer": "",
+      "electron_transport_layer": "",
+      "extra_info": ""
+    },
+    {
+      "device_stack": ["MAPbI3", "QD-FAPbBrI"],
+      "perovskite_absorber_chemical_formula": "MAPbI3",
+      "scan_direction": "forward",
+      "pce": {"value": 6.54, "unit": "%", "extra_info": ""},
+      "jsc": {"value": null, "unit": null, "extra_info": ""},
+      "voc": {"value": null, "unit": null, "extra_info": ""},
+      "ff": {"value": 43.3, "unit": "%", "extra_info": ""},
+      "active_area": {"value": null, "unit": null, "extra_info": ""},
+      "light_intensity": {"value": 100, "unit": "mW/cm2", "extra_info": "AM1.5"},
+      "bandgap": {"value": null, "unit": null, "extra_info": ""},
+      "substrate": "",
+      "backcontact": "",
+      "hole_transport_layer": "",
+      "electron_transport_layer": "",
+      "extra_info": ""
+    },
+    {
+      "device_stack": ["MAPbI3", "QD-FAPbBrI2"],
+      "perovskite_absorber_chemical_formula": "MAPbI3",
+      "scan_direction": "forward",
+      "pce": {"value": 7.59, "unit": "%", "extra_info": ""},
+      "jsc": {"value": 17.4, "unit": "mA/cm2", "extra_info": ""},
+      "voc": {"value": 0.9, "unit": "V", "extra_info": ""},
+      "ff": {"value": 48.6, "unit": "%", "extra_info": ""},
+      "active_area": {"value": null, "unit": null, "extra_info": ""},
+      "light_intensity": {"value": 100, "unit": "mW/cm2", "extra_info": "AM1.5"},
+      "bandgap": {"value": null, "unit": null, "extra_info": ""},
+      "substrate": "",
+      "backcontact": "",
+      "hole_transport_layer": "",
+      "electron_transport_layer": "",
+      "extra_info": ""
+    }
+  ]
+}
+        """
+        resp = json.loads(data)
 
         solarcell = PerovskiteSolarCell()
 
 
-        for device in resp['devices']:
+        for i, device in enumerate(resp['devices']):
+            print("device", device)
             # device['device_stack'] = device['device_stack'].split(',')
             solarcell.jv = JV()
-            solarcell.jv.defalut_Voc = float(device["voc"]["value"])
+            solarcell.jv.defalut_Voc = device["voc"]["value"]
 
+            create_archive(solarcell, archive, f'llm-{i}.json')
             # print(json.loads(response.content.decode('ascii').strip())['message']['content'])
 
 m_package.__init_metainfo__()

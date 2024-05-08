@@ -1,8 +1,6 @@
 {
     "data": {
-        "m_def": "perovskite_solar_cell_database.schema.PerovskiteSolarCell",
-        "llm": {
-            "doi": "10.1016/j.orgel.2017.05.025"
-        }
+        "m_def": "perovskite_solar_cell_database.schema.LLM",
+        "doi": "10.1016/j.orgel.2017.05.025"
     }
 }
