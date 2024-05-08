@@ -155,6 +155,7 @@ class LLM(ArchiveSection):
         # })
         #
         # resp = json.loads(response.content)["response"]
+        
 
         data = """
         {
@@ -218,9 +219,27 @@ class LLM(ArchiveSection):
 
 
         for i, device in enumerate(resp['devices']):
-            solarcell = PerovskiteSolarCell()
-            # device['device_stack'] = device['device_stack'].split(',')
-            solarcell.jv = JV(default_Voc = device['voc']['value'])
+            solarcell.jv = JV()
+            solarcell.jv.default_Voc = device.get("voc").get("value")
+            solarcell.jv.default_Jsc = device.get("jsc").get("value")
+            solarcell.jv.default_FF = device.get("ff").get("value")
+            solarcell.jv.defalt_PCE = device.get("pce").get("value")
+            
+            solarcell.backcontact = Backcontact()
+            solarcell.backcontact.stack_sequence = device.get("backcontact")
+
+            solarcell.htl = HTL()
+            solarcell.htl.stack_sequence = device.get("hole_transport_layer")
+
+            solarcell.substrate = Substrate()
+            solarcell.substrate.stack_sequence = device.get("substrate")
+
+            solarcell.perovskite = Perovskite()
+            solarcell.perovskite.composition_long_form = device.get("perovskite_absorber_chemical_formula")
+
+            solarcell.cell = Cell()
+            solarcell.cell.stack_sequence = " | ".join(device.get("device_stack"))
+            solarcell.area_measured = device.get("active_area").get("value")
 
             solarcell.normalize(archive, logger)
 
