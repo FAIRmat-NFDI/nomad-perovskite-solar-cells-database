@@ -44,7 +44,7 @@ import numpy as np
 from nomad.metainfo import (
     Quantity, Datetime, Section)
 from nomad.datamodel.data import ArchiveSection
-
+from nomad.units import ureg
 
 class LLM(ArchiveSection):
     """Information about the source of the data. It describes who curated the data,
@@ -63,7 +63,6 @@ class LLM(ArchiveSection):
             component='FileEditQuantity'))
 
     def normalize(self, archive, logger):
-        print("****************************")
         # schema = """
         #     Here is the schema in JSON:
         #     {
@@ -216,16 +215,18 @@ class LLM(ArchiveSection):
         """
         resp = json.loads(data)
 
-        solarcell = PerovskiteSolarCell()
 
 
         for i, device in enumerate(resp['devices']):
-            print("device", device)
+            solarcell = PerovskiteSolarCell()
             # device['device_stack'] = device['device_stack'].split(',')
-            solarcell.jv = JV()
-            solarcell.jv.defalut_Voc = device["voc"]["value"]
+            solarcell.jv = JV(default_Voc = device['voc']['value'])
 
-            create_archive(solarcell, archive, f'llm-{i}.json')
+            solarcell.normalize(archive, logger)
+
+            create_archive(solarcell, archive, f'llm-{i}.archive.json')
             # print(json.loads(response.content.decode('ascii').strip())['message']['content'])
+        super().normalize(archive, logger)
+
 
 m_package.__init_metainfo__()
