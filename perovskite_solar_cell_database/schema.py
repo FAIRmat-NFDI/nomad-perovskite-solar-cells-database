@@ -247,7 +247,7 @@ class LLM(EntryData):
 
             solarcell.normalize(archive, logger)
 
-            create_archive(solarcell, archive, f'llm-{i}.archive.json')
+            create_archive(solarcell, archive, f'llm-solar-cell-entry-{i}.archive.json')
             # print(json.loads(response.content.decode('ascii').strip())['message']['content'])
         super().normalize(archive, logger)
 
