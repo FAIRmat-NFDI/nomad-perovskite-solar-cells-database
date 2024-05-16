@@ -1,8 +1,8 @@
-site_name: nomad-solar-cells-efficiency-tables
-site_description: This is a schema package to digitiz solar
-site_author: Pepe Marquez
+site_name: nomad-perovskite-solar-cells-database
+site_description: This is a NOMAD plugin for the perovskite solar cells database.
 
-repo_url: https://github.com/Pepe-Marquez/nomad-solar-cells-efficiency-tables
+
+repo_url: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 
 nav:
   - Home: index.md

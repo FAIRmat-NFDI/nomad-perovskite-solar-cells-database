@@ -1,14 +1,46 @@
+from typing import (
+    TYPE_CHECKING,
+)
 
-from nomad.datamodel.data import EntryData, UseCaseElnCategory
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
-from .schema_sections import Ref, Cell, Module, Substrate, ETL, Perovskite, PerovskiteDeposition, HTL, Backcontact, Add, Encapsulation, JV, Stabilised, EQE, Stability, Outdoor
-from nomad.metainfo import Package, Section, SubSection
+from nomad.datamodel.data import UseCaseElnCategory
+from nomad.config import config
+from nomad.datamodel.data import Schema
+from .schema_sections import (
+    Ref,
+    Cell,
+    Module,
+    Substrate,
+    ETL,
+    Perovskite,
+    PerovskiteDeposition,
+    HTL,
+    Backcontact,
+    Add,
+    Encapsulation,
+    JV,
+    Stabilised,
+    EQE,
+    Stability,
+    Outdoor,
+)
+from nomad.metainfo import Package, Section, SubSection, SchemaPackage
+
+configuration = config.get_plugin_entry_point(
+    'perovskite_solar_cell_database.schema_packages:perovskite_solar_cell_database'
+)
+
+m_package = SchemaPackage()
 
 
-m_package = Package(name='perovskite_solar_cell_database')
-
-
-class PerovskiteSolarCell(EntryData):
+class PerovskiteSolarCell(Schema):
     """
     This schema is adapted to map the data in the [Perovskite Solar Cell Database
     Project](https://www.perovskitedatabase.com/). The descriptions in the quantities
@@ -18,7 +50,8 @@ class PerovskiteSolarCell(EntryData):
     m_def = Section(
         label='Perovskite Solar Cell',
         a_eln=dict(lane_width='400px'),
-        categories=[UseCaseElnCategory])
+        categories=[UseCaseElnCategory],
+    )
 
     ref = SubSection(section_def=Ref)
     cell = SubSection(section_def=Cell)
