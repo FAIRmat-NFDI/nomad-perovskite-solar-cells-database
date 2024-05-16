@@ -29,12 +29,18 @@ maintainers = [
     {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
     ]
 requires-python = ">=3.9"
-dependencies = ["nomad-lab>=1.2.2dev578"]
+dependencies = [
+    "nomad-lab>=1.2.2dev578",
+    "pytest",
+    "rdkit",
+    "openpyxl",
+    "lxml_html_clean"
+]
 license = { file = "LICENSE" }
 
 [project.urls]
 "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
-Repository = "https://github.com/Pepe-Marquez/nomad-solar-cells-efficiency-tables"
+Repository = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
 
 [project.optional-dependencies]
 dev = ["ruff", "pytest", "structlog"]
