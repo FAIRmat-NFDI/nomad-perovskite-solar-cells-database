@@ -24,7 +24,7 @@ authors = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
     {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
     ]
-mantainers = [
+maintainers = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
     {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
     ]
