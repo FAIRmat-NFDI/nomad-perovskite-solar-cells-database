@@ -12,7 +12,8 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install -r requirements.txt --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+        pip install poetry
+        poetry install
     - name: Test with pytest
       run: |
         python -m pytest -sv tests
@@ -35,7 +36,8 @@ jobs:
     - name: Install the package
       run: |
         pip install dist/*.tar.gz --extra-index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
-        pip install -r requirements.txt --extra-index-url https://gitlab.mpcdf.mpg
+        pip install poetry
+        poetry install
     - name: Test with nomad
       run: |
         python -m nomad.cli parse tests/data/example.archive.json
