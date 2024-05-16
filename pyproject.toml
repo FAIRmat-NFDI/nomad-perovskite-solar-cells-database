@@ -36,18 +36,6 @@ license = { file = "LICENSE" }
 "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
 Repository = "https://github.com/Pepe-Marquez/nomad-solar-cells-efficiency-tables"
 
-[project]
-version = "0.1.0"
-readme = "README.rst"
-requires-python = ">=3.9"
-authors = [
-    { name = "Pepe Marquez", email = "jose.marquez@physik.hu-berlin.de" },
-]
-maintainers = [
-    { name = "Pepe Marquez", email = "jose.marquez@physik.hu-berlin.de" },
-]
-license = { file = "LICENSE" }
-
 [project.optional-dependencies]
 dev = ["ruff", "pytest", "structlog"]
 
