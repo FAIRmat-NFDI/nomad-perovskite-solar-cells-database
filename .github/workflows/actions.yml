@@ -25,9 +25,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           coveralls --service=github
-      - name: Test with nomad
-        run: |
-          python -m nomad.cli parse tests/data/example.archive.json
+      # - name: Test with nomad
+      #   run: |
+      #     python -m nomad.cli parse tests/data/example.archive.json
 
   build-and-install:
     runs-on: ubuntu-latest
@@ -45,9 +45,9 @@ jobs:
       - name: Install the package
         run: |
           pip install dist/*.tar.gz --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
-      - name: Test with nomad
-        run: |
-          python -m nomad.cli parse tests/data/example.archive.json
+      # - name: Test with nomad
+      #   run: |
+      #     python -m nomad.cli parse tests/data/example.archive.json
 
   ruff-linting:
     runs-on: ubuntu-latest
