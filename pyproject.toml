@@ -89,6 +89,7 @@ select = [
 ]
 
 ignore = [
+    "F401",  # Imported but unused
     "F403", # 'from module import *' used; unable to detect undefined names
     "E501", # Line too long ({width} > {limit} characters)
     "PLR2004", # Magic value used instead of constant
