@@ -89,16 +89,12 @@ def jv_dict_generator(filename):
 
     for i in list_columns:
         if 'rev' in i:
-            jv_dict['reverse_scan_Jsc'].append(
-                float(f'{abs(df[i].iloc[0]):0.3e}')
-            )
+            jv_dict['reverse_scan_Jsc'].append(float(f'{abs(df[i].iloc[0]):0.3e}'))
             jv_dict['reverse_scan_Voc'].append(float(f'{df[i].iloc[1]:0.3e}'))
             jv_dict['reverse_scan_FF'].append(float(f'{df[i].iloc[2]:0.3e}'))
             jv_dict['reverse_scan_PCE'].append(float(f'{df[i].iloc[3]:0.3e}'))
             jv_dict['reverse_scan_Vmp'].append(float(f'{df[i].iloc[6]:0.3e}'))
-            jv_dict['reverse_scan_Jmp'].append(
-                float(f'{abs(df[i].iloc[5]):0.3e}')
-            )
+            jv_dict['reverse_scan_Jmp'].append(float(f'{abs(df[i].iloc[5]):0.3e}'))
             jv_dict['reverse_scan_series_resistance'].append(
                 float(f'{df[i].iloc[7]:0.3e}')
             )
@@ -107,16 +103,12 @@ def jv_dict_generator(filename):
             )
 
         elif 'for' in i:
-            jv_dict['forward_scan_Jsc'].append(
-                abs(float(f'{df[i].iloc[0]:0.3e}'))
-            )
+            jv_dict['forward_scan_Jsc'].append(abs(float(f'{df[i].iloc[0]:0.3e}')))
             jv_dict['forward_scan_Voc'].append(float(f'{df[i].iloc[1]:0.3e}'))
             jv_dict['forward_scan_FF'].append(float(f'{df[i].iloc[2]:0.3e}'))
             jv_dict['forward_scan_PCE'].append(float(f'{df[i].iloc[3]:0.3e}'))
             jv_dict['forward_scan_Vmp'].append(float(f'{df[i].iloc[6]:0.3e}'))
-            jv_dict['forward_scan_Jmp'].append(
-                float(f'{abs(df[i].iloc[5]):0.3e}')
-            )
+            jv_dict['forward_scan_Jmp'].append(float(f'{abs(df[i].iloc[5]):0.3e}'))
             jv_dict['forward_scan_series_resistance'].append(
                 float(f'{df[i].iloc[7]:0.3e}')
             )

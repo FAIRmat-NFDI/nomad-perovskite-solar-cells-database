@@ -5,7 +5,6 @@ from typing import (
 if TYPE_CHECKING:
     pass
 
-from nomad.config import config
 from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.metainfo import SchemaPackage, Section, SubSection
 
