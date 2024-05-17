@@ -1,4 +1,0 @@
-plugin_type: schema
-name: perovskite_solar_cell_database
-description: |
-  A NOMAD plugin containing the schema for the Perovskite Solar Cell Database.
