@@ -1,10 +1,8 @@
 import numpy as np
-
-# from nomad.datamodel.metainfo.plot import PlotSection
-from nomad.units import ureg
+from nomad.datamodel.metainfo.common import ProvenanceTracker
 from nomad.datamodel.results import (
-    BandGapDeprecated,
     BandGap,
+    BandGapDeprecated,
     BandStructureElectronic,
     ElectronicProperties,
     OptoelectronicProperties,
@@ -12,8 +10,9 @@ from nomad.datamodel.results import (
     Results,
     SolarCell,
 )
-from nomad.datamodel.metainfo.common import ProvenanceTracker
-from nomad.datamodel.metainfo.common import ProvenanceTracker
+
+# from nomad.datamodel.metainfo.plot import PlotSection
+from nomad.units import ureg
 
 
 def add_band_gap(archive, band_gap):

@@ -21,7 +21,7 @@ import pandas as pd
 
 def jv_dict_generator(filename):
     # Block to clean up some bad characters found in the file which gives trouble reading.
-    f = open(filename, 'r', encoding='cp1252')
+    f = open(filename, encoding='cp1252')
     filedata = f.read()
     f.close()
 
@@ -90,38 +90,38 @@ def jv_dict_generator(filename):
     for i in list_columns:
         if 'rev' in i:
             jv_dict['reverse_scan_Jsc'].append(
-                float('{:0.3e}'.format(abs(df[i].iloc[0])))
+                float(f'{abs(df[i].iloc[0]):0.3e}')
             )
-            jv_dict['reverse_scan_Voc'].append(float('{:0.3e}'.format(df[i].iloc[1])))
-            jv_dict['reverse_scan_FF'].append(float('{:0.3e}'.format(df[i].iloc[2])))
-            jv_dict['reverse_scan_PCE'].append(float('{:0.3e}'.format(df[i].iloc[3])))
-            jv_dict['reverse_scan_Vmp'].append(float('{:0.3e}'.format(df[i].iloc[6])))
+            jv_dict['reverse_scan_Voc'].append(float(f'{df[i].iloc[1]:0.3e}'))
+            jv_dict['reverse_scan_FF'].append(float(f'{df[i].iloc[2]:0.3e}'))
+            jv_dict['reverse_scan_PCE'].append(float(f'{df[i].iloc[3]:0.3e}'))
+            jv_dict['reverse_scan_Vmp'].append(float(f'{df[i].iloc[6]:0.3e}'))
             jv_dict['reverse_scan_Jmp'].append(
-                float('{:0.3e}'.format(abs(df[i].iloc[5])))
+                float(f'{abs(df[i].iloc[5]):0.3e}')
             )
             jv_dict['reverse_scan_series_resistance'].append(
-                float('{:0.3e}'.format(df[i].iloc[7]))
+                float(f'{df[i].iloc[7]:0.3e}')
             )
             jv_dict['reverse_scan_shunt_resistance'].append(
-                float('{:0.3e}'.format(df[i].iloc[8]))
+                float(f'{df[i].iloc[8]:0.3e}')
             )
 
         elif 'for' in i:
             jv_dict['forward_scan_Jsc'].append(
-                abs(float('{:0.3e}'.format(df[i].iloc[0])))
+                abs(float(f'{df[i].iloc[0]:0.3e}'))
             )
-            jv_dict['forward_scan_Voc'].append(float('{:0.3e}'.format(df[i].iloc[1])))
-            jv_dict['forward_scan_FF'].append(float('{:0.3e}'.format(df[i].iloc[2])))
-            jv_dict['forward_scan_PCE'].append(float('{:0.3e}'.format(df[i].iloc[3])))
-            jv_dict['forward_scan_Vmp'].append(float('{:0.3e}'.format(df[i].iloc[6])))
+            jv_dict['forward_scan_Voc'].append(float(f'{df[i].iloc[1]:0.3e}'))
+            jv_dict['forward_scan_FF'].append(float(f'{df[i].iloc[2]:0.3e}'))
+            jv_dict['forward_scan_PCE'].append(float(f'{df[i].iloc[3]:0.3e}'))
+            jv_dict['forward_scan_Vmp'].append(float(f'{df[i].iloc[6]:0.3e}'))
             jv_dict['forward_scan_Jmp'].append(
-                float('{:0.3e}'.format(abs(df[i].iloc[5])))
+                float(f'{abs(df[i].iloc[5]):0.3e}')
             )
             jv_dict['forward_scan_series_resistance'].append(
-                float('{:0.3e}'.format(df[i].iloc[7]))
+                float(f'{df[i].iloc[7]:0.3e}')
             )
             jv_dict['forward_scan_shunt_resistance'].append(
-                float('{:0.3e}'.format(df[i].iloc[8]))
+                float(f'{df[i].iloc[8]:0.3e}')
             )
 
     jv_dict['no_cells'] = len(jv_dict['reverse_scan_Jsc'])

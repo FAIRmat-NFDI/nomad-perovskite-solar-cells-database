@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright The NOMAD Authors.
 #
@@ -17,12 +16,13 @@
 # limitations under the License.
 #
 
-import pandas as pd
 import json
-import numpy
+import os
 from collections import defaultdict
 from datetime import date, datetime
-import os
+
+import numpy
+import pandas as pd
 
 
 class PerovskiteEntryWriter:

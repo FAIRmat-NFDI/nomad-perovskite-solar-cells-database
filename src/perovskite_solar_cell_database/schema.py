@@ -3,35 +3,30 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from nomad.datamodel.datamodel import (
-        EntryArchive,
-    )
-    from structlog.stdlib import (
-        BoundLogger,
-    )
+    pass
 
-from nomad.datamodel.data import UseCaseElnCategory
 from nomad.config import config
-from nomad.datamodel.data import Schema
+from nomad.datamodel.data import Schema, UseCaseElnCategory
+from nomad.metainfo import SchemaPackage, Section, SubSection
+
 from .schema_sections import (
-    Ref,
-    Cell,
-    Module,
-    Substrate,
+    EQE,
     ETL,
+    HTL,
+    JV,
+    Add,
+    Backcontact,
+    Cell,
+    Encapsulation,
+    Module,
+    Outdoor,
     Perovskite,
     PerovskiteDeposition,
-    HTL,
-    Backcontact,
-    Add,
-    Encapsulation,
-    JV,
+    Ref,
     Stabilised,
-    EQE,
     Stability,
-    Outdoor,
+    Substrate,
 )
-from nomad.metainfo import Package, Section, SubSection, SchemaPackage
 
 configuration = config.get_plugin_entry_point('perovskite_solar_cell_database:schema')
 

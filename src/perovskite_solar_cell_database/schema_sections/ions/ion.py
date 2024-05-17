@@ -1,8 +1,9 @@
+import os
+
+import openpyxl
+from ase import Atoms
 from nomad.datamodel.metainfo.basesections import PureSubstanceSection
 from nomad.metainfo import Quantity
-import openpyxl
-import os
-from ase import Atoms
 
 
 class Ion(PureSubstanceSection):

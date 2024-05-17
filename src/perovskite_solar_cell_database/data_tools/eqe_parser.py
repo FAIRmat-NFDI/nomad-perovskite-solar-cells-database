@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright The NOMAD Authors.
 #
@@ -23,13 +22,13 @@
 # Initially translated to Python by Christian Wolff
 
 
-from scipy import integrate, optimize
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import os
+from scipy import integrate, optimize
 from scipy.signal import savgol_filter
-import matplotlib.pyplot as plt
-
 
 # Constants
 temperature = 300  # in [°K]

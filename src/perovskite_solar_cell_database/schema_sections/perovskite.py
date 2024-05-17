@@ -1,16 +1,15 @@
-from perovskite_solar_cell_database.schema_sections.utils import (
-    add_solar_cell,
-    add_band_gap,
-)
+from nomad.datamodel.data import ArchiveSection
+from nomad.datamodel.results import Material, System
+from nomad.metainfo import Quantity, SubSection
+
 from perovskite_solar_cell_database.schema_sections.ions.ion import (
     Ion,
     optimize_molecule,
 )
-from nomad.metainfo import Quantity, SubSection
-from nomad.datamodel.data import ArchiveSection
-from nomad.datamodel.results import Material
-from nomad.datamodel.results import System
-from ase.build import molecule
+from perovskite_solar_cell_database.schema_sections.utils import (
+    add_band_gap,
+    add_solar_cell,
+)
 
 
 class Perovskite(ArchiveSection):
@@ -6568,9 +6567,10 @@ Ozone
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
-        from .formula_normalizer import PerovskiteFormulaNormalizer
         from nomad.atomutils import Formula
         from nomad.datamodel.results import Symmetry
+
+        from .formula_normalizer import PerovskiteFormulaNormalizer
 
         add_solar_cell(archive)
         add_band_gap(archive, self.band_gap)
@@ -6680,9 +6680,9 @@ Ozone
 
         self.ions = ions
 
-        from nomad.normalizing.topology import add_system_info, add_system
         from nomad.datamodel.results import Relation
         from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+        from nomad.normalizing.topology import add_system, add_system_info
 
         topology = {}
         # Add original system

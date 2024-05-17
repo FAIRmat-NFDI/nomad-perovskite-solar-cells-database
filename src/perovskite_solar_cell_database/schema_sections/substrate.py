@@ -1,7 +1,8 @@
 import numpy as np
-from .utils import add_solar_cell
-from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
+from nomad.metainfo import Quantity
+
+from .utils import add_solar_cell
 
 
 class Substrate(ArchiveSection):

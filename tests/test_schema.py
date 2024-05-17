@@ -1,5 +1,6 @@
 import os.path
-from nomad.client import parse, normalize_all
+
+from nomad.client import normalize_all, parse
 
 
 def test_schema():
@@ -8,7 +9,7 @@ def test_schema():
     normalize_all(entry_archive)
 
     assert entry_archive.data.substrate.stack_sequence == 'SLG | ITO'
-    assert entry_archive.data.perovskite.composition_inorganic == False
+    assert entry_archive.data.perovskite.composition_inorganic is False
     assert entry_archive.metadata.entry_type == 'PerovskiteSolarCell'
     assert entry_archive.results.properties.optoelectronic.solar_cell.efficiency > -1
     assert len(entry_archive.data.jv.jv_curve[0].current_density) > -1

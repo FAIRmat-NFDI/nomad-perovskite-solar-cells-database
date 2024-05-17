@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright The NOMAD Authors.
 #
@@ -17,6 +16,7 @@
 # limitations under the License.
 
 import re
+
 from pymatgen.core import Composition
 
 preprocess_rules = {'FAPbI': 'FAPbI3', 'MAPbI': 'MAPbI3'}
