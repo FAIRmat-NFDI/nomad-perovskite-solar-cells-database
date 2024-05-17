@@ -30,8 +30,6 @@ maintainers = [
     ]
 requires-python = ">=3.9"
 dependencies = [
-    "nomad-lab>=1.2.2dev578",
-    "pytest",
     "rdkit",
     "openpyxl",
     "lxml_html_clean"
