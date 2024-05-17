@@ -92,6 +92,9 @@ ignore = [
     "F403", # 'from module import *' used; unable to detect undefined names
     "E501", # Line too long ({width} > {limit} characters)
     "PLR2004", # Magic value used instead of constant
+    "PLR0912", # Too many branches
+    "PLR0915", # Too many statements
+    "UP008",  # Use `super()` instead of `super(__class__, self)`
 ]
 
 fixable = ["ALL"]
