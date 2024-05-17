@@ -28,8 +28,6 @@ from .schema_sections import (
     Substrate,
 )
 
-configuration = config.get_plugin_entry_point('perovskite_solar_cell_database:schema')
-
 m_package = SchemaPackage()
 
 
