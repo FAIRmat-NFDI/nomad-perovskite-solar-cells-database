@@ -120,7 +120,5 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 [project.entry-points.'nomad.plugin']
-
-perovskite_solar_cell_database = "perovskite_solar_cell_database:schema"
-
+perovskite_solar_cell = "perovskite_solar_cell_database:perovskite_solar_cell"
 # myapp = "nomad_solar_cells_efficiency_tables.apps:myapp"

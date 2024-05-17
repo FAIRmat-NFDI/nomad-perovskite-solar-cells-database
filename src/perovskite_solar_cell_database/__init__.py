@@ -13,7 +13,7 @@ class PerovskiteDatabasePackageEntryPoint(SchemaPackageEntryPoint):
         return m_package
 
 
-schema = PerovskiteDatabasePackageEntryPoint(
+perovskite_solar_cell = PerovskiteDatabasePackageEntryPoint(
     name='PerovskiteSolarCell',
     description='Schema package defined for the perovskite solar cells database.',
 )
