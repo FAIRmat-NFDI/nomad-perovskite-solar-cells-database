@@ -15,8 +15,8 @@ class Add(ArchiveSection):
         description="""
     TRUE if there is a functional layer below the substrate, i.e. on the opposite side of the substrate from with respect to the perovskite.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     lay_front_function = Quantity(
         type=str,
@@ -34,7 +34,19 @@ Light management
 Upconversion
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Antireflection', 'Unknown', 'Down conversion', 'A.R.C.', 'Light management'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Antireflection',
+                    'Unknown',
+                    'Down conversion',
+                    'A.R.C.',
+                    'Light management',
+                ]
+            ),
+        ),
+    )
 
     lay_front_stack_sequence = Quantity(
         type=str,
@@ -52,7 +64,34 @@ Au-np
 NaYF4:Eu-np
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['ZnSe-QDs', 'N-Graphene-QDs', 'Ag-np', 'Moth eye PDMS', 'Polyimide', 'PDMS', 'Unknown', 'NaYF4:Eu-np', 'NaF', 'Eu(TTA)2(Phen)MAA', 'MgF2', 'Y2O3:Eu3', 'CdSeS-QDs', 'Y2O3:Eu3 | Au-np', 'Mica', 'Eu-complex LDL', 'textured antireflective foil', 'Phosphor-in-glass', 'INVAR', 'Mn:CsPbCl3-QDs', 'LiF'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'ZnSe-QDs',
+                    'N-Graphene-QDs',
+                    'Ag-np',
+                    'Moth eye PDMS',
+                    'Polyimide',
+                    'PDMS',
+                    'Unknown',
+                    'NaYF4:Eu-np',
+                    'NaF',
+                    'Eu(TTA)2(Phen)MAA',
+                    'MgF2',
+                    'Y2O3:Eu3',
+                    'CdSeS-QDs',
+                    'Y2O3:Eu3 | Au-np',
+                    'Mica',
+                    'Eu-complex LDL',
+                    'textured antireflective foil',
+                    'Phosphor-in-glass',
+                    'INVAR',
+                    'Mn:CsPbCl3-QDs',
+                    'LiF',
+                ]
+            ),
+        ),
+    )
 
     lay_front_thickness_list = Quantity(
         type=str,
@@ -70,7 +109,10 @@ nan |250
 100 | 5 | 8
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', '90.0', '100.0', '50.0', '80.0'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', '90.0', '100.0', '50.0', '80.0']),
+        ),
+    )
 
     lay_front_additives_compounds = Quantity(
         type=str,
@@ -89,8 +131,8 @@ CuS
 B; P
 Au-np | Undoped
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_additives_concentrations = Quantity(
         type=str,
@@ -114,8 +156,8 @@ Example
 5 vol%; nan | 10 mg/ml
 0.3 mol% | 2 mol%; 0.2 wt% | 0.3 M
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_procedure = Quantity(
         type=str,
@@ -142,7 +184,10 @@ E-beam evaporation
 Sandwiching
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Evaporation', 'Unknown'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['Evaporation', 'Unknown']),
+        ),
+    )
 
     lay_front_deposition_aggregation_state_of_reactants = Quantity(
         type=str,
@@ -161,8 +206,8 @@ Liquid
 Gas | Liquid
 Liquid | Liquid >> Liquid
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_synthesis_atmosphere = Quantity(
         type=str,
@@ -182,8 +227,8 @@ Vacuum
 Vacuum | N2
 Air | Ar; H2O >> Ar
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_synthesis_atmosphere_pressure_total = Quantity(
         type=str,
@@ -202,8 +247,8 @@ Example
 0.002 torr | 10000 Pa
 nan >> 1 atm | 1 atm
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_synthesis_atmosphere_pressure_partial = Quantity(
         type=str,
@@ -220,8 +265,8 @@ Example
 0.002 torr | 10000 Pa
 nan >> 0.99 atm; 0.01 atm | 1 atm
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_synthesis_atmosphere_relative_humidity = Quantity(
         type=str,
@@ -238,8 +283,8 @@ Example
 0 | 20
 nan >> 25 | 0
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_solvents = Quantity(
         type=str,
@@ -259,8 +304,8 @@ none
 Acetonitile; Ethanol | Chlorobenzene
 none >> Ethanol; Methanol; H2O | DMF; DMSO
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_solvents_mixing_ratios = Quantity(
         type=str,
@@ -280,8 +325,8 @@ Example
 4; 1 | 1
 1 >> 5; 2; 0.3 | 2; 1
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_solvents_supplier = Quantity(
         type=str,
@@ -300,8 +345,8 @@ Sigma Aldrich
 Sigma Aldrich; Fisher | Acros
 none >> Sigma Aldrich; Sigma Aldrich | Unknown
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_solvents_purity = Quantity(
         type=str,
@@ -321,8 +366,8 @@ Pro analysis
 Puris; Puris| Tecnical
 none >> Pro analysis; Pro analysis | Unknown
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_reaction_solutions_compounds = Quantity(
         type=str,
@@ -345,8 +390,8 @@ Au
 CuI
 Ag
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_reaction_solutions_compounds_supplier = Quantity(
         type=str,
@@ -368,8 +413,8 @@ Dysole; Sigma Aldrich; Dyenamo; Sigma Aldrich
 Sigma Aldrich; Fisher | Acros
 Lab made (EPFL) | Sigma Aldrich >> none
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_reaction_solutions_compounds_purity = Quantity(
         type=str,
@@ -389,8 +434,8 @@ Pro analysis
 99.999; Puris| Tecnical
 Unknown >> Pro analysis; Pro analysis | none
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_reaction_solutions_concentrations = Quantity(
         type=str,
@@ -411,8 +456,8 @@ Example
 0.2 M; 0.15 M| 10 mg/ml
 0.3 mol% | 2 mol%; 0.2 wt% | nan
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_deposition_reaction_solutions_volumes = Quantity(
         type=str,
@@ -429,8 +474,8 @@ Example
 0.1 >> 0.05 | 0.05
 nan | 0.15
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_reaction_solutions_age = Quantity(
         type=str,
@@ -448,8 +493,8 @@ Example
 0.25 |1000 >> 10000
 nan | nan
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_reaction_solutions_temperature = Quantity(
         type=str,
@@ -468,8 +513,8 @@ Example
 100; 50 | 25
 nan | 25 >> 25
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_substrate_temperature = Quantity(
         type=str,
@@ -488,8 +533,8 @@ Example
 nan
 125; 325; 375; 450 | 25 >> 25
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_thermal_annealing_temperature = Quantity(
         type=str,
@@ -507,8 +552,8 @@ Example
 50 | nan
 450 | 125; 325; 375; 450 >> 125; 325; 375; 450
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_thermal_annealing_time = Quantity(
         type=str,
@@ -527,8 +572,8 @@ nan
 60 | 1000
 30 | 5; 5; 5; 30 >> 5; 5; 5; 30
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_deposition_thermal_annealing_atmosphere = Quantity(
         type=str,
@@ -550,8 +595,8 @@ N2
 Vacuum | N2
 Air | Ar >> Ar
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_storage_time_until_next_deposition_step = Quantity(
         type=str,
@@ -561,8 +606,8 @@ Air | Ar >> Ar
 - If there are uncertainties, only state the best estimate, e.g. write 35 and not 20-50.
 - If this is the last layer in the stack, state this as ‘nan’
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_storage_atmosphere = Quantity(
         type=str,
@@ -574,8 +619,8 @@ Air
 N2
 Vacuum
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_front_storage_relative_humidity = Quantity(
         type=str,
@@ -584,8 +629,8 @@ Vacuum
     The relive humidity under which the sample with the finalised back contact is stored until the next deposition step or device performance measurement
 - If there are uncertainties, only state the best estimate, e.g write 35 and not 20-50.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_front_surface_treatment_before_next_deposition_step = Quantity(
         type=str,
@@ -601,8 +646,8 @@ none
 Ar plasma
 UV-ozone
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back = Quantity(
         type=bool,
@@ -610,8 +655,8 @@ UV-ozone
         description="""
     TRUE if there is a functional layer above the back contact, i.e. layers deposited after the back contact has been finalised.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     lay_back_function = Quantity(
         type=str,
@@ -629,7 +674,12 @@ Light management
 Upconversion
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Upconversion', 'Dielectric mirror', 'Antireflection'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['', 'Upconversion', 'Dielectric mirror', 'Antireflection']
+            ),
+        ),
+    )
 
     lay_back_stack_sequence = Quantity(
         type=str,
@@ -643,7 +693,9 @@ Upconversion
 - This category was included after the projects initial phase wherefor the list of reported categories is short. Thus, be prepared to expand the given list of alternatives in the data template.
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['MgF2', 'Unknown'])))
+            component='EnumEditQuantity', props=dict(suggestions=['MgF2', 'Unknown'])
+        ),
+    )
 
     lay_back_thickness_list = Quantity(
         type=str,
@@ -657,7 +709,9 @@ Upconversion
 - If there are uncertainties, state the best estimate, e.g write 100 and not 90-110
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', '105.0', '90.0'])))
+            component='EnumEditQuantity', props=dict(suggestions=['', '105.0', '90.0'])
+        ),
+    )
 
     lay_back_additives_compounds = Quantity(
         type=str,
@@ -676,8 +730,8 @@ CuS
 B; P
 Au-np | Undoped
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_additives_concentrations = Quantity(
         type=str,
@@ -701,8 +755,8 @@ Example
 5 vol%; nan | 10 mg/ml
 0.3 mol% | 2 mol%; 0.2 wt% | 0.3 M
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_procedure = Quantity(
         type=str,
@@ -729,7 +783,10 @@ E-beam evaporation
 Sandwiching
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Evaporation', 'Unknown'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['Evaporation', 'Unknown']),
+        ),
+    )
 
     lay_back_deposition_aggregation_state_of_reactants = Quantity(
         type=str,
@@ -748,8 +805,8 @@ Liquid
 Gas | Liquid
 Liquid | Liquid >> Liquid
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_synthesis_atmosphere = Quantity(
         type=str,
@@ -769,8 +826,8 @@ Vacuum
 Vacuum | N2
 Air | Ar; H2O >> Ar
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_synthesis_atmosphere_pressure_total = Quantity(
         type=str,
@@ -789,8 +846,8 @@ Example
 0.002 torr | 10000 Pa
 nan >> 1 atm | 1 atm
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_synthesis_atmosphere_pressure_partial = Quantity(
         type=str,
@@ -807,8 +864,8 @@ Example
 0.002 torr | 10000 Pa
 nan >> 0.99 atm; 0.01 atm | 1 atm
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_synthesis_atmosphere_relative_humidity = Quantity(
         type=str,
@@ -825,8 +882,8 @@ Example
 0 | 20
 nan >> 25 | 0
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_solvents = Quantity(
         type=str,
@@ -846,8 +903,8 @@ none
 Acetonitile; Ethanol | Chlorobenzene
 none >> Ethanol; Methanol; H2O | DMF; DMSO
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_solvents_mixing_ratios = Quantity(
         type=str,
@@ -867,8 +924,8 @@ Example
 4; 1 | 1
 1 >> 5; 2; 0.3 | 2; 1
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_solvents_supplier = Quantity(
         type=str,
@@ -887,8 +944,8 @@ Sigma Aldrich
 Sigma Aldrich; Fisher | Acros
 none >> Sigma Aldrich; Sigma Aldrich | Unknown
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_solvents_purity = Quantity(
         type=str,
@@ -908,8 +965,8 @@ Pro analysis
 Puris; Puris| Tecnical
 none >> Pro analysis; Pro analysis | Unknown
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_reaction_solutions_compounds = Quantity(
         type=str,
@@ -932,8 +989,8 @@ Au
 CuI
 Ag
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_reaction_solutions_compounds_supplier = Quantity(
         type=str,
@@ -955,8 +1012,8 @@ Dysole; Sigma Aldrich; Dyenamo; Sigma Aldrich
 Sigma Aldrich; Fisher | Acros
 Lab made (EPFL) | Sigma Aldrich >> none
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_reaction_solutions_compounds_purity = Quantity(
         type=str,
@@ -976,8 +1033,8 @@ Pro analysis
 99.999; Puris| Tecnical
 Unknown >> Pro analysis; Pro analysis | none
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_reaction_solutions_concentrations = Quantity(
         type=str,
@@ -998,8 +1055,8 @@ Example
 0.2 M; 0.15 M| 10 mg/ml
 0.3 mol% | 2 mol%; 0.2 wt% | nan
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_deposition_reaction_solutions_volumes = Quantity(
         type=str,
@@ -1016,8 +1073,8 @@ Example
 0.1 >> 0.05 | 0.05
 nan | 0.15
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_reaction_solutions_age = Quantity(
         type=str,
@@ -1035,8 +1092,8 @@ Example
 0.25 |1000 >> 10000
 nan | nan
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_reaction_solutions_temperature = Quantity(
         type=str,
@@ -1055,8 +1112,8 @@ Example
 100; 50 | 25
 nan | 25 >> 25
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_substrate_temperature = Quantity(
         type=str,
@@ -1075,8 +1132,8 @@ Example
 nan
 125; 325; 375; 450 | 25 >> 25
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_thermal_annealing_temperature = Quantity(
         type=str,
@@ -1094,8 +1151,8 @@ Example
 50 | nan
 450 | 125; 325; 375; 450 >> 125; 325; 375; 450
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_thermal_annealing_time = Quantity(
         type=str,
@@ -1114,8 +1171,8 @@ nan
 60 | 1000
 30 | 5; 5; 5; 30 >> 5; 5; 5; 30
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_deposition_thermal_annealing_atmosphere = Quantity(
         type=str,
@@ -1137,8 +1194,8 @@ N2
 Vacuum | N2
 Air | Ar >> Ar
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_storage_time_until_next_deposition_step = Quantity(
         type=str,
@@ -1148,8 +1205,8 @@ Air | Ar >> Ar
 - If there are uncertainties, only state the best estimate, e.g. write 35 and not 20-50.
 - If this is the last layer in the stack, state this as ‘nan’
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_storage_atmosphere = Quantity(
         type=str,
@@ -1161,8 +1218,8 @@ Air
 N2
 Vacuum
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['Unknown'])),
+    )
 
     lay_back_storage_relative_humidity = Quantity(
         type=str,
@@ -1171,8 +1228,8 @@ Vacuum
     The relive humidity under which the sample with the finalised back contact is stored until the next deposition step or device performance measurement
 - If there are uncertainties, only state the best estimate, e.g write 35 and not 20-50.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     lay_back_surface_treatment_before_next_deposition_step = Quantity(
         type=str,
@@ -1188,8 +1245,5 @@ none
 Ar plasma
 UV-ozone
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
-
-
-
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )

@@ -2,6 +2,7 @@ import numpy as np
 from nomad.metainfo import Quantity
 from nomad.datamodel.data import ArchiveSection
 
+
 class Stability(ArchiveSection):
     """
     A section decsirbing the stability measurements performed in the device.
@@ -14,8 +15,8 @@ class Stability(ArchiveSection):
     TRUE if some kind of stability measurement has been done.
 - There is no sharp boundary between a stability measurement and a measurement of stabilised efficiency. Generally, a measurement under a few minutes is considered as a measurement of stabilised efficiency, whereas a stability measurement is sufficiently long for degradation to be seen (unless the device is really good)
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     protocol = Quantity(
         type=str,
@@ -32,7 +33,40 @@ ISOS-T-3
 IEC 61215
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Indoor light', 'IEC 61646', 'ISOS-L-1', 'Bending test', 'Other', 'ISOS-LC-1', 'ISOS-T-1', 'ISOS-D-1I', 'ISOS-V-2', 'ISOS-L-2I', 'ISOS-D-1', 'IEC 61215', 'ISOS-L-C1I', 'ISOS‐L‐1', 'ISOS-L-3', 'ISOS-L-1I', 'ISOS-D-2', 'ISOS-V-1', 'ISOS-L-2', 'ISOS‐D‐3', 'ISOS-D-2I', 'ISOS-D-3', 'ISOS-V-1I', 'ISOS-O-1', 'UV-stability', 'ISOS-T-3'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Indoor light',
+                    'IEC 61646',
+                    'ISOS-L-1',
+                    'Bending test',
+                    'Other',
+                    'ISOS-LC-1',
+                    'ISOS-T-1',
+                    'ISOS-D-1I',
+                    'ISOS-V-2',
+                    'ISOS-L-2I',
+                    'ISOS-D-1',
+                    'IEC 61215',
+                    'ISOS-L-C1I',
+                    'ISOS‐L‐1',
+                    'ISOS-L-3',
+                    'ISOS-L-1I',
+                    'ISOS-D-2',
+                    'ISOS-V-1',
+                    'ISOS-L-2',
+                    'ISOS‐D‐3',
+                    'ISOS-D-2I',
+                    'ISOS-D-3',
+                    'ISOS-V-1I',
+                    'ISOS-O-1',
+                    'UV-stability',
+                    'ISOS-T-3',
+                ]
+            ),
+        ),
+    )
 
     average_over_n_number_of_cells = Quantity(
         type=np.dtype(np.int64),
@@ -43,8 +77,8 @@ IEC 61215
 - If the reported stability data is not the data from one individual cell, but an average over N cells. Give the number of cells.
 - If the reported value is an average, but it is unknown over how many cells the value has been averaged (and no good estimate is available), state the number of cells as 2, which is the smallest number of cells that qualifies for an averaging procedure.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     light_source_type = Quantity(
         type=str,
@@ -63,7 +97,35 @@ White LED
 Xenon plasma
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Indoor light', 'Solar Simulator', 'UV lamp', 'Natural sunlight', 'LED', 'White Led', 'Synchrotron', 'Light', 'Mercury', 'Sulfur plasma', 'Halogen', 'Tungsten; Gamma rays', 'White LED', 'Dark', 'Solar simulator', 'solar simulator', 'Sun', 'Tungsten', 'Xenon', 'Fluorescent lamp', 'Metal halide'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Indoor light',
+                    'Solar Simulator',
+                    'UV lamp',
+                    'Natural sunlight',
+                    'LED',
+                    'White Led',
+                    'Synchrotron',
+                    'Light',
+                    'Mercury',
+                    'Sulfur plasma',
+                    'Halogen',
+                    'Tungsten; Gamma rays',
+                    'White LED',
+                    'Dark',
+                    'Solar simulator',
+                    'solar simulator',
+                    'Sun',
+                    'Tungsten',
+                    'Xenon',
+                    'Fluorescent lamp',
+                    'Metal halide',
+                ]
+            ),
+        ),
+    )
 
     light_source_brand_name = Quantity(
         type=str,
@@ -77,8 +139,8 @@ Newport model 91192
 Newport AAA
 Atlas suntest
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     light_source_simulator_class = Quantity(
         type=str,
@@ -91,8 +153,8 @@ AAA
 ABB
 CAB
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     light_intensity = Quantity(
         type=np.dtype(np.float64),
@@ -104,8 +166,8 @@ CAB
 - Standard AM 1.5 illumination correspond to 100 mW/cm2
 - If you need to convert from illumination given in lux; at 550 nm, 1 mW/cm2 corresponds to 6830 lux
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     light_spectra = Quantity(
         type=str,
@@ -122,7 +184,22 @@ Outdoor
 UV
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Indoor light', 'X-ray, 17.998 keV', 'UV', 'AM 1.5', 'Monochromatic', 'Outdoor ligth', 'Yellow light', 'Am 1.5'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Indoor light',
+                    'X-ray, 17.998 keV',
+                    'UV',
+                    'AM 1.5',
+                    'Monochromatic',
+                    'Outdoor ligth',
+                    'Yellow light',
+                    'Am 1.5',
+                ]
+            ),
+        ),
+    )
 
     light_wavelength_range = Quantity(
         type=str,
@@ -139,7 +216,20 @@ Example:
 550
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['nan; nan', '325; 325', '300; 800', '340.0; 340.0', '365.0; 365.0', '254.0; 254.0', '267.0; 267.0'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'nan; nan',
+                    '325; 325',
+                    '300; 800',
+                    '340.0; 340.0',
+                    '365.0; 365.0',
+                    '254.0; 254.0',
+                    '267.0; 267.0',
+                ]
+            ),
+        ),
+    )
 
     light_illumination_direction = Quantity(
         type=str,
@@ -154,7 +244,9 @@ Substrate
 Superstrate
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Substrate'])))
+            component='EnumEditQuantity', props=dict(suggestions=['', 'Substrate'])
+        ),
+    )
 
     light_load_condition = Quantity(
         type=str,
@@ -174,7 +266,19 @@ Day-Night cycle
 Uncontrolled
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'constant', 'Uncontrolled', 'Cycled', 'Day-Night cycle', 'Constant'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'constant',
+                    'Uncontrolled',
+                    'Cycled',
+                    'Day-Night cycle',
+                    'Constant',
+                ]
+            ),
+        ),
+    )
 
     light_cycling_times = Quantity(
         type=str,
@@ -188,7 +292,12 @@ Example
 nan; nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown', '0.16; 12.0', '12.0; 12.0', '10.0; 14.0', '0.6'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['Unknown', '0.16; 12.0', '12.0; 12.0', '10.0; 14.0', '0.6']
+            ),
+        ),
+    )
 
     light_UV_filter = Quantity(
         type=bool,
@@ -196,8 +305,8 @@ nan; nan
         description="""
     TRUE if a UV-filter of any kind was placed between the illumination source and the device during the stability measurement.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     potential_bias_load_condition = Quantity(
         type=str,
@@ -214,7 +323,19 @@ Passive resistance
 Short circuit
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Short circuit', 'MPPT', 'Open circuit', 'Constant potential', 'Passive resistance'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Short circuit',
+                    'MPPT',
+                    'Open circuit',
+                    'Constant potential',
+                    'Passive resistance',
+                ]
+            ),
+        ),
+    )
 
     potential_bias_range = Quantity(
         type=str,
@@ -232,7 +353,34 @@ Example:
 nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['0.9; 0.9', '0.85; 0.85', 'nan; nan', '0.8465; 0.8465', '0.47; 0.47', '0.7499; 0.7499', '0.937; 0.937', '1.2; 1.2', '0.65; 0.65', '0.95; 0.95', '0.84; 0.84', '0.71; 0.71', '1.0; 1.0', '0.86; 0.86', '1.413; 1.413', '0.76; 0.76', '0.7; 0.7', '0.908; 0.908', '0.72; 0.72', '0.8; 0.8', '0.89; 0.89'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '0.9; 0.9',
+                    '0.85; 0.85',
+                    'nan; nan',
+                    '0.8465; 0.8465',
+                    '0.47; 0.47',
+                    '0.7499; 0.7499',
+                    '0.937; 0.937',
+                    '1.2; 1.2',
+                    '0.65; 0.65',
+                    '0.95; 0.95',
+                    '0.84; 0.84',
+                    '0.71; 0.71',
+                    '1.0; 1.0',
+                    '0.86; 0.86',
+                    '1.413; 1.413',
+                    '0.76; 0.76',
+                    '0.7; 0.7',
+                    '0.908; 0.908',
+                    '0.72; 0.72',
+                    '0.8; 0.8',
+                    '0.89; 0.89',
+                ]
+            ),
+        ),
+    )
 
     potential_bias_passive_resistance = Quantity(
         type=np.dtype(np.float64),
@@ -244,8 +392,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     temperature_load_condition = Quantity(
         type=str,
@@ -263,7 +411,19 @@ Uncontrolled
 Cycled
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'constant', 'Uncontrolled', 'Cycled', 'uncontrolled', 'Constant'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'constant',
+                    'Uncontrolled',
+                    'Cycled',
+                    'uncontrolled',
+                    'Constant',
+                ]
+            ),
+        ),
+    )
 
     temperature_range = Quantity(
         type=str,
@@ -280,7 +440,89 @@ Example:
 nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['22.0; 22.0', '70; 70', '-10.0; -10.0', '80; 80', '55.0; 55.0', '50.0; 50.0', '10; 25', 'nan; nan', '75.0; 75.0', '20; 20', '120.0; 120.0', '-40.0; 85.0', '85.0; 85.0', '0.0; 0.0', '26.0; 26.0', '27.5; 27.5', '28.0; 28.0', '25; 85', '25; 25', '65; 65', '22.3; 22.7', '110.0; 110.0', '25; 80', '21.0; 21.0', '14.0; 14.0', '20; 25', '23; 23', '-22.0; 100', '100.0; 100.0', '95.0; 95.0', '23.5; 23.5', '15; 25', '30; 30', '25; 35', '18; 22', '42.0; 42.0', '17.0; 17.0', '22.5; 22.5', '28; 32', '25; 30', '20; 30', '60; 60', '2; 70', '75; 75', '80.0; 80.0', '45.0; 45.0', '160.0; 160.0', '90.0; 90.0', '53.0; 53.0', '30.0; 30.0', '20; 40', '45; 45', '150.0; 150.0', '40.0; 40.0', '-20.0; -20.0', '20.0; 20.0', '25.0; 25.0', '70.0; 70.0', '41.0; 41.0', '50; 50', '40; 40', '65.0; 65.0', '35.0; 35.0', '25.5; 25.5', '24.0; 24.0', '15.0; 15.0', '82.0; 82.0', '23.0; 23.0', '28; 28', '60.0; 60.0', '85; 85', '100; 100', '23.1; 23.1', 'nan; 120', '21.5; 21.5', '27.0; 27.0'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '22.0; 22.0',
+                    '70; 70',
+                    '-10.0; -10.0',
+                    '80; 80',
+                    '55.0; 55.0',
+                    '50.0; 50.0',
+                    '10; 25',
+                    'nan; nan',
+                    '75.0; 75.0',
+                    '20; 20',
+                    '120.0; 120.0',
+                    '-40.0; 85.0',
+                    '85.0; 85.0',
+                    '0.0; 0.0',
+                    '26.0; 26.0',
+                    '27.5; 27.5',
+                    '28.0; 28.0',
+                    '25; 85',
+                    '25; 25',
+                    '65; 65',
+                    '22.3; 22.7',
+                    '110.0; 110.0',
+                    '25; 80',
+                    '21.0; 21.0',
+                    '14.0; 14.0',
+                    '20; 25',
+                    '23; 23',
+                    '-22.0; 100',
+                    '100.0; 100.0',
+                    '95.0; 95.0',
+                    '23.5; 23.5',
+                    '15; 25',
+                    '30; 30',
+                    '25; 35',
+                    '18; 22',
+                    '42.0; 42.0',
+                    '17.0; 17.0',
+                    '22.5; 22.5',
+                    '28; 32',
+                    '25; 30',
+                    '20; 30',
+                    '60; 60',
+                    '2; 70',
+                    '75; 75',
+                    '80.0; 80.0',
+                    '45.0; 45.0',
+                    '160.0; 160.0',
+                    '90.0; 90.0',
+                    '53.0; 53.0',
+                    '30.0; 30.0',
+                    '20; 40',
+                    '45; 45',
+                    '150.0; 150.0',
+                    '40.0; 40.0',
+                    '-20.0; -20.0',
+                    '20.0; 20.0',
+                    '25.0; 25.0',
+                    '70.0; 70.0',
+                    '41.0; 41.0',
+                    '50; 50',
+                    '40; 40',
+                    '65.0; 65.0',
+                    '35.0; 35.0',
+                    '25.5; 25.5',
+                    '24.0; 24.0',
+                    '15.0; 15.0',
+                    '82.0; 82.0',
+                    '23.0; 23.0',
+                    '28; 28',
+                    '60.0; 60.0',
+                    '85; 85',
+                    '100; 100',
+                    '23.1; 23.1',
+                    'nan; 120',
+                    '21.5; 21.5',
+                    '27.0; 27.0',
+                ]
+            ),
+        ),
+    )
 
     temperature_cycling_times = Quantity(
         type=str,
@@ -296,7 +538,18 @@ Example:
 0.5; 10
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Unknown', '15.0; 15.0', '100.0; 100.0', '25.0; 25.0', '60.0; 120.0'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Unknown',
+                    '15.0; 15.0',
+                    '100.0; 100.0',
+                    '25.0; 25.0',
+                    '60.0; 120.0',
+                ]
+            ),
+        ),
+    )
 
     temperature_ramp_speed = Quantity(
         type=np.dtype(np.float64),
@@ -307,8 +560,8 @@ Example:
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     atmosphere = Quantity(
         type=str,
@@ -325,7 +578,26 @@ N2
 Vacuum
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Water', 'Dry air', 'Unknown', 'Air', 'Air. Desiccator', 'Ambient', 'N2', 'Vacuum', 'O2', 'N2; O2', 'Glovebox', 'Ar', 'Near-space'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Water',
+                    'Dry air',
+                    'Unknown',
+                    'Air',
+                    'Air. Desiccator',
+                    'Ambient',
+                    'N2',
+                    'Vacuum',
+                    'O2',
+                    'N2; O2',
+                    'Glovebox',
+                    'Ar',
+                    'Near-space',
+                ]
+            ),
+        ),
+    )
 
     atmosphere_oxygen_concentration = Quantity(
         type=np.dtype(np.float64),
@@ -334,8 +606,8 @@ Vacuum
     The oxygen concentration in the atmosphere
 - If unknown, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     relative_humidity_load_conditions = Quantity(
         type=str,
@@ -353,7 +625,19 @@ Controlled
 Cycled
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'constant', 'Controlled', 'Ambient', 'ambient', 'Constant'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'constant',
+                    'Controlled',
+                    'Ambient',
+                    'ambient',
+                    'Constant',
+                ]
+            ),
+        ),
+    )
 
     relative_humidity_range = Quantity(
         type=str,
@@ -370,7 +654,68 @@ Example:
 nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['40; 50', '61; 75', '30; 80', '80; 80', '60; 70', '25; 45', 'nan; nan', '25; 50', '20; 20', '50; 70', '30; 50', '60; 80', '35; 35', '0; 0', '55; 70', '75; 85', '65; 65', '50; 60', '50.60; 50.60', '1; 50', '25; 25', '20; 70', '25; 35', '30; 30', '10; 15', '45; 55', '15; 25', '15; 15', '15; 20', '42.2; 54.4', '35; 40', '30; 70', '25; 40', '25; 30', '20; 30', '60; 60', '20; 40', '30; 35', '45; 45', '40; 80', '5; 5', '40; 60', '90; 95', '50; 50', '40; 40', '45; 60', '12; 18', '35; 45', '10; 20', '45; 50', '40; 45', '85; 85', '10; 30', '30; 40', '100; 100'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '40; 50',
+                    '61; 75',
+                    '30; 80',
+                    '80; 80',
+                    '60; 70',
+                    '25; 45',
+                    'nan; nan',
+                    '25; 50',
+                    '20; 20',
+                    '50; 70',
+                    '30; 50',
+                    '60; 80',
+                    '35; 35',
+                    '0; 0',
+                    '55; 70',
+                    '75; 85',
+                    '65; 65',
+                    '50; 60',
+                    '50.60; 50.60',
+                    '1; 50',
+                    '25; 25',
+                    '20; 70',
+                    '25; 35',
+                    '30; 30',
+                    '10; 15',
+                    '45; 55',
+                    '15; 25',
+                    '15; 15',
+                    '15; 20',
+                    '42.2; 54.4',
+                    '35; 40',
+                    '30; 70',
+                    '25; 40',
+                    '25; 30',
+                    '20; 30',
+                    '60; 60',
+                    '20; 40',
+                    '30; 35',
+                    '45; 45',
+                    '40; 80',
+                    '5; 5',
+                    '40; 60',
+                    '90; 95',
+                    '50; 50',
+                    '40; 40',
+                    '45; 60',
+                    '12; 18',
+                    '35; 45',
+                    '10; 20',
+                    '45; 50',
+                    '40; 45',
+                    '85; 85',
+                    '10; 30',
+                    '30; 40',
+                    '100; 100',
+                ]
+            ),
+        ),
+    )
 
     relative_humidity_average_value = Quantity(
         type=np.dtype(np.float64),
@@ -380,8 +725,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1 and not 0.90-1.1
 - If unknown, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     time_total_exposure = Quantity(
         type=np.dtype(np.float64),
@@ -391,8 +736,8 @@ nan
     The total duration of the stability measurement.
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     periodic_JV_measurements = Quantity(
         type=bool,
@@ -400,8 +745,8 @@ nan
         description="""
     TRUE if the stability measurement periodically is interrupted for JV-measurements. A typical example is a cell that is stored in the dark and once in a wile is take out from storage for an IV-measurement.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     periodic_JV_measurements_time_between_jv = Quantity(
         type=str,
@@ -410,7 +755,58 @@ nan
     The average time between JV-measurement during the stability measurement.
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['40.0', '85.0', '90.0', '50.0', '24.0', '1440.0', '10.0', '3.0', '3.2', '220.0', '60.0', '5.0', '125.0', '9.0', '120.0', 'Unknown', '72.0', '7.0', '180.0', '75.0', '100.0', '400.0', '240.0', '80.0', '6.0', '0.067', '480.0', '30.0', '0.3', '0.167', '2.0', '0.016', '0.5', '168.0', '48.0', '25.0', '0.1', '52.0', '20.0', '360.0', '160.0', '34.0', '1680.0', '15.0', '200.0'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '40.0',
+                    '85.0',
+                    '90.0',
+                    '50.0',
+                    '24.0',
+                    '1440.0',
+                    '10.0',
+                    '3.0',
+                    '3.2',
+                    '220.0',
+                    '60.0',
+                    '5.0',
+                    '125.0',
+                    '9.0',
+                    '120.0',
+                    'Unknown',
+                    '72.0',
+                    '7.0',
+                    '180.0',
+                    '75.0',
+                    '100.0',
+                    '400.0',
+                    '240.0',
+                    '80.0',
+                    '6.0',
+                    '0.067',
+                    '480.0',
+                    '30.0',
+                    '0.3',
+                    '0.167',
+                    '2.0',
+                    '0.016',
+                    '0.5',
+                    '168.0',
+                    '48.0',
+                    '25.0',
+                    '0.1',
+                    '52.0',
+                    '20.0',
+                    '360.0',
+                    '160.0',
+                    '34.0',
+                    '1680.0',
+                    '15.0',
+                    '200.0',
+                ]
+            ),
+        ),
+    )
 
     PCE_initial_value = Quantity(
         type=np.dtype(np.float64),
@@ -421,8 +817,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_burn_in_observed = Quantity(
         type=bool,
@@ -431,8 +827,8 @@ nan
     TRUE if the performance has a relatively fast initial decay after which the decay rate stabilises at a lower level.
 - There are no sharp boundary between an initial burn in phase an a catastrophic failure, but if the performance of the cell quickly degrade by more than half, it is stretching it a bit to label this as an initial burn in phase.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     PCE_end_of_experiment = Quantity(
         type=np.dtype(np.float64),
@@ -443,8 +839,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_T95 = Quantity(
         type=np.dtype(np.float64),
@@ -455,8 +851,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Ts95 = Quantity(
         type=np.dtype(np.float64),
@@ -467,8 +863,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_T80 = Quantity(
         type=np.dtype(np.float64),
@@ -479,8 +875,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Ts80 = Quantity(
         type=np.dtype(np.float64),
@@ -491,8 +887,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Te80 = Quantity(
         type=np.dtype(np.float64),
@@ -503,8 +899,8 @@ nan
 - This value will by definition have a significant uncertainty to it, as it is not measured but extrapolated under the assumption linearity but without a detailed and stabilised extrapolation protocol. This estimate is, however, not without value as it enables a rough comparison between all cells for with the stability has been measured.
 - If there is an experimental T80, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Tse80 = Quantity(
         type=np.dtype(np.float64),
@@ -515,8 +911,8 @@ nan
 - This value will by definition have a significant uncertainty to it, as it is not measured but extrapolated under the assumption linearity but without a detailed and stabilised extrapolation protocol. This estimate is, however, not without value as it enables a ruff comparison between all cells for with the stability has been measured.
 - If there is an experimental T80s, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_after_1000_h = Quantity(
         type=np.dtype(np.float64),
@@ -527,8 +923,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     lifetime_energy_yield = Quantity(
         type=np.dtype(np.float64),
@@ -539,8 +935,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     flexible_cell_number_of_bending_cycles = Quantity(
         type=np.dtype(np.int64),
@@ -548,8 +944,8 @@ nan
         description="""
     Number of bending cycles for a flexible cell in a mechanical stability test
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     flexible_cell_bending_radius = Quantity(
         type=np.dtype(np.float64),
@@ -558,8 +954,8 @@ nan
         description="""
     The bending radius of the flexible cell during the mechanical stability test
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     flexible_cell_PCE_initial_value = Quantity(
         type=np.dtype(np.float64),
@@ -570,8 +966,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     flexible_cell_PCE_end_of_experiment = Quantity(
         type=np.dtype(np.float64),
@@ -582,8 +978,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     link_raw_data_for_stability_trace = Quantity(
         type=str,
@@ -593,5 +989,6 @@ nan
 - This is a beta feature. The plan is to create a file repository where the raw files for stability data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw stability data.
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'www.testsite…'])))
-
+            component='EnumEditQuantity', props=dict(suggestions=['', 'www.testsite…'])
+        ),
+    )

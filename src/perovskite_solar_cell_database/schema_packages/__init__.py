@@ -3,7 +3,7 @@ from pydantic import Field
 
 
 class PerovskiteDatabasePackageEntryPoint(SchemaPackageEntryPoint):
-    parameter: int = Field(0, description='Custom configuration parameter')
+    # parameter: int = Field(0, description='Custom configuration parameter')
 
     def load(self):
         from perovskite_solar_cell_database.schema_packages.perovskite_solar_cell_database import (

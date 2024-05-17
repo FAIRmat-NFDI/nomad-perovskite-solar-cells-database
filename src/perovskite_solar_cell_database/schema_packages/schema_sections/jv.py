@@ -7,16 +7,16 @@ from nomad.datamodel.data import ArchiveSection
 
 
 class JVcurve(PlotSection, ArchiveSection):
-    '''
+    """
     Section describing a current density, voltage curve.
-    '''
+    """
+
     m_def = Section(
         label_quantity='cell_name',
-        a_plotly_graph_object=[{
-            'data': {'x': '#voltage', 'y': '#current_density'}
-        }, {
-            'data': {'x': '#voltage', 'y': '#current_density'}
-        }]
+        a_plotly_graph_object=[
+            {'data': {'x': '#voltage', 'y': '#current_density'}},
+            {'data': {'x': '#voltage', 'y': '#current_density'}},
+        ],
     )
 
     def derive_n_values(self):
@@ -33,16 +33,22 @@ class JVcurve(PlotSection, ArchiveSection):
         type=str,
         shape=[],
         description='Cell identification name.',
-        a_eln=dict(component='StringEditQuantity'))
+        a_eln=dict(component='StringEditQuantity'),
+    )
 
     current_density = Quantity(
-        type=np.dtype(np.float64), shape=['n_values'],
+        type=np.dtype(np.float64),
+        shape=['n_values'],
         unit='mA/cm^2',
-        description='Current density array of the *JV* curve.')
+        description='Current density array of the *JV* curve.',
+    )
 
     voltage = Quantity(
-        type=np.dtype(np.float64), shape=['n_values'], unit='V',
-        description='Voltage array of the of the *JV* curve.')
+        type=np.dtype(np.float64),
+        shape=['n_values'],
+        unit='V',
+        description='Voltage array of the of the *JV* curve.',
+    )
 
 
 class JV(ArchiveSection):
@@ -55,7 +61,8 @@ class JV(ArchiveSection):
     data_file = Quantity(
         type=str,
         a_eln=dict(component='FileEditQuantity'),
-        a_browser=dict(adaptor='RawFileAdaptor'))
+        a_browser=dict(adaptor='RawFileAdaptor'),
+    )
 
     measured = Quantity(
         type=bool,
@@ -63,8 +70,8 @@ class JV(ArchiveSection):
         description="""
     TRUE if IV-data has been measured and is reported.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     average_over_n_number_of_cells = Quantity(
         type=np.dtype(np.int64),
@@ -75,8 +82,8 @@ class JV(ArchiveSection):
 - If the reported IV data is not the data from one individual cell, but an average over N cells. Give the number of cells.
 - If the reported value is an average, but it is unknown over how many cells the value has been averaged (and no good estimate is available), state the number of cells as 2, which is the smallest number of cells that qualifies for an averaging procedure.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     certified_values = Quantity(
         type=bool,
@@ -84,8 +91,8 @@ class JV(ArchiveSection):
         description="""
     TRUE if the IV data is measured by an independent and certification institute. If your solar simulator is calibrated by a calibrated reference diode, that does not count as a certified result.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     certification_institute = Quantity(
         type=str,
@@ -98,7 +105,31 @@ NIM, National Institute of Metrology of China
 KIER, Korea Institute of Energy Research
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'National Institute ofMetrology, China', 'Quality supervision＆Testing Center of Chemical＆Physical Power Sources of Information Industry', 'CREST, Photovoltaic Meaasurement and calibration Laboratory at Universit of Loughborough', 'Photovoltaic and Wind Power Systems Quality Test Center, Chinese Academy of Sciences', 'NREL', 'Institute of Metrology (NIM) of China', 'PVEVL, National Central University, Taiwan', 'NIM, National Institute of Metrology of China', 'Fraunhofer ISE', 'SIMIT, Shanghai Institute of Microsystem and Information Technology', 'Newport', 'CSIRO, PV Performance Lab at Monash University', 'AIST, National Institute of Advanced Industrial Science and Technology', 'CPVT, National Center of Supervision and Inspection on Solar Photovoltaic Products Quality of China', 'KIER, Korea Institute of Energy Research', 'Newport Corporation', 'Solar Power Lab at Arizona State University'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'National Institute ofMetrology, China',
+                    'Quality supervision＆Testing Center of Chemical＆Physical Power Sources of Information Industry',
+                    'CREST, Photovoltaic Meaasurement and calibration Laboratory at Universit of Loughborough',
+                    'Photovoltaic and Wind Power Systems Quality Test Center, Chinese Academy of Sciences',
+                    'NREL',
+                    'Institute of Metrology (NIM) of China',
+                    'PVEVL, National Central University, Taiwan',
+                    'NIM, National Institute of Metrology of China',
+                    'Fraunhofer ISE',
+                    'SIMIT, Shanghai Institute of Microsystem and Information Technology',
+                    'Newport',
+                    'CSIRO, PV Performance Lab at Monash University',
+                    'AIST, National Institute of Advanced Industrial Science and Technology',
+                    'CPVT, National Center of Supervision and Inspection on Solar Photovoltaic Products Quality of China',
+                    'KIER, Korea Institute of Energy Research',
+                    'Newport Corporation',
+                    'Solar Power Lab at Arizona State University',
+                ]
+            ),
+        ),
+    )
 
     storage_age_of_cell = Quantity(
         type=str,
@@ -108,7 +139,25 @@ KIER, Korea Institute of Energy Research
 - If there are uncertainties, only state the best estimate, e.g. write 3 and not 1-5.
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['1.0', 'Unknown', '7.0', '4.0', '2.0', '28.0', '58.0', '8.0', '0.01', '0.5', '5.0', '6.0'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '1.0',
+                    'Unknown',
+                    '7.0',
+                    '4.0',
+                    '2.0',
+                    '28.0',
+                    '58.0',
+                    '8.0',
+                    '0.01',
+                    '0.5',
+                    '5.0',
+                    '6.0',
+                ]
+            ),
+        ),
+    )
 
     storage_atmosphere = Quantity(
         type=str,
@@ -128,7 +177,12 @@ Air
 N2 >> Air
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Dry air', 'Unknown', 'Air', 'Ambient', 'N2', 'Vacuum'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['Dry air', 'Unknown', 'Air', 'Ambient', 'N2', 'Vacuum']
+            ),
+        ),
+    )
 
     storage_relative_humidity = Quantity(
         type=str,
@@ -144,7 +198,10 @@ Example
 0 >> 25
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', '0.9', '65.0', '5.0'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', '0.9', '65.0', '5.0']),
+        ),
+    )
 
     test_atmosphere = Quantity(
         type=str,
@@ -161,7 +218,23 @@ N2
 Vacuum
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Water', 'Dry air', 'Unknown', 'Air', 'Ambient', 'Outdoor', 'N2', 'Vacuum', 'Ar', 'Near-space'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Water',
+                    'Dry air',
+                    'Unknown',
+                    'Air',
+                    'Ambient',
+                    'Outdoor',
+                    'N2',
+                    'Vacuum',
+                    'Ar',
+                    'Near-space',
+                ]
+            ),
+        ),
+    )
 
     test_relative_humidity = Quantity(
         type=np.dtype(np.float64),
@@ -171,8 +244,8 @@ Vacuum
 - If there are uncertainties, only state the best estimate, e.g write 35 and not 20-50.
 - If the relative humidity is not known, stat that as ‘nan’
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     test_temperature = Quantity(
         type=np.dtype(np.float64),
@@ -183,8 +256,8 @@ Vacuum
 - If the temperature is not controlled and not is known, assume a standard room temperature of 25°C.
 - If there are uncertainties, only state the best estimate, e.g write 35 and not 20-50.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     light_source_type = Quantity(
         type=str,
@@ -204,7 +277,22 @@ White LED
 Xenon plasma
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Unknown', 'White LED', 'Solar Simulator', 'Fluorescent lamp', 'Solar simulator', 'solar simulator', 'Laser', 'Xenon'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Unknown',
+                    'White LED',
+                    'Solar Simulator',
+                    'Fluorescent lamp',
+                    'Solar simulator',
+                    'solar simulator',
+                    'Laser',
+                    'Xenon',
+                ]
+            ),
+        ),
+    )
 
     light_source_brand_name = Quantity(
         type=str,
@@ -219,7 +307,107 @@ Newport AAA
 Atlas suntest
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'EC-lab T-5A', 'ABET 11000', 'Wavelabs', 'ABET Technologies 10500', 'Newport model 94023A-U', 'McScience K3000', 'BOS-X-1000G', 'Solar light 16S-300', 'Enlitech', 'Newport, model 94063A', 'Wacom Denso model WXS-155S-10', 'Sciencetech Inc. SS-150', 'WAVELABS SINUS-70 LED', 'Oriel Sol2ATM', 'Newport model 91195A', 'Newport ORIEL LCS100', 'Oriel 91160', 'Newport Verasol', 'Solar IV-150A, Zolix', 'WAVELABS SINUS-220', 'Newport 91195A', 'San-ei Electric XES-301S', 'Newport model 94043A', 'Cree XML T6', 'Bunkoukeiki CEP-2000SRR', 'Peccell Technologies PEC-L01', 'XES-70S1', 'Sciencetech', 'Oriel 91160A', 'Oriel VeraSol-2', 'CEP-2000SRR, Bunkou-Keiki Inc', 'Zolix SS150A', 'SANEI', 'PET Photo Emission Tech Inc. Model SS', 'Enlitech SS-F7-3A', 'Newport 91160', 'ABET Technology Sun 2000', 'Oriel 9119', 'Peccell PEC-L01', 'Bunkoukeiki BSS-150T', 'Enlitech SS-F5', 'Global (G)', 'Wacom WXs-156s-l2', 'Photo Emission Tech Inc SS150', 'Newport Oriel LCS-100', 'Oriel 92251A', 'Newport 94123A', 'Oriel 94023 A', 'Newport model 94023A', 'Newport Oriel 92192', 'Newport model 94022', 'Bunkoukeiki KHP-1', 'YAMASHITA DENSO model YSS-150A', 'Oriel 300', 'Newport AAA', 'KHP-1, Bunko-Keiki, Japan', 'Spectra-Nova', 'Sol3A, Oriel Instruments', 'Abet Technologies Sun 3000', 'IV5, PV Measurements, Inc., USA', 'Newport Oriel PVIV-201 V', 'Photo Emission Tech.', 'Newport model 91192', 'XES-40S1, SAN-E1', 'San-ei Electric', 'Oriel 92251A-1000', 'Newport Oriel 94043A', 'So13A', 'Newport Oriel Sol3A', 'ABET Sun 3000', 'KHS Steuernagel', 'Zolix Sirius-SS', 'Oriel 81172', 'PV Measurements Inc.', 'Oriel', 'XEF-300', 'Oriel Sol3A', 'Peceell PEC-L01', 'Ushio Optical ModuleX', 'Newport Oriel 96000', 'Oriel 94023A', 'McScience K401', 'Newport Oriel 3A', '94011A-ES Sol', 'Bunkoukeiki CEP-25ML', 'Newport 6279 NS', 'Sharif Solar 10–2', 'SAN-EI (XES-50S1)', 'Enlitech SS-F5-3A', 'ScienceTech model SF-150', 'Newport Oriel', 'Newport Oriel Sol2A', 'Batsol PEC-L01'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'EC-lab T-5A',
+                    'ABET 11000',
+                    'Wavelabs',
+                    'ABET Technologies 10500',
+                    'Newport model 94023A-U',
+                    'McScience K3000',
+                    'BOS-X-1000G',
+                    'Solar light 16S-300',
+                    'Enlitech',
+                    'Newport, model 94063A',
+                    'Wacom Denso model WXS-155S-10',
+                    'Sciencetech Inc. SS-150',
+                    'WAVELABS SINUS-70 LED',
+                    'Oriel Sol2ATM',
+                    'Newport model 91195A',
+                    'Newport ORIEL LCS100',
+                    'Oriel 91160',
+                    'Newport Verasol',
+                    'Solar IV-150A, Zolix',
+                    'WAVELABS SINUS-220',
+                    'Newport 91195A',
+                    'San-ei Electric XES-301S',
+                    'Newport model 94043A',
+                    'Cree XML T6',
+                    'Bunkoukeiki CEP-2000SRR',
+                    'Peccell Technologies PEC-L01',
+                    'XES-70S1',
+                    'Sciencetech',
+                    'Oriel 91160A',
+                    'Oriel VeraSol-2',
+                    'CEP-2000SRR, Bunkou-Keiki Inc',
+                    'Zolix SS150A',
+                    'SANEI',
+                    'PET Photo Emission Tech Inc. Model SS',
+                    'Enlitech SS-F7-3A',
+                    'Newport 91160',
+                    'ABET Technology Sun 2000',
+                    'Oriel 9119',
+                    'Peccell PEC-L01',
+                    'Bunkoukeiki BSS-150T',
+                    'Enlitech SS-F5',
+                    'Global (G)',
+                    'Wacom WXs-156s-l2',
+                    'Photo Emission Tech Inc SS150',
+                    'Newport Oriel LCS-100',
+                    'Oriel 92251A',
+                    'Newport 94123A',
+                    'Oriel 94023 A',
+                    'Newport model 94023A',
+                    'Newport Oriel 92192',
+                    'Newport model 94022',
+                    'Bunkoukeiki KHP-1',
+                    'YAMASHITA DENSO model YSS-150A',
+                    'Oriel 300',
+                    'Newport AAA',
+                    'KHP-1, Bunko-Keiki, Japan',
+                    'Spectra-Nova',
+                    'Sol3A, Oriel Instruments',
+                    'Abet Technologies Sun 3000',
+                    'IV5, PV Measurements, Inc., USA',
+                    'Newport Oriel PVIV-201 V',
+                    'Photo Emission Tech.',
+                    'Newport model 91192',
+                    'XES-40S1, SAN-E1',
+                    'San-ei Electric',
+                    'Oriel 92251A-1000',
+                    'Newport Oriel 94043A',
+                    'So13A',
+                    'Newport Oriel Sol3A',
+                    'ABET Sun 3000',
+                    'KHS Steuernagel',
+                    'Zolix Sirius-SS',
+                    'Oriel 81172',
+                    'PV Measurements Inc.',
+                    'Oriel',
+                    'XEF-300',
+                    'Oriel Sol3A',
+                    'Peceell PEC-L01',
+                    'Ushio Optical ModuleX',
+                    'Newport Oriel 96000',
+                    'Oriel 94023A',
+                    'McScience K401',
+                    'Newport Oriel 3A',
+                    '94011A-ES Sol',
+                    'Bunkoukeiki CEP-25ML',
+                    'Newport 6279 NS',
+                    'Sharif Solar 10–2',
+                    'SAN-EI (XES-50S1)',
+                    'Enlitech SS-F5-3A',
+                    'ScienceTech model SF-150',
+                    'Newport Oriel',
+                    'Newport Oriel Sol2A',
+                    'Batsol PEC-L01',
+                ]
+            ),
+        ),
+    )
 
     light_source_simulator_class = Quantity(
         type=str,
@@ -233,7 +421,10 @@ ABB
 CAB
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'ABB', 'A', 'AAA', 'ABA', 'AAB'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', 'ABB', 'A', 'AAA', 'ABA', 'AAB']),
+        ),
+    )
 
     light_intensity = Quantity(
         type=np.dtype(np.float64),
@@ -245,8 +436,8 @@ CAB
 - Standard AM 1.5 illumination correspond to 100 mW/cm2
 - If you need to convert from illumination given in lux; at 550 nm, 1 mW/cm2 corresponds to 6830 lux. Be aware that the conversion change with the spectrum used. As a rule of thumb for general fluorescent/LED light sources, around 0.31mW corresponded to 1000 lux. If your light intensity is measured in lux, it probably means that your light spectra deviates quite a lot from AM 1.5, wherefore it is very important that you also specify the light spectra in the next column.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     light_spectra = Quantity(
         type=str,
@@ -262,7 +453,12 @@ Outdoor
 UV
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Indoor light', 'AM 1.5', 'Monochromatic', 'Am 1.5'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['', 'Indoor light', 'AM 1.5', 'Monochromatic', 'Am 1.5']
+            ),
+        ),
+    )
 
     light_wavelength_range = Quantity(
         type=str,
@@ -279,7 +475,10 @@ Example:
 550
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['nan; nan', '250; 1200'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['nan; nan', '250; 1200']),
+        ),
+    )
 
     light_illumination_direction = Quantity(
         type=str,
@@ -294,7 +493,10 @@ Substrate
 Superstrate
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Superstrate', 'Substrate'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', 'Superstrate', 'Substrate']),
+        ),
+    )
 
     light_masked_cell = Quantity(
         type=bool,
@@ -302,8 +504,8 @@ Superstrate
         description="""
     TRUE if the cell is illuminated trough a mask with an opening that is smaller than the total cell area.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     light_mask_area = Quantity(
         type=np.dtype(np.float64),
@@ -314,8 +516,8 @@ Superstrate
 - If there are uncertainties, only state the best estimate, e.g. write 100 and not 90-100.
 - If there is no light mask, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     scan_speed = Quantity(
         type=np.dtype(np.float64),
@@ -324,8 +526,8 @@ Superstrate
         description="""
     The speed of the potential sweep during the IV measurement
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     scan_delay_time = Quantity(
         type=np.dtype(np.float64),
@@ -337,8 +539,8 @@ Superstrate
 - If there are uncertainties, only state the best estimate, e.g. write 100 and not 90-100.
 - If unknown, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     scan_integration_time = Quantity(
         type=np.dtype(np.float64),
@@ -350,8 +552,8 @@ Superstrate
 - If there are uncertainties, only state the best estimate, e.g. write 100 and not 90-100.
 - If unknown, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     scan_voltage_step = Quantity(
         type=np.dtype(np.float64),
@@ -361,8 +563,8 @@ Superstrate
     The distance between the measurement point in the potential sweep
 - If unknown, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     preconditioning_protocol = Quantity(
         type=str,
@@ -380,7 +582,28 @@ Light soaking; Potential biasing
 Potential biasing
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Light soaking', 'Potential biasing', 'Heating', 'Unknown', 'MPPT', 'Voc stabilization', 'Bending', 'Light Soaking', 'Light Soaking; Potential biasing', 'Electroluminescence measurement', 'Light soaking; Potential biasing', 'Heating; Light soaking', 'Light soaking; Potential cykling', 'Cooling'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Light soaking',
+                    'Potential biasing',
+                    'Heating',
+                    'Unknown',
+                    'MPPT',
+                    'Voc stabilization',
+                    'Bending',
+                    'Light Soaking',
+                    'Light Soaking; Potential biasing',
+                    'Electroluminescence measurement',
+                    'Light soaking; Potential biasing',
+                    'Heating; Light soaking',
+                    'Light soaking; Potential cykling',
+                    'Cooling',
+                ]
+            ),
+        ),
+    )
 
     preconditioning_time = Quantity(
         type=np.dtype(np.float64),
@@ -391,8 +614,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 100 and not 90-100.
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     preconditioning_potential = Quantity(
         type=np.dtype(np.float64),
@@ -403,8 +626,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 100 and not 90-100.
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     preconditioning_light_intensity = Quantity(
         type=np.dtype(np.float64),
@@ -415,8 +638,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 100 and not 90-100.
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_Voc = Quantity(
         type=np.dtype(np.float64),
@@ -428,8 +651,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_Jsc = Quantity(
         type=np.dtype(np.float64),
@@ -441,8 +664,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_FF = Quantity(
         type=np.dtype(np.float64),
@@ -453,8 +676,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 0.73 and not 0.7-0.76
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_PCE = Quantity(
         type=np.dtype(np.float64),
@@ -465,8 +688,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_Vmp = Quantity(
         type=np.dtype(np.float64),
@@ -478,8 +701,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_Jmp = Quantity(
         type=np.dtype(np.float64),
@@ -491,8 +714,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_series_resistance = Quantity(
         type=np.dtype(np.float64),
@@ -501,8 +724,8 @@ Potential biasing
         description="""
     The series resistance as extracted from the reverse voltage sweep (when U scanned from Voc to 0)
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     reverse_scan_shunt_resistance = Quantity(
         type=np.dtype(np.float64),
@@ -511,8 +734,8 @@ Potential biasing
         description="""
     The shunt resistance as extracted from the reverse voltage sweep (when U scanned from Voc to 0)
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_Voc = Quantity(
         type=np.dtype(np.float64),
@@ -524,8 +747,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_Jsc = Quantity(
         type=np.dtype(np.float64),
@@ -537,8 +760,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_FF = Quantity(
         type=np.dtype(np.float64),
@@ -549,8 +772,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 0.73 and not 0.7-0.76
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_PCE = Quantity(
         type=np.dtype(np.float64),
@@ -561,8 +784,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_Vmp = Quantity(
         type=np.dtype(np.float64),
@@ -574,8 +797,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_Jmp = Quantity(
         type=np.dtype(np.float64),
@@ -587,8 +810,8 @@ Potential biasing
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_series_resistance = Quantity(
         type=np.dtype(np.float64),
@@ -597,8 +820,8 @@ Potential biasing
         description="""
     The series resistance as extracted from the forward voltage sweep (when U scanned from 0 to Voc)
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     forward_scan_shunt_resistance = Quantity(
         type=np.dtype(np.float64),
@@ -607,8 +830,8 @@ Potential biasing
         description="""
     The shunt resistance as extracted from the forward voltage sweep (when U scanned from 0 to Voc)
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     link_raw_data = Quantity(
         type=str,
@@ -616,7 +839,8 @@ Potential biasing
         description="""
     A link to where the data file for the IV-data is stored
 - This is a beta feature. The plan is to create a file repository where the raw files for IV data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw IV-data.
-                    """)
+                    """,
+    )
 
     default_Voc = Quantity(
         type=np.dtype(np.float64),
@@ -625,8 +849,8 @@ Potential biasing
         description="""
     Open circuit voltage.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     default_Jsc = Quantity(
         type=np.dtype(np.float64),
@@ -635,8 +859,8 @@ Potential biasing
         description="""
     Short circuit current density.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     default_FF = Quantity(
         type=np.dtype(np.float64),
@@ -644,8 +868,8 @@ Potential biasing
         description="""
     Fill factor.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     default_PCE = Quantity(
         type=np.dtype(np.float64),
@@ -653,8 +877,8 @@ Potential biasing
         description="""
     Power conversion efficiency.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     default_Voc_scan_direction = Quantity(
         type=str,
@@ -663,7 +887,10 @@ Potential biasing
     nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Reversed', '', 'Forward'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['Reversed', '', 'Forward']),
+        ),
+    )
 
     default_Jsc_scan_direction = Quantity(
         type=str,
@@ -672,7 +899,10 @@ Potential biasing
     nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Reversed', '', 'Forward'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['Reversed', '', 'Forward']),
+        ),
+    )
 
     default_FF_scan_direction = Quantity(
         type=str,
@@ -681,7 +911,10 @@ Potential biasing
     nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Reversed', '', 'Forward'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['Reversed', '', 'Forward']),
+        ),
+    )
 
     default_PCE_scan_direction = Quantity(
         type=str,
@@ -690,7 +923,10 @@ Potential biasing
     nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Reversed', '', 'Stabilised', 'Forward'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['Reversed', '', 'Stabilised', 'Forward']),
+        ),
+    )
 
     hysteresis_index = Quantity(
         type=np.dtype(np.float64),
@@ -698,14 +934,15 @@ Potential biasing
         description="""
     nan
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     jv_curve = SubSection(section_def=JVcurve, repeats=True)
 
     def normalize(self, archive, logger):
         from perovskite_solar_cell_database.data_tools import jv_dict_generator
-        if (self.data_file):
+
+        if self.data_file:
             with archive.m_context.raw_file(self.data_file) as f:
                 jv_dict = jv_dict_generator(f.name)
                 self.measured = True
@@ -715,25 +952,51 @@ Potential biasing
                 self.scan_integration_time = jv_dict['integration_time']
                 self.preconditioning_time = jv_dict['settling_time']
 
-                self.reverse_scan_Jsc = round(jv_dict['reverse_scan_Jsc'], 2) * ureg('mA / cm^2')
-                self.reverse_scan_Voc = round(jv_dict['reverse_scan_Voc'], 2) * ureg('V')
+                self.reverse_scan_Jsc = round(jv_dict['reverse_scan_Jsc'], 2) * ureg(
+                    'mA / cm^2'
+                )
+                self.reverse_scan_Voc = round(jv_dict['reverse_scan_Voc'], 2) * ureg(
+                    'V'
+                )
                 self.reverse_scan_FF = round(jv_dict['reverse_scan_FF'], 2) * 0.01
                 self.reverse_scan_PCE = round(jv_dict['reverse_scan_PCE'], 2)
-                self.reverse_scan_Vmp = round(jv_dict['reverse_scan_Vmp'], 2) * ureg('V')
-                self.reverse_scan_Jmp = round(jv_dict['reverse_scan_Jmp'], 2) * ureg('mA / cm^2')
-                self.reverse_scan_series_resistance = round(jv_dict['reverse_scan_series_resistance'], 2) * ureg('ohm * cm^2')
-                self.reverse_scan_shunt_resistance = round(jv_dict['reverse_scan_shunt_resistance'], 2) * ureg('ohm * cm^2')
+                self.reverse_scan_Vmp = round(jv_dict['reverse_scan_Vmp'], 2) * ureg(
+                    'V'
+                )
+                self.reverse_scan_Jmp = round(jv_dict['reverse_scan_Jmp'], 2) * ureg(
+                    'mA / cm^2'
+                )
+                self.reverse_scan_series_resistance = round(
+                    jv_dict['reverse_scan_series_resistance'], 2
+                ) * ureg('ohm * cm^2')
+                self.reverse_scan_shunt_resistance = round(
+                    jv_dict['reverse_scan_shunt_resistance'], 2
+                ) * ureg('ohm * cm^2')
 
-                self.forward_scan_Jsc = round(jv_dict['forward_scan_Jsc'], 2) * ureg('mA / cm^2')
-                self.forward_scan_Voc = round(jv_dict['forward_scan_Voc'], 3) * ureg('V')
+                self.forward_scan_Jsc = round(jv_dict['forward_scan_Jsc'], 2) * ureg(
+                    'mA / cm^2'
+                )
+                self.forward_scan_Voc = round(jv_dict['forward_scan_Voc'], 3) * ureg(
+                    'V'
+                )
                 self.forward_scan_FF = round(jv_dict['forward_scan_FF'], 2) * 0.01
                 self.forward_scan_PCE = round(jv_dict['forward_scan_PCE'], 2)
-                self.forward_scan_Vmp = round(jv_dict['forward_scan_Vmp'], 3) * ureg('V')
-                self.forward_scan_Jmp = round(jv_dict['forward_scan_Jmp'], 2) * ureg('mA / cm^2')
-                self.forward_scan_series_resistance = round(jv_dict['forward_scan_series_resistance'], 3) * ureg('ohm * cm^2')
-                self.forward_scan_shunt_resistance = round(jv_dict['forward_scan_shunt_resistance'], 3) * ureg('ohm * cm^2')
+                self.forward_scan_Vmp = round(jv_dict['forward_scan_Vmp'], 3) * ureg(
+                    'V'
+                )
+                self.forward_scan_Jmp = round(jv_dict['forward_scan_Jmp'], 2) * ureg(
+                    'mA / cm^2'
+                )
+                self.forward_scan_series_resistance = round(
+                    jv_dict['forward_scan_series_resistance'], 3
+                ) * ureg('ohm * cm^2')
+                self.forward_scan_shunt_resistance = round(
+                    jv_dict['forward_scan_shunt_resistance'], 3
+                ) * ureg('ohm * cm^2')
 
-                self.default_Jsc = round(jv_dict['default_Jsc'], 2)  # * ureg('milliampere / centimeter ** 2')
+                self.default_Jsc = round(
+                    jv_dict['default_Jsc'], 2
+                )  # * ureg('milliampere / centimeter ** 2')
                 self.default_Voc = round(jv_dict['default_Voc'], 2) * ureg('V')
                 self.default_FF = round(jv_dict['default_FF'], 2) * 0.01
                 self.default_PCE = round(jv_dict['default_PCE'], 2)
@@ -747,7 +1010,8 @@ Potential biasing
                     jv_set = JVcurve(
                         cell_name=jv_dict['jv_curve'][curve]['name'],
                         voltage=jv_dict['jv_curve'][curve]['voltage'],
-                        current_density=jv_dict['jv_curve'][curve]['current_density'])
+                        current_density=jv_dict['jv_curve'][curve]['current_density'],
+                    )
                     self.jv_curve.append(jv_set)
 
         add_solar_cell(archive)
@@ -756,9 +1020,12 @@ Potential biasing
         if self.default_Jsc is not None:
             archive.results.properties.optoelectronic.solar_cell.short_circuit_current_density = self.default_Jsc
         if self.default_FF is not None:
-            archive.results.properties.optoelectronic.solar_cell.fill_factor = self.default_FF
+            archive.results.properties.optoelectronic.solar_cell.fill_factor = (
+                self.default_FF
+            )
         if self.default_PCE is not None:
-            archive.results.properties.optoelectronic.solar_cell.efficiency = self.default_PCE
+            archive.results.properties.optoelectronic.solar_cell.efficiency = (
+                self.default_PCE
+            )
         if self.light_intensity is not None:
             archive.results.properties.optoelectronic.solar_cell.illumination_intensity = self.light_intensity
-

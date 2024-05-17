@@ -12,8 +12,8 @@ class Outdoor(ArchiveSection):
         description="""
     TRUE if the performance of the cell has been tested outdoors.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     protocol = Quantity(
         type=str,
@@ -29,7 +29,10 @@ ISOS-O-2
 ISOS-O-3
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'ISOS-O-1', 'IEC 61853-1'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', 'ISOS-O-1', 'IEC 61853-1']),
+        ),
+    )
 
     average_over_n_number_of_cells = Quantity(
         type=np.dtype(np.int64),
@@ -41,8 +44,8 @@ Example:
 - If the reported data is not the data from one individual cell, but an average over N cells. Give the number of cells.
 - If the reported value is an average, but it is unknown over how many cells the value has been averaged (and no good estimate is available), state the number of cells as 2, which is the smallest number of cells that qualifies for an averaging procedure.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     location_country = Quantity(
         type=str,
@@ -56,7 +59,24 @@ Switzerland
 Space International
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Italy', 'Switzerland', 'Slovenia', 'China', 'Great Britain', 'Colombia', 'Spain', 'Israel', 'Space International', 'Saudi Arabia'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Italy',
+                    'Switzerland',
+                    'Slovenia',
+                    'China',
+                    'Great Britain',
+                    'Colombia',
+                    'Spain',
+                    'Israel',
+                    'Space International',
+                    'Saudi Arabia',
+                ]
+            ),
+        ),
+    )
 
     location_city = Quantity(
         type=str,
@@ -65,7 +85,10 @@ Space International
     The city where the outdoor testing was occurring
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Ljubljana', 'Hong Kong'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', 'Ljubljana', 'Hong Kong']),
+        ),
+    )
 
     location_coordinates = Quantity(
         type=str,
@@ -77,8 +100,8 @@ Example:
 59.839116; 17.647979
 52.428150; 13.532134
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['nan; nan'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['nan; nan'])),
+    )
 
     location_climate_zone = Quantity(
         type=str,
@@ -93,7 +116,10 @@ Teperate
 Tropical
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Subtropical', 'Cold', 'Desert', 'Temperate'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['', 'Subtropical', 'Cold', 'Desert', 'Temperate']),
+        ),
+    )
 
     installation_tilt = Quantity(
         type=np.dtype(np.float64),
@@ -104,8 +130,8 @@ Tropical
 - A module lying flat on the ground have a tilt of 0
 - A module standing straight up has a tilt of 90
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     installation_cardinal_direction = Quantity(
         type=np.dtype(np.float64),
@@ -118,8 +144,8 @@ Tropical
 - South is 180
 - West is 270
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     installation_number_of_solar_tracking_axis = Quantity(
         type=np.dtype(np.int64),
@@ -127,8 +153,8 @@ Tropical
         description="""
     The number of tracking axis in the installation.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     time_season = Quantity(
         type=str,
@@ -145,7 +171,20 @@ Autumn; Spring; Summer; Winter
 Spring; Winter
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Summer', 'Autumn; Spring; Summer; Winter', 'Autumn; Winter', 'Winter', 'Spring', 'Autumn; Summer'])))
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    '',
+                    'Summer',
+                    'Autumn; Spring; Summer; Winter',
+                    'Autumn; Winter',
+                    'Winter',
+                    'Spring',
+                    'Autumn; Summer',
+                ]
+            ),
+        ),
+    )
 
     time_start = Quantity(
         type=str,
@@ -154,7 +193,9 @@ Spring; Winter
     The starting time for the outdoor measurement.
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['0000:00:00:00:00'])))
+            component='EnumEditQuantity', props=dict(suggestions=['0000:00:00:00:00'])
+        ),
+    )
 
     time_end = Quantity(
         type=str,
@@ -163,7 +204,10 @@ Spring; Winter
     The ending time for the outdoor measurement.
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['0000:00:00:00:00', '0000:03:14:00:00'])))
+            component='EnumEditQuantity',
+            props=dict(suggestions=['0000:00:00:00:00', '0000:03:14:00:00']),
+        ),
+    )
 
     time_total_exposure = Quantity(
         type=np.dtype(np.float64),
@@ -172,8 +216,8 @@ Spring; Winter
     The total duration of the outdoor measurement in days.
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     potential_bias_load_condition = Quantity(
         type=str,
@@ -189,8 +233,8 @@ Open circuit
 Passive resistance
 Short circuit
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'MPPT'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['', 'MPPT'])),
+    )
 
     potential_bias_range = Quantity(
         type=str,
@@ -207,8 +251,8 @@ Example:
 1.5
 nan
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['nan; nan'])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=['nan; nan'])),
+    )
 
     potential_bias_passive_resistance = Quantity(
         type=np.dtype(np.float64),
@@ -220,8 +264,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1.03 and not 1.01-1.05
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     temperature_load_condition = Quantity(
         type=str,
@@ -239,7 +283,9 @@ Uncontrolled
 Cycled
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['', 'Uncontrolled'])))
+            component='EnumEditQuantity', props=dict(suggestions=['', 'Uncontrolled'])
+        ),
+    )
 
     temperature_range = Quantity(
         type=str,
@@ -256,7 +302,9 @@ Example:
 nan
                     """,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['nan; nan', '15; 60'])))
+            component='EnumEditQuantity', props=dict(suggestions=['nan; nan', '15; 60'])
+        ),
+    )
 
     temperature_tmodule = Quantity(
         type=np.dtype(np.float64),
@@ -265,8 +313,8 @@ nan
         description="""
     The effective temperature of the module during peak hours.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     periodic_JV_measurements = Quantity(
         type=bool,
@@ -274,8 +322,8 @@ nan
         description="""
     TRUE if the outdoor measurement periodically is interrupted for JV-measurements.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     periodic_JV_measurements_time_between_measurements = Quantity(
         type=np.dtype(np.float64),
@@ -284,8 +332,8 @@ nan
         description="""
     The average time between JV-measurement during the outdoor measurement.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_initial_value = Quantity(
         type=np.dtype(np.float64),
@@ -296,8 +344,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_burn_in_observed = Quantity(
         type=bool,
@@ -305,8 +353,8 @@ nan
         description="""
     TRUE if the performance has a relatively fast initial decay after which the decay rate stabilises at a lower level.
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     PCE_end_of_experiment = Quantity(
         type=np.dtype(np.float64),
@@ -317,8 +365,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_T95 = Quantity(
         type=np.dtype(np.float64),
@@ -329,8 +377,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Ts95 = Quantity(
         type=np.dtype(np.float64),
@@ -341,8 +389,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_T80 = Quantity(
         type=np.dtype(np.float64),
@@ -353,8 +401,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Ts80 = Quantity(
         type=np.dtype(np.float64),
@@ -365,8 +413,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 1000 and not 950-1050
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Te80 = Quantity(
         type=np.dtype(np.float64),
@@ -377,8 +425,8 @@ nan
 - This value will by definition have a significant uncertainty to it, as it is not measured but extrapolated under the assumption linearity but without a detailed and stabilised extrapolation protocol. This estimate is, however, not without value as it enables a ruff comparison between all cells for with the stability has been measured.
 - If there is an experimental T80, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_Tse80 = Quantity(
         type=np.dtype(np.float64),
@@ -389,8 +437,8 @@ nan
 - This value will by definition have a significant uncertainty to it, as it is not measured but extrapolated under the assumption linearity but without a detailed and stabilised extrapolation protocol. This estimate is, however, not without value as it enables a ruff comparison between all cells for with the stability has been measured.
 - If there is an experimental T80s, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     PCE_after_1000_h = Quantity(
         type=np.dtype(np.float64),
@@ -401,8 +449,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     power_generated = Quantity(
         type=np.dtype(np.float64),
@@ -412,8 +460,8 @@ nan
 - If there are uncertainties, only state the best estimate, e.g. write 20.5 and not 19-20
 - If unknown or not applicable, leave this field empty.
                     """,
-        a_eln=dict(
-            component='NumberEditQuantity'))
+        a_eln=dict(component='NumberEditQuantity'),
+    )
 
     link_raw_data_for_outdoor_trace = Quantity(
         type=str,
@@ -422,8 +470,8 @@ nan
     A link to where the data file for the measurement is stored
 - This is a beta feature. The plan is to create a file repository where the raw files for stability data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw data.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     detaild_weather_data_available = Quantity(
         type=bool,
@@ -431,8 +479,8 @@ nan
         description="""
     TRUE if detailed weather data is available for the measurement period
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     link_detailed_weather_data = Quantity(
         type=str,
@@ -441,8 +489,8 @@ nan
     A link to where the data file for the measurement is stored
 - This is a beta feature. The plan is to create a file repository where the raw files for stability data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw data.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     spectral_data_available = Quantity(
         type=bool,
@@ -450,8 +498,8 @@ nan
         description="""
     TRUE measured spectral data are available for the measurement period
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     link_spectral_data = Quantity(
         type=str,
@@ -460,8 +508,8 @@ nan
     A link to where the data file for the measurement is stored
 - This is a beta feature. The plan is to create a file repository where the raw files for stability data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw data.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
 
     irradiance_measured = Quantity(
         type=bool,
@@ -469,8 +517,8 @@ nan
         description="""
     TRUE measured irradiance data are available for the measurement period
                     """,
-        a_eln=dict(
-            component='BoolEditQuantity'))
+        a_eln=dict(component='BoolEditQuantity'),
+    )
 
     link_irradiance_data = Quantity(
         type=str,
@@ -479,5 +527,5 @@ nan
     A link to where the data file for the measurement is stored
 - This is a beta feature. The plan is to create a file repository where the raw files for stability data can be stored and disseminated. With the link and associated protocols, it should be possible to programmatically access and analyse the raw data.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=[''])))
+        a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[''])),
+    )
