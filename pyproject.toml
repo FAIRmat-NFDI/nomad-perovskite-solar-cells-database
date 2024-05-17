@@ -121,6 +121,6 @@ where = ["src"]
 
 [project.entry-points.'nomad.plugin']
 
-perovskite_solar_cell_database = "perovskite_solar_cell_database.schema_packages:perovskite_solar_cell_database"
+perovskite_solar_cell_database = "perovskite_solar_cell_database:schema"
 
 # myapp = "nomad_solar_cells_efficiency_tables.apps:myapp"

@@ -33,9 +33,7 @@ from .schema_sections import (
 )
 from nomad.metainfo import Package, Section, SubSection, SchemaPackage
 
-configuration = config.get_plugin_entry_point(
-    'perovskite_solar_cell_database.schema_packages:perovskite_solar_cell_database'
-)
+configuration = config.get_plugin_entry_point('perovskite_solar_cell_database:schema')
 
 m_package = SchemaPackage()
 

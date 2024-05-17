@@ -1,6 +1,6 @@
 {
     "data": {
-        "m_def": "perovskite_solar_cell_database.schema_packages.perovskite_solar_cell_database.PerovskiteSolarCell",
+        "m_def": "perovskite_solar_cell_database.schema.PerovskiteSolarCell",
         "ref": {
             "ID": 36709,
             "ID_temp": 36709,
