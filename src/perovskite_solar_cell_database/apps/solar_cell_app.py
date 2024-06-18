@@ -1,7 +1,7 @@
 import yaml
 
 solar_cell_app = yaml.safe_load(
-"""
+    """
 label: Solar Cells
 path: solarcells
 category: Use Cases

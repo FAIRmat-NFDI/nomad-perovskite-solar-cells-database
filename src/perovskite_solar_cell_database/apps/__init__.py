@@ -1,6 +1,6 @@
 from nomad.config.models.plugins import AppEntryPoint
-from perovskite_solar_cell_database.apps.solar_cell_app import solar_cell_app
 
+from perovskite_solar_cell_database.apps.solar_cell_app import solar_cell_app
 
 solar_cells = AppEntryPoint(
     name='Solar Cells',
