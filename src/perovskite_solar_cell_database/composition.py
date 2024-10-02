@@ -38,7 +38,8 @@ from nomad.metainfo.metainfo import (
     SubSection,
 )
 from nomad.units import ureg
-from structlog.stdlib import BoundLogger
+
+from perovskite_solar_cell_database.utils import create_archive
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
@@ -304,14 +305,41 @@ class PerovskiteComposition(CompositeSystem, EntryData):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super().normalize(archive, logger)
         ions: list[PerovskiteIonComponent] = self.a_ions + self.b_ions + self.c_ions
         self.components = ions
+        if not any(ion.coefficient is None for ion in ions):
+            coefficient_sum = sum([ion.coefficient for ion in ions])
+            for component in self.components:
+                if (
+                    not isinstance(component, PerovskiteIonComponent)
+                    or not isinstance(component.system, PerovskiteIon)
+                    or not isinstance(
+                        component.system.pure_substance, PubChemPureSubstanceSection
+                    )
+                    or component.system.pure_substance.molecular_mass is None
+                ):
+                    continue
+                component.mass_fraction = (
+                    component.system.pure_substance.molecular_mass
+                    * component.coefficient
+                    / coefficient_sum
+                )
         self.short_form = ''
         self.long_form = ''
         for ion in ions:
-            if ion.abbreviation is not None and ion.coefficient is not None:
-                self.short_form += f"{ion.abbreviation}{ion.coefficient:.2f}"
+            if ion.abbreviation is None:
+                continue
+            self.short_form += ion.abbreviation
+            if ion.coefficient is None:
+                continue
+            if ion.coefficient == 1:
+                coefficient_str = ''
+            elif ion.coefficient == int(ion.coefficient):
+                coefficient_str = str(int(ion.coefficient))
+            else:
+                coefficient_str = f'{ion.coefficient:.2}'
+            self.long_form += f'{ion.abbreviation}{coefficient_str}'
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()
