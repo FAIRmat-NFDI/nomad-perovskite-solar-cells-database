@@ -17,3 +17,18 @@ perovskite_solar_cell = PerovskiteDatabasePackageEntryPoint(
     name='PerovskiteSolarCell',
     description='Schema package defined for the perovskite solar cells database.',
 )
+
+
+class PerovskiteCompositionEntryPoint(SchemaPackageEntryPoint):
+    def load(self):
+        from perovskite_solar_cell_database.composition import (
+            m_package,
+        )
+
+        return m_package
+    
+
+perovskite_composition = PerovskiteCompositionEntryPoint(
+    name='PerovskiteComposition',
+    description='Schema package defined for the perovskite compositions.',
+)
