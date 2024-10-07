@@ -137,6 +137,7 @@ class PerovskiteTandemSolarCell(Schema):
     substrate = SubSection(section_def=Substrate)
     backcontact = SubSection(section_def=Backcontact)
     absorber_bottom = SubSection(section_def=Perovskite) # TODO: Change to CIGS related section
+    absorber_bottom_deposition = SubSection(section_def=PerovskiteDeposition) # TODO: Change to CIGS related section
     buffer = SubSection(section_def=ETL) # TODO: Change to buffer related section
     frontcontact_bottom = SubSection(section_def=Backcontact) # TODO: Change to front contact related section
     htl = SubSection(section_def=HTL)
