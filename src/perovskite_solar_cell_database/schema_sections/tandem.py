@@ -2,7 +2,74 @@ from nomad.datamodel.data import ArchiveSection, EntryData
 from nomad.metainfo import Quantity, SubSection
 from nomad.metainfo.data_type import Enum
 
+# Processing and deposition methods
 
+class Storage(ArchiveSection):
+    atmosphere = Quantity()
+    humidity_relative = Quantity()
+    time_until_next_step = Quantity()
+
+class ThermalAnnealing(ArchiveSection):
+    temperature = Quantity()
+    time = Quantity()
+    atmosphere = Quantity()
+
+class ReactionComponent(ArchiveSection):
+    compound = Quantity()
+    supplier = Quantity()
+    purity = Quantity()
+    concentration = Quantity()
+    volume = Quantity()
+    age = Quantity()
+    temperature = Quantity()
+
+class ReactionSolution(ArchiveSection):
+    components = SubSection(ReactionComponent, repeating=True)
+    temperature = Quantity()
+
+class Deposition(ArchiveSection):
+    procedure = Quantity()
+    aggregation_state_of_reactants = Quantity()
+    synthesis_atmosphere = Quantity()
+    synthesis_atmosphere_pressure_total = Quantity()
+    synthesis_atmosphere_pressure_partial = Quantity()
+    synthesis_atmosphere_relative_humidity = Quantity()
+    reaction_solutions_compounds = Quantity()
+    reaction_solutions_compounds_supplier = Quantity()
+    reaction_solutions_compounds_purity = Quantity()
+    reaction_solutions_concentrations = Quantity()
+    reaction_solutions_volumes = Quantity()
+    reaction_solutions_age = Quantity()
+    reaction_solutions_temperature = Quantity()
+    substrate_temperature = Quantity()
+    max_temperature = Quantity()
+    solvents = Quantity()
+    solvents_mixing_ratios = Quantity()
+    solvents_supplier = Quantity()
+    solvents_purity = Quantity()
+
+    thermal_annealing = SubSection(ThermalAnnealing)
+    reaction_solution = SubSection(ReactionSolution)
+
+
+
+# Materials and their properties
+
+class Layer(ArchiveSection):
+    thickness = Quantity()
+    functionality = Quantity()
+    surface_roughness = Quantity()
+
+    storage = SubSection(Storage)
+
+class NonAbsorbingLayer(Layer):
+    pass
+
+class PhotoAbsorber(Layer):
+    bandgap = Quantity()
+    bandgap_graded = Quantity()
+    bandgap_estimation_basis = Quantity()
+    PL_max = Quantity()
 
 
     
