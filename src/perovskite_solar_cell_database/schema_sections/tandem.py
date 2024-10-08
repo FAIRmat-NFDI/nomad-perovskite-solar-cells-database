@@ -11,8 +11,11 @@ class Storage(ArchiveSection):
 
 class ThermalAnnealing(ArchiveSection):
     temperature = Quantity()
-    time = Quantity()
+    duration = Quantity()
     atmosphere = Quantity()
+
+class SolventAnnealing(ThermalAnnealing):
+    point_in_time = Quantity()
 
 class ReactionComponent(ArchiveSection):
     compound = Quantity()
@@ -28,6 +31,8 @@ class ReactionSolution(ArchiveSection):
     temperature = Quantity()
 
 class Deposition(ArchiveSection):
+
+    # General
     procedure = Quantity()
     aggregation_state_of_reactants = Quantity()
     synthesis_atmosphere = Quantity()
@@ -36,13 +41,28 @@ class Deposition(ArchiveSection):
     synthesis_atmosphere_relative_humidity = Quantity()
     substrate_temperature = Quantity()
     max_temperature = Quantity()
+
+    # Solvents
     solvents = Quantity()
     solvents_mixing_ratios = Quantity()
     solvents_supplier = Quantity()
     solvents_purity = Quantity()
-
-    thermal_annealing = SubSection(ThermalAnnealing)
+    solvents_anneaing = SubSection(SolventAnnealing)
+    
+    # Reaction
     reaction_solution = SubSection(ReactionSolution)
+
+    # Quenching
+    quenching = Quantity()
+    quenching_induced_crystallisation = Quantity()
+    quenching_media = Quantity()
+    quenching_media_mixing_ratios = Quantity()
+    quenching_media_volume = Quantity()
+    quenching_media_additives_compounds = Quantity()
+    quenching_media_additives_concentrations = Quantity()
+
+    # Thermal annealing (post processing)  
+    thermal_annealing = SubSection(ThermalAnnealing)
 
 
 
