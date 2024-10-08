@@ -34,13 +34,6 @@ class Deposition(ArchiveSection):
     synthesis_atmosphere_pressure_total = Quantity()
     synthesis_atmosphere_pressure_partial = Quantity()
     synthesis_atmosphere_relative_humidity = Quantity()
-    reaction_solutions_compounds = Quantity()
-    reaction_solutions_compounds_supplier = Quantity()
-    reaction_solutions_compounds_purity = Quantity()
-    reaction_solutions_concentrations = Quantity()
-    reaction_solutions_volumes = Quantity()
-    reaction_solutions_age = Quantity()
-    reaction_solutions_temperature = Quantity()
     substrate_temperature = Quantity()
     max_temperature = Quantity()
     solvents = Quantity()
@@ -61,6 +54,7 @@ class Layer(ArchiveSection):
     surface_roughness = Quantity()
 
     storage = SubSection(Storage)
+    deposition = SubSection(Deposition)
 
 class NonAbsorbingLayer(Layer):
     pass
