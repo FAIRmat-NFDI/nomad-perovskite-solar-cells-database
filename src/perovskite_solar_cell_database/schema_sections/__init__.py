@@ -16,5 +16,4 @@ from .ref import Ref
 from .stabilised import Stabilised
 from .stability import Stability
 from .substrate import Substrate
-from .tandem import Tandem
 from .utils import add_band_gap, add_solar_cell
