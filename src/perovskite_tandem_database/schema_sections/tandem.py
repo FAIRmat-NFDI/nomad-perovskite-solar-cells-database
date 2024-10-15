@@ -1,6 +1,39 @@
 from nomad.datamodel.data import ArchiveSection, EntryData
+from nomad.datamodel.metainfo.basesections import (
+    Activity,
+    ElementalComposition,
+    Process,
+)
 from nomad.metainfo import Quantity, SubSection
 from nomad.metainfo.data_type import Enum
+
+# Chemicals and materials and their treatment
+
+class SolventAnnealing(ArchiveSection):
+    temperature = Quantity()
+    duration = Quantity()
+    atmosphere = Quantity()
+    point_in_time = Quantity()
+
+class ChemicalCompound(ArchiveSection):
+    name = Quantity()
+    supplier = Quantity()
+    purity = Quantity()
+    concentration = Quantity()
+    volume = Quantity()
+    age = Quantity()
+    temperature = Quantity()
+
+class ReactionComponent(ChemicalCompound):
+    pass
+
+class Solvent(ChemicalCompound):
+    annealing = SubSection(SolventAnnealing)
+
+class QuenchingSolvent(ChemicalCompound):
+    pass
+
+
 
 # Processing and deposition methods
 
@@ -9,75 +42,65 @@ class Storage(ArchiveSection):
     humidity_relative = Quantity()
     time_until_next_step = Quantity()
 
-class ThermalAnnealing(ArchiveSection):
+class SynthesisStep(Activity, ArchiveSection):
+    
+    # General
+    procedure = Quantity()
+    aggregation_state_of_reactants = Quantity()
+
+
+    atmosphere = Quantity()
+    pressure_total = Quantity()
+    pressure_partial = Quantity()
+    relative_humidity = Quantity()
+    temperature_substrate = Quantity()
+    temperature_maximum = Quantity()
+    
+class Cleaning(SynthesisStep):
+    pass
+
+class ThermalAnnealing(SynthesisStep):
     temperature = Quantity()
     duration = Quantity()
     atmosphere = Quantity()
 
-class SolventAnnealing(ThermalAnnealing):
-    point_in_time = Quantity()
+class WetChemicalSynthesis(SynthesisStep):
+    reaction_solution = SubSection(ReactionComponent, repeating=True)
+    solvents = SubSection(Solvent, repeating=True)
+    quenching_solvent = SubSection(QuenchingSolvent, repeating=True)
 
-class ReactionComponent(ArchiveSection):
-    compound = Quantity()
-    supplier = Quantity()
-    purity = Quantity()
-    concentration = Quantity()
-    volume = Quantity()
-    age = Quantity()
-    temperature = Quantity()
+class GasPhaseSynthesis(SynthesisStep):
+    pass
 
-class ReactionSolution(ArchiveSection):
-    components = SubSection(ReactionComponent, repeating=True)
-    temperature = Quantity()
+class Synthesis(Process, ArchiveSection):
+    steps = SubSection(SynthesisStep, repeating=True)
 
-class Deposition(ArchiveSection):
-
-    # General
-    procedure = Quantity()
-    aggregation_state_of_reactants = Quantity()
-    synthesis_atmosphere = Quantity()
-    synthesis_atmosphere_pressure_total = Quantity()
-    synthesis_atmosphere_pressure_partial = Quantity()
-    synthesis_atmosphere_relative_humidity = Quantity()
-    substrate_temperature = Quantity()
-    max_temperature = Quantity()
-
-    # Solvents
-    solvents = Quantity()
-    solvents_mixing_ratios = Quantity()
-    solvents_supplier = Quantity()
-    solvents_purity = Quantity()
-    solvents_anneaing = SubSection(SolventAnnealing)
-    
-    # Reaction
-    reaction_solution = SubSection(ReactionSolution)
-
-    # Quenching
-    quenching = Quantity()
-    quenching_induced_crystallisation = Quantity()
-    quenching_media = Quantity()
-    quenching_media_mixing_ratios = Quantity()
-    quenching_media_volume = Quantity()
-    quenching_media_additives_compounds = Quantity()
-    quenching_media_additives_concentrations = Quantity()
-
-    # Thermal annealing (post processing)  
-    thermal_annealing = SubSection(ThermalAnnealing)
-
-
-
-# Materials and their properties
+# Material layers and their properties
 
 class Layer(ArchiveSection):
-    thickness = Quantity()
+
+    # Type
     functionality = Quantity()
+
+    # Basic properties
+    thickness = Quantity()
+    area = Quantity()
     surface_roughness = Quantity()
 
+    # Origin and manufacturing
+    origin = Quantity()
+    supplier = Quantity()
+    supplier_brand = Quantity()
+    synthesis = SubSection(Synthesis)
+
+    # Storage
     storage = SubSection(Storage)
-    deposition = SubSection(Deposition)
+  
 
 class NonAbsorbingLayer(Layer):
-    pass
+    additivies = Quantity(
+        section_def=ElementalComposition,
+    )
 
 class PhotoAbsorber(Layer):
     bandgap = Quantity()
@@ -85,8 +108,16 @@ class PhotoAbsorber(Layer):
     bandgap_estimation_basis = Quantity()
     PL_max = Quantity()
 
+class PerovskiteLayer(PhotoAbsorber):
+    pass
 
-    
+class SiliconLayer(PhotoAbsorber):
+    pass
+
+class ChalcopyriteLayer(PhotoAbsorber):
+    pass
+
+# Device architecture
 
 class Tandem(EntryData):
     """
