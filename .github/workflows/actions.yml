@@ -2,6 +2,9 @@ name: install-and-test-workflow
 
 on: [push]
 
+permissions:
+  contents: read
+
 env:
   # uv pip requires a venv by default
   # allows installating packages in the system
