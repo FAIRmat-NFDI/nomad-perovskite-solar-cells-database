@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 env:
-  # uv pip requires a venv by default
+  # using uv pip requires an existing venv by default
   # allows installating packages in the system
   UV_SYSTEM_PYTHON: true
 
@@ -24,7 +24,9 @@ jobs:
         with:
           python-version: ${{matrix.python_version}}
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+        # uses: astral-sh/setup-uv@v3
       - name: Install dependencies
         run: |
           uv pip install -e '.[dev]'
