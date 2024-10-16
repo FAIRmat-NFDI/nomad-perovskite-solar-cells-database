@@ -11,13 +11,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          # we need the latest nomad version for testing
-          # pip install nomad-lab[infrastructure]@git+https://github.com/nomad-coe/nomad.git@develop
-          pip install '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
-          pip install coverage coveralls
+          uv pip install --upgrade pip
+          uv pip install '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+          uv pip install coverage coveralls
       - name: Test with pytest
         run: |
           python -m coverage run -m pytest -sv
@@ -39,14 +39,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
       - name: Build the package
         run: |
-          pip install --upgrade pip
-          pip install build
-          python -m build --sdist
+          uv pip install --upgrade pip
+          uv pip install build
+          uv python -m build --sdist
       - name: Install the package
         run: |
-          pip install dist/*.tar.gz --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+          uv pip install dist/*.tar.gz --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
       # - name: Test with nomad
       #   run: |
       #     python -m nomad.cli parse tests/data/example.archive.json
