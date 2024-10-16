@@ -18,6 +18,10 @@ jobs:
           uv pip install --upgrade pip
           uv pip install '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
           uv pip install coverage coveralls
+        env:
+          # uv pip requires a venv by default
+          # allows installating packages in the system env
+          UV_SYSTEM_PYTHON: 1
       - name: Test with pytest
         run: |
           python -m coverage run -m pytest -sv
@@ -43,9 +47,7 @@ jobs:
         uses: astral-sh/setup-uv@v3
       - name: Build the package
         run: |
-          uv pip install --upgrade pip
-          uv pip install build
-          uv python -m build --sdist
+          uv build --sdist
       - name: Install the package
         run: |
           uv pip install dist/*.tar.gz --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
