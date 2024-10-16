@@ -16,7 +16,6 @@ from perovskite_solar_cell_database.schema_sections.perovskite import Perovskite
 from perovskite_solar_cell_database.schema_sections.perovskite_deposition import (
     PerovskiteDeposition,
 )
-from perovskite_solar_cell_database.schema_sections.ref import Ref
 from perovskite_solar_cell_database.schema_sections.stabilised import Stabilised
 from perovskite_solar_cell_database.schema_sections.stability import Stability
 from perovskite_solar_cell_database.schema_sections.substrate import Substrate
@@ -25,4 +24,6 @@ from perovskite_solar_cell_database.schema_sections.utils import (
     add_solar_cell,
 )
 
+#from perovskite_solar_cell_database.schema_sections.ref import Ref
+from .ref import Reference
 from .tandem import Tandem
