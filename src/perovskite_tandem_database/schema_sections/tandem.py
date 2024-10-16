@@ -9,6 +9,8 @@ from nomad.metainfo.data_type import Enum
 
 from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
 
+from .ref import Reference
+
 # Chemicals and materials and their treatment
 
 class SolventAnnealing(ArchiveSection):
@@ -159,64 +161,109 @@ class ChalcopyriteLayer(PhotoAbsorber):
 
 # Device architecture
 
-class Tandem(EntryData):
+class General(EntryData):
     """
     This section stores general configuration information about a tandem solar cell.
     """
 
-    layer_stack = SubSection(
-        section_def = Layer,
-        description='The stack of layers in the device starting from the bottom.',
-        repeating=True)
+    architecture = Quantity(
+        type=str,
+        description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
+        shape=[],
+        a_eln=dict(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=sorted(['stacked', 'monolithic', 'other'])
+            )
+        )
+    )
 
-    # architecture = Quantity(
-    #     type=str,
-    #     description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
-    #     shape=[],
-    #     a_eln=dict(
-    #         component='EnumEditQuantity',
-    #         props=dict(
-    #             suggestions=sorted(['stacked', 'monolithic', 'other'])
-    #         )
-    #     )
-    # )
+    number_of_terminals = Quantity(
+        type=int,
+        description='The number of terminals in the device. The most common configurations are 2 and 4',
+        shape=[],
+        # a_eln=dict(component='NumberEditQuantity')
+    )
 
-    # number_of_terminals = Quantity(
-    #     type=int,
-    #     description='The number of terminals in the device. The most common configurations are 2 and 4',
-    #     shape=[],
-    #     a_eln=dict(component='NumberEditQuantity')
-    # )
+    number_of_junctions = Quantity(
+        type=int,
+        description='The number of junctions in the device.',
+        shape=[],
+        # a_eln=dict(component='NumberEditQuantity')
+    )
 
-    # number_of_junctions = Quantity(
-    #     type=int,
-    #     description='The number of junctions in the device.',
-    #     shape=[],
-    #     a_eln=dict(component='NumberEditQuantity')
-    # )
+    number_of_cells = Quantity(
+        type=int,
+        shape=[],
+        default=0,
+        description='The number of individual solar cells, or pixels, on the substrate on which the reported cell is made',
+    )
 
-    # photoabsorber = Quantity(
-    #     type=Enum(['Silicon', 'Perovskite', 'CIGS', 'OPV', 'OSC', 'DSSC', 'BHJ']),
-    #     description='''
-    #         List of the photoabsorbers starting from the bottom of the device stack
-    #         - Start with the bottom one, i.e. the one with the lowest band gap that is closest to the substrate and to the left in the defined device stack
-    #         - Do not care about composition, e.g. write Perovskite or CIGS regardless of the composition of the perovskite and the CIGS. There are several fields that specifically deals with the composition.
-    #     ''',
-    #     shape=['*'],
-    #     a_eln=dict(component='EnumEditQuantity')
-    # )
+    photoabsorber = Quantity(
+        type=Enum(['Silicon', 'Perovskite', 'CIGS', 'OPV', 'OSC', 'DSSC', 'BHJ']),
+        description='''
+            List of the photoabsorbers starting from the bottom of the device stack.
+                    ''',
+        shape=['*'],
+        # a_eln=dict(component='EnumEditQuantity')
+    )
     
-    # photoabsorber_bandgaps = Quantity(
-    #     type= float,
-    #     #unit = 'eV',
-    #     description='''
-    #         List of the band gap values of the respective photo absorbers
-    #         - Every layer should be separated by a space, a vertical bar, and a space, i.e. (‘ | ‘)
-    #         - The layers must line up with the previous filed.
-    #         - State band gaps in eV
-    #         - If there are uncertainties, state the best estimate, e.g write 1.5 and not 1.45-1.55
-    #         - Every photo absorber has a band gap. If it is unknown, state this as ‘nan’
-    #     ''',
-    #     shape=['*'],
-    #     a_eln=dict(component='NumberEditQuantity')
-    # )
+    photoabsorber_bandgaps = Quantity(
+        type= float,
+        #unit = 'eV', # arrays with units not yet supported
+        description='''
+            List of the band gap values of the respective photo absorbers.
+            - The layers must line up with the previous filed.
+            - State band gaps in eV
+            - If there are uncertainties, state the best estimate, e.g write 1.5 and not 1.45-1.55
+            - Every photo absorber has a band gap. If it is unknown, state this as ‘nan’
+        ''',
+        shape=['*'],
+        a_eln=dict(component='NumberEditQuantity')
+    )
+
+    stack_sequence = Quantity(
+        type=str,
+        shape=['*'],
+        description="""
+        The stack sequence describing the cell.
+        - If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
+        - The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. There are plenty of other fields specifically targeting the perovskite.
+        - If a material is doped, or have an additive, state the pure material here and specify the doping in the columns specifically targeting the doping of those layers.
+        - There is no sharp well-defined boundary between a when a material is best considered as doped to when it is best considered as a mixture of two materials. When in doubt if your material is doped or a mixture, use the notation that best capture the metaphysical essence of the situation
+        - Use common abbreviations when possible but spell it out when there is risk for confusion. For consistency, please pay attention to the abbreviation specified under the headline Abbreviations found tandem instructions v4.0 document.
+                    """,
+        a_eln=dict(component='StringEditQuantity')
+    )
+
+    area_measured = Quantity(
+        type=float,
+        shape=[],
+        unit='cm^2',
+        description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
+        a_eln=dict(component='NumberEditQuantity')
+    )
+
+    flexibility = Quantity(
+        type=bool,
+        shape=[],
+        default=False,
+        description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
+        a_eln=dict(component='BoolEditQuantity')
+    )
+
+    semitransparent = Quantity(
+        type=bool,
+        shape=[],
+        default=False,
+        description="""
+        TRUE if the device is semitransparent which usually is the case when there are no thick completely covering metal electrodes.
+        FALSE if it is opaque.""",
+        a_eln=dict(component='BoolEditQuantity')
+    )
+
+    
+
+
+
+
