@@ -41,6 +41,9 @@ license = { file = "LICENSE" }
 "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
 Repository = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database"
 
+[tool.uv]
+index-url = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple"
+
 [project.optional-dependencies]
 dev = ["ruff", "pytest", "structlog"]
 

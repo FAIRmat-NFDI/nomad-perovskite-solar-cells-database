@@ -2,35 +2,39 @@ name: install-and-test-workflow
 
 on: [push]
 
+env:
+  # uv pip requires a venv by default
+  # allows installating packages in the system
+  UV_SYSTEM_PYTHON: true
+
 jobs:
   install-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.12, 3.11, 3.10, 3.9]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.9
+      - name: Set up Python ${{matrix.python_version}}
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: ${{matrix.python_version}}
       - name: Install uv
         uses: astral-sh/setup-uv@v3
       - name: Install dependencies
         run: |
-          uv pip install --upgrade pip
-          uv pip install '.[dev]' --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
-          uv pip install coverage coveralls
-        env:
-          # uv pip requires a venv by default
-          # allows installating packages in the system env
-          UV_SYSTEM_PYTHON: 1
+          uv pip install -e '.[dev]'
       - name: Test with pytest
         run: |
-          python -m coverage run -m pytest -sv
-      - name: Submit to coveralls
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          coveralls --service=github
+          pytest
+      #     python -m coverage run -m pytest -sv
+      # - name: Submit to coveralls
+      #   continue-on-error: true
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     coveralls --service=github
       # - name: Test with nomad
       #   run: |
       #     python -m nomad.cli parse tests/data/example.archive.json
