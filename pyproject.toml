@@ -31,6 +31,8 @@ maintainers = [
 requires-python = ">=3.9"
 dependencies = [
     "nomad-lab>=1.3.0",
+    "nomad-schema-plugin-run>=1.0.1",
+    "nomad-schema-plugin-simulation-workflow>=1.0.1",
     "rdkit",
     "openpyxl",
     "lxml_html_clean"
