@@ -26,4 +26,4 @@ from perovskite_solar_cell_database.schema_sections.utils import (
 
 # from perovskite_solar_cell_database.schema_sections.ref import Ref
 from .ref import Reference
-from .tandem import Tandem
+from .tandem import General

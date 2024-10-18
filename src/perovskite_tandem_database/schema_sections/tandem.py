@@ -15,20 +15,72 @@ from .ref import Reference
 
 
 class SolventAnnealing(ArchiveSection):
-    temperature = Quantity()
-    duration = Quantity()
-    atmosphere = Quantity()
-    point_in_time = Quantity()
+    """
+    Section for a separate solvent annealing step, i.e. a step where the perovskite has been annealing in an atmosphere with a significant amount of solvents.
+    This step should also be included deposition procedure sequence but is also stated separately here to simplify downstream filtering.
+    """
+
+    temperature = Quantity(
+        type=float,
+        shape=[],
+        unit='K',
+        description="""The temperature during the solvent annealing step.
+        - The temperature refers to the temperature of the sample
+        - If the temperature is not known, state that by ‘nan’""",
+        repeating=True,
+    )
+    duration = Quantity(type=float, shape=[], unit='min')
+    atmosphere = Quantity(
+        type=str,
+        shape=[],
+        description='The solvents used in the solvent annealing step.',
+        repeating=True,
+    )
+    point_in_time = Quantity(
+        type=Enum(['After', 'Before', 'Under']),
+        description="""
+        The timing of the solvent annealing with respect to the thermal annealing step under which the perovskite is formed. There are three options.
+        - The solvent annealing is conducted before the perovskite is formed.
+        - The solvent annealing is conducted under the same annealing step in which the perovskite is formed
+        - The solvent annealing is conducted after the perovskite has formed.""",
+    )
 
 
+# TODO : Check inheritance > material processing solution
 class ChemicalCompound(ArchiveSection):
-    name = Quantity()
-    supplier = Quantity()
-    purity = Quantity()
-    concentration = Quantity()
-    volume = Quantity()
-    age = Quantity()
-    temperature = Quantity()
+    name = Quantity(
+        type=str, shape=[], description='The name of the chemical compound.'
+    )
+    supplier = Quantity(
+        type=str, shape=[], description='The supplier of the chemical compound.'
+    )
+    purity = Quantity(
+        type=str, shape=[], description='The purity of the chemical compound.'
+    )
+    concentration = Quantity(
+        type=float,
+        shape=[],
+        unit='mg/ml',
+        description='The concentration of the chemical compound.',
+    )
+    volume = Quantity(
+        type=float,
+        shape=[],
+        unit='ml',
+        description='The volume of the chemical compound.',
+    )
+    age = Quantity(
+        type=float,
+        shape=[],
+        unit='days',
+        description='The age of the chemical compound.',
+    )
+    temperature = Quantity(
+        type=float,
+        shape=[],
+        unit='°C',
+        description='The temperature of the chemical compound.',
+    )
 
 
 class ReactionComponent(ChemicalCompound):
@@ -36,7 +88,7 @@ class ReactionComponent(ChemicalCompound):
 
 
 class Solvent(ChemicalCompound):
-    annealing = SubSection(SolventAnnealing)
+    annealing = SubSection(section_def=SolventAnnealing)
 
 
 class QuenchingSolvent(ChemicalCompound):
@@ -47,38 +99,121 @@ class QuenchingSolvent(ChemicalCompound):
 
 
 class Storage(ArchiveSection):
-    atmosphere = Quantity()
-    humidity_relative = Quantity()
-    time_until_next_step = Quantity()
+    atmosphere = Quantity(
+        type=Enum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
+        shape=[],
+        description='The atmosphere in which the sample is stored.',
+    )
+    humidity_relative = Quantity(
+        type=float,
+        shape=[],
+        unit='%',
+        description='The relative humidity in the storage atmosphere.',
+    )
+    time_until_next_step = Quantity(
+        type=float,
+        shape=[],
+        unit='hours',
+        description='The time between the perovskite stack is finalised and the next layer is deposited.',
+    )
 
 
 class SynthesisStep(Activity, ArchiveSection):
     # General
-    procedure = Quantity()
-    aggregation_state_of_reactants = Quantity()
+    procedure = Quantity(
+        type=str,
+        shape=[],
+        default='Unknown',
+        description='Name of the the synthesis step',
+    )
+    # TODO: make Enum?
+    aggregation_state_of_reactants = Quantity(
+        type=str,
+        shape=['*'],
+        default='Unknown',
+        description="""The physical state of the reactants.
+        - The three basic categories are Solid/Liquid/Gas
+        - Most cases are clear cut, e.g. spin-coating involves species in solution and evaporation involves species in gas phase. For less clear-cut cases, consider where the reaction really is happening as in:
+            - For a spray-coating procedure, it is droplets of liquid that enters the substrate (thus a liquid phase reaction)
+            - For sputtering and thermal evaporation, it is species in gas phase that reaches the substrate (thus a gas phase reaction)
+        """,
+    )
 
-    atmosphere = Quantity()
-    pressure_total = Quantity()
+    atmosphere = Quantity(
+        type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum']),
+        shape=[],
+        description='The atmosphere in which the sample is stored.',
+    )
+    pressure_total = Quantity(
+        type=float,
+        shape=[],
+        unit='mbar',
+        description='The total pressure during each synthesis step',
+    )
     pressure_partial = Quantity()
-    relative_humidity = Quantity()
-    temperature_substrate = Quantity()
-    temperature_maximum = Quantity()
+    humidity_relative = Quantity(
+        type=float,
+        shape=[],
+        unit='%',
+        description='The relative humidity in the storage atmosphere.',
+    )
+    temperature_substrate = Quantity(
+        type=float,
+        shape=[],
+        unit='K',
+        description='The temperature of the substrate during the synthesis step',
+    )
+    temperature_maximum = Quantity(
+        type=float,
+        shape=[],
+        unit='K',
+        description='The maximum temperature reached during the synthesis step',
+    )
 
 
 class Cleaning(SynthesisStep):
-    pass
+    # TODO: Make repeatable if possible
+    procedure = Quantity(
+        type=Enum(
+            [
+                'Soap',
+                'Ultrasonic Bath',
+                'Ethanol',
+                'Acetone',
+                'UV-ozone',
+                'Piranha solutionion',
+                'Unknown',
+            ]
+        ),
+        description='',
+        shape=[],
+    )
 
 
 class ThermalAnnealing(SynthesisStep):
-    temperature = Quantity()
-    duration = Quantity()
-    atmosphere = Quantity()
+    temperature = Quantity(
+        type=float,
+        shape=[],
+        unit='K',
+        description='The temperature during the thermal annealing step',
+    )
+    duration = Quantity(
+        type=float,
+        shape=[],
+        unit='min',
+        description='The duration of the thermal annealing step',
+    )
+    atmosphere = Quantity(
+        type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum']),
+        shape=[],
+        description='The atmosphere present during the thermal annealing step',
+    )
 
 
 class WetChemicalSynthesis(SynthesisStep):
-    reaction_solution = SubSection(ReactionComponent, repeating=True)
-    solvents = SubSection(Solvent, repeating=True)
-    quenching_solvent = SubSection(QuenchingSolvent, repeating=True)
+    reaction_solution = SubSection(section_def=ReactionComponent, repeating=True)
+    solvents = SubSection(section_def=Solvent, repeating=True)
+    quenching_solvent = SubSection(section_def=QuenchingSolvent, repeating=True)
 
 
 class GasPhaseSynthesis(SynthesisStep):
@@ -86,36 +221,84 @@ class GasPhaseSynthesis(SynthesisStep):
 
 
 class Synthesis(Process, ArchiveSection):
-    steps = SubSection(SynthesisStep, repeating=True)
+    steps = SubSection(section_def=SynthesisStep, repeating=True)
 
 
 # Material layers and their properties
 
 
 class Layer(ArchiveSection):
+    name = Quantity(
+        type=str,
+        shape=[],
+        description='The name of the layer',
+    )
     # Type
-    functionality = Quantity()
+    functionality = Quantity(
+        type=Enum(
+            [
+                'Anti reflective coating',
+                'Back contact',
+                'Back reflector',
+                'Beam splitter',
+                'Buffer layer',
+                'Down conversion',
+                'Encapsulant',
+                'ETL',
+                'Front contact',
+                'HTL',
+                'Self assembled monolayer',
+                'Subcell spacer',
+                'Substrate',
+                'Upconversion',
+                'Window layer',
+            ]
+        ),
+        description='The functionality of the layer',
+    )
 
     # Basic properties
-    thickness = Quantity()
-    area = Quantity()
-    surface_roughness = Quantity()
+    thickness = Quantity(
+        type=float,
+        shape=[],
+        unit='nm',
+        description='The thickness of the layer',
+    )
+    area = Quantity(
+        type=float,
+        shape=[],
+        unit='cm^2',
+        description='The area of the layer',
+    )
+    surface_roughness = Quantity(
+        type=float,
+        shape=[],
+        unit='nm',
+        description='The root mean square value of the surface roughness',
+    )
 
     # Origin and manufacturing
     origin = Quantity(
         type=Enum(['Commercial', 'Lab made', 'Unknown']),
         description='Origin of the layer',
-        shape=[],
     )
-    supplier = Quantity()
-    supplier_brand = Quantity()
-    synthesis = SubSection(Synthesis)
+    supplier = Quantity(
+        type=str,
+        shape=[],
+        description='The supplier of a commercially purchased layer',
+    )
+    supplier_brand = Quantity(
+        type=str,
+        shape=[],
+        description='The specific brand name of a commercially purchased layer',
+    )
+    synthesis = SubSection(section_def=Synthesis)
 
     # Storage
-    storage = SubSection(Storage)
+    storage = SubSection(section_def=Storage)
 
     # Common properties
-    additives = SubSection(ElementalComposition, repeating=True)
+    additives = SubSection(section_def=ElementalComposition, repeating=True)
 
 
 class NonAbsorbingLayer(Layer):
@@ -127,23 +310,61 @@ class Substrate(NonAbsorbingLayer):
 
 
 class PhotoAbsorber(Layer):
-    bandgap = Quantity()
-    bandgap_graded = Quantity()
-    bandgap_estimation_basis = Quantity()
-    PL_max = Quantity()
+    bandgap = Quantity(
+        type=float,
+        shape=[],
+        unit='eV',
+        description='The band gap of the photoabsorber',
+    )
+    # TODO: See if joining these two fields makes sense
+    bandgap_graded = Quantity(
+        type=float,
+        shape=[],
+        unit='eV',
+        description='The band gap if it varies as a function of the vertical position in the photoabsorber layer',
+        repeating=True,
+    )
+    bandgap_estimation_basis = Quantity(
+        type=Enum(
+            [
+                'Absorption',
+                'Absorption Tauc-plot',
+                'Composition',
+                'EQE',
+                'Literature',
+                'UPS',
+                'XPS',
+                'Unknown',
+            ]
+        ),
+        description="""The method by which the band gap was estimated.
+        The band gap can be estimated from absorption data, EQE-data, UPS-data, or it can be estimated based on literature values for the recipe, or it could be inferred from the composition and what we know of similar but not identical compositions.""",
+    )
+    PL_max = Quantity(
+        type=float,
+        shape=[],
+        unit='nm',
+        description='The wavelength of the maximum PL intensity',
+    )
 
     # Composition
-    additives = SubSection(ElementalComposition, repeating=True)
+    additives = SubSection(section_def=ElementalComposition, repeating=True)
 
     # Misc
-    perovskite_inspired = Quantity()
+    perovskite_inspired = Quantity(
+        type=bool,
+        default=False,
+        description="""TRUE if the photoabsorber is perovskite inspired.
+        In the literature we sometimes see cells based on non-perovskite photo absorbers, but which claims to be “perovskite inspired” regardless if the crystal structure has any resemblance to the perovskite ABC3 structure or not.
+        This category is for enabling those cells to easily be identified and filtered.""",
+    )
 
 
 class PerovskiteComposition(ArchiveSection):
-    basis = Quantity()
-    ion_a = SubSection(Ion, repeating=True)
-    ion_b = SubSection(Ion, repeating=True)
-    ion_c = SubSection(Ion, repeating=True)
+    basis = Quantity()  # ???
+    ion_a = SubSection(section_def=Ion, repeating=True)
+    ion_b = SubSection(section_def=Ion, repeating=True)
+    ion_c = SubSection(section_def=Ion, repeating=True)
 
 
 class PerovskiteLayer(PhotoAbsorber):
@@ -160,25 +381,59 @@ class PerovskiteLayer(PhotoAbsorber):
         description="""
             The dimension of the perovskite layer.""",
         shape=[],
-        a_eln=dict(component='EnumEditQuantity'),
     )
-    composition = SubSection(PerovskiteComposition)
+    composition = SubSection(section_def=PerovskiteComposition)
 
     # General properties
-    single_crystal = Quantity()
+    single_crystal = Quantity(
+        type=bool,
+        shape=[],
+        default=False,
+        description='TRUE if the perovskite layer is single crystal, FALSE if it is polycrystalline.',
+    )
     stoichiometry = Quantity()
-    inorganic = Quantity()
-    lead_free = Quantity()
+    inorganic = Quantity(
+        type=bool,
+        shape=[],
+        description='TRUE if the perovskite layer is inorganic, FALSE if it is organic.',
+    )
+    lead_free = Quantity(
+        type=bool,
+        shape=[],
+        description='TRUE if the perovskite layer is lead-free, FALSE if it contains lead.',
+    )
 
 
 class SiliconLayer(PhotoAbsorber):
-    cell_type = Quantity()
-    silicon_type = Quantity()
-    doping_sequence = Quantity()
+    cell_type = Quantity(
+        type=str,
+        shape=[],
+        description="""The type of silicon cell.
+        Examples: AL-BSF, c-type, HIT, Homojunction, n-type, PERC, PERC n-type c-Si bifacial SC/nFAB, PERL, Single heterojunction""",
+    )
+    silicon_type = Quantity(
+        type=Enum(
+            [
+                'Amorphous',
+                'CZ',
+                'Float-zone',
+                'Monocrystaline',
+                'Polycrystaline',
+                'Unknown',
+            ]
+        ),
+        description='The type of silicon used in the layer',
+    )
+    doping_sequence = Quantity(
+        type=Enum(['n-aSi', 'i-aSi', 'n-Si', 'p-aSi', 'n-SI', 'i-Si', 'p-Si']),
+        description='The doping sequence of the silicon, starting from the bottom',
+        repeating=True,
+    )
 
 
 class ChalcopyriteLayer(PhotoAbsorber):
-    composition = SubSection(ElementalComposition, repeating=True)
+    # TODO: Reevaluate inheritance
+    composition = SubSection(section_def=ElementalComposition, repeating=True)
     alkali_metal_doping = Quantity()
     alkali_metal_doping_sources = Quantity()
 
@@ -192,13 +447,13 @@ class General(EntryData):
     """
 
     architecture = Quantity(
-        type=str,
+        type=Enum(['stacked', 'monolithic', 'other']),
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
         shape=[],
-        a_eln=dict(
-            component='EnumEditQuantity',
-            props=dict(suggestions=sorted(['stacked', 'monolithic', 'other'])),
-        ),
+        # a_eln=dict(
+        #     component='EnumEditQuantity',
+        #     props=dict(suggestions=sorted(['stacked', 'monolithic', 'other'])),
+        # ),
     )
 
     number_of_terminals = Quantity(
@@ -242,7 +497,7 @@ class General(EntryData):
             - Every photo absorber has a band gap. If it is unknown, state this as ‘nan’
         """,
         shape=['*'],
-        a_eln=dict(component='NumberEditQuantity'),
+        # a_eln=dict(component='NumberEditQuantity'),
     )
 
     stack_sequence = Quantity(
@@ -256,7 +511,7 @@ class General(EntryData):
         - There is no sharp well-defined boundary between a when a material is best considered as doped to when it is best considered as a mixture of two materials. When in doubt if your material is doped or a mixture, use the notation that best capture the metaphysical essence of the situation
         - Use common abbreviations when possible but spell it out when there is risk for confusion. For consistency, please pay attention to the abbreviation specified under the headline Abbreviations found tandem instructions v4.0 document.
                     """,
-        a_eln=dict(component='StringEditQuantity'),
+        # a_eln=dict(component='StringEditQuantity'),
     )
 
     area_measured = Quantity(
@@ -264,7 +519,7 @@ class General(EntryData):
         shape=[],
         unit='cm^2',
         description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
-        a_eln=dict(component='NumberEditQuantity'),
+        # a_eln=dict(component='NumberEditQuantity'),
     )
 
     flexibility = Quantity(
@@ -272,7 +527,7 @@ class General(EntryData):
         shape=[],
         default=False,
         description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
-        a_eln=dict(component='BoolEditQuantity'),
+        # a_eln=dict(component='BoolEditQuantity'),
     )
 
     semitransparent = Quantity(
@@ -282,5 +537,5 @@ class General(EntryData):
         description="""
         TRUE if the device is semitransparent which usually is the case when there are no thick completely covering metal electrodes.
         FALSE if it is opaque.""",
-        a_eln=dict(component='BoolEditQuantity'),
+        # a_eln=dict(component='BoolEditQuantity'),
     )
