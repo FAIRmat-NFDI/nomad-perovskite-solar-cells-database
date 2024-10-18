@@ -50,20 +50,19 @@ class PerovskiteTandemSolarCell(Schema):
     )
 
     # General information
-    general = SubSection(
-        section_def = General,
-        description='')
-        
+    general = SubSection(section_def=General, description='')
+
     # Reference
     reference = SubSection(
-        section_def = Reference, 
-        description='The reference for the data in the entry.')
+        section_def=Reference, description='The reference for the data in the entry.'
+    )
 
     # Layer Stack as from tandem instructions v4.0
     layer_stack = SubSection(
-        section_def = Layer,
+        section_def=Layer,
         description='The stack of layers in the device starting from the bottom.',
-        repeating=True)
+        repeating=True,
+    )
 
     # cell = SubSection(section_def=Cell)
     # module = SubSection(section_def=Module)
