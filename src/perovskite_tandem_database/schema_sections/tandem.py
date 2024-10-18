@@ -13,11 +13,13 @@ from .ref import Reference
 
 # Chemicals and materials and their treatment
 
+
 class SolventAnnealing(ArchiveSection):
     temperature = Quantity()
     duration = Quantity()
     atmosphere = Quantity()
     point_in_time = Quantity()
+
 
 class ChemicalCompound(ArchiveSection):
     name = Quantity()
@@ -28,30 +30,32 @@ class ChemicalCompound(ArchiveSection):
     age = Quantity()
     temperature = Quantity()
 
+
 class ReactionComponent(ChemicalCompound):
     pass
 
+
 class Solvent(ChemicalCompound):
     annealing = SubSection(SolventAnnealing)
+
 
 class QuenchingSolvent(ChemicalCompound):
     pass
 
 
-
 # Processing and deposition methods
+
 
 class Storage(ArchiveSection):
     atmosphere = Quantity()
     humidity_relative = Quantity()
     time_until_next_step = Quantity()
 
+
 class SynthesisStep(Activity, ArchiveSection):
-    
     # General
     procedure = Quantity()
     aggregation_state_of_reactants = Quantity()
-
 
     atmosphere = Quantity()
     pressure_total = Quantity()
@@ -59,30 +63,36 @@ class SynthesisStep(Activity, ArchiveSection):
     relative_humidity = Quantity()
     temperature_substrate = Quantity()
     temperature_maximum = Quantity()
-    
+
+
 class Cleaning(SynthesisStep):
     pass
+
 
 class ThermalAnnealing(SynthesisStep):
     temperature = Quantity()
     duration = Quantity()
     atmosphere = Quantity()
 
+
 class WetChemicalSynthesis(SynthesisStep):
     reaction_solution = SubSection(ReactionComponent, repeating=True)
     solvents = SubSection(Solvent, repeating=True)
     quenching_solvent = SubSection(QuenchingSolvent, repeating=True)
 
+
 class GasPhaseSynthesis(SynthesisStep):
     pass
+
 
 class Synthesis(Process, ArchiveSection):
     steps = SubSection(SynthesisStep, repeating=True)
 
+
 # Material layers and their properties
 
-class Layer(ArchiveSection):
 
+class Layer(ArchiveSection):
     # Type
     functionality = Quantity()
 
@@ -93,7 +103,7 @@ class Layer(ArchiveSection):
 
     # Origin and manufacturing
     origin = Quantity(
-        type = Enum(['Commercial', 'Lab made', 'Unknown']),
+        type=Enum(['Commercial', 'Lab made', 'Unknown']),
         description='Origin of the layer',
         shape=[],
     )
@@ -106,13 +116,15 @@ class Layer(ArchiveSection):
 
     # Common properties
     additives = SubSection(ElementalComposition, repeating=True)
-  
+
 
 class NonAbsorbingLayer(Layer):
     pass
 
+
 class Substrate(NonAbsorbingLayer):
     pass
+
 
 class PhotoAbsorber(Layer):
     bandgap = Quantity()
@@ -126,6 +138,7 @@ class PhotoAbsorber(Layer):
     # Misc
     perovskite_inspired = Quantity()
 
+
 class PerovskiteComposition(ArchiveSection):
     basis = Quantity()
     ion_a = SubSection(Ion, repeating=True)
@@ -135,11 +148,20 @@ class PerovskiteComposition(ArchiveSection):
 
 class PerovskiteLayer(PhotoAbsorber):
     dimension = Quantity(
-        type=Enum(['0D (Quantum dot)', '2D', '2D/3D mixture', '3D', '3D with 2D capping layer']),
-        description='''
-            The dimension of the perovskite layer.''',
+        type=Enum(
+            [
+                '0D (Quantum dot)',
+                '2D',
+                '2D/3D mixture',
+                '3D',
+                '3D with 2D capping layer',
+            ]
+        ),
+        description="""
+            The dimension of the perovskite layer.""",
         shape=[],
-        a_eln=dict(component='EnumEditQuantity'))
+        a_eln=dict(component='EnumEditQuantity'),
+    )
     composition = SubSection(PerovskiteComposition)
 
     # General properties
@@ -148,18 +170,21 @@ class PerovskiteLayer(PhotoAbsorber):
     inorganic = Quantity()
     lead_free = Quantity()
 
+
 class SiliconLayer(PhotoAbsorber):
     cell_type = Quantity()
     silicon_type = Quantity()
     doping_sequence = Quantity()
-    
+
 
 class ChalcopyriteLayer(PhotoAbsorber):
     composition = SubSection(ElementalComposition, repeating=True)
     alkali_metal_doping = Quantity()
     alkali_metal_doping_sources = Quantity()
 
+
 # Device architecture
+
 
 class General(EntryData):
     """
@@ -172,10 +197,8 @@ class General(EntryData):
         shape=[],
         a_eln=dict(
             component='EnumEditQuantity',
-            props=dict(
-                suggestions=sorted(['stacked', 'monolithic', 'other'])
-            )
-        )
+            props=dict(suggestions=sorted(['stacked', 'monolithic', 'other'])),
+        ),
     )
 
     number_of_terminals = Quantity(
@@ -201,25 +224,25 @@ class General(EntryData):
 
     photoabsorber = Quantity(
         type=Enum(['Silicon', 'Perovskite', 'CIGS', 'OPV', 'OSC', 'DSSC', 'BHJ']),
-        description='''
+        description="""
             List of the photoabsorbers starting from the bottom of the device stack.
-                    ''',
+                    """,
         shape=['*'],
         # a_eln=dict(component='EnumEditQuantity')
     )
-    
+
     photoabsorber_bandgaps = Quantity(
-        type= float,
-        #unit = 'eV', # arrays with units not yet supported
-        description='''
+        type=float,
+        # unit = 'eV', # arrays with units not yet supported
+        description="""
             List of the band gap values of the respective photo absorbers.
             - The layers must line up with the previous filed.
             - State band gaps in eV
             - If there are uncertainties, state the best estimate, e.g write 1.5 and not 1.45-1.55
             - Every photo absorber has a band gap. If it is unknown, state this as ‘nan’
-        ''',
+        """,
         shape=['*'],
-        a_eln=dict(component='NumberEditQuantity')
+        a_eln=dict(component='NumberEditQuantity'),
     )
 
     stack_sequence = Quantity(
@@ -233,7 +256,7 @@ class General(EntryData):
         - There is no sharp well-defined boundary between a when a material is best considered as doped to when it is best considered as a mixture of two materials. When in doubt if your material is doped or a mixture, use the notation that best capture the metaphysical essence of the situation
         - Use common abbreviations when possible but spell it out when there is risk for confusion. For consistency, please pay attention to the abbreviation specified under the headline Abbreviations found tandem instructions v4.0 document.
                     """,
-        a_eln=dict(component='StringEditQuantity')
+        a_eln=dict(component='StringEditQuantity'),
     )
 
     area_measured = Quantity(
@@ -241,7 +264,7 @@ class General(EntryData):
         shape=[],
         unit='cm^2',
         description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
-        a_eln=dict(component='NumberEditQuantity')
+        a_eln=dict(component='NumberEditQuantity'),
     )
 
     flexibility = Quantity(
@@ -249,7 +272,7 @@ class General(EntryData):
         shape=[],
         default=False,
         description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
-        a_eln=dict(component='BoolEditQuantity')
+        a_eln=dict(component='BoolEditQuantity'),
     )
 
     semitransparent = Quantity(
@@ -259,11 +282,5 @@ class General(EntryData):
         description="""
         TRUE if the device is semitransparent which usually is the case when there are no thick completely covering metal electrodes.
         FALSE if it is opaque.""",
-        a_eln=dict(component='BoolEditQuantity')
+        a_eln=dict(component='BoolEditQuantity'),
     )
-
-    
-
-
-
-

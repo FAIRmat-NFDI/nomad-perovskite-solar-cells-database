@@ -60,4 +60,5 @@ class PerovskiteSolarCell(Schema):
     stability = SubSection(section_def=Stability)
     outdoor = SubSection(section_def=Outdoor)
 
+
 m_package.__init_metainfo__()
