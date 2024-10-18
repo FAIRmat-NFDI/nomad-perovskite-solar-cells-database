@@ -21,14 +21,14 @@ class Reference(PublicationReference):
         Start with 1 and count upwards. Will in the database be replaced with a unique identifier.
                     """,
     )
-    
+
     ID = Quantity(
         type=np.dtype(np.int64),
         shape=[],
         description="""
                     """,
     )
-    
+
     free_text_comment = Quantity(
         type=str,
         shape=[],
@@ -36,7 +36,7 @@ class Reference(PublicationReference):
     This could be anything given additional description to the cell that is not captured by any other field.
                     """,
         a_eln=dict(component='RichTextEditQuantity'),
-    )    
+    )
 
     name_of_person_entering_the_data = Quantity(
         type=str,

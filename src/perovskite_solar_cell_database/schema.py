@@ -63,6 +63,7 @@ class PerovskiteSolarCell(Schema, PlotSection):
     stability = SubSection(section_def=Stability)
     outdoor = SubSection(section_def=Outdoor)
 
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
