@@ -1,17 +1,87 @@
+from ase.data import chemical_symbols
 from nomad.datamodel.data import ArchiveSection, EntryData
 from nomad.datamodel.metainfo.basesections import (
     Activity,
     ElementalComposition,
     Process,
 )
-from nomad.metainfo import Quantity, SubSection
+from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.data_type import Enum
+from nomad.metainfo.util import MEnum
 
 from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
 
 from .ref import Reference
 
 # Chemicals and materials and their treatment
+
+
+class Element(ArchiveSection):
+    """
+    A section describing a substance that is an element.
+    """
+
+    m_def = Section(label_quantity='element')
+
+    element = Quantity(
+        type=MEnum(chemical_symbols[1:]),
+        description="""
+        The symbol of the element, e.g. 'Pb'.
+        """,
+    )
+
+    coefficient = Quantity(
+        type=float,
+        shape=[],
+        description="""Coefficient for the element.
+        - If a coefficient is unknown, leave the field empty.
+        - If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
+        - If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
+        """,
+    )
+
+
+# TODO : Check inheritance > material processing solution or basesections
+class Substance(ArchiveSection):
+    """
+    A section describing a pure substance, i.e. a chemical compound or a material.
+    """
+
+    m_def = Section(label_quantity='name')
+
+    name = Quantity(type=str, shape=[], description='The name of the substance.')
+    supplier = Quantity(
+        type=str, shape=[], description='The supplier of the substance.'
+    )
+    purity = Quantity(type=str, shape=[], description='The purity of the substance.')
+    concentration = Quantity(
+        type=float,
+        shape=[],
+        unit='mg/ml',
+        description='The concentration of the substance.',
+    )
+    volume = Quantity(
+        type=float,
+        shape=[],
+        unit='ml',
+        description='The volume of the substance.',
+    )
+    age = Quantity(
+        type=float,
+        shape=[],
+        unit='minutes',  # days?
+        description='The age of the substance.',
+    )
+    temperature = Quantity(
+        type=float,
+        shape=[],
+        unit='°C',
+        description='The temperature of the substance.',
+    )
+
+
+class ReactionComponent(Substance):
+    pass
 
 
 class SolventAnnealing(ArchiveSection):
@@ -23,7 +93,7 @@ class SolventAnnealing(ArchiveSection):
     temperature = Quantity(
         type=float,
         shape=[],
-        unit='K',
+        unit='°C',
         description="""The temperature during the solvent annealing step.
         - The temperature refers to the temperature of the sample
         - If the temperature is not known, state that by ‘nan’""",
@@ -46,52 +116,22 @@ class SolventAnnealing(ArchiveSection):
     )
 
 
-# TODO : Check inheritance > material processing solution
-class ChemicalCompound(ArchiveSection):
-    name = Quantity(
-        type=str, shape=[], description='The name of the chemical compound.'
-    )
-    supplier = Quantity(
-        type=str, shape=[], description='The supplier of the chemical compound.'
-    )
-    purity = Quantity(
-        type=str, shape=[], description='The purity of the chemical compound.'
-    )
-    concentration = Quantity(
-        type=float,
-        shape=[],
-        unit='mg/ml',
-        description='The concentration of the chemical compound.',
-    )
-    volume = Quantity(
-        type=float,
-        shape=[],
-        unit='ml',
-        description='The volume of the chemical compound.',
-    )
-    age = Quantity(
-        type=float,
-        shape=[],
-        unit='second', #days?
-        description='The age of the chemical compound.',
-    )
-    temperature = Quantity(
-        type=float,
-        shape=[],
-        unit='°C',
-        description='The temperature of the chemical compound.',
+class Solvent(Substance):
+    """
+    A section describing a solvent for a wetchemical synthesis process.
+    """
+
+    annealing = SubSection(
+        section_def=SolventAnnealing,
+        description='Pre-deposition solvent annealing step.',
     )
 
 
-class ReactionComponent(ChemicalCompound):
-    pass
+class QuenchingSolvent(Substance):
+    """
+    A section describing a quenching solvent.
+    """
 
-
-class Solvent(ChemicalCompound):
-    annealing = SubSection(section_def=SolventAnnealing)
-
-
-class QuenchingSolvent(ChemicalCompound):
     pass
 
 
@@ -119,6 +159,11 @@ class Storage(ArchiveSection):
 
 
 class SynthesisStep(Activity, ArchiveSection):
+    """
+    A section describing a general synthesis step.
+    More specific synthesis steps are inherited from this class.
+    """
+
     # General
     procedure = Quantity(
         type=str,
@@ -126,9 +171,10 @@ class SynthesisStep(Activity, ArchiveSection):
         default='Unknown',
         description='Name of the the synthesis step',
     )
+
     # TODO: make Enum?
     aggregation_state_of_reactants = Quantity(
-        type=str,
+        type=Enum(['Solid', 'Liquid', 'Gas', 'Unknown']),
         shape=['*'],
         default='Unknown',
         description="""The physical state of the reactants.
@@ -142,7 +188,7 @@ class SynthesisStep(Activity, ArchiveSection):
     atmosphere = Quantity(
         type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum']),
         shape=[],
-        description='The atmosphere in which the sample is stored.',
+        description='The atmosphere present during the synthesis step',
     )
     pressure_total = Quantity(
         type=float,
@@ -150,7 +196,6 @@ class SynthesisStep(Activity, ArchiveSection):
         unit='mbar',
         description='The total pressure during each synthesis step',
     )
-    pressure_partial = Quantity()
     humidity_relative = Quantity(
         type=float,
         shape=[],
@@ -160,18 +205,22 @@ class SynthesisStep(Activity, ArchiveSection):
     temperature_substrate = Quantity(
         type=float,
         shape=[],
-        unit='K',
+        unit='°C',
         description='The temperature of the substrate during the synthesis step',
     )
     temperature_maximum = Quantity(
         type=float,
         shape=[],
-        unit='K',
+        unit='°C',
         description='The maximum temperature reached during the synthesis step',
     )
 
 
 class Cleaning(SynthesisStep):
+    """
+    A section describing a cleaning step. Typically before a subsequent synthesis step.
+    """
+
     # TODO: Make repeatable if possible
     procedure = Quantity(
         type=Enum(
@@ -191,10 +240,14 @@ class Cleaning(SynthesisStep):
 
 
 class ThermalAnnealing(SynthesisStep):
+    """
+    A section describing a thermal annealing step.
+    """
+
     temperature = Quantity(
         type=float,
         shape=[],
-        unit='K',
+        unit='°C',
         description='The temperature during the thermal annealing step',
     )
     duration = Quantity(
@@ -211,13 +264,38 @@ class ThermalAnnealing(SynthesisStep):
 
 
 class WetChemicalSynthesis(SynthesisStep):
-    reaction_solution = SubSection(section_def=ReactionComponent, repeating=True)
-    solvents = SubSection(section_def=Solvent, repeating=True)
-    quenching_solvent = SubSection(section_def=QuenchingSolvent, repeating=True)
+    """
+    A section describing a wet chemical synthesis step such as spin-coating or dip-coating.
+    """
+
+    reactants = SubSection(
+        section_def=ReactionComponent,
+        description='The reactants used in the synthesis step',
+        repeating=True,
+    )
+    solvents = SubSection(
+        section_def=Solvent,
+        description='The solvents used in the synthesis step',
+        repeating=True,
+    )
+    quenching_solvent = SubSection(
+        section_def=QuenchingSolvent,
+        description='The quenching solvent used in the synthesis step',
+        repeating=True,
+    )
 
 
 class GasPhaseSynthesis(SynthesisStep):
-    pass
+    """
+    A section describing a gas phase synthesis step such as CVD or PVD.
+    """
+
+    pressure_partial = Quantity(
+        type=float,
+        shape=[],
+        unit='mbar',
+        description='The partial pressure of the gas phase reactants',
+    )
 
 
 class Synthesis(Process, ArchiveSection):
@@ -297,8 +375,8 @@ class Layer(ArchiveSection):
     # Storage
     storage = SubSection(section_def=Storage)
 
-    # Common properties
-    additives = SubSection(section_def=ElementalComposition, repeating=True)
+    # Misc
+    additives = SubSection(section_def=Element, repeating=True)
 
 
 class NonAbsorbingLayer(Layer):
@@ -347,9 +425,6 @@ class PhotoAbsorber(Layer):
         description='The wavelength of the maximum PL intensity',
     )
 
-    # Composition
-    additives = SubSection(section_def=ElementalComposition, repeating=True)
-
     # Misc
     perovskite_inspired = Quantity(
         type=bool,
@@ -361,7 +436,7 @@ class PhotoAbsorber(Layer):
 
 
 class PerovskiteComposition(ArchiveSection):
-    basis = Quantity()  # ???
+    # basis = Quantity()  # ???
     ion_a = SubSection(section_def=Ion, repeating=True)
     ion_b = SubSection(section_def=Ion, repeating=True)
     ion_c = SubSection(section_def=Ion, repeating=True)
@@ -391,7 +466,7 @@ class PerovskiteLayer(PhotoAbsorber):
         default=False,
         description='TRUE if the perovskite layer is single crystal, FALSE if it is polycrystalline.',
     )
-    stoichiometry = Quantity()
+    # stoichiometry = Quantity()
     inorganic = Quantity(
         type=bool,
         shape=[],
@@ -431,11 +506,27 @@ class SiliconLayer(PhotoAbsorber):
     )
 
 
+class ChalcopyriteAlkaliMetalDoping(Element):
+    source = Quantity(
+        type=str,
+        shape=[],
+        description="""The source of the alkali metal doping.
+        Example: none, RbF, RbI, Substrate""",
+    )
+
+
 class ChalcopyriteLayer(PhotoAbsorber):
     # TODO: Reevaluate inheritance
-    composition = SubSection(section_def=ElementalComposition, repeating=True)
-    alkali_metal_doping = Quantity()
-    alkali_metal_doping_sources = Quantity()
+    composition = SubSection(
+        section_def=Element,
+        description='The composition of the chalcopyrite layer',
+        repeating=True,
+    )
+    alkali_metal_doping = SubSection(
+        section_def=ChalcopyriteAlkaliMetalDoping,
+        description='The alkali metal doping of the chalcopyrite layer',
+        repeating=True,
+    )
 
 
 # Device architecture
