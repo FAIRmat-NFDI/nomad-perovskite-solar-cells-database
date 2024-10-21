@@ -72,7 +72,7 @@ class ChemicalCompound(ArchiveSection):
     age = Quantity(
         type=float,
         shape=[],
-        unit='days',
+        unit='second', #days?
         description='The age of the chemical compound.',
     )
     temperature = Quantity(
@@ -107,7 +107,7 @@ class Storage(ArchiveSection):
     humidity_relative = Quantity(
         type=float,
         shape=[],
-        unit='%',
+        unit='dimensionless',
         description='The relative humidity in the storage atmosphere.',
     )
     time_until_next_step = Quantity(
@@ -154,7 +154,7 @@ class SynthesisStep(Activity, ArchiveSection):
     humidity_relative = Quantity(
         type=float,
         shape=[],
-        unit='%',
+        unit='dimensionless',
         description='The relative humidity in the storage atmosphere.',
     )
     temperature_substrate = Quantity(
