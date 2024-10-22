@@ -13,7 +13,7 @@ class TandemParserEntryPoint(ParserEntryPoint):
         return TandemParser(**self.dict())
 
 
-tandemparser = TandemParserEntryPoint(
+tandem_parser = TandemParserEntryPoint(
     name='TandemParser',
     description='Tandem Parser for .csv files.',
     mainfile_name_re='.*\.csv',
