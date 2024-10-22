@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
     from structlog.stdlib import BoundLogger
 
+
 class TandemParser(MatchingParser):
     """
     Parser for matching tandem db files and creating instances of .
