@@ -4,7 +4,7 @@ from pydantic import Field
 
 class TandemDatabasePackageEntryPoint(SchemaPackageEntryPoint):
     def load(self):
-        from perovskite_tandem_database.schema import (
+        from perovskite_tandem_database.schema_packages.schema import (
             m_package,
         )
 

@@ -27,8 +27,8 @@ from perovskite_solar_cell_database.schema_sections import (
     Substrate,
 )
 
-from .schema_sections.ref import Reference
-from .schema_sections.tandem import (
+from .ref import Reference
+from .tandem import (
     General,
     Layer,
 )
