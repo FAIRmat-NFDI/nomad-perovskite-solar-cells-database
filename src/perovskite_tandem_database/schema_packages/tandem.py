@@ -55,9 +55,10 @@ class Substance(ArchiveSection):
     )
     purity = Quantity(type=str, shape=[], description='The purity of the substance.')
     concentration = Quantity(
-        type=float,
+        type=str,  # TODO: Resolve this workaround for Parsing
+        # type=float,
         shape=[],
-        unit='mg/ml',
+        # unit='mg/ml',
         description='The concentration of the substance.',
     )
     volume = Quantity(
@@ -121,18 +122,34 @@ class Solvent(Substance):
     A section describing a solvent for a wetchemical synthesis process.
     """
 
+    mixing_ratio = Quantity(
+        type=float,
+        shape=[],
+        description='The mixing ratio of the solvent.',
+    )
+
     annealing = SubSection(
         section_def=SolventAnnealing,
         description='Pre-deposition solvent annealing step.',
     )
 
 
-class QuenchingSolvent(Substance):
+class QuenchingSolvent(Solvent):
     """
     A section describing a quenching solvent.
     """
 
-    pass
+    # TODO: Check if this is correct
+    additive_name = Quantity(
+        type=str,
+        shape=[],
+        description='The name of the additive.',
+    )
+    additive_concentration = Quantity(
+        type=float,
+        shape=[],
+        description='The concentration of the additive.',
+    )
 
 
 # Processing and deposition methods
@@ -216,7 +233,7 @@ class SynthesisStep(Activity, ArchiveSection):
     )
 
 
-class Cleaning(SynthesisStep):
+class Cleaning(Activity, ArchiveSection):
     """
     A section describing a cleaning step. Typically before a subsequent synthesis step.
     """
@@ -263,7 +280,7 @@ class ThermalAnnealing(SynthesisStep):
     )
 
 
-class WetChemicalSynthesis(SynthesisStep):
+class LiquidSynthesis(SynthesisStep):
     """
     A section describing a wet chemical synthesis step such as spin-coating or dip-coating.
     """
@@ -370,13 +387,14 @@ class Layer(ArchiveSection):
         shape=[],
         description='The specific brand name of a commercially purchased layer',
     )
+    cleaning = SubSection(section_def=Cleaning, repeating=True)
     synthesis = SubSection(section_def=Synthesis)
 
     # Storage
     storage = SubSection(section_def=Storage)
 
     # Misc
-    additives = SubSection(section_def=Element, repeating=True)
+    additives = SubSection(section_def=Substance, repeating=True)
 
 
 class NonAbsorbingLayer(Layer):
