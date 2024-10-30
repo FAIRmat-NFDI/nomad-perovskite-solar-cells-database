@@ -15,7 +15,7 @@ class TandemParserEntryPoint(ParserEntryPoint):
 
 tandem_parser = TandemParserEntryPoint(
     name='TandemParser',
-    description='Tandem Parser for .csv files.',
-    mainfile_name_re='.*\.csv',
+    description='Tandem Parser for .xlsx files.',
+    mainfile_name_re='.*\.xlsx',
     # mainfile_content_re='',
 )
