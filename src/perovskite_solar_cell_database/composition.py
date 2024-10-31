@@ -22,10 +22,10 @@ from nomad.datamodel.data import EntryData, EntryDataCategory
 from nomad.datamodel.datamodel import EntryArchive
 from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
 from nomad.datamodel.metainfo.basesections import (
-    Component,
     CompositeSystem,
     PubChemPureSubstanceSection,
     PureSubstance,
+    PureSubstanceComponent,
     SystemComponent,
 )
 from nomad.metainfo.metainfo import (
@@ -124,7 +124,7 @@ class PerovskiteIonComponent(SystemComponent):
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
         shape=[],
     )
-    smile = Quantity(
+    smiles = Quantity(
         type=str,
         description='The canonical SMILE string',
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
@@ -142,7 +142,7 @@ class PerovskiteIonComponent(SystemComponent):
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
         shape=[],
     )
-    source_compound_smile = Quantity(
+    source_compound_smiles = Quantity(
         type=str,
         description='The canonical SMILE string',
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
@@ -183,15 +183,15 @@ class PerovskiteIonComponent(SystemComponent):
         if isinstance(self.system.pure_substance, PubChemPureSubstanceSection):
             if self.molecular_formula is None:
                 self.molecular_formula = self.system.pure_substance.molecular_formula
-            if self.smile is None:
-                self.smile = self.system.pure_substance.smile
+            if self.smiles is None:
+                self.smiles = self.system.pure_substance.smile
             if self.iupac_name is None:
                 self.iupac_name = self.system.pure_substance.iupac_name
             if self.cas_number is None:
                 self.cas_number = self.system.pure_substance.cas_number
         if isinstance(self.system.source_compound, PubChemPureSubstanceSection):
-            if self.source_compound_smile is None:
-                self.source_compound_smile = self.system.source_compound.smile
+            if self.source_compound_smiles is None:
+                self.source_compound_smiles = self.system.source_compound.smile
             if self.source_compound_iupac_name is None:
                 self.source_compound_iupac_name = self.system.source_compound.iupac_name
             if self.source_compound_cas_number is None:
@@ -220,6 +220,91 @@ class PerovskiteCIonComponent(PerovskiteIonComponent):
         description='A reference to the component system.',
         a_eln=dict(component='ReferenceEditQuantity'),
     )
+
+
+class Impurity(PureSubstanceComponent):
+    abbreviation = Quantity(
+        type=str,
+        description='The abbreviation used for the additive or impurity.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+        shape=[],
+    )
+    concentration = Quantity(
+        type=float,
+        description='The concentration of the additive or impurity.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='mol%'
+        ),
+        unit='cm^-3',
+        shape=[],
+    )
+    common_name = Quantity(
+        type=str,
+        description='The common or trivial name of the additive or impurity.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+        shape=[],
+    )
+    molecular_formula = Quantity(
+        type=str,
+        description='The Molecular formula which indicates the numbers of each type of atom in a molecule, with no information about the structure.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+        shape=[],
+    )
+    smiles = Quantity(
+        type=str,
+        description='The canonical SMILES string of the additive or impurity.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+        shape=[],
+    )
+    iupac_name = Quantity(
+        type=str,
+        description='The preferred systematic IUPAC name of the additive or impurity.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+        shape=[],
+    )
+    cas_number = Quantity(
+        type=str,
+        description='The CAS number for the additive or impurity.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+        shape=[],
+    )
+    pure_substance = SubSection(
+        section_def=PubChemPureSubstanceSection,
+        description="""
+        Section describing the pure substance that is the component.
+        """,
+    )
+    
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `Impurity` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        super().normalize(archive, logger)
+        if isinstance(self.pure_substance, PubChemPureSubstanceSection):
+            if self.molecular_formula is None:
+                self.molecular_formula = self.pure_substance.molecular_formula
+            if self.smiles is None:
+                self.smiles = self.pure_substance.smile
+            if self.iupac_name is None:
+                self.iupac_name = self.pure_substance.iupac_name
+            if self.cas_number is None:
+                self.cas_number = self.pure_substance.cas_number
+            if self.common_name is None:
+                self.common_name = self.pure_substance.name
+        else:
+            pure_substance = PubChemPureSubstanceSection()
+            pure_substance.molecular_formula = self.molecular_formula
+            pure_substance.smile = self.smiles
+            pure_substance.iupac_name = self.iupac_name
+            pure_substance.cas_number = self.cas_number
+            pure_substance.name = self.common_name
+            pure_substance.normalize(archive, logger)
+            self.pure_substance = pure_substance
 
 
 class PerovskiteComposition(CompositeSystem, EntryData):
@@ -292,7 +377,11 @@ class PerovskiteComposition(CompositeSystem, EntryData):
         repeats=True,
     )
     impurities = SubSection(
-        section_def=Component,
+        section_def=Impurity,
+        repeats=True,
+    )
+    additives = SubSection(
+        section_def=Impurity,
         repeats=True,
     )
 
