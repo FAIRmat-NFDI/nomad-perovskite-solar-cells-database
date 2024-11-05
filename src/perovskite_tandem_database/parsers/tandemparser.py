@@ -202,7 +202,7 @@ def split_data(data, delimiter='|'):
             expanded_df = pd.DataFrame(expanded_data.tolist(), index=data.index)
             expanded_df.columns = [f'{data.name}_{i}' for i in range(max_len)]
         else:
-            expanded_df = data
+            expanded_df = pd.DataFrame(data)
         return expanded_df
 
     else:
