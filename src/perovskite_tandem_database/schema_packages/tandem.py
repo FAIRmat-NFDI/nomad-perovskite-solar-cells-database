@@ -1,5 +1,6 @@
 from ase.data import chemical_symbols
 from nomad.datamodel.data import ArchiveSection, EntryData
+from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.datamodel.metainfo.basesections import (
     Activity,
     ElementalComposition,
@@ -9,19 +10,26 @@ from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.data_type import Enum
 from nomad.metainfo.util import MEnum
 
-from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
-
+# from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
 from .ref import Reference
 
 # Chemicals and materials and their treatment
 
 
-class Element(Ion):
+# TODO: Improve this section, check inheritence
+class Ion(ArchiveSection):
     """
     A section describing a substance that is an element.
     """
 
     m_def = Section(label_quantity='element')
+
+    ion_type = Quantity(
+        type=str,
+        shape=[],
+        description='Type of the ion.',
+        a_eln=dict(component='StringEditQuantity'),
+    )
 
     element = Quantity(
         type=MEnum(chemical_symbols[1:]),
@@ -76,7 +84,8 @@ class Substance(ArchiveSection):
     temperature = Quantity(
         type=float,
         shape=[],
-        unit='°C',
+        unit='K',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The temperature of the substance.',
     )
 
@@ -94,7 +103,8 @@ class SolventAnnealing(ArchiveSection):
     temperature = Quantity(
         type=float,
         shape=[],
-        unit='°C',
+        unit='K',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description="""The temperature during the solvent annealing step.
         - The temperature refers to the temperature of the sample
         - If the temperature is not known, state that by ‘nan’""",
@@ -226,13 +236,15 @@ class SynthesisStep(Activity, ArchiveSection):
     temperature_substrate = Quantity(
         type=float,
         shape=[],
-        unit='°C',
+        unit='K',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The temperature of the substrate during the synthesis step',
     )
     temperature_maximum = Quantity(
         type=float,
         shape=[],
-        unit='°C',
+        unit='K',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The maximum temperature reached during the synthesis step',
     )
 
@@ -268,7 +280,8 @@ class ThermalAnnealing(SynthesisStep):
     temperature = Quantity(
         type=float,
         shape=[],
-        unit='°C',
+        unit='K',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The temperature during the thermal annealing step',
     )
     duration = Quantity(
@@ -529,7 +542,7 @@ class SiliconLayer(PhotoAbsorber):
     )
 
 
-class ChalcopyriteAlkaliMetalDoping(Element):
+class ChalcopyriteAlkaliMetalDoping(Ion):
     source = Quantity(
         type=str,
         shape=[],
@@ -541,7 +554,7 @@ class ChalcopyriteAlkaliMetalDoping(Element):
 class ChalcopyriteLayer(PhotoAbsorber):
     # TODO: Reevaluate inheritance
     composition = SubSection(
-        section_def=Element,
+        section_def=Ion,
         description='The composition of the chalcopyrite layer',
         repeating=True,
     )

@@ -16,7 +16,6 @@ from perovskite_tandem_database.schema_packages.tandem import (
     ChalcopyriteAlkaliMetalDoping,
     ChalcopyriteLayer,
     Cleaning,
-    Element,
     GasPhaseSynthesis,
     General,
     Ion,
@@ -408,27 +407,27 @@ def extract_perovskite_composition(data_frame):
             ion_a_type = partial_get(
                 df_components[component], 'Perovskite. Composition. Ion A type'
             )
-            ion_a_coefficients = partial_get(
+            ion_a_coefficient = partial_get(
                 df_components[component], 'Perovskite. Composition. Ion A concentration'
             )
             ion_b_type = partial_get(
                 df_components[component], 'Perovskite. Composition. Ion B type'
             )
-            ion_b_coefficients = partial_get(
+            ion_b_coefficient = partial_get(
                 df_components[component], 'Perovskite. Composition. Ion B concentration'
             )
             ion_c_type = partial_get(
                 df_components[component], 'Perovskite. Composition. Ion C type'
             )
-            ion_c_coefficients = partial_get(
+            ion_c_coefficient = partial_get(
                 df_components[component], 'Perovskite. Composition. Ion C concentration'
             )
             if ion_a_type:
-                ions_a.append(Ion(ion_type=ion_a_type, coefficients=ion_a_coefficients))
+                ions_a.append(Ion(ion_type=ion_a_type, coefficient=ion_a_coefficient))
             if ion_b_type:
-                ions_b.append(Ion(ion_type=ion_b_type, coefficients=ion_b_coefficients))
+                ions_b.append(Ion(ion_type=ion_b_type, coefficient=ion_b_coefficient))
             if ion_c_type:
-                ions_c.append(Ion(ion_type=ion_c_type, coefficients=ion_c_coefficients))
+                ions_c.append(Ion(ion_type=ion_c_type, coefficient=ion_c_coefficient))
     if len(ions_a) == 0 and len(ions_b) == 0 and len(ions_c) == 0:
         return None
     else:
@@ -447,11 +446,11 @@ def extract_chalcopyrite_composition(data_frame):
             ion_type = partial_get(
                 df_components[component], 'Chalcopyrite. Composition. Ions '
             )
-            coefficients = partial_get(
+            coefficient = partial_get(
                 df_components[component],
                 'Chalcopyrite. Composition. Ions. Coefficients',
             )
-            composition.append(Ion(ion_type=ion_type, coefficients=coefficients))
+            composition.append(Ion(ion_type=ion_type, coefficient=coefficient))
     if len(composition) == 0:
         return None
     else:
