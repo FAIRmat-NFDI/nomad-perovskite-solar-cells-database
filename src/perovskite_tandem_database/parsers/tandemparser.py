@@ -75,7 +75,7 @@ class TandemParser(MatchingParser):
             create_archive(
                 entry_archive.m_to_dict(),
                 archive.m_context,
-                f'tandem.archive_{col}.json',
+                f'tandem_{col}.archive.json',
                 'json',
                 logger,
             )
