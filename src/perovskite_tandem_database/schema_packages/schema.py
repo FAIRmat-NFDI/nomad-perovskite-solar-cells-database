@@ -61,7 +61,7 @@ class PerovskiteTandemSolarCell(Schema):
     layer_stack = SubSection(
         section_def=Layer,
         description='The stack of layers in the device starting from the bottom.',
-        repeating=True,
+        repeats=True,
     )
 
     # cell = SubSection(section_def=Cell)
