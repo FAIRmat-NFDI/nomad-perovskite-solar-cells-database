@@ -179,11 +179,16 @@ def split_data(data, delimiter='|'):
             )
             # Expand the data frame to fit the longest list
             max_len = split_data.apply(len).max()
-            expanded_data = split_data.apply(lambda x: x + [x[-1]] * (max_len - len(x)))
-            # Append the data frame with unique column names and preserved index
-            expanded_df = pd.DataFrame(expanded_data.tolist(), index=data.index)
-            expanded_df.columns = [f'{column}_{i}' for i in range(max_len)]
-            expanded_dfs.append(expanded_df)
+            if max_len > 1:
+                expanded_data = split_data.apply(
+                    lambda x: x + [x[-1]] * (max_len - len(x))
+                )
+                # Append the data frame with unique column names and preserved index
+                expanded_df = pd.DataFrame(expanded_data.tolist(), index=data.index)
+                expanded_df.columns = [f'{column}_{i}' for i in range(max_len)]
+                expanded_dfs.append(expanded_df)
+            else:
+                expanded_dfs.append(data[column])
 
         return pd.concat(expanded_dfs, axis=1)
 
@@ -192,9 +197,12 @@ def split_data(data, delimiter='|'):
             lambda x: str(x).split(delimiter) if isinstance(x, str) else [x]
         )
         max_len = split_data.apply(len).max()
-        expanded_data = split_data.apply(lambda x: x + [x[-1]] * (max_len - len(x)))
-        expanded_df = pd.DataFrame(expanded_data.tolist(), index=data.index)
-        expanded_df.columns = [f'{data.name}_{i}' for i in range(max_len)]
+        if max_len > 1:
+            expanded_data = split_data.apply(lambda x: x + [x[-1]] * (max_len - len(x)))
+            expanded_df = pd.DataFrame(expanded_data.tolist(), index=data.index)
+            expanded_df.columns = [f'{data.name}_{i}' for i in range(max_len)]
+        else:
+            expanded_df = data
         return expanded_df
 
     else:
@@ -402,36 +410,31 @@ def extract_perovskite_composition(data_frame):
     ions_a, ions_b, ions_c = [], [], []
     df_temp = data_frame[data_frame.index.str.contains('Perovskite. Composition')]
     if not df_temp.empty:
-        df_components = split_data(df_temp, delimiter=';')
+        df_components = split_data(
+            df_temp[df_temp.index.str.contains('A-ions')], delimiter=';'
+        )
         for component in df_components.columns:
-            ion_a_type = partial_get(
-                df_components[component], 'Perovskite. Composition. Ion A type'
-            )
-            ion_a_coefficient = partial_get(
-                df_components[component], 'Perovskite. Composition. Ion A concentration'
-            )
-            ion_b_type = partial_get(
-                df_components[component], 'Perovskite. Composition. Ion B type'
-            )
-            ion_b_coefficient = partial_get(
-                df_components[component], 'Perovskite. Composition. Ion B concentration'
-            )
-            ion_c_type = partial_get(
-                df_components[component], 'Perovskite. Composition. Ion C type'
-            )
-            ion_c_coefficient = partial_get(
-                df_components[component], 'Perovskite. Composition. Ion C concentration'
-            )
-            if ion_a_type:
-                ions_a.append(Ion(ion_type=ion_a_type, coefficient=ion_a_coefficient))
-            if ion_b_type:
-                ions_b.append(Ion(ion_type=ion_b_type, coefficient=ion_b_coefficient))
-            if ion_c_type:
-                ions_c.append(Ion(ion_type=ion_c_type, coefficient=ion_c_coefficient))
-    if len(ions_a) == 0 and len(ions_b) == 0 and len(ions_c) == 0:
-        return None
-    else:
-        return PerovskiteComposition(ion_a=ions_a, ion_b=ions_b, ion_c=ions_c)
+            type = partial_get(df_components[component], 'type')
+            coefficient = partial_get(df_components[component], 'concentration')
+            if type:
+                ions_a.append(Ion(ion_type=type, coefficient=coefficient))
+        df_components = split_data(
+            df_temp[df_temp.index.str.contains('B-ions')], delimiter=';'
+        )
+        for component in df_components.columns:
+            type = partial_get(df_components[component], 'type')
+            coefficient = partial_get(df_components[component], 'concentration')
+            if type:
+                ions_b.append(Ion(ion_type=type, coefficient=coefficient))
+        df_components = split_data(
+            df_temp[df_temp.index.str.contains('C-ions')], delimiter=';'
+        )
+        for component in df_components.columns:
+            type = partial_get(df_components[component], 'type')
+            coefficient = partial_get(df_components[component], 'concentration')
+            if type:
+                ions_c.append(Ion(ion_type=type, coefficient=coefficient))
+    return PerovskiteComposition(ion_a=ions_a, ion_b=ions_b, ion_c=ions_c)
 
 
 def extract_chalcopyrite_composition(data_frame):
