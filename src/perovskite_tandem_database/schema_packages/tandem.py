@@ -159,6 +159,7 @@ class Storage(ArchiveSection):
     """
     A section describing the storage conditions of a sample before the next Sythesis step.
     """
+
     atmosphere = Quantity(
         type=Enum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
         shape=[],
@@ -410,7 +411,6 @@ class Substrate(NonAbsorbingLayer):
 
 
 class PhotoAbsorber(Layer):
-    
     bandgap = Quantity(
         type=float,
         shape=[],

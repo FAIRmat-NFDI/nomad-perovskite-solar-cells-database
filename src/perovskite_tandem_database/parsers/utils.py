@@ -18,6 +18,7 @@ def get_entry_id(upload_id, filename):
 def get_hash_ref(upload_id, filename):
     return f'{get_reference(upload_id, get_entry_id(upload_id, filename))}#data'
 
+
 def nan_equal(a, b):
     """
     Compare two values with NaN values.
