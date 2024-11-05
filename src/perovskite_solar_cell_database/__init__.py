@@ -66,3 +66,18 @@ ion_parser = IonParserEntryPoint(
         },
     },
 )
+
+
+class LLMSchemaExtractionPackageEntryPoint(SchemaPackageEntryPoint):
+    def load(self):
+        from perovskite_solar_cell_database.llm_extraction_schema import (
+            m_package,
+        )
+
+        return m_package
+
+
+llm_extraction_schema = LLMSchemaExtractionPackageEntryPoint(
+    name='LLMExtractionSchema',
+    description='Schema package defined for the perovskite solar cells database LLM extraction.',
+)
