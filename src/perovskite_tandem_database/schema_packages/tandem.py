@@ -108,14 +108,14 @@ class SolventAnnealing(ArchiveSection):
         description="""The temperature during the solvent annealing step.
         - The temperature refers to the temperature of the sample
         - If the temperature is not known, state that by ‘nan’""",
-        repeating=True,
+        repeats=True,
     )
     duration = Quantity(type=float, shape=[], unit='min')
     atmosphere = Quantity(
         type=str,
         shape=[],
         description='The solvents used in the solvent annealing step.',
-        repeating=True,
+        repeats=True,
     )
     point_in_time = Quantity(
         type=Enum(['After', 'Before', 'Under']),
@@ -305,17 +305,17 @@ class LiquidSynthesis(SynthesisStep):
     reactant = SubSection(
         section_def=ReactionComponent,
         description='The reactants used in the synthesis step',
-        repeating=True,
+        repeats=True,
     )
     solvent = SubSection(
         section_def=Solvent,
         description='The solvents used in the synthesis step',
-        repeating=True,
+        repeats=True,
     )
     quenching_solvent = SubSection(
         section_def=QuenchingSolvent,
         description='The quenching solvent used in the synthesis step',
-        repeating=True,
+        repeats=True,
     )
 
 
@@ -333,7 +333,7 @@ class GasPhaseSynthesis(SynthesisStep):
 
 
 class Synthesis(Process, ArchiveSection):
-    steps = SubSection(section_def=SynthesisStep, repeating=True)
+    steps = SubSection(section_def=SynthesisStep, repeats=True)
 
 
 # Material layers and their properties
@@ -405,14 +405,14 @@ class Layer(ArchiveSection):
         shape=[],
         description='The specific brand name of a commercially purchased layer',
     )
-    cleaning = SubSection(section_def=Cleaning, repeating=True)
+    cleaning = SubSection(section_def=Cleaning, repeats=True)
     synthesis = SubSection(section_def=Synthesis)
 
     # Storage
     storage = SubSection(section_def=Storage)
 
     # Misc
-    additives = SubSection(section_def=Substance, repeating=True)
+    additives = SubSection(section_def=Substance, repeats=True)
 
 
 class NonAbsorbingLayer(Layer):
@@ -436,7 +436,7 @@ class PhotoAbsorber(Layer):
         shape=[],
         unit='eV',
         description='The band gap if it varies as a function of the vertical position in the photoabsorber layer',
-        repeating=True,
+        repeats=True,
     )
     bandgap_estimation_basis = Quantity(
         type=Enum(
@@ -473,9 +473,9 @@ class PhotoAbsorber(Layer):
 
 class PerovskiteComposition(ArchiveSection):
     # basis = Quantity()  # ???
-    ion_a = SubSection(section_def=Ion, repeating=True)
-    ion_b = SubSection(section_def=Ion, repeating=True)
-    ion_c = SubSection(section_def=Ion, repeating=True)
+    ion_a = SubSection(section_def=Ion, repeats=True)
+    ion_b = SubSection(section_def=Ion, repeats=True)
+    ion_c = SubSection(section_def=Ion, repeats=True)
 
 
 class PerovskiteLayer(PhotoAbsorber):
@@ -538,7 +538,7 @@ class SiliconLayer(PhotoAbsorber):
     doping_sequence = Quantity(
         type=Enum(['n-aSi', 'i-aSi', 'n-Si', 'p-aSi', 'n-SI', 'i-Si', 'p-Si']),
         description='The doping sequence of the silicon, starting from the bottom',
-        repeating=True,
+        repeats=True,
     )
 
 
@@ -556,12 +556,12 @@ class ChalcopyriteLayer(PhotoAbsorber):
     composition = SubSection(
         section_def=Ion,
         description='The composition of the chalcopyrite layer',
-        repeating=True,
+        repeats=True,
     )
     alkali_metal_doping = SubSection(
         section_def=ChalcopyriteAlkaliMetalDoping,
         description='The alkali metal doping of the chalcopyrite layer',
-        repeating=True,
+        repeats=True,
     )
 
 
