@@ -67,20 +67,18 @@ class TandemParser(MatchingParser):
             reference.normalize(archive, logger)
 
             tandem = PerovskiteTandemSolarCell(
-                general=general,
-                reference=reference,
-                layer_stack=stack
+                general=general, reference=reference, layer_stack=stack
             )
 
-            entry_archive = EntryArchive(
-                data=tandem
-            )
+            entry_archive = EntryArchive(data=tandem)
 
             create_archive(
                 entry_archive.m_to_dict(),
                 archive.m_context,
                 f'tandem.archive_{col}.json',
-                'json', logger)
+                'json',
+                logger,
+            )
 
 
 # Liquid-based processes
@@ -146,6 +144,7 @@ gas_phase_processes = [
     'Thermal oxidation',
 ]
 
+
 def cleanup(data_frame):
     """
     Cleans the data frame by setting proper Boolean values and removing rows with all NaN values.
@@ -156,6 +155,7 @@ def cleanup(data_frame):
     )
 
     return data_frame.dropna(how='all')
+
 
 def split_data(data, delimiter='|'):
     """
@@ -208,6 +208,7 @@ def convert_value(value, default_unit=None):  # noqa: PLR0911
     Returns the original string if conversion is not possible.
     """
     import pint
+
     ureg = pint.UnitRegistry()
     if isinstance(value, str):
         value = value.strip()
@@ -542,11 +543,11 @@ def extract_layer_stack(data_frame):
             surface_roughness = partial_get(df_sublayer, 'Surface roughness')
             bought_commercially = partial_get(df_sublayer, 'Bought commercially')
             if bought_commercially is None:
-                origin = "Unknown"
+                origin = 'Unknown'
             elif bought_commercially is True:
-                origin = "Commercial"
+                origin = 'Commercial'
             elif bought_commercially is False:
-                origin = "Lab made"
+                origin = 'Lab made'
             supplier = exact_get(df_sublayer, 'Supplier')
             supplier_brand = partial_get(df_sublayer, 'Brand name')
             additives = extract_additives(df_sublayer)
@@ -641,11 +642,15 @@ def extract_layer_stack(data_frame):
                 # Differentiate between absorber types
                 if absorber_type == 'Perovskite':
                     dimension = next(
-                        (idx for idx in df_sublayer.index
-                        if 'Dimension. ' in idx
-                        and "Dimension. List of layers" not in idx
-                        and df_layer[idx]),
-                        None)
+                        (
+                            idx
+                            for idx in df_sublayer.index
+                            if 'Dimension. ' in idx
+                            and 'Dimension. List of layers' not in idx
+                            and df_layer[idx]
+                        ),
+                        None,
+                    )
                     if dimension:
                         dimension = dimension.split('Dimension. ')[1].split(' [')[0]
 
