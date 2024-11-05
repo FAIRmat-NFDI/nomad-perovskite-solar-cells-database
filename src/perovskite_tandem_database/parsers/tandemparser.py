@@ -3,11 +3,14 @@ from typing import TYPE_CHECKING
 import pandas as pd
 from nomad.config import config
 from nomad.datamodel.data import EntryData
+
+# from nomad.parsing.tabular import create_archive
+from nomad.datamodel.datamodel import EntryArchive
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.metainfo import Quantity
 from nomad.parsing.parser import MatchingParser
-from nomad.parsing.tabular import create_archive
 
+from perovskite_tandem_database.parsers.utils import create_archive
 from perovskite_tandem_database.schema_packages.schema import PerovskiteTandemSolarCell
 from perovskite_tandem_database.schema_packages.tandem import (
     ChalcopyriteAlkaliMetalDoping,
@@ -37,7 +40,7 @@ if TYPE_CHECKING:
 
 class TandemParser(MatchingParser):
     """
-    Parser for matching tandem db files and creating instances of .
+    Parser for matching tandem db files and creating instances of PerovskiteTandemSolarCell.
     """
 
     def parse(
@@ -48,48 +51,37 @@ class TandemParser(MatchingParser):
         child_archives: dict[str, 'EntryArchive'] = None,
     ) -> None:
         logger.info('TandemParser.parse')
-        # data_file = mainfile.split('/')[-1]
-        # entry = PerovskiteTandemSolarCell.m_from_dict(PerovskiteTandemSolarCell.m_def.a_template)
-        # entry.data_file = data_file
-        # file_name = f'{"".join(data_file.split(".")[:-1])}.archive.json'
-        # archive.data = RawFileXRFData(
-        #     measurement=create_archive(entry, archive, file_name)
-        # )
-        # archive.metadata.entry_name = f'{data_file} data file'
+        data_frame = pd.read_excel(mainfile, index_col=0)
 
-        # Load the entire Excel file once
-        file_path = '/home/fabian/Seafile/HU-box/My Library/Tandem Database/Extracted data Jesper Jacobsson V4 head.xlsx'
-        data_frame = pd.read_excel(file_path, index_col=0, dtype=str)
-
-        # Process each column
+        # Process each column/device/publication separately
         for col in data_frame.columns:
-            column_data = data_frame[col].dropna()
             logger.info(f'Processing column: {col}')
 
-            stack = extract_layers(column_data)
+            # Clean the data frame
+            # Set proper Boolean values and remove rows with all NaN values
+            column_data = cleanup(data_frame[col])
+
+            stack = extract_layer_stack(column_data)
             general = General()
             reference = extract_reference(column_data)
+            reference.normalize(archive, logger)
 
             tandem = PerovskiteTandemSolarCell(
-                general=general, reference=reference, layer_stack=stack
+                general=general,
+                reference=reference,
+                layer_stack=stack
             )
 
-            create_archive(tandem, archive, 'tandem.archive.json')
+            entry_archive = EntryArchive(
+                data=tandem
+            )
 
+            create_archive(
+                entry_archive.m_to_dict(),
+                archive.m_context,
+                f'tandem.archive_{col}.json',
+                'json', logger)
 
-# section_starts = [
-#     "Ref. ID temp",
-#     "Tandem. Architecture",
-#     "Module [TRUE/FALSE]",
-#     "Exist [TRUE/FALSE]",
-#     # "Encapsulation. Entire device",
-#     # "JV. Measured [TRUE/FALSE]",
-#     # "Stabilised performance. Measured [TRUE/FALSE]",
-#     # "EQE. Full cell. Measured [TRUE/FALSE]",
-#     # "Transmission. Subcell 1. Measured [TRUE/FALSE]",
-#     # "Stability. Measured [TRUE/FALSE]",
-#     # "Outdoor. Tested [TRUE/FALSE]",
-# ]
 
 # Liquid-based processes
 liquid_based_processes = [
@@ -154,6 +146,16 @@ gas_phase_processes = [
     'Thermal oxidation',
 ]
 
+def cleanup(data_frame):
+    """
+    Cleans the data frame by setting proper Boolean values and removing rows with all NaN values.
+    """
+    bool_mask = data_frame.index.str.contains(r'\[TRUE/FALSE\]')
+    data_frame.loc[bool_mask] = data_frame.loc[bool_mask].replace(
+        {0: False, '0': False, 'FALSE': False, 1: True, '1': True, 'TRUE': True}
+    )
+
+    return data_frame.dropna(how='all')
 
 def split_data(data, delimiter='|'):
     """
@@ -168,10 +170,9 @@ def split_data(data, delimiter='|'):
     pd.DataFrame: The expanded data frame with unique column names and preserved index.
     """
 
-    # List to hold the expanded data frames
-    expanded_dfs = []
-
+    # If it's a DataFrame, process each column
     if isinstance(data, pd.DataFrame):
+        expanded_dfs = []
         for column in data.columns:
             # Split each column by the delimiter if it is a string
             split_data = data[column].apply(
@@ -185,6 +186,8 @@ def split_data(data, delimiter='|'):
             expanded_df.columns = [f'{column}_{i}' for i in range(max_len)]
             expanded_dfs.append(expanded_df)
 
+        return pd.concat(expanded_dfs, axis=1)
+
     elif isinstance(data, pd.Series):
         split_data = data.apply(
             lambda x: str(x).split(delimiter) if isinstance(x, str) else [x]
@@ -193,37 +196,46 @@ def split_data(data, delimiter='|'):
         expanded_data = split_data.apply(lambda x: x + [x[-1]] * (max_len - len(x)))
         expanded_df = pd.DataFrame(expanded_data.tolist(), index=data.index)
         expanded_df.columns = [f'{data.name}_{i}' for i in range(max_len)]
-        expanded_dfs.append(expanded_df)
+        return expanded_df
 
     else:
         raise ValueError('Input data_frame must be a pandas DataFrame or Series')
 
-    # Concatenate the expanded data frames
-    return pd.concat(expanded_dfs, axis=1)
 
-
-def convert_value(value):
+def convert_value(value, default_unit=None):  # noqa: PLR0911
     """
     Attempts to convert the string value to its appropriate type (int, float, bool).
     Returns the original string if conversion is not possible.
     """
+    import pint
+    ureg = pint.UnitRegistry()
     if isinstance(value, str):
+        value = value.strip()
         if value.lower() == 'true':
             return True
         elif value.lower() == 'false':
             return False
         try:
-            return int(value)
+            number = int(value)
+            return number * ureg(default_unit) if default_unit else number
         except ValueError:
             pass
         try:
-            return float(value)
+            number = float(value)
+            return number * ureg(default_unit) if default_unit else number
         except ValueError:
+            pass
+        try:
+            quantity = ureg(value)
+            if default_unit:
+                return quantity.to(default_unit)
+            return quantity
+        except (pint.errors.UndefinedUnitError, ValueError):
             pass
     return value
 
 
-def partial_get(data, label, default=None):
+def partial_get(data, label, default=None, default_unit=None):
     """
     Extracts the first entry from a DataFrame or Series whose index partially matches a label.
     """
@@ -235,10 +247,10 @@ def partial_get(data, label, default=None):
             value = df_matched.iloc[0, 0]
         elif isinstance(data, pd.Series):
             value = df_matched.iloc[0]
-        return convert_value(value)
+        return convert_value(value, default_unit)
 
 
-def exact_get(data, label, default=None):
+def exact_get(data, label, default=None, default_unit=None):
     """
     Extracts the first entry from a DataFrame or Series whose index exactly matches a label.
     """
@@ -247,7 +259,7 @@ def exact_get(data, label, default=None):
             value = data.loc[label, data.columns[0]]
         elif isinstance(data, pd.Series):
             value = data.loc[label]
-        return convert_value(value)
+        return convert_value(value, default_unit)
     else:
         return default
 
@@ -438,7 +450,7 @@ def extract_chalcopyrite_composition(data_frame):
                 df_components[component],
                 'Chalcopyrite. Composition. Ions. Coefficients',
             )
-            composition.append(Element(ion_type=ion_type, coefficients=coefficients))
+            composition.append(Ion(ion_type=ion_type, coefficients=coefficients))
     if len(composition) == 0:
         return None
     else:
@@ -455,9 +467,9 @@ def extract_alkali_doping(data_frame):
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
             ion_type = partial_get(df_components[component], 'Alkali metal doping')
-            sources = partial_get(df_components[component], 'Sources of alkali doping')
+            source = partial_get(df_components[component], 'Sources of alkali doping')
             alkali_doping.append(
-                ChalcopyriteAlkaliMetalDoping(ion_type=ion_type, sources=sources)
+                ChalcopyriteAlkaliMetalDoping(ion_type=ion_type, source=source)
             )
     if len(alkali_doping) == 0:
         return None
@@ -485,11 +497,10 @@ def extract_reference(data_frame):
         name_of_person_entering_the_data=name_of_person_entering_the_data,
         free_text_comment=free_text_comment,
     )
-    reference.normalize()
     return reference
 
 
-def extract_layers(data_frame):
+def extract_layer_stack(data_frame):
     """
     Extracts the layer stack from the data subframe.
     """
@@ -530,52 +541,63 @@ def extract_layers(data_frame):
             area = partial_get(df_sublayer, 'Area')
             surface_roughness = partial_get(df_sublayer, 'Surface roughness')
             bought_commercially = partial_get(df_sublayer, 'Bought commercially')
+            if bought_commercially is None:
+                origin = "Unknown"
+            elif bought_commercially is True:
+                origin = "Commercial"
+            elif bought_commercially is False:
+                origin = "Lab made"
             supplier = exact_get(df_sublayer, 'Supplier')
             supplier_brand = partial_get(df_sublayer, 'Brand name')
+            additives = extract_additives(df_sublayer)
 
-            # Sublayer synthesis
+            # Split synthesis into single steps
             synthesis = []
             df_processes = split_data(df_sublayer, delimiter='>>')
             for syn_step in df_processes.columns:
                 df_process = df_processes[syn_step]
                 name = partial_get(
                     df_process, 'Stack sequence '
-                )  # << check if this is correct
+                )  # TODO: check if this is correct
+
+                # Synthesis process information
                 procedure = partial_get(df_process, 'Deposition. Procedure')
-                aggr_state = partial_get(df_process, 'Aggregation state')
-                atmo = partial_get(df_process, 'Synthesis atmosphere ')
-                atmo_p_total = partial_get(df_process, 'atmosphere. Pressure. Total')
-                # atmo_p_partial = partial_get(df_process, "atmosphere. Pressure. Partial")
-                humidity_rel = partial_get(df_process, 'Relative humidity')
-
-                # Liquid based synthesis
-                if procedure in liquid_based_processes:
-                    additives = extract_additives(df_process)
-                    solvents = extract_solvents(df_process)
-                    reactants = extract_reactants(df_process)
-                    quenching_solvents = extract_quenching_solvents(df_process)
-                    synthesis.append(
-                        LiquidSynthesis(
-                            aggregation_state_of_reactants=aggr_state,
-                            atmosphere=atmo,
-                            pressure_total=atmo_p_total,
-                            humidity_relative=humidity_rel,
-                            solvents=solvents,
-                            reactants=reactants,
-                            quenching_solvents=quenching_solvents,
-                        )
+                if procedure is not None:
+                    aggr_state = partial_get(df_process, 'Aggregation state')
+                    atmo = partial_get(df_process, 'Synthesis atmosphere ')
+                    atmo_p_total = partial_get(
+                        df_process, 'atmosphere. Pressure. Total', default_unit='mbar'
                     )
+                    # atmo_p_partial = partial_get(df_process, "atmosphere. Pressure. Partial")
+                    humidity_rel = partial_get(df_process, 'Relative humidity')
 
-                # Physical vapour deposition & similar
-                elif procedure in gas_phase_processes:
-                    synthesis.append(GasPhaseSynthesis())
+                    # Liquid based synthesis
+                    if procedure in liquid_based_processes:
+                        solvents = extract_solvents(df_process)
+                        reactants = extract_reactants(df_process)
+                        quenching_solvents = extract_quenching_solvents(df_process)
+                        synthesis.append(
+                            LiquidSynthesis(
+                                aggregation_state_of_reactants=aggr_state,
+                                atmosphere=atmo,
+                                pressure_total=atmo_p_total,
+                                humidity_relative=humidity_rel,
+                                solvent=solvents,
+                                reactant=reactants,
+                                quenching_solvent=quenching_solvents,
+                            )
+                        )
+
+                    # Physical vapour deposition & similar
+                    elif procedure in gas_phase_processes:
+                        synthesis.append(GasPhaseSynthesis())
 
             # Annealing etc!
             # Storage conditions
             storage = None
 
             # Differentiate between type of layers
-            if 'NALayer' in label:
+            if 'NAlayer' in label:
                 if functionality == 'Substrate':
                     layer_stack.append(
                         Substrate(
@@ -584,7 +606,7 @@ def extract_layers(data_frame):
                             thickness=thickness,
                             area=area,
                             surface_roughness=surface_roughness,
-                            origin=bought_commercially,
+                            origin=origin,
                             supplier=supplier,
                             supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
@@ -598,7 +620,7 @@ def extract_layers(data_frame):
                             thickness=thickness,
                             area=area,
                             surface_roughness=surface_roughness,
-                            origin=bought_commercially,
+                            origin=origin,
                             supplier=supplier,
                             supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
@@ -618,16 +640,14 @@ def extract_layers(data_frame):
 
                 # Differentiate between absorber types
                 if absorber_type == 'Perovskite':
-                    df_dimension = df_layer[
-                        (df_layer[df_layer.columns[0]] is True)
-                        & (~df_layer.index.str.contains('List of layers'))
-                    ]
-                    if not df_dimension.empty:
-                        dimension = (
-                            df_dimension.index[0].split('Dimension. ')[1].split(' [')[0]
-                        )
-                    else:
-                        dimension = None
+                    dimension = next(
+                        (idx for idx in df_sublayer.index
+                        if 'Dimension. ' in idx
+                        and "Dimension. List of layers" not in idx
+                        and df_layer[idx]),
+                        None)
+                    if dimension:
+                        dimension = dimension.split('Dimension. ')[1].split(' [')[0]
 
                     single_crystal = partial_get(df_sublayer, 'Single crystal')
                     inorganic = partial_get(df_sublayer, 'Inorganic Perovskite')
@@ -638,7 +658,6 @@ def extract_layers(data_frame):
                     layer_stack.append(
                         PerovskiteLayer(
                             name=name,
-                            functionality=functionality,
                             thickness=thickness,
                             area=area,
                             surface_roughness=surface_roughness,
@@ -651,7 +670,7 @@ def extract_layers(data_frame):
                             single_crystal=single_crystal,
                             inorganic=inorganic,
                             lead_free=lead_free,
-                            origin=bought_commercially,
+                            origin=origin,
                             supplier=supplier,
                             supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
@@ -668,7 +687,6 @@ def extract_layers(data_frame):
                     layer_stack.append(
                         SiliconLayer(
                             name=name,
-                            functionality=functionality,
                             thickness=thickness,
                             area=area,
                             surface_roughness=surface_roughness,
@@ -680,7 +698,7 @@ def extract_layers(data_frame):
                             cell_type=cell_type,
                             silicon_type=silicon_type,
                             doping_sequence=doping_sequence,
-                            origin=bought_commercially,
+                            origin=origin,
                             supplier=supplier,
                             supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
@@ -696,7 +714,6 @@ def extract_layers(data_frame):
                     layer_stack.append(
                         ChalcopyriteLayer(
                             name=name,
-                            functionality=functionality,
                             thickness=thickness,
                             area=area,
                             surface_roughness=surface_roughness,
@@ -707,7 +724,7 @@ def extract_layers(data_frame):
                             composition=composition,
                             alkali_metal_doping=alkali_metal_doping,
                             perovskite_inspired=None,
-                            origin=bought_commercially,
+                            origin=origin,
                             supplier=supplier,
                             supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
@@ -720,7 +737,6 @@ def extract_layers(data_frame):
                     layer_stack.append(
                         PhotoAbsorber(
                             name=name,
-                            functionality=functionality,
                             thickness=thickness,
                             area=area,
                             surface_roughness=surface_roughness,
@@ -729,7 +745,7 @@ def extract_layers(data_frame):
                             bandgap_estimation_basis=bandgap_estimation_basis,
                             PL_max=PL_max,
                             perovskite_inspired=None,
-                            origin=bought_commercially,
+                            origin=origin,
                             supplier=supplier,
                             supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,

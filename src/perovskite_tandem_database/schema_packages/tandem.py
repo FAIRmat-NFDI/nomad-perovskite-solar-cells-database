@@ -16,7 +16,7 @@ from .ref import Reference
 # Chemicals and materials and their treatment
 
 
-class Element(ArchiveSection):
+class Element(Ion):
     """
     A section describing a substance that is an element.
     """
@@ -156,6 +156,9 @@ class QuenchingSolvent(Solvent):
 
 
 class Storage(ArchiveSection):
+    """
+    A section describing the storage conditions of a sample before the next Sythesis step.
+    """
     atmosphere = Quantity(
         type=Enum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
         shape=[],
@@ -192,7 +195,7 @@ class SynthesisStep(Activity, ArchiveSection):
     # TODO: make Enum?
     aggregation_state_of_reactants = Quantity(
         type=Enum(['Solid', 'Liquid', 'Gas', 'Unknown']),
-        shape=['*'],
+        shape=[],
         default='Unknown',
         description="""The physical state of the reactants.
         - The three basic categories are Solid/Liquid/Gas
@@ -285,12 +288,12 @@ class LiquidSynthesis(SynthesisStep):
     A section describing a wet chemical synthesis step such as spin-coating or dip-coating.
     """
 
-    reactants = SubSection(
+    reactant = SubSection(
         section_def=ReactionComponent,
         description='The reactants used in the synthesis step',
         repeating=True,
     )
-    solvents = SubSection(
+    solvent = SubSection(
         section_def=Solvent,
         description='The solvents used in the synthesis step',
         repeating=True,
@@ -342,6 +345,7 @@ class Layer(ArchiveSection):
                 'ETL',
                 'Front contact',
                 'HTL',
+                'Recombination layer',
                 'Self assembled monolayer',
                 'Subcell spacer',
                 'Substrate',
@@ -406,6 +410,7 @@ class Substrate(NonAbsorbingLayer):
 
 
 class PhotoAbsorber(Layer):
+    
     bandgap = Quantity(
         type=float,
         shape=[],
