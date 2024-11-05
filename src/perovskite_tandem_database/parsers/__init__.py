@@ -3,7 +3,7 @@ from nomad.config.models.plugins import ParserEntryPoint
 
 class TandemParserEntryPoint(ParserEntryPoint):
     """
-    XRF Parser plugin entry point.
+    Tandem Parser plugin entry point.
     """
 
     def load(self):
