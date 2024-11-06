@@ -54,7 +54,7 @@ class PerovskiteComposition(SectionRevision):
     dimensionality = Quantity(
         type=MEnum(['0D', '1D', '2D', '3D', '2D/3D']),
         description='Dimensionality of the perovskite structure',
-        a_eln=ELNAnnotation(label='Dimensionality', component='EnumEditQuantity'),
+        a_eln=ELNAnnotation(label='Dimensionality', component='RadioEditQuantity'),
     )
 
     ions_a_site = SubSection(
@@ -274,7 +274,7 @@ class ReactionSolution(SectionRevision):
 
 # ProcessingStep class
 class ProcessingStep(SectionRevision):
-    m_def = Section(label='Processing Step')
+    m_def = Section(label='Processing Step', label_quantity='method')
 
     step_name = Quantity(
         type=str,
