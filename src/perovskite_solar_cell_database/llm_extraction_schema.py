@@ -17,6 +17,54 @@ from nomad.metainfo import SchemaPackage
 m_package = SchemaPackage()
 
 
+class Ion(ArchiveSection):
+    m_def = Section(label='Ion')
+
+    abbreviation = Quantity(
+        type=str,
+        description="The abbreviation used for the ion when writing the perovskite composition",
+        a_eln=ELNAnnotation(label='Abbreviation', component='StringEditQuantity')
+    )
+
+    coefficient = Quantity(
+        type=str,
+        description="The stoichiometric coefficient of the ion",
+        a_eln=ELNAnnotation(label='Coefficient', component='StringEditQuantity')
+    )
+
+class PerovskiteComposition(ArchiveSection):
+    m_def = Section(label='Perovskite Composition')
+
+    formula = Quantity(
+        type=str,
+        description="The perovskite composition according to IUPAC recommendations",
+        a_eln=ELNAnnotation(label='Formula', component='StringEditQuantity')
+    )
+
+    dimensionality = Quantity(
+        type=MEnum(['0D', '1D', '2D', '3D', '2D/3D']),
+        description="Dimensionality of the perovskite structure",
+        a_eln=ELNAnnotation(label='Dimensionality', component='EnumEditQuantity')
+    )
+
+    a_ions = SubSection(
+        section_def=Ion,
+        repeats=True,
+        a_eln=ELNAnnotation(label='A-site Ions')
+    )
+
+    b_ions = SubSection(
+        section_def=Ion,
+        repeats=True,
+        a_eln=ELNAnnotation(label='B-site Ions')
+    )
+
+    x_ions = SubSection(
+        section_def=Ion,
+        repeats=True,
+        a_eln=ELNAnnotation(label='X-site Ions')
+    )
+
 # LightSource class
 class LightSource(ArchiveSection):
     m_def = Section(label='Light Source')
@@ -61,6 +109,43 @@ class LightSource(ArchiveSection):
         a_eln=ELNAnnotation(label='Lamp', component='StringEditQuantity'),
     )
 
+
+class Solute(ArchiveSection):
+    m_def = Section(label='Solute')
+
+    name = Quantity(
+        type=str,
+        description='Name of the solute',
+        a_eln=ELNAnnotation(label='Name', component='StringEditQuantity')
+    )
+
+    concentration = Quantity(
+        type=float,
+        description='Concentration value',
+        a_eln=ELNAnnotation(label='Concentration', component='NumberEditQuantity')
+    )
+
+    concentration_unit = Quantity(
+        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'wt%', 'vol%', 'M']),
+        description='Unit of concentration',
+        a_eln=ELNAnnotation(label='Concentration Unit', component='EnumEditQuantity')
+    )
+
+class GasQuenching(ArchiveSection):
+    m_def = Section(label='Gas Quenching')
+
+    gas_name = Quantity(
+        type=str,
+        description='Name of the gas used',
+        a_eln=ELNAnnotation(label='Gas Name', component='StringEditQuantity')
+    )
+
+    time = Quantity(
+        type=float,
+        unit='s',
+        description='Duration of gas quenching',
+        a_eln=ELNAnnotation(label='Time', component='NumberEditQuantity')
+    )
 
 # Stability class
 class Stability(ArchiveSection):
@@ -168,26 +253,10 @@ class ProcessingAtmosphere(ArchiveSection):
 class ReactionSolution(ArchiveSection):
     m_def = Section(label='Reaction Solution')
 
-    compounds = Quantity(
-        type=str,
-        shape=['*'],
-        description='List of compounds',
-        a_eln=ELNAnnotation(label='Compounds', component='StringEditQuantity'),
-    )
-
-    concentrations = Quantity(
-        type=float,
-        shape=['*'],
-        description='Concentrations of compounds',
-        a_eln=ELNAnnotation(label='Concentrations', component='NumberEditQuantity'),
-    )
-
-    concentrations_unit = Quantity(
-        type=str,
-        description='Unit of the concentrations',
-        a_eln=ELNAnnotation(
-            label='Concentrations Unit', component='StringEditQuantity'
-        ),
+    solutes = SubSection(
+        section_def=Solute,
+        repeats=True,
+        a_eln=ELNAnnotation(label='Solutes')
     )
 
     volume = Quantity(
@@ -195,7 +264,9 @@ class ReactionSolution(ArchiveSection):
         unit='L',
         description='Volume of the solution',
         a_eln=ELNAnnotation(
-            label='Volume', defaultDisplayUnit='L', component='NumberEditQuantity'
+            label='Volume',
+            defaultDisplayUnit='L',
+            component='NumberEditQuantity'
         ),
     )
 
@@ -204,7 +275,9 @@ class ReactionSolution(ArchiveSection):
         unit='°C',
         description='Temperature of the solution',
         a_eln=ELNAnnotation(
-            label='Temperature', defaultDisplayUnit='°C', component='NumberEditQuantity'
+            label='Temperature',
+            defaultDisplayUnit='°C',
+            component='NumberEditQuantity'
         ),
     )
 
@@ -227,7 +300,7 @@ class ProcessingStep(ArchiveSection):
 
     method = Quantity(
         type=str,
-        description='Method used in the processing step (e.g., spin-coating, dropcasting)',
+        description='Method used in the processing step',
         a_eln=ELNAnnotation(label='Method', component='StringEditQuantity'),
     )
 
@@ -241,7 +314,9 @@ class ProcessingStep(ArchiveSection):
         unit='°C',
         description='Temperature during the step',
         a_eln=ELNAnnotation(
-            label='Temperature', defaultDisplayUnit='°C', component='NumberEditQuantity'
+            label='Temperature',
+            defaultDisplayUnit='°C',
+            component='NumberEditQuantity'
         ),
     )
 
@@ -250,24 +325,20 @@ class ProcessingStep(ArchiveSection):
         unit='s',
         description='Duration of the step',
         a_eln=ELNAnnotation(
-            label='Duration', defaultDisplayUnit='s', component='NumberEditQuantity'
+            label='Duration',
+            defaultDisplayUnit='s',
+            component='NumberEditQuantity'
         ),
     )
 
-    antisolvent = Quantity(
-        type=str,
-        description='Antisolvent used',
-        a_eln=ELNAnnotation(label='Antisolvent', component='StringEditQuantity'),
-    )
-
-    gas = Quantity(
-        type=str,
-        description='Gas used in the process',
-        a_eln=ELNAnnotation(label='Gas', component='StringEditQuantity'),
+    gas_quenching = SubSection(
+        section_def=GasQuenching,
+        a_eln=ELNAnnotation(label='Gas Quenching')
     )
 
     solution = SubSection(
-        section_def=ReactionSolution, a_eln=ELNAnnotation(label='Solution')
+        section_def=ReactionSolution,
+        a_eln=ELNAnnotation(label='Solution')
     )
 
     additional_parameters = Quantity(
@@ -275,7 +346,6 @@ class ProcessingStep(ArchiveSection):
         description='Any additional parameters specific to this processing step',
         a_eln=ELNAnnotation(label='Additional Parameters'),
     )
-
 
 # Deposition class
 class Deposition(ArchiveSection):
@@ -335,6 +405,12 @@ class Layer(ArchiveSection):
         section_def=Deposition, a_eln=ELNAnnotation(label='Deposition')
     )
 
+    additional_treatment = Quantity(
+        type=str,
+        description='Description of modifications applied to this layer beyond its basic composition',
+        a_eln=ELNAnnotation(label='Additional Treatment', component='StringEditQuantity')
+    )
+
 
 # PerovskiteSolarCell class
 class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
@@ -360,12 +436,9 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
         a_eln=ELNAnnotation(label='Cell Stack', component='StringEditQuantity'),
     )
 
-    perovskite_composition = Quantity(
-        type=str,
-        description='Chemical formula of the perovskite absorber',
-        a_eln=ELNAnnotation(
-            label='Perovskite Composition', component='StringEditQuantity'
-        ),
+    perovskite_composition = SubSection(
+        section_def=PerovskiteComposition,
+        a_eln=ELNAnnotation(label='Perovskite Composition')
     )
 
     device_architecture = Quantity(
