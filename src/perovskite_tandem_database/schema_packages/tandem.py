@@ -423,7 +423,9 @@ class NonAbsorbingLayer(Layer):
 
 
 class Substrate(NonAbsorbingLayer):
-    pass
+    m_def = Section(
+        a_template=dict(functionality='Substrate'),
+    )
 
 
 class PhotoAbsorber(Layer):
