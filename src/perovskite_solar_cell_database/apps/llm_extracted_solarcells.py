@@ -89,7 +89,7 @@ llm_extracted_solar_cells = App(
     widgets:
       - type: terms
         scale: linear
-        search_quantity: data.journal#perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell
+        quantity: data.journal#perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell
         layout:
           xxl:
             minH: 3
@@ -128,7 +128,7 @@ llm_extracted_solar_cells = App(
             x: 4
       - type: terms
         scale: linear
-        search_quantity: authors.name
+        quantity: authors.name
         title: Reviewer names
         layout:
           xxl:
@@ -172,7 +172,7 @@ llm_extracted_solar_cells = App(
         y:
           scale: linear
         x:
-          search_quantity: data.publication_date#perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell
+          quantity: data.publication_date#perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell
         layout:
           xxl:
             minH: 3
