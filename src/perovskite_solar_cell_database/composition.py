@@ -20,14 +20,14 @@ from typing import TYPE_CHECKING
 
 from nomad.datamodel.data import EntryData, EntryDataCategory
 from nomad.datamodel.datamodel import (
-    EntryArchive,
     ArchiveSection,
+    EntryArchive,
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
-    SectionDisplayAnnotation,
     Filter,
+    SectionProperties,
 )
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
@@ -45,9 +45,6 @@ from nomad.metainfo.metainfo import (
     Section,
     SubSection,
 )
-from nomad.units import ureg
-
-from perovskite_solar_cell_database.utils import create_archive
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
@@ -132,26 +129,31 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
     """
 
     m_def = Section(
-        a_display=SectionDisplayAnnotation(
-            visible=Filter(
-                exclude=[
-                    'description',
-                    'name',
-                    'lab_id',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'description',
+                        'name',
+                        'lab_id',
+                        'pure_substance',
+                        'source_compound',
+                        'datetime',
+                    ],
+                ),
+                order=[
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
                 ]
-            ),
-            order=[
-                'common_name',
-                'abbreviation',
-                'molecular_formula',
-                'smiles',
-                'iupac_name',
-                'cas_number',
-                'source_compound_molecular_formula',
-                'source_compound_smiles',
-                'source_compound_iupac_name',
-                'source_compound_cas_number',
-            ]
+            )
         )
     )
     abbreviation = Quantity(
@@ -182,102 +184,79 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
+        pure_substance = PubChemPureSubstanceSection(
+            molecular_formula=self.molecular_formula,
+            smile=self.smiles,
+            iupac_name=self.iupac_name,
+            cas_number=self.cas_number,
+            name=self.common_name,
+        )
+        pure_substance.normalize(archive, logger)
+        if self.molecular_formula is None:
+            self.molecular_formula = pure_substance.molecular_formula
+        if self.smiles is None:
+            self.smiles = pure_substance.smile
+        if self.iupac_name is None:
+            self.iupac_name = pure_substance.iupac_name
+        if self.cas_number is None:
+            self.cas_number = pure_substance.cas_number
+        if self.common_name is None:
+            self.common_name = pure_substance.name
+        self.pure_substance = pure_substance
+        source_compound = PubChemPureSubstanceSection(
+            molecular_formula=self.source_compound_molecular_formula,
+            smile=self.source_compound_smiles,
+            iupac_name=self.source_compound_iupac_name,
+            cas_number=self.source_compound_cas_number,
+        )
+        source_compound.normalize(archive, logger)
+        if self.source_compound_molecular_formula is None:
+            self.source_compound_molecular_formula = source_compound.molecular_formula
+        if self.source_compound_smiles is None:
+            self.source_compound_smiles = source_compound.smile
+        if self.source_compound_iupac_name is None:
+            self.source_compound_iupac_name = source_compound.iupac_name
+        if self.source_compound_cas_number is None:
+            self.source_compound_cas_number = source_compound.cas_number
+        self.source_compound = source_compound
         super().normalize(archive, logger)
-        if isinstance(self.pure_substance, PubChemPureSubstanceSection):
-            if self.molecular_formula is None:
-                self.molecular_formula = self.pure_substance.molecular_formula
-            if self.smiles is None:
-                self.smiles = self.pure_substance.smile
-            if self.iupac_name is None:
-                self.iupac_name = self.pure_substance.iupac_name
-            if self.cas_number is None:
-                self.cas_number = self.pure_substance.cas_number
-        else:
-            pure_substance = PubChemPureSubstanceSection(
-                molecular_formula=self.molecular_formula,
-                smile=self.smiles,
-                iupac_name=self.iupac_name,
-                cas_number=self.cas_number,
-                name=self.common_name,
-            )
-            pure_substance.normalize(archive, logger)
-            self.pure_substance = pure_substance
-            self.normalize(archive, logger)
-        if isinstance(self.source_compound, PubChemPureSubstanceSection):
-            if self.source_compound_molecular_formula is None:
-                self.source_compound_molecular_formula = self.source_compound.molecular_formula
-            if self.source_compound_smiles is None:
-                self.source_compound_smiles = self.source_compound.smile
-            if self.source_compound_iupac_name is None:
-                self.source_compound_iupac_name = self.source_compound.iupac_name
-            if self.source_compound_cas_number is None:
-                self.source_compound_cas_number = self.source_compound.cas_number
-        else:
-            source_compound = PubChemPureSubstanceSection(
-                molecular_formula=self.source_compound_molecular_formula,
-                smile=self.source_compound_smiles,
-                iupac_name=self.source_compound_iupac_name,
-                cas_number=self.source_compound_cas_number,
-            )
-            source_compound.normalize(archive, logger)
-            self.source_compound = source_compound
-            self.normalize(archive, logger)
 
 
 class PerovskiteAIon(PerovskiteIon, EntryData):
     m_def = Section(
         categories=[PerovskiteCompositionCategory],
         label='Perovskite A Ion',
-        a_display={
-            "visible":{
-                "exclude":[
-                    'description',
-                    'name',
-                    'lab_id',
-                    'datetime',
-                    'elemental_composition',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'description',
+                        'name',
+                        'lab_id',
+                        'datetime',
+                    ],
+                ),
+                editable=Filter(
+                    exclude=[
+                        'pure_substance',
+                        'source_compound',
+                        'elemental_composition',
+                    ]
+                ),
+                order=[
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
                 ]
-            },
-            "order":[
-                'common_name',
-                'abbreviation',
-                'molecular_formula',
-                'smiles',
-                'iupac_name',
-                'cas_number',
-                'source_compound_molecular_formula',
-                'source_compound_smiles',
-                'source_compound_iupac_name',
-                'source_compound_cas_number',
-                'pure_substance',
-                'source_compound',
-            ]
-        }
-        # a_display=SectionDisplayAnnotation(
-        #     visible=Filter(
-        #         exclude=[
-        #             'description',
-        #             'name',
-        #             'lab_id',
-        #             'datetime',
-        #             'elemental_composition',
-        #         ]
-        #     ),
-        #     order=[
-        #         'common_name',
-        #         'abbreviation',
-        #         'molecular_formula',
-        #         'smiles',
-        #         'iupac_name',
-        #         'cas_number',
-        #         'source_compound_molecular_formula',
-        #         'source_compound_smiles',
-        #         'source_compound_iupac_name',
-        #         'source_compound_cas_number',
-        #         'pure_substance',
-        #         'source_compound',
-        #     ]
-        # )
+            )
+        )
     )
 
 
@@ -285,6 +264,37 @@ class PerovskiteBIon(PerovskiteIon, EntryData):
     m_def = Section(
         categories=[PerovskiteCompositionCategory],
         label='Perovskite B Ion',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'description',
+                        'name',
+                        'lab_id',
+                        'datetime',
+                    ],
+                ),
+                editable=Filter(
+                    exclude=[
+                        'pure_substance',
+                        'source_compound',
+                        'elemental_composition',
+                    ]
+                ),
+                order=[
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
+                ]
+            )
+        )
     )
 
 
@@ -292,10 +302,68 @@ class PerovskiteXIon(PerovskiteIon, EntryData):
     m_def = Section(
         categories=[PerovskiteCompositionCategory],
         label='Perovskite C Ion',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'description',
+                        'name',
+                        'lab_id',
+                        'datetime',
+                    ],
+                ),
+                editable=Filter(
+                    exclude=[
+                        'pure_substance',
+                        'source_compound',
+                        'elemental_composition',
+                    ]
+                ),
+                order=[
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
+                ]
+            )
+        )
     )
 
 
 class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'name',
+                        'mass',
+                        'mass_fraction',
+                    ],
+                ),
+                order=[
+                    'system',
+                    'coefficient',
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
+                ]
+            )
+        )
+    )
     coefficient = Quantity(
         type=float,
         description='The stoichiometric coefficient',
@@ -341,6 +409,33 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
 
 
 class PerovskiteAIonComponent(PerovskiteIonComponent):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'name',
+                        'mass',
+                        'mass_fraction',
+                    ],
+                ),
+                order=[
+                    'system',
+                    'coefficient',
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
+                ]
+            )
+        )
+    )
     system = Quantity(
         type=Reference(PerovskiteAIon.m_def),
         description='A reference to the component system.',
@@ -349,6 +444,33 @@ class PerovskiteAIonComponent(PerovskiteIonComponent):
 
 
 class PerovskiteBIonComponent(PerovskiteIonComponent):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'name',
+                        'mass',
+                        'mass_fraction',
+                    ],
+                ),
+                order=[
+                    'system',
+                    'coefficient',
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
+                ]
+            )
+        )
+    )
     system = Quantity(
         type=Reference(PerovskiteBIon.m_def),
         description='A reference to the component system.',
@@ -357,6 +479,33 @@ class PerovskiteBIonComponent(PerovskiteIonComponent):
 
 
 class PerovskiteXIonComponent(PerovskiteIonComponent):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'name',
+                        'mass',
+                        'mass_fraction',
+                    ],
+                ),
+                order=[
+                    'system',
+                    'coefficient',
+                    'abbreviation',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                    'source_compound_molecular_formula',
+                    'source_compound_smiles',
+                    'source_compound_iupac_name',
+                    'source_compound_cas_number',
+                ]
+            )
+        )
+    )
     system = Quantity(
         type=Reference(PerovskiteXIon.m_def),
         description='A reference to the component system.',
@@ -365,6 +514,28 @@ class PerovskiteXIonComponent(PerovskiteIonComponent):
 
 
 class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'name',
+                        'mass',
+                    ],
+                ),
+                order=[
+                    'abbreviation',
+                    'concentration',
+                    'mass_fraction',
+                    'common_name',
+                    'molecular_formula',
+                    'smiles',
+                    'iupac_name',
+                    'cas_number',
+                ]
+            )
+        )
+    )
     abbreviation = Quantity(
         type=str,
         description='The abbreviation used for the additive or impurity.',
@@ -396,29 +567,25 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
+        pure_substance = PubChemPureSubstanceSection(
+            name=self.common_name,
+            molecular_formula=self.molecular_formula,
+            smile=self.smiles,
+            iupac_name=self.iupac_name,
+            cas_number=self.cas_number,
+        )
+        pure_substance.normalize(archive, logger)
+        if self.molecular_formula is None:
+            self.molecular_formula = pure_substance.molecular_formula
+        if self.smiles is None:
+            self.smiles = pure_substance.smile
+        if self.iupac_name is None:
+            self.iupac_name = pure_substance.iupac_name
+        if self.cas_number is None:
+            self.cas_number = pure_substance.cas_number
+        if self.common_name is None:
+            self.common_name = pure_substance.name
         super().normalize(archive, logger)
-        if isinstance(self.pure_substance, PubChemPureSubstanceSection):
-            if self.molecular_formula is None:
-                self.molecular_formula = self.pure_substance.molecular_formula
-            if self.smiles is None:
-                self.smiles = self.pure_substance.smile
-            if self.iupac_name is None:
-                self.iupac_name = self.pure_substance.iupac_name
-            if self.cas_number is None:
-                self.cas_number = self.pure_substance.cas_number
-            if self.common_name is None:
-                self.common_name = self.pure_substance.name
-        else:
-            pure_substance = PubChemPureSubstanceSection(
-                name=self.common_name,
-                molecular_formula=self.molecular_formula,
-                smile=self.smiles,
-                iupac_name=self.iupac_name,
-                cas_number=self.cas_number,
-            )
-            pure_substance.normalize(archive, logger)
-            self.pure_substance = pure_substance
-            self.normalize(archive, logger)
 
 
 class PerovskiteComposition(CompositeSystem, EntryData):
