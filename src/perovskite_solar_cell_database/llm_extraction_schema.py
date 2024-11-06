@@ -113,7 +113,7 @@ class Stability(ArchiveSection):
         ),
     )
 
-    PCE_at_start = Quantity(
+    PCE_at_the_start_of_the_experiment = Quantity(
         type=float,
         description='PCE at the start of the experiment',
         a_eln=ELNAnnotation(label='PCE at Start', component='NumberEditQuantity'),
@@ -127,7 +127,7 @@ class Stability(ArchiveSection):
         ),
     )
 
-    PCE_at_end = Quantity(
+    PCE_at_the_end_of_description = Quantity(
         type=float,
         description='PCE at the end of the experiment',
         a_eln=ELNAnnotation(label='PCE at End', component='NumberEditQuantity'),
@@ -163,7 +163,24 @@ class ProcessingAtmosphere(ArchiveSection):
         ),
     )
 
+class Solute(ArchiveSection):
+    m_def = Section(label='Solute')
 
+    name = Quantity(
+        type=str,
+        description='Name of the solute',
+        a_eln=ELNAnnotation(label='Name', component='StringEditQuantity'),
+    )
+    concentration = Quantity(
+        type=float,
+        description='Concentration of the solute',
+        a_eln=ELNAnnotation(label='Concentration', component='NumberEditQuantity'),
+    )
+    concentration_unit = Quantity(
+        type=str,
+        description='Unit of the concentration',
+        a_eln=ELNAnnotation(label='Concentration Unit', component='StringEditQuantity'),
+    )
 # ReactionSolution class
 class ReactionSolution(ArchiveSection):
     m_def = Section(label='Reaction Solution')
@@ -175,20 +192,7 @@ class ReactionSolution(ArchiveSection):
         a_eln=ELNAnnotation(label='Compounds', component='StringEditQuantity'),
     )
 
-    concentrations = Quantity(
-        type=float,
-        shape=['*'],
-        description='Concentrations of compounds',
-        a_eln=ELNAnnotation(label='Concentrations', component='NumberEditQuantity'),
-    )
-
-    concentrations_unit = Quantity(
-        type=str,
-        description='Unit of the concentrations',
-        a_eln=ELNAnnotation(
-            label='Concentrations Unit', component='StringEditQuantity'
-        ),
-    )
+    solutes = SubSection(section_def = Solute, repeats=True, a_eln=ELNAnnotation(label='Solutes'))
 
     volume = Quantity(
         type=float,
@@ -260,10 +264,10 @@ class ProcessingStep(ArchiveSection):
         a_eln=ELNAnnotation(label='Antisolvent', component='StringEditQuantity'),
     )
 
-    gas = Quantity(
-        type=str,
-        description='Gas used in the process',
-        a_eln=ELNAnnotation(label='Gas', component='StringEditQuantity'),
+    gas_quenching = Quantity(
+        type=bool,
+        description='Whether the crystallization was induced by gas quenching',
+        a_eln=ELNAnnotation(label='Gas Quenching', component='StringEditQuantity'),
     )
 
     solution = SubSection(
@@ -282,7 +286,7 @@ class Deposition(ArchiveSection):
     steps = SubSection(
         section_def=ProcessingStep,
         repeats=True,
-        description='List of processing steps in order of execution. Only report conditions that have been explicitly reported.',
+        description='List of processing steps in order of execution',
     )
 
     reviewer_additional_notes = Quantity(
@@ -332,10 +336,40 @@ class Layer(ArchiveSection):
     )
 
     deposition = SubSection(
-        section_def=Deposition, a_eln=ELNAnnotation(label='Deposition')
+        section_def=ProcessingStep, repeats=True, a_eln=ELNAnnotation(label='Deposition')
     )
 
+    additional_treatments = Quantity(
+        type=str,
+        description='Any additional treatments applied to the layer',
+        a_eln=ELNAnnotation(label='Additional Treatments', component='RichTextEditQuantity'),
+    )
 
+class Ion(ArchiveSection):
+    m_def = Section(label='Ion')
+
+    abbreviation = Quantity(
+        type=str,
+        description="Abbreviation used for the ion",
+        a_eln=ELNAnnotation(label='Abbreviation', component='StringEditQuantity'),)
+    
+    coefficient = Quantity(
+        type=str,
+        description="The stoichiometric coefficient of the ion.",
+        a_eln=ELNAnnotation(label='Coefficient', component='StringEditQuantity'),)
+
+class PerovskiteComposition(ArchiveSection):
+    m_def = Section(label='Perovskite Composition')
+
+    formula = Quantity(
+        type=str,
+        description="Perovskite composition according to IUPAC recommendations.",
+        a_eln=ELNAnnotation(label='Formula', component='StringEditQuantity'),)
+    
+    a_ions = SubSection(section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='A Ions'))
+    b_ions = SubSection(section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='B Ions'))
+    x_ions = SubSection(section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='X Ions'))
+    
 # PerovskiteSolarCell class
 class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
     m_def = Section(label='LLM Extracted Perovskite Solar Cell')
@@ -360,12 +394,9 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
         a_eln=ELNAnnotation(label='Cell Stack', component='StringEditQuantity'),
     )
 
-    perovskite_composition = Quantity(
-        type=str,
-        description='Chemical formula of the perovskite absorber',
-        a_eln=ELNAnnotation(
-            label='Perovskite Composition', component='StringEditQuantity'
-        ),
+    perovskite_composition = SubSection(
+        section_def=PerovskiteComposition, 
+        a_eln=ELNAnnotation(label='Perovskite Composition'),
     )
 
     device_architecture = Quantity(
@@ -451,9 +482,9 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
         ),
     )
 
-    encapsulation = Quantity(
-        type=str,
-        description='Encapsulation method, if any',
+    encapsulated = Quantity(
+        type=bool,
+        description="True if the cell has been encapsulated",
         a_eln=ELNAnnotation(label='Encapsulation', component='StringEditQuantity'),
     )
 
@@ -464,7 +495,8 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
     )
 
     additional_notes = Quantity(
-        type=str, description='Any additional comments or observations'
+        type=str, description='Any additional comments or observations',
+        a_eln=ELNAnnotation(label='Additional Notes', component='RichTextEditQuantity'),
     )
 
     stability = SubSection(
@@ -475,5 +507,30 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, Schema):
         section_def=Layer, repeats=True, a_eln=ELNAnnotation(label='Layers')
     )
 
+# class LLMExtractedPerovskiteSolarCells(PublicationReference, Schema):
+#     m_def = Section(label='LLM Extracted Perovskite Solar Cells')
+    
+#     review_completed = Quantity(
+#         type=bool,
+#         description='True if the review of the data is completed',
+#         default=False,
+#         a_eln=ELNAnnotation(label='Review Completed', component='BoolEditQuantity'),
+#     )
+
+#     DOI_number = Quantity(
+#         type=str,
+#         description='DOI number of the publication',
+#         a_eln=ELNAnnotation(label='DOI Number', component='URLEditQuantity'),
+#     )
+
+#     reviewer_additional_notes = Quantity(
+#         type=str,
+#         description='Any additional comments or observations',
+#         a_eln=ELNAnnotation(label='Additional Notes', component='RichTextEditQuantity'),
+#     )
+    
+#     cells = SubSection(
+#         section_def=LLMExtractedPerovskiteSolarCell, repeats=True
+#     )
 
 m_package.__init_metainfo__()
