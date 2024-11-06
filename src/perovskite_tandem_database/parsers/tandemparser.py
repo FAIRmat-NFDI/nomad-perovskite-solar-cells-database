@@ -223,6 +223,8 @@ def convert_value(value, default_unit=None):  # noqa: PLR0911
             return True
         elif value.lower() == 'false':
             return False
+        elif value.lower() == 'nan':
+            return None
         try:
             number = int(value)
             return number * ureg(default_unit) if default_unit else number
