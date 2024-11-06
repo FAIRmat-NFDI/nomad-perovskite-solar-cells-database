@@ -145,7 +145,8 @@ class PerovskiteChemicalSection(ArchiveSection):
         Returns:
             System: The system object.
         """
-        atoms=optimize_molecule(self.smiles)
+        ase_atoms = optimize_molecule(self.smiles)
+        atoms = nomad_atoms_from_ase_atoms(ase_atoms)
         structural_type = 'molecule'
         if len(atoms) == 1:
             structural_type = 'atom'
@@ -851,7 +852,7 @@ class PerovskiteComposition(CompositeSystem, EntryData):
 
         # topology contains an extra parent
         if len(sub_systems) == len(material.topology) - 1:
-            for i in range(len(self.ions)):
+            for i in range(len(sub_systems)):
                 material.topology[i + 1].chemical_formula_descriptive = self.ions[
                     i
                 ].name
