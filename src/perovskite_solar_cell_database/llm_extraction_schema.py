@@ -17,7 +17,16 @@ from nomad.metainfo import SchemaPackage
 m_package = SchemaPackage()
 
 
-class Ion(ArchiveSection):
+class SectionRevision(ArchiveSection):
+    review_completed = Quantity(
+        type=bool,
+        description='True if the review of the data is completed',
+        default=False,
+        a_eln=ELNAnnotation(label='Review Completed', component='BoolEditQuantity'),
+    )
+
+
+class Ion(SectionRevision):
     m_def = Section(label='Ion')
 
     abbreviation = Quantity(
@@ -33,7 +42,7 @@ class Ion(ArchiveSection):
     )
 
 
-class PerovskiteComposition(ArchiveSection):
+class PerovskiteComposition(SectionRevision):
     m_def = Section(label='Perovskite Composition')
 
     formula = Quantity(
@@ -48,21 +57,21 @@ class PerovskiteComposition(ArchiveSection):
         a_eln=ELNAnnotation(label='Dimensionality', component='EnumEditQuantity'),
     )
 
-    a_ions = SubSection(
+    ions_a_site = SubSection(
         section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='A-site Ions')
     )
 
-    b_ions = SubSection(
+    b_ions_b_site = SubSection(
         section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='B-site Ions')
     )
 
-    x_ions = SubSection(
+    ions_x_site = SubSection(
         section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='X-site Ions')
     )
 
 
 # LightSource class
-class LightSource(ArchiveSection):
+class LightSource(SectionRevision):
     m_def = Section(label='Light Source')
 
     type = Quantity(
@@ -106,7 +115,7 @@ class LightSource(ArchiveSection):
     )
 
 
-class Solute(ArchiveSection):
+class Solute(SectionRevision):
     m_def = Section(label='Solute')
 
     name = Quantity(
@@ -128,25 +137,8 @@ class Solute(ArchiveSection):
     )
 
 
-class GasQuenching(ArchiveSection):
-    m_def = Section(label='Gas Quenching')
-
-    gas_name = Quantity(
-        type=str,
-        description='Name of the gas used',
-        a_eln=ELNAnnotation(label='Gas Name', component='StringEditQuantity'),
-    )
-
-    time = Quantity(
-        type=float,
-        unit='s',
-        description='Duration of gas quenching',
-        a_eln=ELNAnnotation(label='Time', component='NumberEditQuantity'),
-    )
-
-
 # Stability class
-class Stability(ArchiveSection):
+class Stability(SectionRevision):
     time = Quantity(
         type=float,
         unit='hour',
@@ -218,7 +210,7 @@ class Stability(ArchiveSection):
 
 
 # ProcessingAtmosphere class
-class ProcessingAtmosphere(ArchiveSection):
+class ProcessingAtmosphere(SectionRevision):
     m_def = Section(label='Processing Atmosphere')
 
     type = Quantity(
@@ -248,7 +240,7 @@ class ProcessingAtmosphere(ArchiveSection):
 
 
 # ReactionSolution class
-class ReactionSolution(ArchiveSection):
+class ReactionSolution(SectionRevision):
     m_def = Section(label='Reaction Solution')
 
     solutes = SubSection(
@@ -281,7 +273,7 @@ class ReactionSolution(ArchiveSection):
 
 
 # ProcessingStep class
-class ProcessingStep(ArchiveSection):
+class ProcessingStep(SectionRevision):
     m_def = Section(label='Processing Step')
 
     step_name = Quantity(
@@ -322,7 +314,7 @@ class ProcessingStep(ArchiveSection):
     gas_quenching = Quantity(
         type=bool,
         description='Whether gas quenching was used',
-        a_eln=ELNAnnotation(label='Gas Quenching', component='BooleanEditQuantity'),
+        a_eln=ELNAnnotation(label='Gas Quenching', component='BoolEditQuantity'),
     )
 
     solution = SubSection(
@@ -337,7 +329,7 @@ class ProcessingStep(ArchiveSection):
 
 
 # Deposition class
-class Deposition(ArchiveSection):
+class Deposition(SectionRevision):
     steps = SubSection(
         section_def=ProcessingStep,
         repeats=True,
@@ -356,7 +348,7 @@ class Deposition(ArchiveSection):
 
 
 # Layer class
-class Layer(ArchiveSection):
+class Layer(SectionRevision):
     name = Quantity(
         type=str,
         description='Name of the layer',
@@ -410,15 +402,6 @@ Use established terminology: "SAM" for self-organized molecular layers, "surface
         a_eln=ELNAnnotation(
             label='Additional Treatment', component='StringEditQuantity'
         ),
-    )
-
-
-class SectionRevision(ArchiveSection):
-    review_completed = Quantity(
-        type=bool,
-        description='True if the review of the data is completed',
-        default=False,
-        a_eln=ELNAnnotation(label='Review Completed', component='BoolEditQuantity'),
     )
 
 
