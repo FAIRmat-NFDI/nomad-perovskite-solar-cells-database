@@ -283,15 +283,13 @@ def extract_additives(data_frame):
     if not df_temp.empty:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
-            additives_name = partial_get(
-                df_components[component], 'Additives. Compounds'
-            )
-            additives_concentration = partial_get(
-                df_components[component], 'Additives. Concentrations'
-            )
-            additives.append(
-                Substance(name=additives_name, concentration=additives_concentration)
-            )
+            additives_properties = {
+                'name': partial_get(df_components[component], 'Additives. Compounds'),
+                'concentration': partial_get(
+                    df_components[component], 'Additives. Concentrations'
+                ),
+            }
+            additives.append(Substance(**additives_properties))
     if len(additives) == 0:
         return None
     else:
@@ -307,18 +305,13 @@ def extract_solvents(data_frame):
     if not df_temp.empty:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
-            name = partial_get(df_components[component], 'Solvents ')
-            mixing_ratio = partial_get(df_components[component], 'Mixing ratio')
-            supplier = partial_get(df_components[component], 'Solvents. Supplier')
-            purity = partial_get(df_components[component], 'Solvents. Purity')
-            solvents.append(
-                Solvent(
-                    name=name,
-                    mixing_ratio=mixing_ratio,
-                    supplier=supplier,
-                    purity=purity,
-                )
-            )
+            solvent_properties = {
+                'name': partial_get(df_components[component], 'Solvents '),
+                'mixing_ratio': partial_get(df_components[component], 'Mixing ratio'),
+                'supplier': partial_get(df_components[component], 'Solvents. Supplier'),
+                'purity': partial_get(df_components[component], 'Solvents. Purity'),
+            }
+            solvents.append(Solvent(**solvent_properties))
     if len(solvents) == 0:
         return None
     else:
@@ -334,36 +327,35 @@ def extract_reactants(data_frame):
     if not df_temp.empty:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
-            name = partial_get(
-                df_components[component], 'Reaction solutions. Compounds '
-            )
-            supplier = partial_get(
-                df_components[component], 'Reaction solutions. Compounds. Supplier'
-            )
-            purity = partial_get(
-                df_components[component], 'Reaction solutions. Compounds. Purity'
-            )
-            concentration = partial_get(
-                df_components[component], 'Reaction solutions. Concentrations'
-            )
-            volume = partial_get(
-                df_components[component], 'Reaction solutions. Volumes'
-            )
-            age = partial_get(df_components[component], 'Reaction solutions. Age')
-            temperature = partial_get(
-                df_components[component], 'Reaction solutions. Temperature'
-            )
-            reactants.append(
-                Substance(
-                    name=name,
-                    supplier=supplier,
-                    purity=purity,
-                    concentration=concentration,
-                    volume=volume,
-                    age=age,
-                    temperature=temperature,
-                )
-            )
+            reactant_properties = {
+                'name': partial_get(
+                    df_components[component], 'Reaction solutions. Compounds '
+                ),
+                'supplier': partial_get(
+                    df_components[component], 'Reaction solutions. Compounds. Supplier'
+                ),
+                'purity': partial_get(
+                    df_components[component], 'Reaction solutions. Compounds. Purity'
+                ),
+                'concentration': partial_get(
+                    df_components[component], 'Reaction solutions. Concentrations'
+                ),
+                'volume': partial_get(
+                    df_components[component], 'Reaction solutions. Volumes'
+                ),
+                'age': partial_get(
+                    df_components[component],
+                    'Reaction solutions. Age',
+                    default_unit='h',
+                ),
+                'temperature': partial_get(
+                    df_components[component],
+                    'Reaction solutions. Temperature',
+                    default_unit='celsius',
+                ),
+            }
+
+            reactants.append(Substance(**reactant_properties))
     if len(reactants) == 0:
         return None
     else:
@@ -379,26 +371,24 @@ def extract_quenching_solvents(data_frame):
     if not df_temp.empty:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
-            name = partial_get(df_components[component], 'Quenching media ')
-            mixing_ratio = partial_get(
-                df_components[component], 'Mixing media. Mixing ratios'
-            )
-            volume = partial_get(df_components[component], 'Quenching media. Volume')
-            additive_name = partial_get(
-                df_components[component], 'Quenching media. Additives'
-            )
-            additive_concentration = partial_get(
-                df_components[component], 'Quenching media. Additives. Concentrations'
-            )
-            quenching_solvents.append(
-                QuenchingSolvent(
-                    name=name,
-                    mixing_ratio=mixing_ratio,
-                    volume=volume,
-                    additive_name=additive_name,
-                    additive_concentration=additive_concentration,
-                )
-            )
+            solvent_properties = {
+                'name': partial_get(df_components[component], 'Quenching media '),
+                'mixing_ratio': partial_get(
+                    df_components[component], 'Mixing media. Mixing ratios'
+                ),
+                'volume': partial_get(
+                    df_components[component], 'Quenching media. Volume'
+                ),
+                'additive_name': partial_get(
+                    df_components[component], 'Quenching media. Additives'
+                ),
+                'additive_concentration': partial_get(
+                    df_components[component],
+                    'Quenching media. Additives. Concentrations',
+                ),
+            }
+            quenching_solvents.append(QuenchingSolvent(**solvent_properties))
+
     if len(quenching_solvents) == 0:
         return None
     else:
@@ -540,9 +530,11 @@ def extract_layer_stack(data_frame):
             # Sublayer information
             sublayer_properties = {
                 'functionality': partial_get(df_sublayer, 'Functionality'),
-                'thickness': partial_get(df_sublayer, 'Thickness'),
-                'area': partial_get(df_sublayer, 'Area'),
-                'surface_roughness': partial_get(df_sublayer, 'Surface roughness'),
+                'thickness': partial_get(df_sublayer, 'Thickness', default_unit='nm'),
+                'area': partial_get(df_sublayer, 'Area', default_unit='cm^2'),
+                'surface_roughness': partial_get(
+                    df_sublayer, 'Surface roughness', default_unit='nm'
+                ),
                 'supplier': partial_get(df_sublayer, 'Supplier'),
                 'supplier_brand': partial_get(df_sublayer, 'Brand name'),
             }
