@@ -562,45 +562,41 @@ def extract_layer_stack(data_frame):
             df_processes = split_data(df_sublayer, delimiter='>>')
             for syn_step in df_processes.columns:
                 df_process = df_processes[syn_step]
-                name = partial_get(
-                    df_process, 'Stack sequence '
-                )  # TODO: check if this is correct
+
+                # Sublayer name
+                # TODO: check if this is correct
+                sublayer_properties['name'] = partial_get(df_process, 'Stack sequence ')
 
                 # Synthesis process information
-                procedure = partial_get(df_process, 'Deposition. Procedure')
-                if procedure is not None:
-                    # atmo_p_partial = partial_get(df_process, "atmosphere. Pressure. Partial")
-                    process_conditions = {
-                        'aggregation_state_of_reactants': partial_get(
-                            df_process, 'Aggregation state'
-                        ),
-                        'atmosphere': partial_get(df_process, 'Synthesis atmosphere '),
-                        'pressure_total': partial_get(
-                            df_process,
-                            'atmosphere. Pressure. Total',
-                            default_unit='mbar',
-                        ),
-                        'humidity_relative': partial_get(
-                            df_process, 'Relative humidity'
-                        ),
-                    }
+                # atmo_p_partial = partial_get(df_process, "atmosphere. Pressure. Partial")
+                process_conditions = {
+                    'procedure': partial_get(df_process, 'Deposition. Procedure'),
+                    'aggregation_state_of_reactants': partial_get(
+                        df_process, 'Aggregation state'
+                    ),
+                    'atmosphere': partial_get(df_process, 'Synthesis atmosphere '),
+                    'pressure_total': partial_get(
+                        df_process,
+                        'atmosphere. Pressure. Total',
+                        default_unit='mbar',
+                    ),
+                    'humidity_relative': partial_get(df_process, 'Relative humidity'),
+                }
 
-                    # Liquid based synthesis
-                    if procedure in liquid_based_processes:
-                        synthesis.append(
-                            LiquidSynthesis(
-                                **process_conditions,
-                                solvent=extract_solvents(df_process),
-                                reactant=extract_reactants(df_process),
-                                quenching_solvent=extract_quenching_solvents(
-                                    df_process
-                                ),
-                            )
+                # Liquid based synthesis
+                if process_conditions['procedure'] in liquid_based_processes:
+                    synthesis.append(
+                        LiquidSynthesis(
+                            **process_conditions,
+                            solvent=extract_solvents(df_process),
+                            reactant=extract_reactants(df_process),
+                            quenching_solvent=extract_quenching_solvents(df_process),
                         )
+                    )
 
-                    # Physical vapour deposition & similar
-                    elif procedure in gas_phase_processes:
-                        synthesis.append(GasPhaseSynthesis())
+                # Physical vapour deposition & similar
+                elif process_conditions['procedure'] in gas_phase_processes:
+                    synthesis.append(GasPhaseSynthesis())
 
             # Annealing etc!
             # Storage conditions
@@ -611,15 +607,15 @@ def extract_layer_stack(data_frame):
                 if sublayer_properties['functionality'] == 'Substrate':
                     layer_stack.append(
                         Substrate(
-                            name=name,
                             **sublayer_properties,
                             cleaning=cleaning_steps,
+                            synthesis=synthesis,
+                            storage=storage,
                         )
                     )
                 else:
                     layer_stack.append(
                         NonAbsorbingLayer(
-                            name=name,
                             **sublayer_properties,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
@@ -630,9 +626,7 @@ def extract_layer_stack(data_frame):
             elif 'P' in label:
                 sublayer_properties.update(
                     {
-                        'absorber_type': partial_get(
-                            df_layer, 'Photoabsorber material'
-                        ),
+                        'name': partial_get(df_sublayer, 'Photoabsorber material'),
                         'bandgap': partial_get(df_sublayer, 'Band gap '),
                         'bandgap_graded': partial_get(df_sublayer, 'Band gap. Graded'),
                         'bandgap_estimation_basis': partial_get(
@@ -643,7 +637,13 @@ def extract_layer_stack(data_frame):
                 )
 
                 # Differentiate between absorber types
-                if sublayer_properties['absorber_type'] == 'Perovskite':
+                if sublayer_properties['name'] == 'Perovskite':
+                    perovskite_properties = {
+                        'single_crystal': partial_get(df_sublayer, 'Single crystal'),
+                        'inorganic': partial_get(df_sublayer, 'Inorganic Perovskite'),
+                        'lead_free': partial_get(df_sublayer, 'Lead free'),
+                    }
+
                     dimension = next(
                         (
                             idx
@@ -655,58 +655,45 @@ def extract_layer_stack(data_frame):
                         None,
                     )
                     if dimension:
-                        dimension = dimension.split('Dimension. ')[1].split(' [')[0]
-
-                    single_crystal = partial_get(df_sublayer, 'Single crystal')
-                    inorganic = partial_get(df_sublayer, 'Inorganic Perovskite')
-                    lead_free = partial_get(df_sublayer, 'Lead free')
-
-                    composition = extract_perovskite_composition(df_sublayer)
+                        perovskite_properties['dimension'] = dimension.split(
+                            'Dimension. '
+                        )[1].split(' [')[0]
 
                     layer_stack.append(
                         PerovskiteLayer(
-                            name=name,
                             **sublayer_properties,
-                            dimension=dimension,
-                            composition=composition,
-                            single_crystal=single_crystal,
-                            inorganic=inorganic,
-                            lead_free=lead_free,
+                            **perovskite_properties,
+                            composition=extract_perovskite_composition(df_sublayer),
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
                         )
                     )
-                elif sublayer_properties['absorber_type'] == 'Silicon':
-                    cell_type = partial_get(df_sublayer, 'Type of cell')
-                    silicon_type = partial_get(df_sublayer, 'Type of silicon')
-                    doping_sequence = partial_get(df_sublayer, 'Doping sequence')
+                elif sublayer_properties['name'] == 'Silicon':
+                    silicon_properties = {
+                        'cell_type': partial_get(df_sublayer, 'Type of cell'),
+                        'silicon_type': partial_get(df_sublayer, 'Type of silicon'),
+                        'doping_sequence': partial_get(df_sublayer, 'Doping sequence'),
+                    }
 
                     layer_stack.append(
                         SiliconLayer(
-                            name=name,
                             **sublayer_properties,
+                            **silicon_properties,
                             perovskite_inspired=None,
-                            cell_type=cell_type,
-                            silicon_type=silicon_type,
-                            doping_sequence=doping_sequence,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
                         )
                     )
-                elif sublayer_properties['absorber_type'] == 'CIGS':
-                    composition = extract_chalcopyrite_composition(df_sublayer)
-                    alkali_metal_doping = extract_alkali_doping(df_sublayer)
-
+                elif sublayer_properties['name'] == 'CIGS':
                     layer_stack.append(
                         ChalcopyriteLayer(
-                            name=name,
                             **sublayer_properties,
-                            composition=composition,
-                            alkali_metal_doping=alkali_metal_doping,
+                            composition=extract_chalcopyrite_composition(df_sublayer),
+                            alkali_metal_doping=extract_alkali_doping(df_sublayer),
                             perovskite_inspired=None,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
@@ -717,7 +704,6 @@ def extract_layer_stack(data_frame):
                 else:
                     layer_stack.append(
                         PhotoAbsorber(
-                            name=name,
                             **sublayer_properties,
                             perovskite_inspired=None,
                             cleaning=cleaning_steps,
