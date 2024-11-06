@@ -361,6 +361,7 @@ class Layer(ArchiveSection):
                 'ETL',
                 'Front contact',
                 'HTL',
+                'Photoabsorber',
                 'Recombination layer',
                 'Self assembled monolayer',
                 'Subcell spacer',
@@ -426,6 +427,10 @@ class Substrate(NonAbsorbingLayer):
 
 
 class PhotoAbsorber(Layer):
+    m_def = Section(
+        a_template=dict(functionality='Photoabsorber'),
+    )
+
     bandgap = Quantity(
         type=float,
         shape=[],
