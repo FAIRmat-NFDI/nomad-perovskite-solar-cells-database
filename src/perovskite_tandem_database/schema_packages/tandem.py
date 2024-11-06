@@ -195,6 +195,8 @@ class SynthesisStep(Activity, ArchiveSection):
     More specific synthesis steps are inherited from this class.
     """
 
+    m_def = Section(label_quantity='procedure')
+
     # General
     procedure = Quantity(
         type=str,
