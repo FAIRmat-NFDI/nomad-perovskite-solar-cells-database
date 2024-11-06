@@ -406,24 +406,24 @@ def extract_perovskite_composition(data_frame):
             df_temp[df_temp.index.str.contains('A-ions')], delimiter=';'
         )
         for component in df_components.columns:
-            type = partial_get(df_components[component], 'type')
-            coefficient = partial_get(df_components[component], 'concentration')
+            type = partial_get(df_components[component], '-ions ')
+            coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
                 ions_a.append(Ion(ion_type=type, coefficient=coefficient))
         df_components = split_data(
             df_temp[df_temp.index.str.contains('B-ions')], delimiter=';'
         )
         for component in df_components.columns:
-            type = partial_get(df_components[component], 'type')
-            coefficient = partial_get(df_components[component], 'concentration')
+            type = partial_get(df_components[component], '-ions ')
+            coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
                 ions_b.append(Ion(ion_type=type, coefficient=coefficient))
         df_components = split_data(
             df_temp[df_temp.index.str.contains('C-ions')], delimiter=';'
         )
         for component in df_components.columns:
-            type = partial_get(df_components[component], 'type')
-            coefficient = partial_get(df_components[component], 'concentration')
+            type = partial_get(df_components[component], '-ions ')
+            coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
                 ions_c.append(Ion(ion_type=type, coefficient=coefficient))
     return PerovskiteComposition(ion_a=ions_a, ion_b=ions_b, ion_c=ions_c)
