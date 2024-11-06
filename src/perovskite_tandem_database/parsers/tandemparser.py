@@ -486,23 +486,20 @@ def extract_reference(data_frame):
     """
     Extracts the reference from the data subframe.
     """
-    df_temp = data_frame[data_frame.index.str.contains('Ref. ')]
-    ID_temp = partial_get(df_temp, 'ID temp')
-    DOI_number = partial_get(df_temp, 'DOI number')
-    data_entered_by_author = partial_get(df_temp, 'Data entered by author')
-    name_of_person_entering_the_data = partial_get(
-        df_temp, 'Name of person entering the data'
-    )
-    free_text_comment = partial_get(df_temp, 'Free text comment')
 
-    reference = Reference(
-        ID_temp=ID_temp,
-        DOI_number=DOI_number,
-        data_entered_by_author=data_entered_by_author,
-        name_of_person_entering_the_data=name_of_person_entering_the_data,
-        free_text_comment=free_text_comment,
-    )
-    return reference
+    df_temp = data_frame[data_frame.index.str.contains('Ref. ')]
+
+    reference_data = {
+        'ID_temp': partial_get(df_temp, 'ID temp'),
+        'DOI_number': partial_get(df_temp, 'DOI number'),
+        'data_entered_by_author': partial_get(df_temp, 'Data entered by author'),
+        'name_of_person_entering_the_data': partial_get(
+            df_temp, 'Name of person entering the data'
+        ),
+        'free_text_comment': partial_get(df_temp, 'Free text comment'),
+    }
+
+    return Reference(**reference_data)
 
 
 def extract_layer_stack(data_frame):
@@ -541,19 +538,23 @@ def extract_layer_stack(data_frame):
             df_sublayer = df_sublayers[sublayer]
 
             # Sublayer information
-            functionality = partial_get(df_sublayer, 'Functionality')
-            thickness = partial_get(df_sublayer, 'Thickness')
-            area = partial_get(df_sublayer, 'Area')
-            surface_roughness = partial_get(df_sublayer, 'Surface roughness')
+            sublayer_properties = {
+                'functionality': partial_get(df_sublayer, 'Functionality'),
+                'thickness': partial_get(df_sublayer, 'Thickness'),
+                'area': partial_get(df_sublayer, 'Area'),
+                'surface_roughness': partial_get(df_sublayer, 'Surface roughness'),
+                'supplier': partial_get(df_sublayer, 'Supplier'),
+                'supplier_brand': partial_get(df_sublayer, 'Brand name'),
+            }
+
             bought_commercially = partial_get(df_sublayer, 'Bought commercially')
-            if bought_commercially is None:
-                origin = 'Unknown'
-            elif bought_commercially is True:
-                origin = 'Commercial'
+            if bought_commercially is True:
+                sublayer_properties['origin'] = 'Commercial'
             elif bought_commercially is False:
-                origin = 'Lab made'
-            supplier = exact_get(df_sublayer, 'Supplier')
-            supplier_brand = partial_get(df_sublayer, 'Brand name')
+                sublayer_properties['origin'] = 'Lab made'
+            else:
+                sublayer_properties['origin'] = 'Unknown'
+
             additives = extract_additives(df_sublayer)
 
             # Split synthesis into single steps
@@ -568,28 +569,32 @@ def extract_layer_stack(data_frame):
                 # Synthesis process information
                 procedure = partial_get(df_process, 'Deposition. Procedure')
                 if procedure is not None:
-                    aggr_state = partial_get(df_process, 'Aggregation state')
-                    atmo = partial_get(df_process, 'Synthesis atmosphere ')
-                    atmo_p_total = partial_get(
-                        df_process, 'atmosphere. Pressure. Total', default_unit='mbar'
-                    )
                     # atmo_p_partial = partial_get(df_process, "atmosphere. Pressure. Partial")
-                    humidity_rel = partial_get(df_process, 'Relative humidity')
+                    process_conditions = {
+                        'aggregation_state_of_reactants': partial_get(
+                            df_process, 'Aggregation state'
+                        ),
+                        'atmosphere': partial_get(df_process, 'Synthesis atmosphere '),
+                        'pressure_total': partial_get(
+                            df_process,
+                            'atmosphere. Pressure. Total',
+                            default_unit='mbar',
+                        ),
+                        'humidity_relative': partial_get(
+                            df_process, 'Relative humidity'
+                        ),
+                    }
 
                     # Liquid based synthesis
                     if procedure in liquid_based_processes:
-                        solvents = extract_solvents(df_process)
-                        reactants = extract_reactants(df_process)
-                        quenching_solvents = extract_quenching_solvents(df_process)
                         synthesis.append(
                             LiquidSynthesis(
-                                aggregation_state_of_reactants=aggr_state,
-                                atmosphere=atmo,
-                                pressure_total=atmo_p_total,
-                                humidity_relative=humidity_rel,
-                                solvent=solvents,
-                                reactant=reactants,
-                                quenching_solvent=quenching_solvents,
+                                **process_conditions,
+                                solvent=extract_solvents(df_process),
+                                reactant=extract_reactants(df_process),
+                                quenching_solvent=extract_quenching_solvents(
+                                    df_process
+                                ),
                             )
                         )
 
@@ -603,17 +608,11 @@ def extract_layer_stack(data_frame):
 
             # Differentiate between type of layers
             if 'NAlayer' in label:
-                if functionality == 'Substrate':
+                if sublayer_properties['functionality'] == 'Substrate':
                     layer_stack.append(
                         Substrate(
                             name=name,
-                            functionality=functionality,
-                            thickness=thickness,
-                            area=area,
-                            surface_roughness=surface_roughness,
-                            origin=origin,
-                            supplier=supplier,
-                            supplier_brand=supplier_brand,
+                            **sublayer_properties,
                             cleaning=cleaning_steps,
                         )
                     )
@@ -621,13 +620,7 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         NonAbsorbingLayer(
                             name=name,
-                            functionality=functionality,
-                            thickness=thickness,
-                            area=area,
-                            surface_roughness=surface_roughness,
-                            origin=origin,
-                            supplier=supplier,
-                            supplier_brand=supplier_brand,
+                            **sublayer_properties,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
@@ -635,16 +628,22 @@ def extract_layer_stack(data_frame):
                         )
                     )
             elif 'P' in label:
-                absorber_type = partial_get(df_layer, 'Photoabsorber material')
-                bandgap = partial_get(df_sublayer, 'Band gap ')
-                bandgap_graded = partial_get(df_sublayer, 'Band gap. Graded')
-                bandgap_estimation_basis = partial_get(
-                    df_sublayer, 'Band gap. Estimation basis'
+                sublayer_properties.update(
+                    {
+                        'absorber_type': partial_get(
+                            df_layer, 'Photoabsorber material'
+                        ),
+                        'bandgap': partial_get(df_sublayer, 'Band gap '),
+                        'bandgap_graded': partial_get(df_sublayer, 'Band gap. Graded'),
+                        'bandgap_estimation_basis': partial_get(
+                            df_sublayer, 'Band gap. Estimation basis'
+                        ),
+                        'PL_max': partial_get(df_sublayer, 'Pl max'),
+                    }
                 )
-                PL_max = partial_get(df_sublayer, 'Pl max')
 
                 # Differentiate between absorber types
-                if absorber_type == 'Perovskite':
+                if sublayer_properties['absorber_type'] == 'Perovskite':
                     dimension = next(
                         (
                             idx
@@ -667,28 +666,19 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         PerovskiteLayer(
                             name=name,
-                            thickness=thickness,
-                            area=area,
-                            surface_roughness=surface_roughness,
-                            bandgap=bandgap,
-                            bandgap_graded=bandgap_graded,
-                            bandgap_estimation_basis=bandgap_estimation_basis,
-                            PL_max=PL_max,
+                            **sublayer_properties,
                             dimension=dimension,
                             composition=composition,
                             single_crystal=single_crystal,
                             inorganic=inorganic,
                             lead_free=lead_free,
-                            origin=origin,
-                            supplier=supplier,
-                            supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
                         )
                     )
-                elif absorber_type == 'Silicon':
+                elif sublayer_properties['absorber_type'] == 'Silicon':
                     cell_type = partial_get(df_sublayer, 'Type of cell')
                     silicon_type = partial_get(df_sublayer, 'Type of silicon')
                     doping_sequence = partial_get(df_sublayer, 'Doping sequence')
@@ -696,46 +686,28 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         SiliconLayer(
                             name=name,
-                            thickness=thickness,
-                            area=area,
-                            surface_roughness=surface_roughness,
-                            bandgap=bandgap,
-                            bandgap_graded=bandgap_graded,
-                            bandgap_estimation_basis=bandgap_estimation_basis,
-                            PL_max=PL_max,
+                            **sublayer_properties,
                             perovskite_inspired=None,
                             cell_type=cell_type,
                             silicon_type=silicon_type,
                             doping_sequence=doping_sequence,
-                            origin=origin,
-                            supplier=supplier,
-                            supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
                         )
                     )
-                elif absorber_type == 'CIGS':
+                elif sublayer_properties['absorber_type'] == 'CIGS':
                     composition = extract_chalcopyrite_composition(df_sublayer)
                     alkali_metal_doping = extract_alkali_doping(df_sublayer)
 
                     layer_stack.append(
                         ChalcopyriteLayer(
                             name=name,
-                            thickness=thickness,
-                            area=area,
-                            surface_roughness=surface_roughness,
-                            bandgap=bandgap,
-                            bandgap_graded=bandgap_graded,
-                            bandgap_estimation_basis=bandgap_estimation_basis,
-                            PL_max=PL_max,
+                            **sublayer_properties,
                             composition=composition,
                             alkali_metal_doping=alkali_metal_doping,
                             perovskite_inspired=None,
-                            origin=origin,
-                            supplier=supplier,
-                            supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
@@ -746,17 +718,8 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         PhotoAbsorber(
                             name=name,
-                            thickness=thickness,
-                            area=area,
-                            surface_roughness=surface_roughness,
-                            bandgap=bandgap,
-                            bandgap_graded=bandgap_graded,
-                            bandgap_estimation_basis=bandgap_estimation_basis,
-                            PL_max=PL_max,
+                            **sublayer_properties,
                             perovskite_inspired=None,
-                            origin=origin,
-                            supplier=supplier,
-                            supplier_brand=supplier_brand,
                             cleaning=cleaning_steps,
                             synthesis=synthesis,
                             storage=storage,
