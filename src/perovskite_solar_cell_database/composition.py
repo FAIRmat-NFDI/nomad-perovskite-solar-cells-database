@@ -18,7 +18,11 @@
 
 from typing import TYPE_CHECKING
 
-from nomad.datamodel.data import EntryData, EntryDataCategory
+from ase import Atoms
+from nomad.datamodel.data import (
+    EntryData,
+    EntryDataCategory,
+)
 from nomad.datamodel.datamodel import (
     ArchiveSection,
     EntryArchive,
@@ -36,6 +40,13 @@ from nomad.datamodel.metainfo.basesections import (
     PureSubstanceComponent,
     SystemComponent,
 )
+from nomad.datamodel.results import (
+    Material,
+    Properties,
+    Relation,
+    Results,
+    System,
+)
 from nomad.metainfo.metainfo import (
     Category,
     MEnum,
@@ -45,12 +56,50 @@ from nomad.metainfo.metainfo import (
     Section,
     SubSection,
 )
+from nomad.normalizing.common import nomad_atoms_from_ase_atoms
+from nomad.normalizing.topology import add_system, add_system_info
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
     from structlog.stdlib import BoundLogger
 
 m_package = Package()
+
+
+def convert_rdkit_mol_to_ase_atoms(rdkit_mol):
+    """
+    Convert an RDKit molecule to an ASE atoms object.
+
+    Args:
+        rdkit_mol (rdkit.Chem.Mol): RDKit molecule object.
+
+    Returns:
+        ase.Atoms: ASE atoms object.
+    """
+    positions = rdkit_mol.GetConformer().GetPositions()
+    atomic_numbers = [atom.GetAtomicNum() for atom in rdkit_mol.GetAtoms()]
+    ase_atoms = Atoms(numbers=atomic_numbers, positions=positions)
+    return ase_atoms
+
+
+def optimize_molecule(smiles):
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+
+    try:
+        m = Chem.MolFromSmiles(smiles)
+        m = Chem.AddHs(m)
+
+        AllChem.EmbedMolecule(m)
+        AllChem.MMFFOptimizeMolecule(m)
+
+        ase_atoms = convert_rdkit_mol_to_ase_atoms(m)
+
+        # Further processing
+        # ...
+        return ase_atoms
+    except Exception as e:
+        print(f'An error occurred: {e}')
 
 
 class PerovskiteCompositionCategory(EntryDataCategory):
@@ -88,6 +137,24 @@ class PerovskiteChemicalSection(ArchiveSection):
         a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
         shape=[],
     )
+
+    def to_topology_system(self) -> System:
+        """
+        Convert the section to a system.
+
+        Returns:
+            System: The system object.
+        """
+        atoms=optimize_molecule(self.smiles)
+        structural_type = 'molecule'
+        if len(atoms) == 1:
+            structural_type = 'atom'
+        return System(
+            label=self.common_name,
+            method='parser',
+            atoms=atoms,
+            structural_type=structural_type,
+        )
 
 
 class PerovskiteIonSection(PerovskiteChemicalSection):
@@ -220,6 +287,9 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
             self.source_compound_cas_number = source_compound.cas_number
         self.source_compound = source_compound
         super().normalize(archive, logger)
+        # if self.smiles is not None:
+        #     system = self.to_topology_system()
+
 
 
 class PerovskiteAIon(PerovskiteIon, EntryData):
@@ -298,7 +368,7 @@ class PerovskiteBIon(PerovskiteIon, EntryData):
     )
 
 
-class PerovskiteXIon(PerovskiteIon, EntryData):
+class PerovskiteCIon(PerovskiteIon, EntryData):
     m_def = Section(
         categories=[PerovskiteCompositionCategory],
         label='Perovskite C Ion',
@@ -478,7 +548,7 @@ class PerovskiteBIonComponent(PerovskiteIonComponent):
     )
 
 
-class PerovskiteXIonComponent(PerovskiteIonComponent):
+class PerovskiteCIonComponent(PerovskiteIonComponent):
     m_def = Section(
         a_eln=ELNAnnotation(
             properties=SectionProperties(
@@ -507,7 +577,7 @@ class PerovskiteXIonComponent(PerovskiteIonComponent):
         )
     )
     system = Quantity(
-        type=Reference(PerovskiteXIon.m_def),
+        type=Reference(PerovskiteCIon.m_def),
         description='A reference to the component system.',
         a_eln=dict(component='ReferenceEditQuantity'),
     )
@@ -596,6 +666,31 @@ class PerovskiteComposition(CompositeSystem, EntryData):
     m_def = Section(
         categories=[PerovskiteCompositionCategory],
         label='Perovskite Composition',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'datetime',
+                        'description',
+                        'name',
+                        'lab_id', 
+                    ],
+                ),
+                order=[
+                    'short_form',
+                    'long_form',
+                    'composition_estimate',
+                    'sample_type',
+                    'dimensionality',
+                    'band_gap',
+                    'a_ions',
+                    'b_ions',
+                    'c_ions',
+                    'impurities',
+                    'additives',
+                ]
+            )
+        )
     )
     short_form = Quantity(
         type=str,
@@ -653,8 +748,8 @@ class PerovskiteComposition(CompositeSystem, EntryData):
         section_def=PerovskiteBIonComponent,
         repeats=True,
     )
-    x_ions = SubSection(
-        section_def=PerovskiteXIonComponent,
+    c_ions = SubSection(
+        section_def=PerovskiteCIonComponent,
         repeats=True,
     )
     impurities = SubSection(
@@ -675,7 +770,13 @@ class PerovskiteComposition(CompositeSystem, EntryData):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        ions: list[PerovskiteIonComponent] = self.a_ions + self.b_ions + self.x_ions
+        if not archive.results:
+            archive.results = Results()
+        if not archive.results.material:
+            archive.results.material = Material()
+        if not archive.results.properties:
+            archive.results.properties = Properties()
+        ions: list[PerovskiteIonComponent] = self.a_ions + self.b_ions + self.c_ions
         self.components = ions
         if not any(ion.coefficient is None for ion in ions):
             coefficient_sum = sum([ion.coefficient for ion in ions])
@@ -709,7 +810,51 @@ class PerovskiteComposition(CompositeSystem, EntryData):
             else:
                 coefficient_str = f'{ion.coefficient:.2}'
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
+
+        if self.dimensionality in ['0D', '1D', '2D', '3D']:
+            archive.results.properties.dimensionality = self.dimensionality
+            if self.dimensionality == '3D':
+                archive.results.material.structural_type = 'bulk'
+            elif self.dimensionality != '0D':
+                archive.results.material.structural_type = self.dimensionality
         super().normalize(archive, logger)
+
+        topology = {}
+        # Add original system
+        parent_system = System(
+            label='Perovskite Composition',
+            description='A system describing the chemistry and components of the perovskite.',
+            system_relation=Relation(type='root'),
+        )
+
+        parent_system.structural_type = archive.results.material.structural_type
+        parent_system.chemical_formula_hill = (
+            archive.results.material.chemical_formula_hill
+        )
+        parent_system.elements = archive.results.material.elements
+        parent_system.chemical_formula_iupac = (
+            archive.results.material.chemical_formula_iupac
+        )
+
+        add_system(parent_system, topology)
+        add_system_info(parent_system, topology)
+
+        sub_systems: list[PerovskiteChemicalSection] = ions + self.impurities + self.additives
+        for sub_system in sub_systems:
+            child_system = sub_system.to_topology_system()
+            add_system(child_system, topology, parent_system)
+            add_system_info(child_system, topology)
+
+        material = archive.m_setdefault('results.material')
+        for system in topology.values():
+            material.m_add_sub_section(Material.topology, system)
+
+        # topology contains an extra parent
+        if len(sub_systems) == len(material.topology) - 1:
+            for i in range(len(self.ions)):
+                material.topology[i + 1].chemical_formula_descriptive = self.ions[
+                    i
+                ].name
 
 
 m_package.__init_metainfo__()
