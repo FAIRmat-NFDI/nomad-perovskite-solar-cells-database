@@ -22,13 +22,12 @@ class Ion(ArchiveSection):
     A section describing a substance that is an element.
     """
 
-    m_def = Section(label_quantity='element')
+    m_def = Section(label_quantity='ion_type')
 
     ion_type = Quantity(
         type=str,
         shape=[],
         description='Type of the ion.',
-        a_eln=dict(component='StringEditQuantity'),
     )
 
     element = Quantity(
@@ -378,18 +377,21 @@ class Layer(ArchiveSection):
         type=float,
         shape=[],
         unit='nm',
+        a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
         description='The thickness of the layer',
     )
     area = Quantity(
         type=float,
         shape=[],
         unit='cm^2',
+        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
         description='The area of the layer',
     )
     surface_roughness = Quantity(
         type=float,
         shape=[],
         unit='nm',
+        a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
         description='The root mean square value of the surface roughness',
     )
 
@@ -481,7 +483,7 @@ class PhotoAbsorber(Layer):
 
 
 class PerovskiteComposition(ArchiveSection):
-    # basis = Quantity()  # ???
+    # TODO: basis = Quantity()  # ???
     ion_a = SubSection(section_def=Ion, repeats=True)
     ion_b = SubSection(section_def=Ion, repeats=True)
     ion_c = SubSection(section_def=Ion, repeats=True)
