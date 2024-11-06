@@ -155,3 +155,4 @@ perovskite_tandem_json_parser = "perovskite_solar_cell_database.parsers:tandem_j
 solar_cell_app = "perovskite_solar_cell_database.apps:solar_cells"
 tandem_app = "perovskite_solar_cell_database.apps:tandem_cells"
 llm_extraction_schema = "perovskite_solar_cell_database:llm_extraction_schema"
+llm_extracted_solar_cells = "perovskite_solar_cell_database.apps:llm_extracted_solar_cells"
