@@ -22,13 +22,13 @@ class Ion(ArchiveSection):
 
     abbreviation = Quantity(
         type=str,
-        description='The abbreviation used for the ion when writing the perovskite composition',
+        description="The abbreviation used for the ion when writing the perovskite composition such as: 'Cs', 'MA', 'FA', 'PEA'",
         a_eln=ELNAnnotation(label='Abbreviation', component='StringEditQuantity'),
     )
 
     coefficient = Quantity(
         type=str,
-        description='The stoichiometric coefficient of the ion',
+        description='The stoichiometric coefficient of the ion such as “0.75”, or “1-x”.',
         a_eln=ELNAnnotation(label='Coefficient', component='StringEditQuantity'),
     )
 
@@ -38,7 +38,7 @@ class PerovskiteComposition(ArchiveSection):
 
     formula = Quantity(
         type=str,
-        description='The perovskite composition according to IUPAC recommendations',
+        description='The perovskite composition according to IUPAC recommendations, where standard abbreviations are used for all ions',
         a_eln=ELNAnnotation(label='Formula', component='StringEditQuantity'),
     )
 
@@ -190,7 +190,7 @@ class Stability(ArchiveSection):
     PCE_T80 = Quantity(
         type=float,
         unit='hour',
-        description='Time after which the cell performance has degraded by 20%',
+        description='The time after which the cell performance has degraded by 20% with respect to the initial performance.',
         a_eln=ELNAnnotation(
             label='PCE T80', defaultDisplayUnit='hour', component='NumberEditQuantity'
         ),
@@ -292,7 +292,7 @@ class ProcessingStep(ArchiveSection):
 
     method = Quantity(
         type=str,
-        description='Method used in the processing step',
+        description='This is the method for the processing of steps in the design of the cells. Some examples are: Spin-coating, Drop-infiltration, Co-evaporation, Doctor blading, Spray coating, Slot-die coating, Ultrasonic spray, Dropcasting, Inkjet printing, Electrospraying, Thermal-annealing, Antisolvent-quenching',
         a_eln=ELNAnnotation(label='Method', component='StringEditQuantity'),
     )
 
@@ -319,8 +319,10 @@ class ProcessingStep(ArchiveSection):
         ),
     )
 
-    gas_quenching = SubSection(
-        section_def=GasQuenching, a_eln=ELNAnnotation(label='Gas Quenching')
+    gas_quenching = Quantity(
+        type=bool,
+        description='Whether gas quenching was used',
+        a_eln=ELNAnnotation(label='Gas Quenching', component='BooleanEditQuantity'),
     )
 
     solution = SubSection(
@@ -339,7 +341,7 @@ class Deposition(ArchiveSection):
     steps = SubSection(
         section_def=ProcessingStep,
         repeats=True,
-        description='List of processing steps in order of execution. Only report conditions that have been explicitly reported.',
+        description='List of processing steps in order of execution. Only report conditions that have reported in the paper.',
     )
 
     reviewer_additional_notes = Quantity(
@@ -389,12 +391,22 @@ class Layer(ArchiveSection):
     )
 
     deposition = SubSection(
-        section_def=ProcessingStep, a_eln=ELNAnnotation(label='Deposition')
+        section_def=ProcessingStep,
+        a_eln=ELNAnnotation(label='Deposition'),
+        repeats=True,
     )
 
     additional_treatment = Quantity(
         type=str,
-        description='Description of modifications applied to this layer beyond its basic composition',
+        description="""Description of modifications applied to this layer beyond its basic composition, including:
+
+- Self-assembled monolayers (SAMs)
+- Surface passivation treatments
+- Interface engineering (e.g., Lewis base/acid treatments)
+- Additives or dopants
+- Post-deposition treatments
+
+Use established terminology: "SAM" for self-organized molecular layers, "surface passivation", "doping" where applicable.""",
         a_eln=ELNAnnotation(
             label='Additional Treatment', component='StringEditQuantity'
         ),
@@ -468,7 +480,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
     ff = Quantity(
         type=float,
-        description='Fill Factor (FF)',
+        description='Mostly the Fill factor is given as a percentage (%). In case is not make sure to convert it from ratio to percentage.',
         a_eln=ELNAnnotation(
             label='Fill Factor',
             component='NumberEditQuantity',
@@ -515,10 +527,10 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
         ),
     )
 
-    encapsulation = Quantity(
-        type=str,
-        description='Encapsulation method, if any',
-        a_eln=ELNAnnotation(label='Encapsulation', component='StringEditQuantity'),
+    encapsulated = Quantity(
+        type=bool,
+        description='True if the device is encapsulated',
+        a_eln=ELNAnnotation(label='Encapsulated', component='BoolEditQuantity'),
     )
 
     reviewer_additional_notes = Quantity(
