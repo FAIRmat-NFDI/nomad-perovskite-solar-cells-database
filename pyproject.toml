@@ -35,7 +35,7 @@ dependencies = [
     "nomad-schema-plugin-simulation-workflow>=1.0.1",
     "rdkit",
     "openpyxl",
-    "lxml_html_clean",
+    "lxml_html_clean"
 ]
 license = { file = "LICENSE" }
 
