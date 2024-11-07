@@ -6,6 +6,7 @@ from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
     ElementalComposition,
     Process,
+    ProcessStep,
 )
 from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.data_type import Enum
@@ -189,7 +190,7 @@ class Storage(ArchiveSection):
     )
 
 
-class SynthesisStep(Activity, ArchiveSection):
+class SynthesisStep(ProcessStep):
     """
     A section describing a general synthesis step.
     More specific synthesis steps are inherited from this class.
@@ -251,7 +252,7 @@ class SynthesisStep(Activity, ArchiveSection):
     )
 
 
-class CleaningStep(ActivityStep):
+class CleaningStep(ProcessStep):
     """
     A cleaning procedure step.
     """
@@ -259,7 +260,7 @@ class CleaningStep(ActivityStep):
     pass
 
 
-class Cleaning(Activity):
+class Cleaning(Process):
     """
     A section describing a cleaning procedure. Typically before a subsequent synthesis step.
     """
@@ -333,7 +334,7 @@ class GasPhaseSynthesis(SynthesisStep):
     )
 
 
-class Synthesis(Process, ArchiveSection):
+class Synthesis(Process):
     steps = SubSection(section_def=SynthesisStep, repeats=True)
 
 
