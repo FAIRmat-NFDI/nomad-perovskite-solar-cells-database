@@ -1,3 +1,4 @@
+import re
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -9,6 +10,7 @@ from nomad.datamodel.datamodel import EntryArchive
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.metainfo import Quantity
 from nomad.parsing.parser import MatchingParser
+from pint import UnitRegistry, errors
 
 from perovskite_tandem_database.parsers.utils import create_archive
 from perovskite_tandem_database.schema_packages.schema import PerovskiteTandemSolarCell
@@ -58,7 +60,7 @@ class TandemParser(MatchingParser):
 
             # Clean the data frame
             # Set proper Boolean values and remove rows with all NaN values
-            column_data = cleanup(data_frame[col])
+            column_data = cleanup_dataframe(data_frame[col])
 
             stack = extract_layer_stack(column_data)
             general = General()
@@ -144,7 +146,7 @@ gas_phase_processes = [
 ]
 
 
-def cleanup(data_frame):
+def cleanup_dataframe(data_frame):
     """
     Cleans the data frame by setting proper Boolean values and removing rows with all NaN values.
     """
@@ -209,39 +211,48 @@ def split_data(data, delimiter='|'):
         raise ValueError('Input data_frame must be a pandas DataFrame or Series')
 
 
-def convert_value(value, default_unit=None):  # noqa: PLR0911
+def convert_value(value, unit=None):  # noqa: PLR0911
     """
     Attempts to convert the string value to its appropriate type (int, float, bool).
     Returns the original string if conversion is not possible.
     """
-    import pint
 
-    ureg = pint.UnitRegistry()
+    ureg = UnitRegistry()
+    unit_pattern = re.compile(
+        r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
+    )  # Matches ".9kg", "10mA", "1.5 kg", "2 cm^2/(V*s)", "1e-6 m" etc.
+
     if isinstance(value, str):
         value = value.strip()
+
+        # Check for boolean values
         if value.lower() == 'true':
             return True
         elif value.lower() == 'false':
             return False
         elif value.lower() == 'nan':
             return None
-        try:
+
+        # Check for numerical values
+        if value.isdigit():
             number = int(value)
-            return number * ureg(default_unit) if default_unit else number
-        except ValueError:
-            pass
+            return number * ureg(unit) if unit else number
         try:
             number = float(value)
-            return number * ureg(default_unit) if default_unit else number
+            return number * ureg(unit) if unit else number
         except ValueError:
             pass
-        try:
-            quantity = ureg(value)
-            if default_unit:
-                return quantity.to(default_unit)
-            return quantity
-        except (pint.errors.UndefinedUnitError, ValueError):
-            pass
+
+        # Check for unit values
+        if unit_pattern.match(value):
+            try:
+                quantity = ureg(value)
+                if unit:
+                    return quantity.to(unit)
+                return quantity
+            except (errors.UndefinedUnitError, ValueError):
+                pass
+
     return value
 
 
