@@ -61,7 +61,7 @@ class PerovskiteComposition(SectionRevision):
         section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='A-site Ions')
     )
 
-    b_ions_b_site = SubSection(
+    ions_b_site = SubSection(
         section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='B-site Ions')
     )
 
