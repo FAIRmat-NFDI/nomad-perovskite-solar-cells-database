@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+import re
 from typing import TYPE_CHECKING
 
 from ase import Atoms
@@ -44,7 +45,12 @@ from nomad.datamodel.metainfo.basesections import (
     SystemComponent,
     elemental_composition_from_formula,
 )
+from nomad.datamodel.metainfo.common import (
+    ProvenanceTracker,
+)
 from nomad.datamodel.results import (
+    BandGap,
+    ElectronicProperties,
     Material,
     Properties,
     Relation,
@@ -61,7 +67,15 @@ from nomad.metainfo.metainfo import (
     SubSection,
 )
 from nomad.normalizing.common import nomad_atoms_from_ase_atoms
-from nomad.normalizing.topology import add_system, add_system_info
+from nomad.normalizing.topology import (
+    add_system,
+    add_system_info,
+)
+from nomad.search import (
+    MetadataPagination,
+    search,
+)
+from structlog.stdlib import BoundLogger
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
@@ -99,8 +113,6 @@ def optimize_molecule(smiles):
 
         ase_atoms = convert_rdkit_mol_to_ase_atoms(m)
 
-        # Further processing
-        # ...
         return ase_atoms
     except Exception as e:
         print(f'An error occurred: {e}')
@@ -258,6 +270,7 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
+        self.lab_id = 'perovskite_ion_' + self.abbreviation
         pure_substance = PubChemPureSubstanceSection(
             molecular_formula=self.molecular_formula,
             smile=self.smiles,
@@ -278,8 +291,8 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
             self.common_name = pure_substance.name
         self.pure_substance = pure_substance
         formula = self.pure_substance.molecular_formula
-        if isinstance(formula, str) and formula.endswith('-'):
-            self.pure_substance.molecular_formula = formula[:-1]
+        if isinstance(formula, str):
+            self.pure_substance.molecular_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', formula)
         source_compound = PubChemPureSubstanceSection(
             molecular_formula=self.source_compound_molecular_formula,
             smile=self.source_compound_smiles,
@@ -475,7 +488,31 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         """
         super().normalize(archive, logger)
         if not isinstance(self.system, PerovskiteIon):
-            return
+            if self.abbreviation is None:
+                return
+            query = {
+                'section_defs.definition_qualified_name:all': [
+                    'perovskite_solar_cell_database.composition.PerovskiteIon'
+                ],
+                'results.eln.lab_ids': 'perovskite_ion_' + self.abbreviation
+            }  # TODO: Search also for smiles and molecular_formula
+            search_result = search(
+                owner='all',
+                query=query,
+                pagination=MetadataPagination(    
+                    page_size=1,
+                    order_by='entry_create_time',
+                    order='asc',
+                ),
+                user_id=archive.metadata.main_author.user_id,
+            )
+            if search_result.pagination.total > 0:
+                entry_id = search_result.data[0]['entry_id']
+                upload_id = search_result.data[0]['upload_id']
+                self.system = f'../uploads/{upload_id}/archive/{entry_id}#data'
+            else:
+                logger.warn(f'Could not find system for ion {self.abbreviation}.')
+                return  # TODO: Create ion
         if self.abbreviation is None:
             self.abbreviation = self.system.abbreviation
         if self.common_name is None:
@@ -693,40 +730,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
         super().normalize(archive, logger)
 
 
-class PerovskiteComposition(CompositeSystem, EntryData):
-    """
-    Schema for describing a perovskite composition.
-    """
-
-    m_def = Section(
-        categories=[PerovskiteCompositionCategory],
-        label='Perovskite Composition',
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                visible=Filter(
-                    exclude=[
-                        'datetime',
-                        'description',
-                        'name',
-                        'lab_id', 
-                    ],
-                ),
-                order=[
-                    'short_form',
-                    'long_form',
-                    'composition_estimate',
-                    'sample_type',
-                    'dimensionality',
-                    'band_gap',
-                    'a_ions',
-                    'b_ions',
-                    'c_ions',
-                    'impurities',
-                    'additives',
-                ]
-            )
-        )
-    )
+class PerovskiteCompositionSection(ArchiveSection):
     short_form = Quantity(
         type=str,
     )
@@ -798,7 +802,7 @@ class PerovskiteComposition(CompositeSystem, EntryData):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
-        The normalizer for the `PerovskiteComposition` class.
+        The normalizer for the `PerovskiteCompositionSection` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
@@ -812,7 +816,6 @@ class PerovskiteComposition(CompositeSystem, EntryData):
         if not archive.results.properties:
             archive.results.properties = Properties()
         ions: list[PerovskiteIonComponent] = self.a_ions + self.b_ions + self.c_ions
-        self.components = ions
         self.short_form = ''
         self.long_form = ''
         formula_str = ''
@@ -831,12 +834,11 @@ class PerovskiteComposition(CompositeSystem, EntryData):
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
                 continue
-            cleaned_formula = ion.molecular_formula.replace('+', '').replace('-', '')
+            cleaned_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', ion.molecular_formula)
             formula_str += f'({cleaned_formula}){coefficient_str}'
         try:
             formula = Formula(formula_str)
             formula.populate(archive.results.material, overwrite=True)
-            self.elemental_composition = elemental_composition_from_formula(formula)
         except Exception as e:
             logger.warn('Could not analyse chemical formula.', exc_info=e)
 
@@ -850,7 +852,6 @@ class PerovskiteComposition(CompositeSystem, EntryData):
         super().normalize(archive, logger)
         
         topology = {}
-        # Add original system
         parent_system = System(
             label='Perovskite Composition',
             description='A system describing the chemistry and components of the perovskite.',
@@ -878,12 +879,69 @@ class PerovskiteComposition(CompositeSystem, EntryData):
         for system in topology.values():
             material.m_add_sub_section(Material.topology, system)
 
-        # topology contains an extra parent TODO: Check if this is necessary
-        # if len(ions) == len(material.topology) - 1:
-        #     for i in range(len(ions)):
-        #         material.topology[i + 1].chemical_formula_descriptive = ions[
-        #             i
-        #         ].common_name
+        if self.band_gap is not None:
+            archive.results.properties.electronic = ElectronicProperties(
+                band_gap=[
+                    BandGap(
+                        value=self.band_gap,
+                        provenance=ProvenanceTracker(label='perovskite_composition'),
+                    )
+                ]
+            )
+
+
+class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, EntryData):
+    """
+    Schema for describing a perovskite composition.
+    """
+
+    m_def = Section(
+        categories=[PerovskiteCompositionCategory],
+        label='Perovskite Composition',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                visible=Filter(
+                    exclude=[
+                        'datetime',
+                        'description',
+                        'name',
+                        'lab_id', 
+                    ],
+                ),
+                order=[
+                    'short_form',
+                    'long_form',
+                    'composition_estimate',
+                    'sample_type',
+                    'dimensionality',
+                    'band_gap',
+                    'a_ions',
+                    'b_ions',
+                    'c_ions',
+                    'impurities',
+                    'additives',
+                ]
+            )
+        )
+    )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `PerovskiteComposition` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        super().normalize(archive, logger)
+        self.components = self.a_ions + self.b_ions + self.c_ions
+        results: Results = archive.results
+        material: Material = results.material
+        if material.chemical_formula_iupac is not None:
+            self.elemental_composition = elemental_composition_from_formula(
+                Formula(material.chemical_formula_iupac)
+            )
 
 
 m_package.__init_metainfo__()
