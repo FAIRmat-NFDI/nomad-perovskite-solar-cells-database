@@ -38,4 +38,6 @@ class IonParser(MatchingParser):
             ion.source_compound_iupac_name = row['source_compound_iupac_name']
             ion.source_compound_smiles = row['source_compound_smiles']
             ion.source_compound_cas_number = row['source_compound_cas_number']
-            create_archive(ion, archive, f'{row["abbreviation"]}_perovskite_ion.archive.json')
+            create_archive(
+                ion, archive, f'{row["abbreviation"]}_perovskite_ion.archive.json'
+            )

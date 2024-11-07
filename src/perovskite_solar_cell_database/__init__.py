@@ -29,7 +29,7 @@ class PerovskiteCompositionEntryPoint(SchemaPackageEntryPoint):
         )
 
         return m_package
-    
+
 
 perovskite_composition = PerovskiteCompositionEntryPoint(
     name='PerovskiteComposition',
@@ -50,6 +50,19 @@ ion_parser = IonParserEntryPoint(
     mainfile_name_re=r'.+\.xlsx',
     mainfile_mime_re='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     mainfile_contents_dict={
-        'Sheet1': {'__has_all_keys': ['perovskite_site', 'abbreviation', 'molecular_formula', 'smiles', 'common_name', 'iupac_name', 'cas_number', 'source_compound_iupac_name', 'source_compound_smiles', 'source_compound_cas_number']},
+        'Sheet1': {
+            '__has_all_keys': [
+                'perovskite_site',
+                'abbreviation',
+                'molecular_formula',
+                'smiles',
+                'common_name',
+                'iupac_name',
+                'cas_number',
+                'source_compound_iupac_name',
+                'source_compound_smiles',
+                'source_compound_cas_number',
+            ]
+        },
     },
 )
