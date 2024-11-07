@@ -26,7 +26,7 @@ authors = [
     ]
 maintainers = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
-    {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
+    {name = "Hampus Näsström", email = "hampus.naesstroem@physik.hu-berlin.de"},
     ]
 requires-python = ">=3.9"
 dependencies = [
@@ -36,7 +36,6 @@ dependencies = [
     "rdkit",
     "openpyxl",
     "lxml_html_clean",
-    "nomad-lab>=1.3.4",
 ]
 license = { file = "LICENSE" }
 
