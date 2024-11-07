@@ -3,6 +3,7 @@ from nomad.datamodel.data import ArchiveSection, EntryData
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.datamodel.metainfo.basesections import (
     Activity,
+    ActivityStep,
     ElementalComposition,
     Process,
 )
@@ -250,26 +251,25 @@ class SynthesisStep(Activity, ArchiveSection):
     )
 
 
-class Cleaning(Activity, ArchiveSection):
+class CleaningStep(ActivityStep):
     """
-    A section describing a cleaning step. Typically before a subsequent synthesis step.
+    A cleaning procedure step.
     """
 
-    # TODO: Make repeatable if possible
-    procedure = Quantity(
-        type=Enum(
-            [
-                'Soap',
-                'Ultrasonic Bath',
-                'Ethanol',
-                'Acetone',
-                'UV-ozone',
-                'Piranha solutionion',
-                'Unknown',
-            ]
-        ),
-        description='',
-        shape=[],
+    pass
+
+
+class Cleaning(Activity):
+    """
+    A section describing a cleaning procedure. Typically before a subsequent synthesis step.
+    """
+
+    steps = SubSection(
+        section_def=CleaningStep,
+        description="""
+        An ordered list of all the cleaning steps that make up this activity.
+        """,
+        repeats=True,
     )
 
 
@@ -410,7 +410,7 @@ class Layer(ArchiveSection):
         shape=[],
         description='The specific brand name of a commercially purchased layer',
     )
-    cleaning = SubSection(section_def=Cleaning, repeats=True)
+    cleaning = SubSection(section_def=Cleaning)
     synthesis = SubSection(section_def=Synthesis)
 
     # Storage

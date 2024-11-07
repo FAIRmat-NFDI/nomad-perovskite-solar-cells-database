@@ -18,6 +18,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     ChalcopyriteAlkaliMetalDoping,
     ChalcopyriteLayer,
     Cleaning,
+    CleaningStep,
     GasPhaseSynthesis,
     General,
     Ion,
@@ -285,6 +286,25 @@ def exact_get(data, label, default=None, default_unit=None):
         return default
 
 
+def extract_cleaning(data_frame):
+    """
+    Extracts the cleaning steps from the data subframe.
+    """
+
+    df_cleaning = data_frame[data_frame.index.str.contains('Cleaning')]
+    if df_cleaning.empty:
+        return None
+    else:
+        df_cleaning = split_data(df_cleaning, delimiter='|')  # probably not necessary
+        df_cleaning = split_data(df_cleaning, delimiter='>>')
+        cleaning_steps = []
+        for syn_step in df_cleaning.columns:
+            cleaning_steps.append(
+                CleaningStep(name=partial_get(df_cleaning[syn_step], 'procedure'))
+            )
+        return Cleaning(steps=cleaning_steps)
+
+
 def extract_additives(data_frame):
     """
     Extracts the additives from the data subframe.
@@ -521,17 +541,7 @@ def extract_layer_stack(data_frame):
             continue
 
         # Cleaning
-        cleaning_steps = []
-        df_cleaning = df_layer[df_layer.index.str.contains('Cleaning')]
-        if not df_cleaning.empty:
-            df_cleaning = split_data(
-                df_cleaning, delimiter='|'
-            )  # probably not necessary
-            df_cleaning = split_data(df_cleaning, delimiter='>>')
-            for syn_step in df_cleaning.columns:
-                cleaning_steps.append(
-                    Cleaning(procedure=partial_get(df_cleaning[syn_step], 'Procedure'))
-                )
+        cleaning = extract_cleaning(df_layer)
 
         # Deposition
         df_sublayers = split_data(df_layer, delimiter='|')
@@ -611,7 +621,7 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         Substrate(
                             **sublayer_properties,
-                            cleaning=cleaning_steps,
+                            cleaning=cleaning,
                             synthesis=synthesis,
                             storage=storage,
                         )
@@ -620,7 +630,7 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         NonAbsorbingLayer(
                             **sublayer_properties,
-                            cleaning=cleaning_steps,
+                            cleaning=cleaning,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
@@ -667,7 +677,7 @@ def extract_layer_stack(data_frame):
                             **sublayer_properties,
                             **perovskite_properties,
                             composition=extract_perovskite_composition(df_sublayer),
-                            cleaning=cleaning_steps,
+                            cleaning=cleaning,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
@@ -685,7 +695,7 @@ def extract_layer_stack(data_frame):
                             **sublayer_properties,
                             **silicon_properties,
                             perovskite_inspired=None,
-                            cleaning=cleaning_steps,
+                            cleaning=cleaning,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
@@ -698,7 +708,7 @@ def extract_layer_stack(data_frame):
                             composition=extract_chalcopyrite_composition(df_sublayer),
                             alkali_metal_doping=extract_alkali_doping(df_sublayer),
                             perovskite_inspired=None,
-                            cleaning=cleaning_steps,
+                            cleaning=cleaning,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
@@ -709,7 +719,7 @@ def extract_layer_stack(data_frame):
                         PhotoAbsorber(
                             **sublayer_properties,
                             perovskite_inspired=None,
-                            cleaning=cleaning_steps,
+                            cleaning=cleaning,
                             synthesis=synthesis,
                             storage=storage,
                             additives=additives,
