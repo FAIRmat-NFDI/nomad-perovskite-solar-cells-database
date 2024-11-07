@@ -73,10 +73,10 @@ jobs:
           args: "check ."
 
   # to enable auto-formatting check, uncomment the following lines below
-  # ruff-formatting:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: chartboost/ruff-action@v1
-  #       with:
-  #         args: "format . --check"
+  ruff-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chartboost/ruff-action@v1
+        with:
+          args: "format . --check"
