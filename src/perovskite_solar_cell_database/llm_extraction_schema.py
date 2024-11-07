@@ -54,7 +54,7 @@ class PerovskiteComposition(SectionRevision):
     dimensionality = Quantity(
         type=MEnum(['0D', '1D', '2D', '3D', '2D/3D']),
         description='Dimensionality of the perovskite structure',
-        a_eln=ELNAnnotation(label='Dimensionality', component='RadioEditQuantity'),
+        a_eln=ELNAnnotation(label='Dimensionality', component='RadioEnumEditQuantity'),
     )
 
     ions_a_site = SubSection(
