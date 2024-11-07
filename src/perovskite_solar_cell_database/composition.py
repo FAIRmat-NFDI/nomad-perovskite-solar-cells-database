@@ -71,10 +71,11 @@ from nomad.normalizing.topology import (
     add_system,
     add_system_info,
 )
-from nomad.search import (
-    MetadataPagination,
-    search,
-)
+
+# from nomad.search import (
+#     MetadataPagination,
+#     search,
+# )
 from structlog.stdlib import BoundLogger
 
 if TYPE_CHECKING:
@@ -238,7 +239,7 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
         )
     )
@@ -292,7 +293,9 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
         self.pure_substance = pure_substance
         formula = self.pure_substance.molecular_formula
         if isinstance(formula, str):
-            self.pure_substance.molecular_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', formula)
+            self.pure_substance.molecular_formula = re.sub(
+                r'(?<=[A-Za-z])\d*[+-]', '', formula
+            )
         source_compound = PubChemPureSubstanceSection(
             molecular_formula=self.source_compound_molecular_formula,
             smile=self.source_compound_smiles,
@@ -311,7 +314,7 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
         self.source_compound = source_compound
 
         super().normalize(archive, logger)
-        
+
         system = self.to_topology_system()
         system.system_relation = Relation(type='root')
         topology = {}
@@ -320,7 +323,6 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
         material = archive.m_setdefault('results.material')
         for system in topology.values():
             material.m_add_sub_section(Material.topology, system)
-
 
 
 class PerovskiteAIon(PerovskiteIon, EntryData):
@@ -355,9 +357,9 @@ class PerovskiteAIon(PerovskiteIon, EntryData):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
-        )
+        ),
     )
 
 
@@ -393,9 +395,9 @@ class PerovskiteBIon(PerovskiteIon, EntryData):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
-        )
+        ),
     )
 
 
@@ -431,9 +433,9 @@ class PerovskiteXIon(PerovskiteIon, EntryData):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
-        )
+        ),
     )
 
 
@@ -461,7 +463,7 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
         )
     )
@@ -487,32 +489,32 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
             logger (BoundLogger): A structlog logger.
         """
         super().normalize(archive, logger)
-        if not isinstance(self.system, PerovskiteIon):
-            if self.abbreviation is None:
-                return
-            query = {
-                'section_defs.definition_qualified_name:all': [
-                    'perovskite_solar_cell_database.composition.PerovskiteIon'
-                ],
-                'results.eln.lab_ids': 'perovskite_ion_' + self.abbreviation
-            }  # TODO: Search also for smiles and molecular_formula
-            search_result = search(
-                owner='all',
-                query=query,
-                pagination=MetadataPagination(    
-                    page_size=1,
-                    order_by='entry_create_time',
-                    order='asc',
-                ),
-                user_id=archive.metadata.main_author.user_id,
-            )
-            if search_result.pagination.total > 0:
-                entry_id = search_result.data[0]['entry_id']
-                upload_id = search_result.data[0]['upload_id']
-                self.system = f'../uploads/{upload_id}/archive/{entry_id}#data'
-            else:
-                logger.warn(f'Could not find system for ion {self.abbreviation}.')
-                return  # TODO: Create ion
+        # if not isinstance(self.system, PerovskiteIon):
+        #     if self.abbreviation is None:
+        #         return
+        #     query = {
+        #         'section_defs.definition_qualified_name:all': [
+        #             'perovskite_solar_cell_database.composition.PerovskiteIon'
+        #         ],
+        #         'results.eln.lab_ids': 'perovskite_ion_' + self.abbreviation
+        #     }  # TODO: Search also for smiles and molecular_formula
+        #     search_result = search(
+        #         owner='all',
+        #         query=query,
+        #         pagination=MetadataPagination(
+        #             page_size=1,
+        #             order_by='entry_create_time',
+        #             order='asc',
+        #         ),
+        #         user_id=archive.metadata.main_author.user_id,
+        #     )
+        #     if search_result.pagination.total > 0:
+        #         entry_id = search_result.data[0]['entry_id']
+        #         upload_id = search_result.data[0]['upload_id']
+        #         self.system = f'../uploads/{upload_id}/archive/{entry_id}#data'
+        #     else:
+        #         logger.warn(f'Could not find system for ion {self.abbreviation}.')
+        #         return  # TODO: Create ion
         if self.abbreviation is None:
             self.abbreviation = self.system.abbreviation
         if self.common_name is None:
@@ -526,7 +528,9 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         if self.cas_number is None:
             self.cas_number = self.system.cas_number
         if self.source_compound_molecular_formula is None:
-            self.source_compound_molecular_formula = self.system.source_compound_molecular_formula
+            self.source_compound_molecular_formula = (
+                self.system.source_compound_molecular_formula
+            )
         if self.source_compound_smiles is None:
             self.source_compound_smiles = self.system.source_compound_smiles
         if self.source_compound_iupac_name is None:
@@ -559,7 +563,7 @@ class PerovskiteAIonComponent(PerovskiteIonComponent):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
         )
     )
@@ -599,7 +603,7 @@ class PerovskiteBIonComponent(PerovskiteIonComponent):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
         )
     )
@@ -639,7 +643,7 @@ class PerovskiteXIonComponent(PerovskiteIonComponent):
                     'source_compound_smiles',
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
-                ]
+                ],
             )
         )
     )
@@ -674,7 +678,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
                     'smiles',
                     'iupac_name',
                     'cas_number',
-                ]
+                ],
             )
         )
     )
@@ -699,7 +703,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
         Section describing the pure substance that is the component.
         """,
     )
-    
+
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `Impurity` class.
@@ -815,7 +819,9 @@ class PerovskiteCompositionSection(ArchiveSection):
             archive.results.material = Material()
         if not archive.results.properties:
             archive.results.properties = Properties()
-        ions: list[PerovskiteIonComponent] = self.ions_a_site + self.ions_b_site + self.ions_x_site
+        ions: list[PerovskiteIonComponent] = (
+            self.ions_a_site + self.ions_b_site + self.ions_x_site
+        )
         self.short_form = ''
         self.long_form = ''
         formula_str = ''
@@ -850,7 +856,7 @@ class PerovskiteCompositionSection(ArchiveSection):
                 archive.results.material.structural_type = self.dimensionality
 
         super().normalize(archive, logger)
-        
+
         topology = {}
         parent_system = System(
             label='Perovskite Composition',
@@ -905,7 +911,7 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
                         'datetime',
                         'description',
                         'name',
-                        'lab_id', 
+                        'lab_id',
                     ],
                 ),
                 order=[
@@ -920,9 +926,9 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
                     'c_ions',
                     'impurities',
                     'additives',
-                ]
+                ],
             )
-        )
+        ),
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
