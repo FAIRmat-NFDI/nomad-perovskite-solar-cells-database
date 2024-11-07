@@ -399,10 +399,10 @@ class PerovskiteBIon(PerovskiteIon, EntryData):
     )
 
 
-class PerovskiteCIon(PerovskiteIon, EntryData):
+class PerovskiteXIon(PerovskiteIon, EntryData):
     m_def = Section(
         categories=[PerovskiteCompositionCategory],
-        label='Perovskite C Ion',
+        label='Perovskite X Ion',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 visible=Filter(
@@ -615,7 +615,7 @@ class PerovskiteBIonComponent(PerovskiteIonComponent):
         return system
 
 
-class PerovskiteCIonComponent(PerovskiteIonComponent):
+class PerovskiteXIonComponent(PerovskiteIonComponent):
     m_def = Section(
         a_eln=ELNAnnotation(
             properties=SectionProperties(
@@ -644,7 +644,7 @@ class PerovskiteCIonComponent(PerovskiteIonComponent):
         )
     )
     system = Quantity(
-        type=Reference(PerovskiteCIon.m_def),
+        type=Reference(PerovskiteXIon.m_def),
         description='A reference to the component system.',
         a_eln=dict(component='ReferenceEditQuantity'),
     )
@@ -779,16 +779,16 @@ class PerovskiteCompositionSection(ArchiveSection):
         unit='eV',
         shape=[],
     )
-    a_ions = SubSection(
+    ions_a_site = SubSection(
         section_def=PerovskiteAIonComponent,
         repeats=True,
     )
-    b_ions = SubSection(
+    ions_b_site = SubSection(
         section_def=PerovskiteBIonComponent,
         repeats=True,
     )
-    c_ions = SubSection(
-        section_def=PerovskiteCIonComponent,
+    ions_x_site = SubSection(
+        section_def=PerovskiteXIonComponent,
         repeats=True,
     )
     impurities = SubSection(
@@ -815,7 +815,7 @@ class PerovskiteCompositionSection(ArchiveSection):
             archive.results.material = Material()
         if not archive.results.properties:
             archive.results.properties = Properties()
-        ions: list[PerovskiteIonComponent] = self.a_ions + self.b_ions + self.c_ions
+        ions: list[PerovskiteIonComponent] = self.ions_a_site + self.ions_b_site + self.ions_x_site
         self.short_form = ''
         self.long_form = ''
         formula_str = ''
@@ -935,7 +935,7 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
             logger (BoundLogger): A structlog logger.
         """
         super().normalize(archive, logger)
-        self.components = self.a_ions + self.b_ions + self.c_ions
+        self.components = self.ions_a_site + self.ions_b_site + self.ions_x_site
         results: Results = archive.results
         material: Material = results.material
         if material.chemical_formula_iupac is not None:

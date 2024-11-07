@@ -6,7 +6,7 @@ from nomad.parsing import MatchingParser
 from perovskite_solar_cell_database.composition import (
     PerovskiteAIon,
     PerovskiteBIon,
-    PerovskiteCIon,
+    PerovskiteXIon,
 )
 from perovskite_solar_cell_database.utils import create_archive
 
@@ -25,8 +25,8 @@ class IonParser(MatchingParser):
                 ion = PerovskiteAIon()
             elif row['perovskite_site'] == 'B':
                 ion = PerovskiteBIon()
-            elif row['perovskite_site'] == 'C':
-                ion = PerovskiteCIon()
+            elif row['perovskite_site'] == 'X':
+                ion = PerovskiteXIon()
             else:
                 raise ValueError(f'Unknown ion type {row["perovskite_site"]}')
             ion.abbreviation = row['abbreviation']
@@ -38,4 +38,4 @@ class IonParser(MatchingParser):
             ion.source_compound_iupac_name = row['source_compound_iupac_name']
             ion.source_compound_smiles = row['source_compound_smiles']
             ion.source_compound_cas_number = row['source_compound_cas_number']
-            create_archive(ion, archive, f'{row['abbreviation']}_perovskite_ion.archive.json')
+            create_archive(ion, archive, f'{row["abbreviation"]}_perovskite_ion.archive.json')
