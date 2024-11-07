@@ -9,7 +9,6 @@
   [<img width="280" alt="image" src="docs/assets/perovskite_database_project.png">](https://www.perovskitedatabase.com/)
 
 
-
 ## Introduction
 Welcome to the NOMAD plugin for the Perovskite Solar Cell Database. This project aims to provide an open-access interface for the perovskite solar cells database in NOMAD making the data accessible and interoperable with many other materials science datasets.
 The data can be accessed via the NOMAD API and explored in the [NOMAD Solar Cell APP](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
