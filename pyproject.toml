@@ -23,6 +23,7 @@ readme = "README.md"
 authors = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
     {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
+    {name = "Hampus Näsström", email = "hampus.naesstroem@physik.hu-berlin.de"},
     ]
 maintainers = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
