@@ -71,10 +71,6 @@ from nomad.normalizing.topology import (
     add_system,
     add_system_info,
 )
-from nomad.search import (
-    MetadataPagination,
-    search,
-)
 from structlog.stdlib import BoundLogger
 
 if TYPE_CHECKING:
@@ -490,6 +486,10 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         if not isinstance(self.system, PerovskiteIon):
             if self.abbreviation is None:
                 return
+            from nomad.search import (
+                MetadataPagination,
+                search,
+            )
             query = {
                 'section_defs.definition_qualified_name:all': [
                     'perovskite_solar_cell_database.composition.PerovskiteIon'
