@@ -31,6 +31,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     Reference,
     SiliconLayer,
     Solvent,
+    Storage,
     Substance,
     Substrate,
 )
@@ -503,6 +504,25 @@ def extract_alkali_doping(data_frame):
         return alkali_doping
 
 
+def extract_storage(data_frame):
+    """
+    Extracts the storage condition from the dataframe.
+    """
+
+    df_temp = data_frame[data_frame.index.str.contains('Storage. ')]
+    if df_temp.empty:
+        return None
+    else:
+        storage_conditions = {
+            'time_until_next_step': partial_get(
+                df_temp, 'Time until', default_unit='h'
+            ),
+            'atmosphere': partial_get(df_temp, 'Atmosphere'),
+            'humidity_relative': partial_get(df_temp, 'Relative humidity'),
+        }
+        return Storage(**storage_conditions)
+
+
 def extract_reference(data_frame):
     """
     Extracts the reference from the data subframe.
@@ -613,7 +633,7 @@ def extract_layer_stack(data_frame):
 
             # Annealing etc!
             # Storage conditions
-            storage = None
+            storage = extract_storage(df_sublayer)
 
             # Differentiate between type of layers
             if 'NAlayer' in label:
