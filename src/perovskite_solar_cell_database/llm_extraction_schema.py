@@ -7,6 +7,7 @@ from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import JSON, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import MEnum
+
 from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
 
 if TYPE_CHECKING:
