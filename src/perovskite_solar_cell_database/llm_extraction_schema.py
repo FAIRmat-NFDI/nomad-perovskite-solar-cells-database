@@ -209,36 +209,6 @@ class Stability(SectionRevision):
     )
 
 
-# ProcessingAtmosphere class
-class ProcessingAtmosphere(SectionRevision):
-    m_def = Section(label='Processing Atmosphere')
-
-    type = Quantity(
-        type=str,
-        description='Type of atmosphere',
-        a_eln=ELNAnnotation(label='Atmosphere Type', component='StringEditQuantity'),
-    )
-
-    pressure = Quantity(
-        type=float,
-        unit='mbar',
-        description='Pressure during processing',
-        a_eln=ELNAnnotation(
-            label='Pressure', defaultDisplayUnit='mbar', component='NumberEditQuantity'
-        ),
-    )
-
-    relative_humidity = Quantity(
-        type=float,
-        description='Relative humidity during processing',
-        a_eln=ELNAnnotation(
-            label='Relative Humidity',
-            component='NumberEditQuantity',
-            props=dict(minValue=0, maxValue=100),
-        ),
-    )
-
-
 # ReactionSolution class
 class ReactionSolution(SectionRevision):
     m_def = Section(label='Reaction Solution')
@@ -288,9 +258,12 @@ class ProcessingStep(SectionRevision):
         a_eln=ELNAnnotation(label='Method', component='StringEditQuantity'),
     )
 
-    atmosphere = SubSection(
-        section_def=ProcessingAtmosphere,
-        a_eln=ELNAnnotation(label='Atmosphere'),
+    atmosphere = Quantity(
+        type=MEnum(
+            ['Ambient air', 'Dry air', 'Air', 'N2', 'Ar', 'He', 'H2', 'Vacuum', 'Other']
+        ),
+        description='Atmosphere during the step',
+        a_eln=ELNAnnotation(label='Atmosphere', component='EnumEditQuantity'),
     )
 
     temperature = Quantity(
