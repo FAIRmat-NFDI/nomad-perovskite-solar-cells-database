@@ -860,6 +860,7 @@ class PerovskiteCompositionSection(ArchiveSection):
             label='Perovskite Composition',
             description='A system describing the chemistry and components of the perovskite.',
             system_relation=Relation(type='root'),
+            chemical_formula_descriptive=self.long_form,
         )
 
         parent_system.structural_type = archive.results.material.structural_type
