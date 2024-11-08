@@ -7,6 +7,7 @@ from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import JSON, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import MEnum
+from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
 
 if TYPE_CHECKING:
     pass
@@ -42,32 +43,9 @@ class Ion(SectionRevision):
     )
 
 
-class PerovskiteComposition(SectionRevision):
+class PerovskiteComposition(SectionRevision, PerovskiteCompositionSection):
     m_def = Section(label='Perovskite Composition')
-
-    formula = Quantity(
-        type=str,
-        description='The perovskite composition according to IUPAC recommendations, where standard abbreviations are used for all ions',
-        a_eln=ELNAnnotation(label='Formula', component='StringEditQuantity'),
-    )
-
-    dimensionality = Quantity(
-        type=MEnum(['0D', '1D', '2D', '3D', '2D/3D']),
-        description='Dimensionality of the perovskite structure',
-        a_eln=ELNAnnotation(label='Dimensionality', component='RadioEnumEditQuantity'),
-    )
-
-    ions_a_site = SubSection(
-        section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='A-site Ions')
-    )
-
-    ions_b_site = SubSection(
-        section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='B-site Ions')
-    )
-
-    ions_x_site = SubSection(
-        section_def=Ion, repeats=True, a_eln=ELNAnnotation(label='X-site Ions')
-    )
+    pass
 
 
 # LightSource class
