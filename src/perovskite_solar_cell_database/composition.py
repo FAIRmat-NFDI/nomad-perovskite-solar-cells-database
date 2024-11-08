@@ -463,7 +463,7 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         )
     )
     coefficient = Quantity(
-        type=float,
+        type=str,
         description='The stoichiometric coefficient',
         a_eln=ELNAnnotation(component=ELNComponentEnum.NumberEditQuantity),
         shape=[],
@@ -831,12 +831,10 @@ class PerovskiteCompositionSection(ArchiveSection):
             self.short_form += ion.abbreviation
             if ion.coefficient is None:
                 continue
-            if ion.coefficient == 1:
+            if ion.coefficient == '1':
                 coefficient_str = ''
-            elif ion.coefficient == int(ion.coefficient):
-                coefficient_str = str(int(ion.coefficient))
             else:
-                coefficient_str = f'{ion.coefficient:.2}'
+                coefficient_str = ion.coefficient
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
                 continue
