@@ -465,7 +465,7 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
     coefficient = Quantity(
         type=str,
         description='The stoichiometric coefficient',
-        a_eln=ELNAnnotation(component=ELNComponentEnum.NumberEditQuantity),
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
         shape=[],
     )
     system = Quantity(
