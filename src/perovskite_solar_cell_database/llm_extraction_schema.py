@@ -367,13 +367,6 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
         a_eln=ELNAnnotation(label='DOI Number', component='URLEditQuantity'),
     )
 
-    cell_stack = Quantity(
-        type=str,
-        shape=['*'],
-        description='The stack sequence of the cell.',
-        a_eln=ELNAnnotation(label='Cell Stack', component='StringEditQuantity'),
-    )
-
     perovskite_composition = SubSection(
         section_def=PerovskiteComposition,
         a_eln=ELNAnnotation(label='Perovskite Composition'),
@@ -485,6 +478,32 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
     layers = SubSection(
         section_def=Layer, repeats=True, a_eln=ELNAnnotation(label='Layers')
     )
+
+    layer_order = Quantity(
+        type=str,
+        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by commas.',
+        a_eln=ELNAnnotation(label='Layer Order', component='StringEditQuantity'),
+    )
+
+    # normalizer that reorderes the layers according to the layer_order
+    def normalize(self):
+        if self.layer_order:
+            layer_order = self.layer_order.split(',')
+            layers = self.layers
+            new_layers = []
+            for layer_name in layer_order:
+                layer_name_stripped = layer_name.strip()
+                for layer in layers:
+                    if layer.name == layer_name_stripped:
+                        self.layers.append(layer)
+                        break
+
+            # if the new list is not the same length as the old one
+            # then the are some issues with the keys and we should raise an error
+            if len(new_layers) != len(layers):
+                raise ValueError(
+                    'The layer order is not valid. Please check the layer names and try again.'
+                )
 
 
 m_package.__init_metainfo__()
