@@ -486,7 +486,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
     )
 
     # normalizer that reorderes the layers according to the layer_order
-    def normalize(self):
+    def normalize(self, archive, logger):
         if self.layer_order:
             layer_order = self.layer_order.split(',')
             layers = self.layers
