@@ -495,7 +495,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
                 layer_name_stripped = layer_name.strip()
                 for layer in layers:
                     if layer.name == layer_name_stripped:
-                        self.layers.append(layer)
+                        new_layers.append(layer)
                         break
 
             # if the new list is not the same length as the old one
@@ -504,6 +504,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
                 raise ValueError(
                     'The layer order is not valid. Please check the layer names and try again.'
                 )
-
+            else:
+                self.layers = new_layers
 
 m_package.__init_metainfo__()
