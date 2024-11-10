@@ -487,24 +487,17 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
     # normalizer that reorderes the layers according to the layer_order
     def normalize(self, archive, logger):
-        if self.layer_order:
-            layer_order = self.layer_order.split(',')
-            layers = self.layers
-            new_layers = []
-            for layer_name in layer_order:
-                layer_name_stripped = layer_name.strip()
-                for layer in layers:
-                    if layer.name == layer_name_stripped:
-                        new_layers.append(layer)
-                        break
+        if not self.layer_order:
+            return
 
-            # if the new list is not the same length as the old one
-            # then the are some issues with the keys and we should raise an error
-            if len(new_layers) != len(layers):
-                raise ValueError(
-                    'The layer order is not valid. Please check the layer names and try again.'
-                )
-            else:
-                self.layers = new_layers
+        layer_dict = {layer.name: layer for layer in self.layers}
+        ordered_names = [name.strip() for name in self.layer_order.split(',')]
+
+        if set(ordered_names) != set(layer_dict.keys()):
+            raise ValueError('Layer order does not match available layers')
+
+        # Reorder in single pass
+        self.layers = [layer_dict[name] for name in ordered_names]
+
 
 m_package.__init_metainfo__()
