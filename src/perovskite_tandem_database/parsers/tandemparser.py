@@ -1,5 +1,6 @@
 import re
 from typing import TYPE_CHECKING
+from unicodedata import numeric
 
 import pandas as pd
 from nomad.config import config
@@ -32,6 +33,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     SiliconLayer,
     Solvent,
     Storage,
+    SubCell,
     Substance,
     Substrate,
 )
@@ -65,7 +67,7 @@ class TandemParser(MatchingParser):
             column_data = cleanup_dataframe(data_frame[col])
 
             stack = extract_layer_stack(column_data)
-            general = General()
+            general = extract_general(column_data)
             reference = extract_reference(column_data)
             reference.normalize(archive, logger)
 
@@ -541,6 +543,59 @@ def extract_reference(data_frame):
     }
 
     return Reference(**reference_data)
+
+
+def extract_general(data_frame):
+    """
+    Extracts the general information from the data subframe.
+    """
+    # TODO: Can this used as quality check?
+    df_temp = data_frame[data_frame.index.str.contains('Tandem.')]
+
+    general_data = {
+        'architecture': partial_get(df_temp, 'Tandem. Architecture'),
+        'number_of_terminals': partial_get(df_temp, 'Tandem. Number of terminals'),
+        'number_of_junctions': partial_get(df_temp, 'Tandem. Number of junctions'),
+        'number_of_cells': partial_get(df_temp, 'Tandem. Number of cells'),
+        'area': partial_get(df_temp, 'Tandem. Area. Total', default_unit='cm^2'),
+        'area_measured': partial_get(
+            df_temp, 'Tandem. Area. Measured', default_unit='cm^2'
+        ),
+        'flexibility': partial_get(df_temp, 'Tandem. Flexibile'),
+        'semitransparent': partial_get(df_temp, 'Tandem. Semitransparent'),
+        'contains_textured_layers': partial_get(df_temp, 'Textured layers'),
+        'contains_antireflectie_coating': partial_get(
+            df_temp, 'Antireflective coatings'
+        ),
+    }
+
+    absorber, bandgap = [], []
+    df_absorber = split_data(
+        df_temp[df_temp.index.str.contains('Photoabsorbers')], delimiter='|'
+    )
+    for column in df_absorber.columns:
+        absorber.append(partial_get(df_absorber[column], 'Photoabsorbers/tec'))
+        bandgap.append(partial_get(df_absorber[column], 'Photoabsorbers. Band gaps'))
+
+    subcells = []
+    df_subcells = split_data(
+        df_temp[df_temp.index.str.contains('Subcells')], delimiter='|'
+    )
+    for column in df_subcells.columns:
+        subcell_data = {
+            'area': partial_get(df_subcells[column], 'Area', default_unit='cm^2'),
+            'module': partial_get(df_subcells[column], 'Module'),
+            'commercial_unit': partial_get(df_subcells[column], 'Comercial unit'),
+            'supplier': partial_get(df_subcells[column], 'Supplier'),
+        }
+        subcells.append(SubCell(**subcell_data))
+
+    return General(
+        **general_data,
+        photoabsorber=absorber,
+        photoabsorber_bandgaps=bandgap,
+        subcell=subcells,
+    )
 
 
 def extract_layer_stack(data_frame):

@@ -580,33 +580,62 @@ class ChalcopyriteLayer(PhotoAbsorber):
 # Device architecture
 
 
+class SubCell(ArchiveSection):
+    """
+    A section describing a sub cell in a tandem solar cell.
+    """
+
+    area = Quantity(
+        type=float,
+        shape=[],
+        unit='cm^2',
+        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
+        description='The area of the sub cell',
+    )
+
+    module = Quantity(
+        type=bool,
+        shape=[],
+        description="""
+        TRUE if a sub cell is in the form of a module, FALSE if it is a single cell
+        It is for example possible to have a silicon bottom cell and a perovskite module as a top cell. In that case this would be marked as FALSE | TRUE
+        """,
+    )
+
+    commercial_unit = Quantity(
+        type=bool,
+        shape=[],
+        description='TRUE if the sub cell was bought commercially, FALSE if it is a lab-made unit',
+    )
+
+    supplier = Quantity(
+        type=str,
+        shape=[],
+        description='Origin of the subcell. This will most often be a company or the lab of a research group',
+    )
+
+
 class General(EntryData):
     """
     This section stores general configuration information about a tandem solar cell.
     """
 
     architecture = Quantity(
-        type=Enum(['stacked', 'monolithic', 'other']),
+        type=str,  # type=Enum(['stacked', 'monolithic', 'other']),
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
         shape=[],
-        # a_eln=dict(
-        #     component='EnumEditQuantity',
-        #     props=dict(suggestions=sorted(['stacked', 'monolithic', 'other'])),
-        # ),
     )
 
     number_of_terminals = Quantity(
         type=int,
         description='The number of terminals in the device. The most common configurations are 2 and 4',
         shape=[],
-        # a_eln=dict(component='NumberEditQuantity')
     )
 
     number_of_junctions = Quantity(
         type=int,
         description='The number of junctions in the device.',
         shape=[],
-        # a_eln=dict(component='NumberEditQuantity')
     )
 
     number_of_cells = Quantity(
@@ -622,7 +651,6 @@ class General(EntryData):
             List of the photoabsorbers starting from the bottom of the device stack.
                     """,
         shape=['*'],
-        # a_eln=dict(component='EnumEditQuantity')
     )
 
     photoabsorber_bandgaps = Quantity(
@@ -636,7 +664,6 @@ class General(EntryData):
             - Every photo absorber has a band gap. If it is unknown, state this as ‘nan’
         """,
         shape=['*'],
-        # a_eln=dict(component='NumberEditQuantity'),
     )
 
     stack_sequence = Quantity(
@@ -650,15 +677,22 @@ class General(EntryData):
         - There is no sharp well-defined boundary between a when a material is best considered as doped to when it is best considered as a mixture of two materials. When in doubt if your material is doped or a mixture, use the notation that best capture the metaphysical essence of the situation
         - Use common abbreviations when possible but spell it out when there is risk for confusion. For consistency, please pay attention to the abbreviation specified under the headline Abbreviations found tandem instructions v4.0 document.
                     """,
-        # a_eln=dict(component='StringEditQuantity'),
+    )
+
+    area = Quantity(
+        type=float,
+        shape=[],
+        unit='cm^2',
+        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
+        description='The total area of the device.',
     )
 
     area_measured = Quantity(
         type=float,
         shape=[],
         unit='cm^2',
+        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
         description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
-        # a_eln=dict(component='NumberEditQuantity'),
     )
 
     flexibility = Quantity(
@@ -666,7 +700,6 @@ class General(EntryData):
         shape=[],
         default=False,
         description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
-        # a_eln=dict(component='BoolEditQuantity'),
     )
 
     semitransparent = Quantity(
@@ -676,5 +709,24 @@ class General(EntryData):
         description="""
         TRUE if the device is semitransparent which usually is the case when there are no thick completely covering metal electrodes.
         FALSE if it is opaque.""",
-        # a_eln=dict(component='BoolEditQuantity'),
+    )
+
+    contains_textured_layers = Quantity(
+        type=bool,
+        shape=[],
+        default=False,
+        description='TRUE if the device contains textured layers with the purpose of light management.',
+    )
+
+    contains_antireflectie_coating = Quantity(
+        type=bool,
+        shape=[],
+        default=False,
+        description='TRUE if the device contains one or more anti reflective coatings.',
+    )
+
+    subcell = SubSection(
+        section_def=SubCell,
+        description='The sub cells in the device',
+        repeats=True,
     )
