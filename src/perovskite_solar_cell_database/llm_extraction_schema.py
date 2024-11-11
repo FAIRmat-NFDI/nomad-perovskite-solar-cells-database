@@ -494,7 +494,8 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
         ordered_names = [name.strip() for name in self.layer_order.split(',')]
 
         if set(ordered_names) != set(layer_dict.keys()):
-            raise ValueError('Layer order does not match available layers')
+            logger.warn('The names in layer_order does not match available layers')
+            return
 
         # Reorder in single pass
         self.layers = [layer_dict[name] for name in ordered_names]
