@@ -367,13 +367,6 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
         a_eln=ELNAnnotation(label='DOI Number', component='URLEditQuantity'),
     )
 
-    cell_stack = Quantity(
-        type=str,
-        shape=['*'],
-        description='The stack sequence of the cell.',
-        a_eln=ELNAnnotation(label='Cell Stack', component='StringEditQuantity'),
-    )
-
     perovskite_composition = SubSection(
         section_def=PerovskiteComposition,
         a_eln=ELNAnnotation(label='Perovskite Composition'),
@@ -485,6 +478,27 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
     layers = SubSection(
         section_def=Layer, repeats=True, a_eln=ELNAnnotation(label='Layers')
     )
+
+    layer_order = Quantity(
+        type=str,
+        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by commas.',
+        a_eln=ELNAnnotation(label='Layer Order', component='StringEditQuantity'),
+    )
+
+    # normalizer that reorderes the layers according to the layer_order
+    def normalize(self, archive, logger):
+        if not self.layer_order:
+            return
+
+        layer_dict = {layer.name: layer for layer in self.layers}
+        ordered_names = [name.strip() for name in self.layer_order.split(',')]
+
+        if set(ordered_names) != set(layer_dict.keys()):
+            logger.warn('The names in layer_order does not match available layers')
+            return
+
+        # Reorder in single pass
+        self.layers = [layer_dict[name] for name in ordered_names]
 
 
 m_package.__init_metainfo__()
