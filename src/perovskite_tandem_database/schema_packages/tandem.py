@@ -68,6 +68,7 @@ class Substance(ArchiveSection):
     volume = Quantity(
         type=float,
         unit='ml',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The volume of the substance.',
     )
     age = Quantity(
@@ -173,7 +174,8 @@ class Storage(ArchiveSection):
     )
     time_until_next_step = Quantity(
         type=float,
-        unit='hours',
+        unit='hour',
+        a_eln=ELNAnnotation(defaultDisplayUnit='hour'),
         description='The time between the perovskite stack is finalised and the next layer is deposited.',
     )
 
@@ -195,7 +197,6 @@ class SynthesisStep(ProcessStep):
 
     aggregation_state_of_reactants = Quantity(
         type=Enum(['Solid', 'Liquid', 'Gas', 'Unknown']),
-        default='Unknown',
         description="""The physical state of the reactants.
         - The three basic categories are Solid/Liquid/Gas
         - Most cases are clear cut, e.g. spin-coating involves species in solution and evaporation involves species in gas phase. For less clear-cut cases, consider where the reaction really is happening as in:
@@ -212,6 +213,7 @@ class SynthesisStep(ProcessStep):
     pressure_total = Quantity(
         type=float,
         unit='mbar',
+        a_eln=ELNAnnotation(defaultDisplayUnit='mbar'),
         description='The total pressure during each synthesis step',
     )
     humidity_relative = Quantity(
@@ -412,10 +414,8 @@ class PhotoAbsorber(Layer):
     )
     # TODO: See if joining these two fields makes sense
     bandgap_graded = Quantity(
-        type=float,
-        unit='eV',
-        description='The band gap if it varies as a function of the vertical position in the photoabsorber layer',
-        repeats=True,
+        type=bool,
+        description='TRUE if the band gap varies as a function of the vertical position in the photoabsorber layer',
     )
     bandgap_estimation_basis = Quantity(
         type=Enum(
