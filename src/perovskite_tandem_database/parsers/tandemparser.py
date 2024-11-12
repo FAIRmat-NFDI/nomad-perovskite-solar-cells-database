@@ -23,6 +23,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     GasPhaseSynthesis,
     General,
     Ion,
+    Layer,
     LiquidSynthesis,
     NonAbsorbingLayer,
     PerovskiteComposition,
@@ -36,6 +37,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     SubCell,
     Substance,
     Substrate,
+    SynthesisStep,
 )
 
 if TYPE_CHECKING:
@@ -515,11 +517,12 @@ def extract_storage(data_frame):
     if df_temp.empty:
         return None
     else:
+        atmosphere = partial_get(df_temp, 'Atmosphere')
         storage_conditions = {
+            'atmosphere': atmosphere if atmosphere in Storage.atmosphere.type else None,
             'time_until_next_step': partial_get(
                 df_temp, 'Time until', default_unit='h'
             ),
-            'atmosphere': partial_get(df_temp, 'Atmosphere'),
             'humidity_relative': partial_get(df_temp, 'Relative humidity'),
         }
         return Storage(**storage_conditions)
@@ -552,8 +555,11 @@ def extract_general(data_frame):
     # TODO: Can this used as quality check?
     df_temp = data_frame[data_frame.index.str.contains('Tandem.')]
 
+    architecture = partial_get(df_temp, 'Tandem. Architecture')
     general_data = {
-        'architecture': partial_get(df_temp, 'Tandem. Architecture'),
+        'architecture': architecture
+        if architecture in General.architecture.type
+        else None,
         'number_of_terminals': partial_get(df_temp, 'Tandem. Number of terminals'),
         'number_of_junctions': partial_get(df_temp, 'Tandem. Number of junctions'),
         'number_of_cells': partial_get(df_temp, 'Tandem. Number of cells'),
@@ -561,7 +567,7 @@ def extract_general(data_frame):
         'area_measured': partial_get(
             df_temp, 'Tandem. Area. Measured', default_unit='cm^2'
         ),
-        'flexibility': partial_get(df_temp, 'Tandem. Flexibile'),
+        'flexibility': partial_get(df_temp, 'Tandem. Flexible'),
         'semitransparent': partial_get(df_temp, 'Tandem. Semitransparent'),
         'contains_textured_layers': partial_get(df_temp, 'Textured layers'),
         'contains_antireflectie_coating': partial_get(
@@ -569,13 +575,17 @@ def extract_general(data_frame):
         ),
     }
 
-    absorber, bandgap = [], []
+    absorbers, bandgaps = [], []
     df_absorber = split_data(
         df_temp[df_temp.index.str.contains('Photoabsorbers')], delimiter='|'
     )
     for column in df_absorber.columns:
-        absorber.append(partial_get(df_absorber[column], 'Photoabsorbers/tec'))
-        bandgap.append(partial_get(df_absorber[column], 'Photoabsorbers. Band gaps'))
+        absorber = partial_get(df_absorber[column], 'Photoabsorbers/tec')
+        if absorber in General.photoabsorber.type:
+            absorbers.append(absorber)
+            bandgaps.append(
+                partial_get(df_absorber[column], 'Photoabsorbers. Band gaps')
+            )
 
     subcells = []
     df_subcells = split_data(
@@ -592,8 +602,8 @@ def extract_general(data_frame):
 
     return General(
         **general_data,
-        photoabsorber=absorber,
-        photoabsorber_bandgaps=bandgap,
+        photoabsorber=absorbers,
+        photoabsorber_bandgaps=bandgaps,
         subcell=subcells,
     )
 
@@ -624,8 +634,11 @@ def extract_layer_stack(data_frame):
             df_sublayer = df_sublayers[sublayer]
 
             # Sublayer information
+            functionality = partial_get(df_sublayer, 'Functionality')
             sublayer_properties = {
-                'functionality': partial_get(df_sublayer, 'Functionality'),
+                'functionality': functionality
+                if functionality in Layer.functionality.type
+                else None,
                 'thickness': partial_get(df_sublayer, 'Thickness', default_unit='nm'),
                 'area': partial_get(df_sublayer, 'Area', default_unit='cm^2'),
                 'surface_roughness': partial_get(
@@ -657,12 +670,19 @@ def extract_layer_stack(data_frame):
 
                 # Synthesis process information
                 # atmo_p_partial = partial_get(df_process, "atmosphere. Pressure. Partial")
+                aggregation_state_of_reactants = partial_get(
+                    df_process, 'Aggregation state'
+                )
+                atmosphere = partial_get(df_process, 'Atmosphere')
                 process_conditions = {
                     'procedure': partial_get(df_process, 'Deposition. Procedure'),
-                    'aggregation_state_of_reactants': partial_get(
-                        df_process, 'Aggregation state'
-                    ),
-                    'atmosphere': partial_get(df_process, 'Synthesis atmosphere '),
+                    'atmosphere': atmosphere
+                    if atmosphere in SynthesisStep.atmosphere.type
+                    else None,
+                    'aggregation_state_of_reactants': aggregation_state_of_reactants
+                    if aggregation_state_of_reactants
+                    in SynthesisStep.aggregation_state_of_reactants.type
+                    else None,
                     'pressure_total': partial_get(
                         df_process,
                         'atmosphere. Pressure. Total',
