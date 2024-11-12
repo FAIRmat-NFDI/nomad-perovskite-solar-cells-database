@@ -38,6 +38,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     Substance,
     Substrate,
     SynthesisStep,
+    ThermalAnnealing,
 )
 
 if TYPE_CHECKING:
@@ -240,22 +241,19 @@ def convert_value(value, unit=None):  # noqa: PLR0911
             return None
 
         # Check for numerical values
-        if value.isdigit():
-            number = int(value)
-            return number * ureg(unit) if unit else number
+        if value.isdigit() and not unit:
+            return int(value)
         try:
             number = float(value)
-            return number * ureg(unit) if unit else number
+            return ureg.Quantity(number, unit) if unit else number
         except ValueError:
             pass
 
         # Check for unit values
         if unit_pattern.match(value):
             try:
-                quantity = ureg(value)
-                if unit:
-                    return quantity.to(unit)
-                return quantity
+                quantity = ureg.Quantity(value)
+                return quantity.to(unit) if unit else quantity
             except (errors.UndefinedUnitError, ValueError):
                 pass
 
@@ -274,6 +272,8 @@ def partial_get(data, label, default=None, default_unit=None):
             value = df_matched.iloc[0, 0]
         elif isinstance(data, pd.Series):
             value = df_matched.iloc[0]
+        else:
+            return default
         return convert_value(value, default_unit)
 
 
@@ -508,6 +508,32 @@ def extract_alkali_doping(data_frame):
         return alkali_doping
 
 
+def extract_annealing(data_frame):
+    """
+    Extracts the annealing conditions from the data subframe.
+    """
+    df_temp = data_frame[data_frame.index.str.contains('Thermal annealing.')]
+
+    if df_temp.empty:
+        return None
+    else:
+        annealing = []
+        df_temp = split_data(df_temp, delimiter=';')
+        for column in df_temp.columns:
+            atmosphere = partial_get(df_temp[column], 'Atmosphere')
+            annealing_conditions = {
+                'temperature': partial_get(
+                    df_temp[column], 'Temperature', default_unit='celsius'
+                ),
+                'duration': partial_get(df_temp[column], 'Time', default_unit='hour'),
+                'atmosphere': atmosphere
+                if atmosphere in ThermalAnnealing.atmosphere.type
+                else None,
+            }
+            annealing.append(ThermalAnnealing(**annealing_conditions))
+        return annealing
+
+
 def extract_storage(data_frame):
     """
     Extracts the storage condition from the dataframe.
@@ -673,7 +699,7 @@ def extract_layer_stack(data_frame):
                 aggregation_state_of_reactants = partial_get(
                     df_process, 'Aggregation state'
                 )
-                atmosphere = partial_get(df_process, 'Atmosphere')
+                atmosphere = partial_get(df_process, 'Synthesis atmosphere ')
                 process_conditions = {
                     'procedure': partial_get(df_process, 'Deposition. Procedure'),
                     'atmosphere': atmosphere
@@ -688,7 +714,9 @@ def extract_layer_stack(data_frame):
                         'atmosphere. Pressure. Total',
                         default_unit='mbar',
                     ),
-                    'humidity_relative': partial_get(df_process, 'Relative humidity'),
+                    'humidity_relative': partial_get(
+                        df_process, 'atmosphere. Relative humidity'
+                    ),
                 }
 
                 # Liquid based synthesis
@@ -704,9 +732,18 @@ def extract_layer_stack(data_frame):
 
                 # Physical vapour deposition & similar
                 elif process_conditions['procedure'] in gas_phase_processes:
-                    synthesis.append(GasPhaseSynthesis())
+                    synthesis.append(
+                        GasPhaseSynthesis(
+                            **process_conditions,
+                            reactant=extract_reactants(df_process),
+                        )
+                    )
 
-            # Annealing etc!
+                # Annealing
+                annealing = extract_annealing(df_process)
+                if annealing:
+                    synthesis.extend(annealing)
+
             # Storage conditions
             storage = extract_storage(df_sublayer)
 
