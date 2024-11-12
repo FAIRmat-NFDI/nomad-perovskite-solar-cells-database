@@ -37,6 +37,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     SubCell,
     Substance,
     Substrate,
+    Synthesis,
     SynthesisStep,
     ThermalAnnealing,
 )
@@ -522,15 +523,17 @@ def extract_annealing(data_frame):
         for column in df_temp.columns:
             atmosphere = partial_get(df_temp[column], 'Atmosphere')
             annealing_conditions = {
+                'procedure': 'Thermal annealing',
                 'temperature': partial_get(
                     df_temp[column], 'Temperature', default_unit='celsius'
                 ),
-                'duration': partial_get(df_temp[column], 'Time', default_unit='hour'),
+                'duration': partial_get(df_temp[column], 'Time', default_unit='minute'),
                 'atmosphere': atmosphere
                 if atmosphere in ThermalAnnealing.atmosphere.type
                 else None,
             }
-            annealing.append(ThermalAnnealing(**annealing_conditions))
+            if annealing_conditions['temperature'] is not None:
+                annealing.append(ThermalAnnealing(**annealing_conditions))
         return annealing
 
 
@@ -685,7 +688,7 @@ def extract_layer_stack(data_frame):
             additives = extract_additives(df_sublayer)
 
             # Split synthesis into single steps
-            synthesis = []
+            synthesis_steps = []
             df_processes = split_data(df_sublayer, delimiter='>>')
             for syn_step in df_processes.columns:
                 df_process = df_processes[syn_step]
@@ -721,7 +724,7 @@ def extract_layer_stack(data_frame):
 
                 # Liquid based synthesis
                 if process_conditions['procedure'] in liquid_based_processes:
-                    synthesis.append(
+                    synthesis_steps.append(
                         LiquidSynthesis(
                             **process_conditions,
                             solvent=extract_solvents(df_process),
@@ -732,7 +735,7 @@ def extract_layer_stack(data_frame):
 
                 # Physical vapour deposition & similar
                 elif process_conditions['procedure'] in gas_phase_processes:
-                    synthesis.append(
+                    synthesis_steps.append(
                         GasPhaseSynthesis(
                             **process_conditions,
                             reactant=extract_reactants(df_process),
@@ -742,7 +745,7 @@ def extract_layer_stack(data_frame):
                 # Annealing
                 annealing = extract_annealing(df_process)
                 if annealing:
-                    synthesis.extend(annealing)
+                    synthesis_steps.extend(annealing)
 
             # Storage conditions
             storage = extract_storage(df_sublayer)
@@ -754,7 +757,7 @@ def extract_layer_stack(data_frame):
                         Substrate(
                             **sublayer_properties,
                             cleaning=cleaning,
-                            synthesis=synthesis,
+                            synthesis=Synthesis(steps=synthesis_steps),
                             storage=storage,
                         )
                     )
@@ -763,7 +766,7 @@ def extract_layer_stack(data_frame):
                         NonAbsorbingLayer(
                             **sublayer_properties,
                             cleaning=cleaning,
-                            synthesis=synthesis,
+                            synthesis=Synthesis(steps=synthesis_steps),
                             storage=storage,
                             additives=additives,
                         )
@@ -810,7 +813,7 @@ def extract_layer_stack(data_frame):
                             **perovskite_properties,
                             composition=extract_perovskite_composition(df_sublayer),
                             cleaning=cleaning,
-                            synthesis=synthesis,
+                            synthesis=Synthesis(steps=synthesis_steps),
                             storage=storage,
                             additives=additives,
                         )
@@ -828,7 +831,7 @@ def extract_layer_stack(data_frame):
                             **silicon_properties,
                             perovskite_inspired=None,
                             cleaning=cleaning,
-                            synthesis=synthesis,
+                            synthesis=Synthesis(steps=synthesis_steps),
                             storage=storage,
                             additives=additives,
                         )
@@ -841,7 +844,7 @@ def extract_layer_stack(data_frame):
                             alkali_metal_doping=extract_alkali_doping(df_sublayer),
                             perovskite_inspired=None,
                             cleaning=cleaning,
-                            synthesis=synthesis,
+                            synthesis=Synthesis(steps=synthesis_steps),
                             storage=storage,
                             additives=additives,
                         )
@@ -852,7 +855,7 @@ def extract_layer_stack(data_frame):
                             **sublayer_properties,
                             perovskite_inspired=None,
                             cleaning=cleaning,
-                            synthesis=synthesis,
+                            synthesis=Synthesis(steps=synthesis_steps),
                             storage=storage,
                             additives=additives,
                         )
