@@ -206,7 +206,6 @@ class SynthesisStep(ProcessStep):
         description='Name of the the synthesis step',
     )
 
-    # TODO: make Enum?
     aggregation_state_of_reactants = Quantity(
         type=Enum(['Solid', 'Liquid', 'Gas', 'Unknown']),
         shape=[],
@@ -220,7 +219,8 @@ class SynthesisStep(ProcessStep):
     )
 
     atmosphere = Quantity(
-        type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum']),
+        type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum', 'Unknown']),
+        default='Unknown',
         shape=[],
         description='The atmosphere present during the synthesis step',
     )
@@ -291,11 +291,6 @@ class ThermalAnnealing(SynthesisStep):
         shape=[],
         unit='min',
         description='The duration of the thermal annealing step',
-    )
-    atmosphere = Quantity(
-        type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum']),
-        shape=[],
-        description='The atmosphere present during the thermal annealing step',
     )
 
 
@@ -621,7 +616,8 @@ class General(EntryData):
     """
 
     architecture = Quantity(
-        type=str,  # type=Enum(['stacked', 'monolithic', 'other']),
+        type=Enum(['Stacked', 'Monolithic', 'Other']),
+        default='Other',
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
         shape=[],
     )
