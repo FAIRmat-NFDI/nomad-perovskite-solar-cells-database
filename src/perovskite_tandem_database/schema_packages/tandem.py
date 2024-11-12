@@ -28,7 +28,6 @@ class Ion(ArchiveSection):
 
     ion_type = Quantity(
         type=str,
-        shape=[],
         description='Type of the ion.',
     )
 
@@ -41,7 +40,6 @@ class Ion(ArchiveSection):
 
     coefficient = Quantity(
         type=float,
-        shape=[],
         description="""Coefficient for the element.
         - If a coefficient is unknown, leave the field empty.
         - If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
@@ -58,33 +56,27 @@ class Substance(ArchiveSection):
 
     m_def = Section(label_quantity='name')
 
-    name = Quantity(type=str, shape=[], description='The name of the substance.')
-    supplier = Quantity(
-        type=str, shape=[], description='The supplier of the substance.'
-    )
+    name = Quantity(type=str, description='The name of the substance.')
+    supplier = Quantity(type=str, description='The supplier of the substance.')
     purity = Quantity(type=str, shape=[], description='The purity of the substance.')
     concentration = Quantity(
         type=str,  # TODO: Resolve this workaround for Parsing
         # type=float,
-        shape=[],
         # unit='mg/ml',
         description='The concentration of the substance.',
     )
     volume = Quantity(
         type=float,
-        shape=[],
         unit='ml',
         description='The volume of the substance.',
     )
     age = Quantity(
         type=float,
-        shape=[],
-        unit='minutes',  # days?
+        unit='minute',  # days?
         description='The age of the substance.',
     )
     temperature = Quantity(
         type=float,
-        shape=[],
         unit='K',
         a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The temperature of the substance.',
@@ -103,7 +95,6 @@ class SolventAnnealing(ArchiveSection):
 
     temperature = Quantity(
         type=float,
-        shape=[],
         unit='K',
         a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description="""The temperature during the solvent annealing step.
@@ -111,10 +102,13 @@ class SolventAnnealing(ArchiveSection):
         - If the temperature is not known, state that by ‘nan’""",
         repeats=True,
     )
-    duration = Quantity(type=float, shape=[], unit='min')
+    duration = Quantity(
+        type=float,
+        unit='minute',
+        a_eln=ELNAnnotation(defaultDisplayUnit='minute'),
+    )
     atmosphere = Quantity(
         type=str,
-        shape=[],
         description='The solvents used in the solvent annealing step.',
         repeats=True,
     )
@@ -135,7 +129,6 @@ class Solvent(Substance):
 
     mixing_ratio = Quantity(
         type=float,
-        shape=[],
         description='The mixing ratio of the solvent.',
     )
 
@@ -153,12 +146,10 @@ class QuenchingSolvent(Solvent):
     # TODO: Check if this is correct
     additive_name = Quantity(
         type=str,
-        shape=[],
         description='The name of the additive.',
     )
     additive_concentration = Quantity(
         type=float,
-        shape=[],
         description='The concentration of the additive.',
     )
 
@@ -173,18 +164,15 @@ class Storage(ArchiveSection):
 
     atmosphere = Quantity(
         type=Enum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
-        shape=[],
         description='The atmosphere in which the sample is stored.',
     )
     humidity_relative = Quantity(
         type=float,
-        shape=[],
         unit='dimensionless',
         description='The relative humidity in the storage atmosphere.',
     )
     time_until_next_step = Quantity(
         type=float,
-        shape=[],
         unit='hours',
         description='The time between the perovskite stack is finalised and the next layer is deposited.',
     )
@@ -201,14 +189,12 @@ class SynthesisStep(ProcessStep):
     # General
     procedure = Quantity(
         type=str,
-        shape=[],
         default='Unknown',
         description='Name of the the synthesis step',
     )
 
     aggregation_state_of_reactants = Quantity(
         type=Enum(['Solid', 'Liquid', 'Gas', 'Unknown']),
-        shape=[],
         default='Unknown',
         description="""The physical state of the reactants.
         - The three basic categories are Solid/Liquid/Gas
@@ -221,34 +207,35 @@ class SynthesisStep(ProcessStep):
     atmosphere = Quantity(
         type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum', 'Unknown']),
         default='Unknown',
-        shape=[],
         description='The atmosphere present during the synthesis step',
     )
     pressure_total = Quantity(
         type=float,
-        shape=[],
         unit='mbar',
         description='The total pressure during each synthesis step',
     )
     humidity_relative = Quantity(
         type=float,
-        shape=[],
         unit='dimensionless',
         description='The relative humidity in the storage atmosphere.',
     )
     temperature_substrate = Quantity(
         type=float,
-        shape=[],
         unit='K',
         a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The temperature of the substrate during the synthesis step',
     )
     temperature_maximum = Quantity(
         type=float,
-        shape=[],
         unit='K',
         a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The maximum temperature reached during the synthesis step',
+    )
+
+    reactant = SubSection(
+        section_def=ReactionComponent,
+        description='The reactants used in the synthesis step',
+        repeats=True,
     )
 
 
@@ -281,15 +268,14 @@ class ThermalAnnealing(SynthesisStep):
 
     temperature = Quantity(
         type=float,
-        shape=[],
         unit='K',
         a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
         description='The temperature during the thermal annealing step',
     )
     duration = Quantity(
         type=float,
-        shape=[],
-        unit='min',
+        unit='minute',
+        a_eln=ELNAnnotation(defaultDisplayUnit='minute'),
         description='The duration of the thermal annealing step',
     )
 
@@ -299,11 +285,6 @@ class LiquidSynthesis(SynthesisStep):
     A section describing a wet chemical synthesis step such as spin-coating or dip-coating.
     """
 
-    reactant = SubSection(
-        section_def=ReactionComponent,
-        description='The reactants used in the synthesis step',
-        repeats=True,
-    )
     solvent = SubSection(
         section_def=Solvent,
         description='The solvents used in the synthesis step',
@@ -323,7 +304,6 @@ class GasPhaseSynthesis(SynthesisStep):
 
     pressure_partial = Quantity(
         type=float,
-        shape=[],
         unit='mbar',
         description='The partial pressure of the gas phase reactants',
     )
@@ -339,7 +319,6 @@ class Synthesis(Process):
 class Layer(ArchiveSection):
     name = Quantity(
         type=str,
-        shape=[],
         description='The name of the layer',
     )
     # Type
@@ -371,21 +350,18 @@ class Layer(ArchiveSection):
     # Basic properties
     thickness = Quantity(
         type=float,
-        shape=[],
         unit='nm',
         a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
         description='The thickness of the layer',
     )
     area = Quantity(
         type=float,
-        shape=[],
         unit='cm^2',
         a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
         description='The area of the layer',
     )
     surface_roughness = Quantity(
         type=float,
-        shape=[],
         unit='nm',
         a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
         description='The root mean square value of the surface roughness',
@@ -398,12 +374,10 @@ class Layer(ArchiveSection):
     )
     supplier = Quantity(
         type=str,
-        shape=[],
         description='The supplier of a commercially purchased layer',
     )
     supplier_brand = Quantity(
         type=str,
-        shape=[],
         description='The specific brand name of a commercially purchased layer',
     )
     cleaning = SubSection(section_def=Cleaning)
@@ -433,14 +407,12 @@ class PhotoAbsorber(Layer):
 
     bandgap = Quantity(
         type=float,
-        shape=[],
         unit='eV',
         description='The band gap of the photoabsorber',
     )
     # TODO: See if joining these two fields makes sense
     bandgap_graded = Quantity(
         type=float,
-        shape=[],
         unit='eV',
         description='The band gap if it varies as a function of the vertical position in the photoabsorber layer',
         repeats=True,
@@ -463,7 +435,6 @@ class PhotoAbsorber(Layer):
     )
     PL_max = Quantity(
         type=float,
-        shape=[],
         unit='nm',
         description='The wavelength of the maximum PL intensity',
     )
@@ -498,26 +469,22 @@ class PerovskiteLayer(PhotoAbsorber):
         ),
         description="""
             The dimension of the perovskite layer.""",
-        shape=[],
     )
     composition = SubSection(section_def=PerovskiteComposition)
 
     # General properties
     single_crystal = Quantity(
         type=bool,
-        shape=[],
         default=False,
         description='TRUE if the perovskite layer is single crystal, FALSE if it is polycrystalline.',
     )
     # stoichiometry = Quantity()
     inorganic = Quantity(
         type=bool,
-        shape=[],
         description='TRUE if the perovskite layer is inorganic, FALSE if it is organic.',
     )
     lead_free = Quantity(
         type=bool,
-        shape=[],
         description='TRUE if the perovskite layer is lead-free, FALSE if it contains lead.',
     )
 
@@ -525,7 +492,6 @@ class PerovskiteLayer(PhotoAbsorber):
 class SiliconLayer(PhotoAbsorber):
     cell_type = Quantity(
         type=str,
-        shape=[],
         description="""The type of silicon cell.
         Examples: AL-BSF, c-type, HIT, Homojunction, n-type, PERC, PERC n-type c-Si bifacial SC/nFAB, PERL, Single heterojunction""",
     )
@@ -552,7 +518,6 @@ class SiliconLayer(PhotoAbsorber):
 class ChalcopyriteAlkaliMetalDoping(Ion):
     source = Quantity(
         type=str,
-        shape=[],
         description="""The source of the alkali metal doping.
         Example: none, RbF, RbI, Substrate""",
     )
@@ -582,7 +547,6 @@ class SubCell(ArchiveSection):
 
     area = Quantity(
         type=float,
-        shape=[],
         unit='cm^2',
         a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
         description='The area of the sub cell',
@@ -590,7 +554,6 @@ class SubCell(ArchiveSection):
 
     module = Quantity(
         type=bool,
-        shape=[],
         description="""
         TRUE if a sub cell is in the form of a module, FALSE if it is a single cell
         It is for example possible to have a silicon bottom cell and a perovskite module as a top cell. In that case this would be marked as FALSE | TRUE
@@ -599,13 +562,11 @@ class SubCell(ArchiveSection):
 
     commercial_unit = Quantity(
         type=bool,
-        shape=[],
         description='TRUE if the sub cell was bought commercially, FALSE if it is a lab-made unit',
     )
 
     supplier = Quantity(
         type=str,
-        shape=[],
         description='Origin of the subcell. This will most often be a company or the lab of a research group',
     )
 
@@ -619,24 +580,20 @@ class General(EntryData):
         type=Enum(['Stacked', 'Monolithic', 'Other']),
         default='Other',
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
-        shape=[],
     )
 
     number_of_terminals = Quantity(
         type=int,
         description='The number of terminals in the device. The most common configurations are 2 and 4',
-        shape=[],
     )
 
     number_of_junctions = Quantity(
         type=int,
         description='The number of junctions in the device.',
-        shape=[],
     )
 
     number_of_cells = Quantity(
         type=int,
-        shape=[],
         default=0,
         description='The number of individual solar cells, or pixels, on the substrate on which the reported cell is made',
     )
@@ -677,7 +634,6 @@ class General(EntryData):
 
     area = Quantity(
         type=float,
-        shape=[],
         unit='cm^2',
         a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
         description='The total area of the device.',
@@ -685,7 +641,6 @@ class General(EntryData):
 
     area_measured = Quantity(
         type=float,
-        shape=[],
         unit='cm^2',
         a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
         description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
@@ -693,14 +648,12 @@ class General(EntryData):
 
     flexibility = Quantity(
         type=bool,
-        shape=[],
         default=False,
         description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
     )
 
     semitransparent = Quantity(
         type=bool,
-        shape=[],
         default=False,
         description="""
         TRUE if the device is semitransparent which usually is the case when there are no thick completely covering metal electrodes.
@@ -709,14 +662,12 @@ class General(EntryData):
 
     contains_textured_layers = Quantity(
         type=bool,
-        shape=[],
         default=False,
         description='TRUE if the device contains textured layers with the purpose of light management.',
     )
 
     contains_antireflectie_coating = Quantity(
         type=bool,
-        shape=[],
         default=False,
         description='TRUE if the device contains one or more anti reflective coatings.',
     )
