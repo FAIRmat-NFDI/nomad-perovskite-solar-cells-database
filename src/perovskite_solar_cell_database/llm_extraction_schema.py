@@ -499,6 +499,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
         # Reorder in single pass
         self.layers = [layer_dict[name] for name in ordered_names]
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()
