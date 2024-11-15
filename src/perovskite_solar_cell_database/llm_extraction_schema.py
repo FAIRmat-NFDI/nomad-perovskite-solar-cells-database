@@ -63,6 +63,7 @@ class LightSource(SectionRevision):
                 'White LED',
                 'Other',
                 'Outdoor',
+                ''
             ]
         ),
         description='Type of light source',
@@ -110,7 +111,7 @@ class Solute(SectionRevision):
     )
 
     concentration_unit = Quantity(
-        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'wt%', 'vol%', 'M']),
+        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'wt%', 'vol%', 'M', '']),
         description='Unit of concentration',
         a_eln=ELNAnnotation(label='Concentration Unit', component='EnumEditQuantity'),
     )
@@ -187,6 +188,30 @@ class Stability(SectionRevision):
         a_eln=ELNAnnotation(label='PCE at End', component='NumberEditQuantity'),
     )
 
+    potential_bias = Quantity(
+        type=MEnum(
+            ['Open circuit', 'MPPT', 'Constant potential', 'Constant current', 'Constant resistance', '']
+        ),
+        description='Potential bias during stability test',
+        a_eln=ELNAnnotation(label='Potential Bias', component='EnumEditQuantity'),
+    )
+
+
+
+class Solvent(SectionRevision):
+    m_def = Section(label='Solvent')
+
+    name = Quantity(
+        type=str,
+        description='Name of the solvent',
+        a_eln=ELNAnnotation(label='Name', component='StringEditQuantity'),
+    )
+
+    ratio = Quantity(
+        type=float,
+        description='Ratio of this solvent with respect to others - (0-1)',
+        a_eln=ELNAnnotation(label='Concentration', component='NumberEditQuantity'),
+    )
 
 # ReactionSolution class
 class ReactionSolution(SectionRevision):
@@ -214,10 +239,8 @@ class ReactionSolution(SectionRevision):
         ),
     )
 
-    solvent = Quantity(
-        type=str,
-        description='Solvent used',
-        a_eln=ELNAnnotation(label='Solvent', component='StringEditQuantity'),
+    solvents = SubSection(
+        section_def=Solvent, repeats=True, a_eln=ELNAnnotation(label='Solvents')
     )
 
 
@@ -239,7 +262,7 @@ class ProcessingStep(SectionRevision):
 
     atmosphere = Quantity(
         type=MEnum(
-            ['Ambient air', 'Dry air', 'Air', 'N2', 'Ar', 'He', 'H2', 'Vacuum', 'Other']
+            ['Ambient air', 'Dry air', 'Air', 'N2', 'Ar', 'He', 'H2', 'Vacuum', 'Other', '']
         ),
         description='Atmosphere during the step',
         a_eln=ELNAnnotation(label='Atmosphere', component='EnumEditQuantity'),
@@ -267,6 +290,12 @@ class ProcessingStep(SectionRevision):
         type=bool,
         description='Whether gas quenching was used',
         a_eln=ELNAnnotation(label='Gas Quenching', component='BoolEditQuantity'),
+    )
+
+    antisolvent_quenching = Quantity(
+        type=bool,
+        description='Whether antisolvent quenching was used',
+        a_eln=ELNAnnotation(label='Antisolvent Quenching', component='BoolEditQuantity'),
     )
 
     solution = SubSection(
@@ -328,6 +357,7 @@ class Layer(SectionRevision):
                 'Absorber',
                 'Other',
                 'Substrate',
+                ''
             ]
         ),
         description='Functionality of the layer',
@@ -373,7 +403,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
     )
 
     device_architecture = Quantity(
-        type=MEnum(['pin', 'nip', 'Back contacted', 'Front contacted']),
+        type=MEnum(['pin', 'nip', 'Back contacted', 'Front contacted', 'Other', '']),
         description='Device architecture',
         a_eln=ELNAnnotation(label='Device Architecture', component='EnumEditQuantity'),
     )
