@@ -551,6 +551,25 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
         # Reorder in single pass
         self.layers = [layer_dict[name] for name in ordered_names]
+
+        # Recursive function to traverse sections and set MEnum values to None when they 'Unknown'
+        def reset_menum_values(section):
+            for attribute_name in dir(section):
+                attribute = getattr(section, attribute_name, None)
+                if isinstance(attribute, MEnum) and attribute == 'Unknown':
+                    setattr(section, attribute_name, None)
+                elif isinstance(attribute, list):
+                    # Process lists of subsections
+                    for item in attribute:
+                        if isinstance(item, ArchiveSection):
+                            reset_menum_values(item)
+                elif isinstance(attribute, ArchiveSection):
+                    # Recursively process subsections
+                    reset_menum_values(attribute)
+
+        # Start normalization from the current section
+        reset_menum_values(self)
+
         super().normalize(archive, logger)
 
 
