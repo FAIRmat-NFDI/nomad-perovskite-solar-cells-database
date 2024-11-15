@@ -63,7 +63,7 @@ class LightSource(SectionRevision):
                 'White LED',
                 'Other',
                 'Outdoor',
-                ''
+                '',
             ]
         ),
         description='Type of light source',
@@ -190,12 +190,18 @@ class Stability(SectionRevision):
 
     potential_bias = Quantity(
         type=MEnum(
-            ['Open circuit', 'MPPT', 'Constant potential', 'Constant current', 'Constant resistance', '']
+            [
+                'Open circuit',
+                'MPPT',
+                'Constant potential',
+                'Constant current',
+                'Constant resistance',
+                '',
+            ]
         ),
         description='Potential bias during stability test',
         a_eln=ELNAnnotation(label='Potential Bias', component='EnumEditQuantity'),
     )
-
 
 
 class Solvent(SectionRevision):
@@ -212,6 +218,7 @@ class Solvent(SectionRevision):
         description='Ratio of this solvent with respect to others - (0-1)',
         a_eln=ELNAnnotation(label='Concentration', component='NumberEditQuantity'),
     )
+
 
 # ReactionSolution class
 class ReactionSolution(SectionRevision):
@@ -262,7 +269,18 @@ class ProcessingStep(SectionRevision):
 
     atmosphere = Quantity(
         type=MEnum(
-            ['Ambient air', 'Dry air', 'Air', 'N2', 'Ar', 'He', 'H2', 'Vacuum', 'Other', '']
+            [
+                'Ambient air',
+                'Dry air',
+                'Air',
+                'N2',
+                'Ar',
+                'He',
+                'H2',
+                'Vacuum',
+                'Other',
+                '',
+            ]
         ),
         description='Atmosphere during the step',
         a_eln=ELNAnnotation(label='Atmosphere', component='EnumEditQuantity'),
@@ -295,7 +313,9 @@ class ProcessingStep(SectionRevision):
     antisolvent_quenching = Quantity(
         type=bool,
         description='Whether antisolvent quenching was used',
-        a_eln=ELNAnnotation(label='Antisolvent Quenching', component='BoolEditQuantity'),
+        a_eln=ELNAnnotation(
+            label='Antisolvent Quenching', component='BoolEditQuantity'
+        ),
     )
 
     solution = SubSection(
@@ -357,7 +377,7 @@ class Layer(SectionRevision):
                 'Absorber',
                 'Other',
                 'Substrate',
-                ''
+                '',
             ]
         ),
         description='Functionality of the layer',
