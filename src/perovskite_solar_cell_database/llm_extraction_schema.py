@@ -63,7 +63,7 @@ class LightSource(SectionRevision):
                 'White LED',
                 'Other',
                 'Outdoor',
-                '',
+                'Unknown',
             ]
         ),
         description='Type of light source',
@@ -111,7 +111,7 @@ class Solute(SectionRevision):
     )
 
     concentration_unit = Quantity(
-        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'wt%', 'vol%', 'M', '']),
+        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'wt%', 'vol%', 'M', 'Unknown']),
         description='Unit of concentration',
         a_eln=ELNAnnotation(label='Concentration Unit', component='EnumEditQuantity'),
     )
@@ -196,7 +196,7 @@ class Stability(SectionRevision):
                 'Constant potential',
                 'Constant current',
                 'Constant resistance',
-                '',
+                'Unknown',
             ]
         ),
         description='Potential bias during stability test',
@@ -213,9 +213,9 @@ class Solvent(SectionRevision):
         a_eln=ELNAnnotation(label='Name', component='StringEditQuantity'),
     )
 
-    ratio = Quantity(
+    volume_fraction = Quantity(
         type=float,
-        description='Ratio of this solvent with respect to others - (0-1)',
+        description='The volume fraction of the solvent with respect to the other solvents in the solution',
         a_eln=ELNAnnotation(label='Concentration', component='NumberEditQuantity'),
     )
 
@@ -279,7 +279,7 @@ class ProcessingStep(SectionRevision):
                 'H2',
                 'Vacuum',
                 'Other',
-                '',
+                'Unknown',
             ]
         ),
         description='Atmosphere during the step',
@@ -377,7 +377,7 @@ class Layer(SectionRevision):
                 'Absorber',
                 'Other',
                 'Substrate',
-                '',
+                'Unknown',
             ]
         ),
         description='Functionality of the layer',
@@ -423,7 +423,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
     )
 
     device_architecture = Quantity(
-        type=MEnum(['pin', 'nip', 'Back contacted', 'Front contacted', 'Other', '']),
+        type=MEnum(['pin', 'nip', 'Back contacted', 'Front contacted', 'Other', 'Unknown']),
         description='Device architecture',
         a_eln=ELNAnnotation(label='Device Architecture', component='EnumEditQuantity'),
     )
