@@ -423,7 +423,9 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
     )
 
     device_architecture = Quantity(
-        type=MEnum(['pin', 'nip', 'Back contacted', 'Front contacted', 'Other', 'Unknown']),
+        type=MEnum(
+            ['pin', 'nip', 'Back contacted', 'Front contacted', 'Other', 'Unknown']
+        ),
         description='Device architecture',
         a_eln=ELNAnnotation(label='Device Architecture', component='EnumEditQuantity'),
     )
