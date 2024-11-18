@@ -304,20 +304,6 @@ class ProcessingStep(SectionRevision):
         ),
     )
 
-    gas_quenching = Quantity(
-        type=bool,
-        description='Whether gas quenching was used',
-        a_eln=ELNAnnotation(label='Gas Quenching', component='BoolEditQuantity'),
-    )
-
-    antisolvent_quenching = Quantity(
-        type=bool,
-        description='Whether antisolvent quenching was used',
-        a_eln=ELNAnnotation(
-            label='Antisolvent Quenching', component='BoolEditQuantity'
-        ),
-    )
-
     solution = SubSection(
         section_def=ReactionSolution, a_eln=ELNAnnotation(label='Solution')
     )
