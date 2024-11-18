@@ -142,7 +142,7 @@ class Stability(SectionRevision):
 
     humidity = Quantity(
         type=float,
-        description='Relative humidity during stability test',
+        description='The ambient humidity as a percentage without the % sign (i.e. a value between 0 and 100). When measurements are done in an inert atmosphere, this should be 0. If the humidity is fluctuating, use the average value.',
         a_eln=ELNAnnotation(
             label='Humidity',
             component='NumberEditQuantity',
@@ -170,13 +170,13 @@ class Stability(SectionRevision):
 
     PCE_at_start = Quantity(
         type=float,
-        description='PCE at the start of the experiment',
+        description='PCE at the start of the experiment as a percentage without the % sign.',
         a_eln=ELNAnnotation(label='PCE at Start', component='NumberEditQuantity'),
     )
 
     PCE_after_1000_hours = Quantity(
         type=float,
-        description='PCE after 1000 hours',
+        description='PCE after 1000 hours as a percentage without the % sign.',
         a_eln=ELNAnnotation(
             label='PCE after 1000 Hours', component='NumberEditQuantity'
         ),
@@ -184,7 +184,7 @@ class Stability(SectionRevision):
 
     PCE_at_end = Quantity(
         type=float,
-        description='PCE at the end of the experiment',
+        description='PCE at the end of the experiment as a percentage without the % sign.',
         a_eln=ELNAnnotation(label='PCE at End', component='NumberEditQuantity'),
     )
 
@@ -289,7 +289,7 @@ class ProcessingStep(SectionRevision):
     temperature = Quantity(
         type=float,
         unit='°C',
-        description='Temperature during the step',
+        description='The temperature during the deposition step. Depending on the circumstances the most relevant temperature could be either the ambient temperature, the substrate temperature, or the solution temperature.',
         a_eln=ELNAnnotation(
             label='Temperature', defaultDisplayUnit='°C', component='NumberEditQuantity'
         ),
@@ -418,7 +418,8 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
     pce = Quantity(
         type=float,
-        description='Power Conversion Efficiency (PCE)',
+        description="""This is the device efficiency in %. Make sure to convert it to a percentage if it's given as a fraction before reporting.
+Sometimes several different PCE values are presented for the same device. It could be a stabilized efficiency, a value extracted from a reversed JV scan, a value extracted from a forward JV scan. Only state one value. If several values are present for the device The priority is: Stabilized values is preferred before JV data from the reverse scan which is preferred before JV values from the forward scan.""",
         a_eln=ELNAnnotation(
             label='PCE',
             component='NumberEditQuantity',
@@ -446,7 +447,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
     ff = Quantity(
         type=float,
-        description='Mostly the Fill factor is given as a percentage (%). In case is not make sure to convert it from ratio to percentage.',
+        description='This field requires the fill factor as a percentage without the % sign. If the fill factor is given as a fraction, e.g. 0.2, convert it to and write it as 20 without any percentage sign (%).',
         a_eln=ELNAnnotation(
             label='Fill Factor',
             component='NumberEditQuantity',
@@ -519,7 +520,7 @@ class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Sch
 
     layer_order = Quantity(
         type=str,
-        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by commas.',
+        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by commas. If you want to add a missing layer, please add it first to the Layers section below. Then make sure to add the name of the layer, as you list it below, in this field in the right order. When you hit save on the top right, the correct order will be set on the layers in the Layers section below.',
         a_eln=ELNAnnotation(label='Layer Order', component='StringEditQuantity'),
     )
 
