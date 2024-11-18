@@ -216,7 +216,7 @@ class Solvent(SectionRevision):
     volume_fraction = Quantity(
         type=float,
         description='The volume fraction of the solvent with respect to the other solvents in the solution',
-        a_eln=ELNAnnotation(label='Concentration', component='NumberEditQuantity'),
+        a_eln=ELNAnnotation(label='Volume Fraction', component='NumberEditQuantity'),
     )
 
 
