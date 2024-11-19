@@ -31,7 +31,7 @@ maintainers = [
     ]
 requires-python = ">=3.9"
 dependencies = [
-    "nomad-lab>=1.3.0",
+    "nomad-lab>=1.3.11.dev29",
     "nomad-schema-plugin-run>=1.0.1",
     "nomad-schema-plugin-simulation-workflow>=1.0.1",
     "rdkit",
@@ -135,3 +135,4 @@ perovskite_solar_cell = "perovskite_solar_cell_database:perovskite_solar_cell"
 solar_cell_app = "perovskite_solar_cell_database.apps:solar_cells"
 perovskite_composition = "perovskite_solar_cell_database:perovskite_composition"
 ion_parser = "perovskite_solar_cell_database:ion_parser"
+perovskite_ions_app = "perovskite_solar_cell_database.apps:perovskite_ions"

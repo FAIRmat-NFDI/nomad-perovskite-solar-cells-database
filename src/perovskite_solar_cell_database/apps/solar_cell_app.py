@@ -4,7 +4,7 @@ solar_cell_app = yaml.safe_load(
     """
 label: Solar Cells
 path: solarcells
-category: Use Cases
+category: Halide Perovskites
 description: Search solar cells
 readme: 'This page allows you to search **solar cell data**
   within NOMAD. The filter menu on the left and the shown
