@@ -56,6 +56,12 @@ perovskite_ions_app = App(
                 quantity='data.iupac_name#perovskite_solar_cell_database.composition.PerovskiteAIon',
                 show_input=True,
             ),
+            MenuItemHistogram(
+                x=Axis(
+                    search_quantity='data.pure_substance.molar_mass#perovskite_solar_cell_database.composition.PerovskiteAIon',
+                    title='A cation Molar Mass',
+                )
+            ),
             MenuItemHistogram(x=Axis(search_quantity='results.material.n_elements')),
         ],
     ),
