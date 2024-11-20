@@ -2,3 +2,5 @@ mkdocs
 mkdocs-material==8.1.1
 pymdown-extensions
 mkdocs-click
+mkdocs-glightbox
+
