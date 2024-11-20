@@ -18,4 +18,11 @@ tandem_parser = TandemParserEntryPoint(
     description='Tandem Parser for .xlsx files.',
     mainfile_name_re=r'.*\.xlsx',
     # mainfile_content_re='',
+    mainfile_contents_dict={
+        'Master vertical': {
+            '__has_all_keys': [
+                'Ref. ID temp (Integer starting from 1 and counting upwards)',
+            ]
+        },
+    },
 )
