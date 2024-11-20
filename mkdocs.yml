@@ -1,7 +1,6 @@
 site_name: nomad-perovskite-solar-cells-database
 site_description: This is a NOMAD plugin for the perovskite solar cells database.
-
-
+edit_uri: ""
 repo_url: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 
 nav:
@@ -9,13 +8,18 @@ nav:
   - Tutorial: tutorial/tutorial.md
   - How-to guides:
       - Install this Plugin: how_to/install_this_plugin.md
-      - Use this Plugin: how_to/use_this_plugin.md
       - Contribute to this plugin: how_to/contribute_to_this_plugin.md
       - Contribute to the documentation: how_to/contribute_to_the_documentation.md
+      - Search for ions: how_to/search_for_ions.md
+      - Add a new ion: how_to/add_a_new_ion.md
+      - Export a cation structure: how_to/export_a_cation_structure.md
+      - Create a perovskite compostion: how_to/create_a_perovskite_composition.md
   - Explanation: explanation/explanation.md
   - Reference: reference/references.md
 plugins:
   - search
+  - glightbox
+
 theme:
   name: material
   palette:
@@ -26,7 +30,11 @@ theme:
   logo: assets/nomad-plugin-logo.png
   favicon: assets/favicon.png
   features:
-    - navigation.instant
+    - navigation.path
+    - navigation.footer
+    - navigation.top
+  icon:
+    repo: fontawesome/brands/github
   custom_dir: docs/theme
 markdown_extensions:
   - attr_list
@@ -37,17 +45,16 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - mkdocs-click
+  - pymdownx.extra
   - toc:
       permalink: True
   - pymdownx.arithmatex:
       generic: true
-  - attr_list
-  - mkdocs-click
-  - pymdownx.extra
+
 extra:
   generator: false
-  homepage: https://nomad-lab.eu
+  homepage: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 use_directory_urls: false
 extra_css:
   - stylesheets/extra.css
