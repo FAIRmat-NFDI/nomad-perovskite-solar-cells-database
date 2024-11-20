@@ -21,7 +21,7 @@ It also contains a database of ions used in halide perovskites and a schema to c
 
 ### Key Features
 
-- The perovksite soalr cell database.
+- The perovskite solar cell database.
 - A database of ions used in halide perovskites.
 - A schema to create standarized perovskite composition entries.
 - Integration with NOMAD for data exploration and access via the API.
