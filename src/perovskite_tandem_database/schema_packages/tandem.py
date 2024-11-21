@@ -26,9 +26,9 @@ class Ion(ArchiveSection):
 
     m_def = Section(label_quantity='ion_type')
 
-    ion_type = Quantity(
+    name = Quantity(
         type=str,
-        description='Type of the ion.',
+        description='Name of the ion.',
     )
 
     element = Quantity(
