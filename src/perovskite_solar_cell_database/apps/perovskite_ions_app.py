@@ -69,16 +69,94 @@ perovskite_ions_app = App(
         yaml.safe_load(
             """
             widgets:
-              - layout:
-                  xxl: {minH: 8, minW: 12, h: 9, w: 13, y: 0, x: 0}
-                  xl: {minH: 8, minW: 12, h: 9, w: 12, y: 0, x: 0}
-                  lg: {minH: 8, minW: 12, h: 8, w: 12, y: 0, x: 0}
-                  md: {minH: 8, minW: 12, h: 8, w: 12, y: 0, x: 0}
-                  sm: {minH: 8, minW: 12, h: 8, w: 12, y: 0, x: 0}
-                type: periodictable
-                scale: linear
-                quantity: results.material.elements
-      """
+                - type: periodictable
+                  scale: linear
+                  search_quantity: results.material.elements
+                  layout:
+                    xxl:
+                      minH: 8
+                      minW: 12
+                      h: 9
+                      w: 13
+                      y: 0
+                      x: 0
+                    xl:
+                      minH: 8
+                      minW: 12
+                      h: 9
+                      w: 12
+                      y: 0
+                      x: 0
+                    lg:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                    md:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                    sm:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                - type: scatter_plot
+                  autorange: true
+                  size: 1000
+                  markers:
+                    color:
+                      search_quantity: results.material.topology[0].structural_type
+                  y:
+                    search_quantity: data.pure_substance.molar_mass#perovskite_solar_cell_database.composition.PerovskiteAIon
+                    title: A cation molar mass
+                  x:
+                    search_quantity: results.material.topology[0].n_atoms
+                    title: Number ot atoms
+                  layout:
+                    xxl:
+                      minH: 3
+                      minW: 3
+                      h: 6
+                      w: 9
+                      y: 0
+                      x: 12
+                    xl:
+                      minH: 3
+                      minW: 3
+                      h: 9
+                      w: 18
+                      y: 0
+                      x: 12
+                    lg:
+                      minH: 3
+                      minW: 3
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 12
+                    md:
+                      minH: 3
+                      minW: 3
+                      h: 8
+                      w: 6
+                      y: 0
+                      x: 12
+                    sm:
+                      minH: 3
+                      minW: 3
+                      h: 6
+                      w: 9
+                      y: 8
+                      x: 0
+            """
         )
     ),
     filters_locked={
