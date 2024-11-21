@@ -1,0 +1,542 @@
+{
+    "data": {
+        "m_def": "perovskite_tandem_database.schema_packages.schema.PerovskiteTandemSolarCell",
+        "general": {
+            "architecture": "Stacked",
+            "number_of_terminals": 4,
+            "number_of_junctions": 2,
+            "number_of_cells": 1,
+            "photoabsorber": [
+                "CIGS",
+                "Perovskite"
+            ],
+            "photoabsorber_bandgaps": [
+                1.18,
+                1.62
+            ],
+            "area_measured": 0.213,
+            "flexibility": false,
+            "semitransparent": false,
+            "contains_textured_layers": false,
+            "contains_antireflectie_coating": true,
+            "subcell": [
+                {
+                    "area": 0.5,
+                    "module": true,
+                    "commercial_unit": false,
+                    "supplier": "Zentrum f\u00fcr Sonnenenergie- und Wasserstoff-Forschung Baden-W\u00fcrttemberg"
+                },
+                {
+                    "area": 0.5,
+                    "module": true,
+                    "commercial_unit": false,
+                    "supplier": "Empa-Swiss Federal Laboratories for Materials Science and Technology"
+                }
+            ]
+        },
+        "reference": {
+            "DOI_number": "10.1002/advs.201700675",
+            "name_of_person_entering_the_data": "T. Jesper Jacobsson",
+            "data_entered_by_author": false
+        },
+        "layer_stack": [
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.Substrate",
+                "name": "SLG",
+                "functionality": "Substrate",
+                "origin": "Commercial",
+                "synthesis": {}
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "Mo",
+                "functionality": "Back contact",
+                "thickness": 700.0,
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Sputtering",
+                            "aggregation_state_of_reactants": "Gas",
+                            "reactant": [
+                                {
+                                    "name": "Mo"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.ChalcopyriteLayer",
+                "name": "CIGS",
+                "thickness": 3000.0,
+                "origin": "Unknown",
+                "bandgap": 1.18,
+                "bandgap_graded": true,
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Co-evaporation",
+                            "aggregation_state_of_reactants": "Gas"
+                        }
+                    ]
+                },
+                "composition": [
+                    {
+                        "name": "Cu",
+                        "coefficient": 1.0
+                    },
+                    {
+                        "name": "In",
+                        "coefficient": 0.59
+                    },
+                    {
+                        "name": "Ga",
+                        "coefficient": 0.41
+                    },
+                    {
+                        "name": "Se",
+                        "coefficient": 2.0
+                    }
+                ],
+                "alkali_metal_doping": [
+                    {
+                        "name": "Rb",
+                        "source": "RbF"
+                    }
+                ]
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "CdS",
+                "functionality": "Buffer layer",
+                "thickness": 40.0,
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "CBD"
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "i-ZnO",
+                "functionality": "Window layer",
+                "thickness": 100.0,
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Sputtering",
+                            "atmosphere": "Vacuum",
+                            "reactant": [
+                                {
+                                    "name": "ZnO"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "AZO",
+                "functionality": "Window layer",
+                "thickness": 200.0,
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Sputtering",
+                            "atmosphere": "Vacuum",
+                            "reactant": [
+                                {
+                                    "name": "Al"
+                                },
+                                {
+                                    "name": "ZnO"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "Ni:Al-grid",
+                "functionality": "Window layer",
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Evaporation",
+                            "atmosphere": "Vacuum",
+                            "reactant": [
+                                {
+                                    "name": "Al"
+                                },
+                                {
+                                    "name": "Ni"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "MgF2",
+                "functionality": "Window layer",
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Evaporation",
+                            "atmosphere": "Vacuum",
+                            "reactant": [
+                                {
+                                    "name": "MgF2"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "Air-gap",
+                "functionality": "Subcell spacer",
+                "origin": "Lab made",
+                "synthesis": {}
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.Substrate",
+                "name": "SLG",
+                "functionality": "Substrate",
+                "area": 6.25,
+                "origin": "Commercial",
+                "cleaning": {
+                    "steps": [
+                        {
+                            "name": "Soap"
+                        },
+                        {
+                            "name": "Water"
+                        },
+                        {
+                            "name": "Ultrasonification"
+                        },
+                        {
+                            "name": "Heating"
+                        },
+                        {
+                            "name": "N2"
+                        }
+                    ]
+                },
+                "synthesis": {}
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.Substrate",
+                "name": "ITO",
+                "functionality": "Substrate",
+                "area": 6.25,
+                "origin": "Commercial",
+                "cleaning": {
+                    "steps": [
+                        {
+                            "name": "Soap"
+                        },
+                        {
+                            "name": "Water"
+                        },
+                        {
+                            "name": "Ultrasonification"
+                        },
+                        {
+                            "name": "Heating"
+                        },
+                        {
+                            "name": "N2"
+                        }
+                    ]
+                },
+                "synthesis": {}
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "PTAA",
+                "functionality": "HTL",
+                "origin": "Lab made",
+                "supplier": "Unknown; Sigma Aldrich",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.LiquidSynthesis",
+                            "procedure": "Spin-coating",
+                            "aggregation_state_of_reactants": "Liquid",
+                            "reactant": [
+                                {
+                                    "name": "F4-TCNQ",
+                                    "supplier": "Unknown",
+                                    "concentration": "1 wt%",
+                                    "age": 0.03
+                                },
+                                {
+                                    "name": "PTAA",
+                                    "supplier": "Sigma Aldrich",
+                                    "concentration": "5.0",
+                                    "age": 0.03
+                                }
+                            ],
+                            "solvent": [
+                                {
+                                    "name": "Toluene",
+                                    "mixing_ratio": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.ThermalAnnealing",
+                            "duration": 10.0,
+                            "procedure": "Thermal annealing",
+                            "temperature": 100.0
+                        }
+                    ]
+                },
+                "additives": [
+                    {
+                        "name": "F4-TCNQ",
+                        "concentration": "1 wt%"
+                    }
+                ]
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.PerovskiteLayer",
+                "name": "Perovskite",
+                "thickness": 520.0,
+                "origin": "Unknown",
+                "bandgap": 1.62,
+                "bandgap_graded": false,
+                "bandgap_estimation_basis": "Absorption Tauc-plot",
+                "dimension": "3D",
+                "single_crystal": false,
+                "inorganic": false,
+                "lead_free": false,
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "Evaporation",
+                            "aggregation_state_of_reactants": "Solid",
+                            "atmosphere": "Vacuum",
+                            "reactant": [
+                                {
+                                    "name": "PbI2",
+                                    "concentration": "1"
+                                }
+                            ]
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.LiquidSynthesis",
+                            "procedure": "Spin-coating",
+                            "aggregation_state_of_reactants": "Liquid",
+                            "atmosphere": "N2",
+                            "reactant": [
+                                {
+                                    "name": "MAI",
+                                    "concentration": "65.0",
+                                    "volume": 0.3
+                                }
+                            ],
+                            "solvent": [
+                                {
+                                    "name": "IPA",
+                                    "mixing_ratio": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.ThermalAnnealing",
+                            "duration": 10.0,
+                            "procedure": "Thermal annealing",
+                            "temperature": 373.15
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.LiquidSynthesis",
+                            "procedure": "Spin-coating",
+                            "aggregation_state_of_reactants": "Liquid",
+                            "atmosphere": "N2",
+                            "reactant": [
+                                {
+                                    "name": "FABr",
+                                    "concentration": "65.0"
+                                }
+                            ],
+                            "solvent": [
+                                {
+                                    "name": "IPA",
+                                    "mixing_ratio": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.ThermalAnnealing",
+                            "duration": 60.0,
+                            "procedure": "Thermal annealing",
+                            "temperature": 373.15
+                        }
+                    ]
+                },
+                "additives": [
+                    {
+                        "concentration": "Under"
+                    }
+                ],
+                "composition": {
+                    "ion_a": [
+                        {
+                            "name": "MA",
+                            "coefficient": 1.0
+                        }
+                    ],
+                    "ion_b": [
+                        {
+                            "name": "Pb",
+                            "coefficient": 1.0
+                        }
+                    ],
+                    "ion_c": [
+                        {
+                            "name": "Br",
+                            "coefficient": 0.17
+                        },
+                        {
+                            "name": "I",
+                            "coefficient": 2.83
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "PCBM-60",
+                "functionality": "ETL",
+                "origin": "Lab made",
+                "supplier": "Solenne",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.LiquidSynthesis",
+                            "procedure": "Spin-coating",
+                            "aggregation_state_of_reactants": "Liquid",
+                            "reactant": [
+                                {
+                                    "name": "PCBM-60",
+                                    "supplier": "Solenne",
+                                    "concentration": "20.0",
+                                    "volume": 0.03
+                                }
+                            ],
+                            "solvent": [
+                                {
+                                    "name": "Chlorobenzene"
+                                }
+                            ]
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.ThermalAnnealing",
+                            "duration": 60.0,
+                            "procedure": "Thermal annealing",
+                            "temperature": 373.15
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "ZnO-np",
+                "functionality": "ETL",
+                "origin": "Lab made",
+                "supplier": "Sigma-Aldrich",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.LiquidSynthesis",
+                            "procedure": "Spin-coating",
+                            "aggregation_state_of_reactants": "Liquid",
+                            "reactant": [
+                                {
+                                    "name": "ZnO-np",
+                                    "supplier": "Sigma-Aldrich",
+                                    "concentration": "2.7 wt%",
+                                    "volume": 0.03
+                                }
+                            ],
+                            "solvent": [
+                                {
+                                    "name": "IPA"
+                                }
+                            ]
+                        },
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.ThermalAnnealing",
+                            "duration": 1.0,
+                            "procedure": "Thermal annealing",
+                            "temperature": 373.15
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "AZO",
+                "functionality": "Front contact",
+                "thickness": 50.0,
+                "origin": "Lab made",
+                "synthesis": {}
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "NiAl",
+                "functionality": "Front contact",
+                "thickness": 4000.0,
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "E-beam evaporation",
+                            "aggregation_state_of_reactants": "Gas"
+                        }
+                    ]
+                }
+            },
+            {
+                "m_def": "perovskite_tandem_database.schema_packages.tandem.NonAbsorbingLayer",
+                "name": "MgF2",
+                "functionality": "Anti reflective coating",
+                "thickness": 105.0,
+                "origin": "Lab made",
+                "synthesis": {
+                    "steps": [
+                        {
+                            "m_def": "perovskite_tandem_database.schema_packages.tandem.GasPhaseSynthesis",
+                            "procedure": "E-beam evaporation"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

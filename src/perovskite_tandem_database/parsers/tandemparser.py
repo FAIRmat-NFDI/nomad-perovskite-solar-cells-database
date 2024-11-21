@@ -30,6 +30,7 @@ from perovskite_tandem_database.schema_packages.tandem import (
     PerovskiteLayer,
     PhotoAbsorber,
     QuenchingSolvent,
+    ReactionComponent,
     Reference,
     SiliconLayer,
     Solvent,
@@ -80,6 +81,8 @@ class TandemParser(MatchingParser):
             )
 
             entry_archive = EntryArchive(data=tandem)
+
+            print('parsing with tandem parser')
 
             create_archive(
                 entry_archive.m_to_dict(),
@@ -361,7 +364,9 @@ def extract_reactants(data_frame):
     """
     reactants = []
     df_temp = data_frame[data_frame.index.str.contains('Reaction solutions.')]
-    if not df_temp.empty:
+    if df_temp.empty:
+        return None
+    else:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
             reactant_properties = {
@@ -392,11 +397,9 @@ def extract_reactants(data_frame):
                 ),
             }
 
-            reactants.append(Substance(**reactant_properties))
-    if len(reactants) == 0:
-        return None
-    else:
-        return reactants
+            reactants.append(ReactionComponent(**reactant_properties))
+
+    return reactants if len(reactants) > 0 else None
 
 
 def extract_quenching_solvents(data_frame):
@@ -446,7 +449,7 @@ def extract_perovskite_composition(data_frame):
             type = partial_get(df_components[component], '-ions ')
             coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
-                ions_a.append(Ion(ion_type=type, coefficient=coefficient))
+                ions_a.append(Ion(name=type, coefficient=coefficient))
         df_components = split_data(
             df_temp[df_temp.index.str.contains('B-ions')], delimiter=';'
         )
@@ -454,7 +457,7 @@ def extract_perovskite_composition(data_frame):
             type = partial_get(df_components[component], '-ions ')
             coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
-                ions_b.append(Ion(ion_type=type, coefficient=coefficient))
+                ions_b.append(Ion(name=type, coefficient=coefficient))
         df_components = split_data(
             df_temp[df_temp.index.str.contains('C-ions')], delimiter=';'
         )
@@ -462,7 +465,7 @@ def extract_perovskite_composition(data_frame):
             type = partial_get(df_components[component], '-ions ')
             coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
-                ions_c.append(Ion(ion_type=type, coefficient=coefficient))
+                ions_c.append(Ion(name=type, coefficient=coefficient))
     return PerovskiteComposition(ion_a=ions_a, ion_b=ions_b, ion_c=ions_c)
 
 
@@ -475,14 +478,14 @@ def extract_chalcopyrite_composition(data_frame):
     if not df_temp.empty:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
-            ion_type = partial_get(
+            name = partial_get(
                 df_components[component], 'Chalcopyrite. Composition. Ions '
             )
             coefficient = partial_get(
                 df_components[component],
                 'Chalcopyrite. Composition. Ions. Coefficients',
             )
-            composition.append(Ion(ion_type=ion_type, coefficient=coefficient))
+            composition.append(Ion(name=name, coefficient=coefficient))
     if len(composition) == 0:
         return None
     else:
@@ -498,10 +501,10 @@ def extract_alkali_doping(data_frame):
     if not df_temp.empty:
         df_components = split_data(df_temp, delimiter=';')
         for component in df_components.columns:
-            ion_type = partial_get(df_components[component], 'Alkali metal doping')
+            name = partial_get(df_components[component], 'Alkali metal doping')
             source = partial_get(df_components[component], 'Sources of alkali doping')
             alkali_doping.append(
-                ChalcopyriteAlkaliMetalDoping(ion_type=ion_type, source=source)
+                ChalcopyriteAlkaliMetalDoping(name=name, source=source)
             )
     if len(alkali_doping) == 0:
         return None
