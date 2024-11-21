@@ -10,7 +10,9 @@ ureg = UnitRegistry()
 
 
 def test_schema():
-    test_file = os.path.join(os.path.dirname(__file__), 'data', 'test_tandem_schema.archive.json')
+    test_file = os.path.join(
+        os.path.dirname(__file__), 'data', 'test_tandem_schema.archive.json'
+    )
     entry_archive = parse(test_file)[0]
     normalize_all(entry_archive)
 
