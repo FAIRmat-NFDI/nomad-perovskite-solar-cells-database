@@ -119,7 +119,7 @@ perovskite_ions_app = App(
                     title: A cation molar mass
                   x:
                     search_quantity: results.material.topology[0].n_atoms
-                    title: Number ot atoms
+                    title: Number of atoms
                   layout:
                     xxl:
                       minH: 3
