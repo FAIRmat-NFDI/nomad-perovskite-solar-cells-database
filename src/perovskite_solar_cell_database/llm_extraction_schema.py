@@ -483,17 +483,6 @@ Sometimes several different PCE values are presented for the same device. It cou
         section_def=LightSource, a_eln=ELNAnnotation(label='Light Source')
     )
 
-    bandgap = Quantity(
-        type=float,
-        unit='eV',
-        description='Bandgap of the perovskite material in eV. Include this field only if the bandgap has been directly measured in the experiment.',
-        a_eln=ELNAnnotation(
-            label='Bandgap',
-            component='NumberEditQuantity',
-            props=dict(minValue=0.5, maxValue=4.0),
-        ),
-    )
-
     encapsulated = Quantity(
         type=bool,
         description='True if the device is encapsulated',
