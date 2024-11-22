@@ -121,49 +121,49 @@ class Scan(ExperimentStep):
         description='Direction of the scan.',
     )
 
-    jsc = Quantity(
+    short_circuit_current_density = Quantity(
         type=float,
         description='Short-circuit current density.',
         unit='mA/cm^2',
     )
 
-    Voc = Quantity(
+    open_circuit_voltage = Quantity(
         type=float,
         description='Open-circuit voltage.',
         unit='V',
     )
 
-    FF = Quantity(
+    fill_factor = Quantity(
         type=float,
         description='Fill factor.',
         unit='dimensionless',
     )
 
-    PCE = Quantity(
+    power_conversion_efficiency = Quantity(
         type=float,
         description='Power conversion efficiency.',
         unit='dimensionless',
     )
 
-    Vmp = Quantity(
+    maximum_power_point_voltage = Quantity(
         type=float,
         description='Voltage at maximum power.',
         unit='V',
     )
 
-    jmp = Quantity(
+    maximum_power_point_current = Quantity(
         type=float,
         description='Current at maximum power.',
         unit='mA/cm^2',
     )
 
-    Rs = Quantity(
+    restiance_series = Quantity(
         type=float,
         description='Series resistance.',
         unit='Ohm cm^2',
     )
 
-    Rsh = Quantity(
+    resistance_shunt = Quantity(
         type=float,
         description='Shunt resistance.',
         unit='Ohm cm^2',
@@ -174,6 +174,11 @@ class JV(Experiment):
     """
     JV measurement.
     """
+
+    target = Quantity(
+        type=str,
+        description='Target of the measurement.',
+    )
 
     illumination = SubSection(
         section_def=Illumination,

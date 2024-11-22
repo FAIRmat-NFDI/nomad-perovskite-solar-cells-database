@@ -13,7 +13,7 @@ from nomad.metainfo.data_type import Enum
 from nomad.metainfo.util import MEnum
 
 # from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
-from .ref import Reference
+from .reference import Reference
 
 # Chemicals and materials and their treatment
 

@@ -17,7 +17,10 @@ def test_schema():
     normalize_all(entry_archive)
 
     # test reference
-    assert entry_archive.data.reference.DOI_number == '10.1002/advs.201700675'
+    assert (
+        entry_archive.data.reference.DOI_number
+        == 'https://doi.org/10.1002/advs.201700675'
+    )
     assert entry_archive.data.reference.data_entered_by_author is False
 
     # test general

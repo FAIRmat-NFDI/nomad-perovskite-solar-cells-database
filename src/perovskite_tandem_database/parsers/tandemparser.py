@@ -66,6 +66,7 @@ class TandemParser(MatchingParser):
         # Process each column/device/publication separately
         for col in data_frame.columns:
             logger.info(f'Processing column: {col}')
+            entry_archive = EntryArchive()
 
             # Clean the data frame
             # Set proper Boolean values and remove rows with all NaN values
@@ -74,15 +75,13 @@ class TandemParser(MatchingParser):
             stack = extract_layer_stack(column_data)
             general = extract_general(column_data)
             reference = extract_reference(column_data)
-            reference.normalize(archive, logger)
+            # reference.normalize(entry_archive, logger)
 
             tandem = PerovskiteTandemSolarCell(
                 general=general, reference=reference, layer_stack=stack
             )
 
-            entry_archive = EntryArchive(data=tandem)
-
-            print('parsing with tandem parser')
+            entry_archive.data = tandem
 
             create_archive(
                 entry_archive.m_to_dict(),
@@ -649,7 +648,9 @@ def extract_layer_stack(data_frame):
 
     # Filter out layers
     filtered_df = data_frame[data_frame.index.str.contains('Exist')]
-    layer_labels = [idx.split('Exist')[0] for idx in filtered_df.index]
+    layer_labels = [
+        idx.split('Exist')[0].strip() for idx, val in filtered_df.items() if val
+    ]
 
     for label in layer_labels:
         # Filter dataframes by label
