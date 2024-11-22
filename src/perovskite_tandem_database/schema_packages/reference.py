@@ -57,4 +57,4 @@ class Reference(PublicationReference):
 
     def normalize(self, archive, logger):
         """Normalize the reference section."""
-        super(PublicationReference, self).normalize(archive, logger)
+        super().normalize(archive, logger)
