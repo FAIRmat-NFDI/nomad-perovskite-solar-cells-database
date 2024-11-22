@@ -44,18 +44,22 @@ How-to guides provide step-by-step instructions for a wide range of tasks:
 - [Install this plugin](how_to/install_this_plugin.md)
 - [Contribute to this plugin](how_to/contribute_to_this_plugin.md)
 - [Contribute to the documentation](how_to/contribute_to_the_documentation.md)
-- [Search for ions used in halide perovskites](how_to/search_for_ions.md)
-- [Add a new ion to the database](how_to/add_a_new_ion.md)
-- [Export a cation structure](how_to/export_a_cation_structure.md)
+<!-- - [Search for ions used in halide perovskites](how_to/search_for_ions.md) -->
+
 - [Create a perovskite composition](how_to/create_a_perovskite_composition.md)
+- [Define a new perovskite ion](how_to/add_a_new_ion.md)
+- [Explore and Export perovskite ion data and structures](how_to/export_and_explore_ion_data_and_structure.md)
 
 </div>
 
 <div markdown="block">
 
 ### Explanation
-
+- [Perovskite composition data schema] (explanation/perovskite_composition_schema.md). Explanation of the data fields
+- [Perovskite Ions data schema](perovskite_ions_schema.md). Explanation of the data fields related to perovskite ions
+- [Additives and Impurities data schema](additives_and_impurities.). Explanation of the data fields related to additives and impurities
 The explanation [section](explanation/explanation.md) provides background knowledge on this plugin.
+
 
 </div>
 <div markdown="block">
