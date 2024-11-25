@@ -231,7 +231,7 @@ class ReactionSolution(SectionRevision):
     volume = Quantity(
         type=float,
         unit='L',
-        description='Volume of the solution',
+        description='This volume is the volume of solution used in the experiment, e.g. the solvent volume that is spin-coated rather than the volume of the stock solution.',
         a_eln=ELNAnnotation(
             label='Volume', defaultDisplayUnit='L', component='NumberEditQuantity'
         ),
