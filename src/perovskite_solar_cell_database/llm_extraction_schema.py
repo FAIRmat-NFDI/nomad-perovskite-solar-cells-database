@@ -515,18 +515,16 @@ Sometimes several different PCE values are presented for the same device. It cou
 
     # normalizer that reorderes the layers according to the layer_order
     def normalize(self, archive, logger):
-        if not self.layer_order:
-            return
+        if self.layer_order:
+            layer_dict = {layer.name: layer for layer in self.layers}
+            ordered_names = [name.strip() for name in self.layer_order.split(',')]
 
-        layer_dict = {layer.name: layer for layer in self.layers}
-        ordered_names = [name.strip() for name in self.layer_order.split(',')]
+            if set(ordered_names) != set(layer_dict.keys()):
+                logger.warn('The names in layer_order does not match available layers')
+                return
 
-        if set(ordered_names) != set(layer_dict.keys()):
-            logger.warn('The names in layer_order does not match available layers')
-            return
-
-        # Reorder in single pass
-        self.layers = [layer_dict[name] for name in ordered_names]
+            # Reorder in single pass
+            self.layers = [layer_dict[name] for name in ordered_names]
         super().normalize(archive, logger)
 
 
