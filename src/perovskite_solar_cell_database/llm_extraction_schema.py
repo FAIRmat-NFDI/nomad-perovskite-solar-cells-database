@@ -111,7 +111,7 @@ class Solute(SectionRevision):
     )
 
     concentration_unit = Quantity(
-        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'wt%', 'vol%', 'M', 'Unknown']),
+        type=MEnum(['mol/L', 'mmol/L', 'g/L', 'mg/L', 'mg/mL', 'wt%', 'vol%', 'M', 'Unknown']),
         description='Unit of concentration',
         a_eln=ELNAnnotation(label='Concentration Unit', component='EnumEditQuantity'),
     )
