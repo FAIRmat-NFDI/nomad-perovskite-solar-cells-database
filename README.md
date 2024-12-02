@@ -41,7 +41,7 @@ To integrate this plugin with your NOMAD installation:
 
 ## Developers
 
-It's nice to not miss a ruff fromat before pushing your commits. To set up pre-commit hook:
+It's nice to not miss a ruff format before pushing your commits. To set up pre-commit hook:
 ```console
    pip install pre-commit
    pre-commit install
