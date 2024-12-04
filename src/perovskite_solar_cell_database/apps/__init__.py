@@ -1,6 +1,9 @@
 from nomad.config.models.plugins import AppEntryPoint
 
 from perovskite_solar_cell_database.apps.perovskite_ions_app import perovskite_ions_app
+from perovskite_solar_cell_database.apps.perovskite_solar_cell_database_app import (
+    perovskite_database_app,
+)
 from perovskite_solar_cell_database.apps.solar_cell_app import solar_cell_app
 
 solar_cells = AppEntryPoint(
@@ -12,6 +15,14 @@ solar_cells = AppEntryPoint(
       interactive statistics about the data.
     """,
     app=solar_cell_app,
+)
+
+perovskite_solar_cell_database_app = AppEntryPoint(
+    name='The Perovskite Solar Cell Database',
+    description="""
+      Search Entries of the Perovskite Solar Cell Database
+    """,
+    app=perovskite_database_app,
 )
 
 perovskite_ions = AppEntryPoint(
