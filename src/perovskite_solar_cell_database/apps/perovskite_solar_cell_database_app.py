@@ -7,7 +7,6 @@ from nomad.config.models.ui import (
     Dashboard,
     Menu,
     MenuItemHistogram,
-    MenuItemOption,
     MenuItemPeriodicTable,
     MenuItemTerms,
     MenuSizeEnum,
@@ -26,11 +25,15 @@ perovskite_database_app = App(
     description='Search entries of the perovskite solar cell database',
     search_quantities=SearchQuantities(include=schemas),
     columns=[
-        Column(quantity='entry_create_time', selected=True),
+        Column(
+            quantity='results.material.chemical_formula_descriptive',
+            selected=True,
+            label='Descriptive formula',
+        ),
         Column(
             quantity='results.properties.optoelectronic.solar_cell.efficiency',
             selected=True,
-            # format={'decimals': 2, 'mode': 'standard'},
+            format={'decimals': 2, 'mode': 'standard'},
             label='Efficiency (%)',
         ),
         Column(
@@ -42,20 +45,20 @@ perovskite_database_app = App(
         Column(
             quantity='results.properties.optoelectronic.solar_cell.short_circuit_current_density',
             selected=True,
-            # format={'decimals': 3, 'mode': 'standard'},
+            format={'decimals': 3, 'mode': 'standard'},
             unit='A/m**2',
         ),
         Column(
             quantity='results.properties.optoelectronic.solar_cell.fill_factor',
             selected=True,
-            # format={'decimals': 3, 'mode': 'standard'},
+            format={'decimals': 3, 'mode': 'standard'},
         ),
         Column(quantity='references', selected=True),
         Column(quantity='results.material.chemical_formula_hill', label='Formula'),
         Column(quantity='results.material.structural_type'),
         Column(
             quantity='results.properties.optoelectronic.solar_cell.illumination_intensity',
-            # format={'decimals': 3, 'mode': 'standard'},
+            format={'decimals': 3, 'mode': 'standard'},
             label='Illum. intensity',
             unit='W/m**2',
         ),
@@ -204,7 +207,7 @@ perovskite_database_app = App(
                         x=Axis(
                             search_quantity='data.cell.area_measured#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
                             scale=ScaleEnum.LOG,
-                            title='Total area',
+                            title='Measured area',
                             unit='cm**2',
                         ),
                         y=AxisScale(
