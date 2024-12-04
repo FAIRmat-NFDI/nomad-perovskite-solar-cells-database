@@ -39,6 +39,14 @@ To integrate this plugin with your NOMAD installation:
 
 2. For more detailed installation instructions, visit our [docs for NOMAD plugins](https://nomad-lab.eu/prod/v1/staging/docs/plugins/plugins.html).
 
+## Developers
+
+It's nice to not miss a ruff format before pushing your commits. To set up pre-commit hook:
+```console
+   pip install pre-commit
+   pre-commit install
+```
+
 ### Acknowledgments
 Special thanks to Jinzhao Li and all contributors who have made this project possible.
 
