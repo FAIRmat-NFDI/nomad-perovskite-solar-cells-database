@@ -120,7 +120,7 @@ class Solute(SectionRevision):
 
 
 # Stability class
-class Stability(SectionRevision):
+class Stability(LightSource):
     time = Quantity(
         type=float,
         unit='hour',
