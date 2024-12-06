@@ -463,9 +463,9 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         )
     )
     coefficient = Quantity(
-        type=float,
+        type=str,
         description='The stoichiometric coefficient',
-        a_eln=ELNAnnotation(component=ELNComponentEnum.NumberEditQuantity),
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
         shape=[],
     )
     system = Quantity(
@@ -692,7 +692,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
         type=float,
         description='The concentration of the additive or impurity.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='mol%'
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='cm^-3'
         ),
         unit='cm^-3',
         shape=[],
@@ -831,12 +831,10 @@ class PerovskiteCompositionSection(ArchiveSection):
             self.short_form += ion.abbreviation
             if ion.coefficient is None:
                 continue
-            if ion.coefficient == 1:
+            if ion.coefficient == '1':
                 coefficient_str = ''
-            elif ion.coefficient == int(ion.coefficient):
-                coefficient_str = str(int(ion.coefficient))
             else:
-                coefficient_str = f'{ion.coefficient:.2}'
+                coefficient_str = ion.coefficient
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
                 continue
@@ -862,6 +860,7 @@ class PerovskiteCompositionSection(ArchiveSection):
             label='Perovskite Composition',
             description='A system describing the chemistry and components of the perovskite.',
             system_relation=Relation(type='root'),
+            chemical_formula_descriptive=self.long_form,
         )
 
         parent_system.structural_type = archive.results.material.structural_type
