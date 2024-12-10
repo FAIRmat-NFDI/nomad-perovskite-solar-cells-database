@@ -27,16 +27,15 @@ try:
 except Exception as e:
     raise RuntimeError(f'Failed to load widgets from YAML file: {e}')
 
-schemas = [
-    '*#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
-]
-# noqa: E501
+
+schema = 'perovskite_solar_cell_database.schema.PerovskiteSolarCell'
+
 perovskite_database_app = App(
     label='The Perovskite Solar Cell Database',
     path='perovskite-solar-cells-database',
     category='Solar cells',
     description='Search entries of the perovskite solar cell database',
-    search_quantities=SearchQuantities(include=schemas),
+    search_quantities=SearchQuantities(include=[f'*#{schema}']),
     columns=[
         Column(
             quantity='results.material.chemical_formula_descriptive',
@@ -96,14 +95,14 @@ perovskite_database_app = App(
                 size=MenuSizeEnum.XXL,
                 items=[
                     MenuItemTerms(
-                        search_quantity='data.ref.journal#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.ref.journal#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
                         title='Journal',
                     ),
                     MenuItemTerms(
-                        search_quantity='data.ref.DOI_number#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.ref.DOI_number#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
@@ -111,7 +110,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.ref.publication_date#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.ref.publication_date#{schema}',
                             title='Publication Date',
                         )
                     ),
@@ -123,7 +122,6 @@ perovskite_database_app = App(
                 items=[
                     MenuItemPeriodicTable(
                         quantity='results.material.elements',
-                        show_input=True,
                     ),
                     MenuItemTerms(
                         search_quantity='results.material.chemical_formula_hill',
@@ -157,19 +155,19 @@ perovskite_database_app = App(
                         nbins=30,
                     ),
                     MenuItemTerms(
-                        search_quantity='data.perovskite.composition_a_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.perovskite.composition_a_ions#{schema}',
                         width=4,
                         options=10,
                         title='A cations',
                     ),
                     MenuItemTerms(
-                        search_quantity='data.perovskite.composition_b_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.perovskite.composition_b_ions#{schema}',
                         width=4,
                         options=10,
                         title='B cations',
                     ),
                     MenuItemTerms(
-                        search_quantity='data.perovskite.composition_c_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.perovskite.composition_c_ions#{schema}',
                         width=4,
                         options=10,
                         title='X anions',
@@ -181,15 +179,15 @@ perovskite_database_app = App(
                 size=MenuSizeEnum.SM,
                 items=[
                     MenuItemTerms(
-                        search_quantity='data.perovskite_deposition.procedure#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.perovskite_deposition.procedure#{schema}',
                         options=10,
                     ),
                     MenuItemTerms(
-                        search_quantity='data.perovskite_deposition.solvents#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.perovskite_deposition.solvents#{schema}',
                         options=10,
                     ),
                     MenuItemTerms(
-                        search_quantity='data.perovskite.additives_compounds#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.perovskite.additives_compounds#{schema}',
                         options=10,
                     ),
                 ],
@@ -200,7 +198,7 @@ perovskite_database_app = App(
                 items=[
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.cell.area_total#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.cell.area_total#{schema}',
                             scale=ScaleEnum.LOG,
                             title='Total area',
                             unit='cm**2',
@@ -231,7 +229,7 @@ perovskite_database_app = App(
                         options=10,
                     ),
                     MenuItemTerms(
-                        search_quantity='data.cell.architecture#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.cell.architecture#{schema}',
                         options=3,
                     ),
                 ],
@@ -255,14 +253,14 @@ perovskite_database_app = App(
                         title='Electron transport layer (ETL)',
                     ),
                     MenuItemTerms(
-                        search_quantity='data.htl.deposition_procedure#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.htl.deposition_procedure#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
                         title='HTL deposition method',
                     ),
                     MenuItemTerms(
-                        search_quantity='data.etl.deposition_procedure#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                        search_quantity=f'data.etl.deposition_procedure#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
@@ -346,7 +344,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.eqe.integrated_Jsc#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.eqe.integrated_Jsc#{schema}',
                             scale=ScaleEnum.LINEAR,
                             title='Integrated Jsc (EQE)',
                             unit='mA/cm**2',
@@ -367,7 +365,7 @@ perovskite_database_app = App(
                 items=[
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.stability.PCE_T80#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.stability.PCE_T80#{schema}',
                             title='PCE T80',
                             unit='hour',
                         ),
@@ -380,7 +378,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.stability.PCE_T95#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.stability.PCE_T95#{schema}',
                             title='PCE T95',
                             unit='hour',
                         ),
@@ -393,7 +391,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.stability.PCE_initial_value#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.stability.PCE_initial_value#{schema}',
                             scale=ScaleEnum.LINEAR,
                             title='PCE initial value',
                         ),
@@ -406,7 +404,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.stability.PCE_end_of_experiment#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.stability.PCE_end_of_experiment#{schema}',
                             title='PCE end of experiment',
                         ),
                         y=AxisScale(
@@ -418,7 +416,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.stabilised.performance_measurement_time#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.stabilised.performance_measurement_time#{schema}',
                             scale=ScaleEnum.LOG,
                             title='Stabilized performance measurement time',
                             unit='hour',
@@ -432,7 +430,7 @@ perovskite_database_app = App(
                     ),
                     MenuItemHistogram(
                         x=Axis(
-                            search_quantity='data.stability.PCE_after_1000_h#perovskite_solar_cell_database.schema.PerovskiteSolarCell',
+                            search_quantity=f'data.stability.PCE_after_1000_h#{schema}',
                             scale=ScaleEnum.LINEAR,
                             title='PCE after 1000 h',
                         ),
@@ -449,9 +447,5 @@ perovskite_database_app = App(
         ]
     ),
     dashboard=Dashboard.parse_obj(widgets),
-    filters_locked={
-        'section_defs.definition_qualified_name': [
-            'perovskite_solar_cell_database.schema.PerovskiteSolarCell'
-        ]
-    },
+    filters_locked={'section_defs.definition_qualified_name': [f'{schema}']},
 )
