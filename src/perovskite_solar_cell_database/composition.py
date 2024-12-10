@@ -692,7 +692,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
         type=float,
         description='The concentration of the additive or impurity.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='mol%'
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='cm^-3'
         ),
         unit='cm^-3',
         shape=[],
