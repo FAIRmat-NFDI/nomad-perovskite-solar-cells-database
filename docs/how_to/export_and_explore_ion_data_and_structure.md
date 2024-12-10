@@ -7,7 +7,7 @@ The documentation below contains instructions for the following tasks:
 - Search for an ion and download a JSON file for a specific ion
 - Download a CIF file for an ion
 - Download a JSON file with ion data from your own upload
-- Download ion data programmatically
+
 
 ## Explore the ions in the database
 <iframe src="https://scribehow.com/shared/Explore_the_ions_in_the_database__LHs45gSqSUq9PXTOI4AQTg" width="100%" height="640" allowfullscreen frameborder="0"></iframe>
@@ -21,6 +21,4 @@ The documentation below contains instructions for the following tasks:
 ## Download a JSON file with ion data from your own upload
 <iframe src="https://scribehow.com/shared/Downlaod_an_ion_file_in_your_own_upload__r6kSVRioQYC7qH3S4eXlbA" width="100%" height="640" allowfullscreen frameborder="0"></iframe>
 
-## Download ion data programmatically
-!!! note "Attention"
-    TODO
+
