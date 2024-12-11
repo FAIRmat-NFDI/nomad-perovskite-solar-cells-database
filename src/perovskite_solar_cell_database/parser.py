@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pandas as pd
 from nomad.datamodel import EntryArchive
@@ -38,6 +40,7 @@ class IonParser(MatchingParser):
             ion.source_compound_iupac_name = row['source_compound_iupac_name']
             ion.source_compound_smiles = row['source_compound_smiles']
             ion.source_compound_cas_number = row['source_compound_cas_number']
+            time.sleep(1)  # Waiting to avoid rate limiting
             create_archive(
                 ion, archive, f'{row["abbreviation"]}_perovskite_ion.archive.json'
             )
