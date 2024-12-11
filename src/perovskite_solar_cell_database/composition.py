@@ -274,6 +274,8 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
             cas_number=self.cas_number,
             name=self.common_name,
         )
+        if isinstance(self.pure_substance, PubChemPureSubstanceSection):
+            pure_substance.pub_chem_cid = self.pure_substance.pub_chem_cid
         pure_substance.normalize(archive, logger)
         if self.molecular_formula is None:
             self.molecular_formula = pure_substance.molecular_formula
@@ -297,6 +299,8 @@ class PerovskiteIon(PureSubstance, PerovskiteIonSection):
             iupac_name=self.source_compound_iupac_name,
             cas_number=self.source_compound_cas_number,
         )
+        if isinstance(self.source_compound, PubChemPureSubstanceSection):
+            source_compound.pub_chem_cid = self.source_compound.pub_chem_cid
         source_compound.normalize(archive, logger)
         if self.source_compound_molecular_formula is None:
             self.source_compound_molecular_formula = source_compound.molecular_formula
@@ -463,9 +467,9 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         )
     )
     coefficient = Quantity(
-        type=float,
+        type=str,
         description='The stoichiometric coefficient',
-        a_eln=ELNAnnotation(component=ELNComponentEnum.NumberEditQuantity),
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
         shape=[],
     )
     system = Quantity(
@@ -692,7 +696,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
         type=float,
         description='The concentration of the additive or impurity.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='mol%'
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='cm^-3'
         ),
         unit='cm^-3',
         shape=[],
@@ -720,6 +724,8 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
             iupac_name=self.iupac_name,
             cas_number=self.cas_number,
         )
+        if isinstance(self.pure_substance, PubChemPureSubstanceSection):
+            pure_substance.pub_chem_cid = self.pure_substance.pub_chem_cid
         pure_substance.normalize(archive, logger)
         if self.molecular_formula is None:
             self.molecular_formula = pure_substance.molecular_formula
@@ -731,6 +737,7 @@ class Impurity(PureSubstanceComponent, PerovskiteChemicalSection):
             self.cas_number = pure_substance.cas_number
         if self.common_name is None:
             self.common_name = pure_substance.name
+        self.pure_substance = pure_substance
         super().normalize(archive, logger)
 
 
@@ -831,12 +838,10 @@ class PerovskiteCompositionSection(ArchiveSection):
             self.short_form += ion.abbreviation
             if ion.coefficient is None:
                 continue
-            if ion.coefficient == 1:
+            if ion.coefficient == '1':
                 coefficient_str = ''
-            elif ion.coefficient == int(ion.coefficient):
-                coefficient_str = str(int(ion.coefficient))
             else:
-                coefficient_str = f'{ion.coefficient:.2}'
+                coefficient_str = ion.coefficient
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
                 continue
@@ -862,6 +867,7 @@ class PerovskiteCompositionSection(ArchiveSection):
             label='Perovskite Composition',
             description='A system describing the chemistry and components of the perovskite.',
             system_relation=Relation(type='root'),
+            chemical_formula_descriptive=self.long_form,
         )
 
         parent_system.structural_type = archive.results.material.structural_type

@@ -19,8 +19,8 @@ schemas = [
 perovskite_ions_app = App(
     label='Halide Perovskite Ions Database',
     path='perovskite-ions',
-    category='Halide Perovskites',
-    description='Search Ions Used in Halide Perovskites',
+    category='Solar cells',
+    description='Search ions used in halide perovskites compunds.',
     search_quantities=SearchQuantities(include=schemas),
     columns=[
         Column(quantity='results.material.elements', selected=True),
