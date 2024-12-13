@@ -5933,14 +5933,12 @@ Example
     )
 
     band_gap_graded = Quantity(
-        type=str,
+        type=bool,
         shape=[],
         description="""
     TRUE if the band gap varies as a function of the vertical position in the perovskite layer.
                     """,
-        a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['true', 'false'])
-        ),
+        a_eln=dict(component='BoolEditQuantity'),
     )
 
     band_gap_estimation_basis = Quantity(
