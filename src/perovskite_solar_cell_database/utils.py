@@ -167,7 +167,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
     # Update layout
     fig.update_layout(
         hovermode='closest',
-        legend=dict(x=0.0, y=1.0, xanchor='left', yanchor='top'),
+        legend=dict(x=0.0, y=1.0, xanchor='left', yanchor='top', traceorder='reversed'),
         scene=dict(
             xaxis=dict(visible=False, showgrid=False, zeroline=False),
             yaxis=dict(visible=False, showgrid=False, zeroline=False),
