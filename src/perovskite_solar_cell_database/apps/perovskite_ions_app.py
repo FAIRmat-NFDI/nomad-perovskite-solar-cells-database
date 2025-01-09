@@ -20,7 +20,7 @@ perovskite_ions_app = App(
     label='Halide Perovskite Ions Database',
     path='perovskite-ions',
     category='Solar cells',
-    description='Search ions used in halide perovskites compunds.',
+    description='Search ions used in halide perovskites compunds',
     search_quantities=SearchQuantities(include=schemas),
     columns=[
         Column(quantity='results.material.elements', selected=True),
