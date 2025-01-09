@@ -8,7 +8,7 @@ nav:
   - Tutorial: tutorial/tutorial.md
   - How-to guides:
       - Install this plugin: how_to/install_this_plugin.md
-      - Search for ions: how_to/search_for_ions.md
+      - Explore the databases: how_to/explore_the_databases.md
       - Add a new ion: how_to/add_a_new_ion.md
       - Export a cation structure: how_to/export_a_cation_structure.md
       - Create a perovskite compostion: how_to/create_a_perovskite_composition.md

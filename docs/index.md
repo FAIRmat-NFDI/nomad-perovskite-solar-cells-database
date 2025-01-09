@@ -24,7 +24,7 @@ Information about the original database is available at [perovskitedatabase.com]
 
 | 🔍 **Search Application** | 📝 **Description** | 💻 **Code** | 📄 **Metadata Definitions** |
 |---------------------------|--------------------|------------------------|----------------------------|
-| [The Perovskite Solar Database](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-solar-cells-database) | Explore the data from the perovskite database. | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_solar_cell_database_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.schema.PerovskiteSolarCell) |
+| [The Perovskite Database Project](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-solar-cells-database) | Explore the data from the perovskite database. | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_solar_cell_database_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.schema.PerovskiteSolarCell) |
 | [Halide Perovskite Ions Database](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-ions) | Search ions used in halide perovskites compounds | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_ions_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.composition.PerovskiteIon) |
 | [Solar Cells](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells) | An application to explore solar cells | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/solar_cell_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/nomad.datamodel.datamodel.EntryArchive/results/properties/optoelectronic/solar_cell) |
 
@@ -44,10 +44,10 @@ Information about the original database is available at [perovskitedatabase.com]
 How-to guides provide step-by-step instructions for a wide range of tasks:
 
 - [Install this plugin](how_to/install_this_plugin.md)
-- [Explore the databases](how_to/export_and_explore_ion_data_and_structure.md)
+- [Explore the databases](how_to/explore_the_databases.md)
 - [Create a perovskite composition](how_to/create_a_perovskite_composition.md)
-- [Define a new perovskite ion](how_to/add_a_new_ion.md)
-- [Explore and Export perovskite ion data and structures](how_to/export_and_explore_ion_data_and_structure.md)
+- [Add a new perovskite ion to the database](how_to/add_a_new_ion.md)
+- [Export structure files](how_to/export_structures.md)
 
 </div>
 

@@ -1,5 +1,5 @@
 # How to create a perovskite composition
-In NOMAD it is possible to utilize hte perovskite ions database for simply generating perovskite composition files
+In NOMAD it is possible to utilize the perovskite ions database for creating perovskite composition entries.
 
 The documentation below contains instructions for the following tasks:
 
@@ -16,7 +16,6 @@ composition entry: -->
 
 <!-- <iframe src="https://scribehow.com/embed/How_to_Create_a_New_Perovskite_Composition_Upload__HdNr9pn5S_2jFM5Ii4FYkA?removeLogo=true" width="100%" height="640" allowfullscreen frameborder="0"></iframe> -->
 
-
 ## Create a new perovskite composition in NOMAD
 <iframe src="https://scribehow.com/shared/Create_a_perovskite_composition_file_in_NOMAD__vKN4StPRTfSEHLIDEYB2Dg" width="100%" height="640" allowfullscreen frameborder="0"></iframe>
 
@@ -27,7 +26,7 @@ composition entry: -->
 <iframe src="https://scribehow.com/shared/Download_a_JSON_file_with_a_perovksite_composition_from_own_upload__sT5TFXMWQw-XOn9zacWOzA" width="100%" height="640" allowfullscreen frameborder="0"></iframe>
 
 
-## Publish a Perovskite composition in NOMAD 
+## Publish a Perovskite composition in NOMAD
 <iframe src="https://scribehow.com/shared/How_To_Publish_Data_on_NOMAD__RZKTrs-1RcmQ49VcsJ1dRQ" width="100%" height="640" allowfullscreen frameborder="0"></iframe>
 
 
