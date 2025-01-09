@@ -60,7 +60,7 @@ plugins = [
 ]
 ```
 
-For more detailed installation instructions, visit our [docs for NOMAD plugins](https://nomad-lab.eu/prod/v1/staging/docs/plugins/plugins.html).
+For more detailed installation instructions, visit our [docs for NOMAD plugins](https://nomad-lab.eu/prod/v1/develop/docs/howto/oasis/plugins_install.html).
 
 ## Developers
 

@@ -44,8 +44,7 @@ Information about the original database is available at [perovskitedatabase.com]
 How-to guides provide step-by-step instructions for a wide range of tasks:
 
 - [Install this plugin](how_to/install_this_plugin.md)
-- [Contribute to this plugin](how_to/contribute_to_this_plugin.md)
-- [Contribute to the documentation](how_to/contribute_to_the_documentation.md)
+- [Explore the databases](how_to/export_and_explore_ion_data_and_structure.md)
 - [Create a perovskite composition](how_to/create_a_perovskite_composition.md)
 - [Define a new perovskite ion](how_to/add_a_new_ion.md)
 - [Explore and Export perovskite ion data and structures](how_to/export_and_explore_ion_data_and_structure.md)
