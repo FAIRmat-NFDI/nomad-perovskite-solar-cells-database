@@ -22,6 +22,9 @@ Information about the original database is available at [perovskitedatabase.com]
 
 ### Search applications
 
+Search applications provide an efficient way to explore the databases. They are powered by
+metadata definitions that define the structure of the data and allow for filtering and visualization.
+
 | 🔍 **Search Application** | 📝 **Description** | 💻 **Code** | 📄 **Metadata Definitions** |
 |---------------------------|--------------------|------------------------|----------------------------|
 | [The Perovskite Database Project](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-solar-cells-database) | Explore the data from the perovskite database. | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_solar_cell_database_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.schema.PerovskiteSolarCell) |
@@ -53,22 +56,10 @@ How-to guides provide step-by-step instructions for a wide range of tasks:
 
 <div markdown="block">
 
-### Explanation
-- [Perovskite composition data schema](explanation/perovskite_composition_schema.md). Explanation of the data fields
-- [Perovskite Ions data schema](perovskite_ions_schema.md). Explanation of the data fields related to perovskite ions
-- [Additives and Impurities data schema](additives_and_impurities.). Explanation of the data fields related to additives and impurities
-The explanation [section](explanation/explanation.md) provides background knowledge on this plugin.
-
+### Example Notebooks
 
 </div>
-<div markdown="block">
 
-### Reference
-
-The reference [section](reference/references.md) includes all CLI commands and arguments, all configuration options,
-the possible schema annotations and their arguments, and a glossary of used terms.
-
-</div>
 </div>
 
 ### Related Resources
