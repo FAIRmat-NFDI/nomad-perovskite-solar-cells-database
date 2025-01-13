@@ -11,33 +11,56 @@
 
 
 ## Introduction
-Welcome to the NOMAD plugin for the Perovskite Solar Cell Database. This project aims to provide an open-access interface for the perovskite solar cells database in NOMAD making the data accessible and interoperable with many other materials science datasets.
-The data can be accessed via the NOMAD API and explored in the [NOMAD Solar Cell APP](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
+Welcome to the NOMAD plugin for the Perovskite Solar Cell Database.
+This project aims to provide a FAIR and open-access interface for the perovskite solar cells database in NOMAD
+and related data sources.
+Additionally, it has data models and schemas for defining ions and halide hybrid-perovskite compositions.
+The data can be accessed via the NOMAD API and explored in the [NOMAD Solar Cell Search App](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
 
   [<img src="docs/assets/screenshot_nomad_app.png">](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells)
 
 Information about the original database is available at [perovskitedatabase.com](https://www.perovskitedatabase.com/).
 
+## Search applications
 
-## Key Features
-- Detailed schema of perovskite solar cells.
-- Integration with NOMAD for data exploration and access via the API.
-- Augmented (meta)data including the elements of the perovskite absolbers and several staandarized chemical formulas, enabling and easy featurization of the composition for ML applications.
+| 🔍 **Search Application** | 📝 **Description** | 💻 **Code** | 📄 **Metadata Definitions** |
+|---------------------------|--------------------|------------------------|----------------------------|
+| [The Perovskite Solar Database](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-solar-cells-database) | Explore the data from the perovskite database. | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_solar_cell_database_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.schema.PerovskiteSolarCell) |
+| [Halide Perovskite Ions Database](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-ions) | Search ions used in halide perovskites compounds | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_ions_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.composition.PerovskiteIon) |
+| [Solar Cells](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells) | An application to explore solar cells | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/solar_cell_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/nomad.datamodel.datamodel.EntryArchive/results/properties/optoelectronic/solar_cell) |
 
-## Installation
-To integrate this plugin with your NOMAD installation:
-1. Add the following lines to your `nomad.yaml` file in your NOMAD installation:
 
-    ```yaml
-    plugins:
-      include:
-        - 'schemas/perovskite_solar_cell_database'
-      options:
-        schemas/perovskite_solar_cell_database:
-          python_package: perovskite_solar_cell_database
-    ```
+## Adding the plugin to a NOMAD (Oasis) intallation
 
-2. For more detailed installation instructions, visit our [docs for NOMAD plugins](https://nomad-lab.eu/prod/v1/staging/docs/plugins/plugins.html).
+To add a new plugin to the docker image you should add it to the plugins table in the [`pyproject.toml`](pyproject.toml) file of a [NOMAD distribution repository](https://github.com/FAIRmat-NFDI/nomad-distro-template?tab=readme-ov-file).
+
+Here you can put either plugins distributed to PyPI, e.g.
+
+```toml
+[project.optional-dependencies]
+plugins = [
+  "perovskite-solar-cell-database>=1.0.0",
+]
+```
+
+or plugins in a git repository with either the commit hash
+
+```toml
+[project.optional-dependencies]
+plugins = [
+  "perovskite-solar-cell-database @ git+https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database.git@4b10f9927fb51d5779a386727867c7542c54f3f7"]
+```
+
+or with a tag
+
+```toml
+[project.optional-dependencies]
+plugins = [
+  "perovskite-solar-cell-database @ git+https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database.git@v1.0.0"
+]
+```
+
+For more detailed installation instructions, visit our [docs for NOMAD plugins](https://nomad-lab.eu/prod/v1/develop/docs/howto/oasis/plugins_install.html).
 
 ## Developers
 
@@ -51,5 +74,5 @@ It's nice to not miss a ruff format before pushing your commits. To set up pre-c
 Special thanks to Jinzhao Li and all contributors who have made this project possible.
 
 ## Related Resources
-- [Original Paper on Nature Energy](https://www.nature.com/articles/s41560-021-00941-3)  
+- [Original Paper on Nature Energy](https://www.nature.com/articles/s41560-021-00941-3)
 - [NOMAD Documentation](https://nomad-lab.eu/prod/v1/staging/docs/)

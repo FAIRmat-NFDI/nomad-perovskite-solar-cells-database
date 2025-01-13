@@ -1,4 +1,0 @@
-# Explanation
-
-!!! note "Attention"
-    TODO

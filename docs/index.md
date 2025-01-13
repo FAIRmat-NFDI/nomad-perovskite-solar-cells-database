@@ -11,21 +11,26 @@
 
 ### Introduction
 Welcome to the NOMAD plugin for the Perovskite Solar Cell Database.
-This project aims to provide an open-access interface for the perovskite solar cells database in NOMAD making the data accessible and interoperable with many other materials science datasets.
-The data can be accessed via the NOMAD API and explored in the [NOMAD Solar Cell App](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
-
-It also contains a database of ions used in halide perovskites and a schema to create standarized perovskite composition entries.
+This project aims to provide a FAIR and open-access interface for the perovskite solar cells database in NOMAD
+and related data sources.
+Additionally, it has data models and schemas for defining ions and halide hybrid-perovskite compositions.
+The data can be accessed via the NOMAD API and explored in the [NOMAD Solar Cell Search App](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells).
 
   [<img src="assets/screenshot_nomad_app.png">](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells)
 
+Information about the original database is available at [perovskitedatabase.com](https://www.perovskitedatabase.com/).
 
-### Key Features
+### Search applications
 
-- The perovskite solar cell database.
-- A database of ions used in halide perovskites.
-- A schema to create standarized perovskite composition entries.
-- Integration with NOMAD for data exploration and access via the API.
-- Augmented (meta)data including the elements of the perovskite absorbers and several standardized chemical formulas, enabling an easy featurization of the composition for ML applications.
+Search applications provide an efficient way to explore the databases. They are powered by
+metadata definitions that define the structure of the data and allow for filtering and visualization.
+
+| 🔍 **Search Application** | 📝 **Description** | 💻 **Code** | 📄 **Metadata Definitions** |
+|---------------------------|--------------------|------------------------|----------------------------|
+| [The Perovskite Database Project](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-solar-cells-database) | Explore the data from the perovskite database. | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_solar_cell_database_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.schema.PerovskiteSolarCell) |
+| [Halide Perovskite Ions Database](https://nomad-lab.eu/prod/v1/develop/gui/search/perovskite-ions) | Search ions used in halide perovskites compounds | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/perovskite_ions_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/perovskite_solar_cell_database/section_definitions@perovskite_solar_cell_database.composition.PerovskiteIon) |
+| [Solar Cells](https://nomad-lab.eu/prod/v1/staging/gui/search/solarcells) | An application to explore solar cells | [App's code](https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database/blob/main/src/perovskite_solar_cell_database/apps/solar_cell_app.py) | [Metadata](https://nomad-lab.eu/prod/v1/develop/gui/analyze/metainfo/nomad.datamodel.datamodel.EntryArchive/results/properties/optoelectronic/solar_cell) |
+
 
 <div markdown="block" class="home-grid">
 <div markdown="block">
@@ -42,30 +47,19 @@ It also contains a database of ions used in halide perovskites and a schema to c
 How-to guides provide step-by-step instructions for a wide range of tasks:
 
 - [Install this plugin](how_to/install_this_plugin.md)
-- [Contribute to this plugin](how_to/contribute_to_this_plugin.md)
-- [Contribute to the documentation](how_to/contribute_to_the_documentation.md)
-- [Search for ions used in halide perovskites](how_to/search_for_ions.md)
-- [Add a new ion to the database](how_to/add_a_new_ion.md)
-- [Export a cation structure](how_to/export_a_cation_structure.md)
+- [Explore the databases](how_to/explore_the_databases.md)
 - [Create a perovskite composition](how_to/create_a_perovskite_composition.md)
+- [Add a new perovskite ion to the database](how_to/add_a_new_ion.md)
+- [Export structure files](how_to/export_structures.md)
 
 </div>
 
 <div markdown="block">
 
-### Explanation
-
-The explanation [section](explanation/explanation.md) provides background knowledge on this plugin.
+### Example Notebooks
 
 </div>
-<div markdown="block">
 
-### Reference
-
-The reference [section](reference/references.md) includes all CLI commands and arguments, all configuration options,
-the possible schema annotations and their arguments, and a glossary of used terms.
-
-</div>
 </div>
 
 ### Related Resources

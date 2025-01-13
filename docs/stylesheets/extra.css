@@ -52,7 +52,7 @@
 
 .home-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-column-gap: 24px;
     row-gap: 24px;
 }

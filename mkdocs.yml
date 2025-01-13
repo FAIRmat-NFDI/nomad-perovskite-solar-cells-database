@@ -5,17 +5,14 @@ repo_url: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 
 nav:
   - Home: index.md
-  - Tutorial: tutorial/tutorial.md
+  - Tutorial: tutorial/sharing_a_perovskite_composition.md
   - How-to guides:
       - Install this plugin: how_to/install_this_plugin.md
-      - Contribute to this plugin: how_to/contribute_to_this_plugin.md
-      - Contribute to the documentation: how_to/contribute_to_the_documentation.md
-      - Search for ions: how_to/search_for_ions.md
-      - Add a new ion: how_to/add_a_new_ion.md
-      - Export a cation structure: how_to/export_a_cation_structure.md
+      - Explore the databases: how_to/explore_the_databases.md
       - Create a perovskite compostion: how_to/create_a_perovskite_composition.md
-  - Explanation: explanation/explanation.md
-  - Reference: reference/references.md
+      - Add a new ion: how_to/add_a_new_ion.md
+      - Export a structure: how_to/export_structures.md
+      - Download data: how_to/download_data.md
 plugins:
   - search
   - glightbox
