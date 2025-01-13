@@ -9,9 +9,10 @@ nav:
   - How-to guides:
       - Install this plugin: how_to/install_this_plugin.md
       - Explore the databases: how_to/explore_the_databases.md
+      - Create a perovskite compostion: how_to/create_a_perovskite_composition.md
       - Add a new ion: how_to/add_a_new_ion.md
       - Export a structure: how_to/export_structures.md
-      - Create a perovskite compostion: how_to/create_a_perovskite_composition.md
+      - Download data: how_to/download_data.md
 plugins:
   - search
   - glightbox

@@ -44,10 +44,3 @@ else:
 
 With this, you could write a script to download the structure files of the conformers of all the ions in the database.
 
-## Download a JSON file with ion data
-
-To download a JSON file with the data of the ion you have uploaded, follow the steps below:
-
-<iframe src="https://scribehow.com/shared/Downlaod_an_ion_file_in_your_own_upload__r6kSVRioQYC7qH3S4eXlbA" width="100%" height="640" allowfullscreen frameborder="0"></iframe>
-
-
