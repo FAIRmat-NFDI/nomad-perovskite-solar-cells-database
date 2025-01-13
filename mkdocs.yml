@@ -5,7 +5,7 @@ repo_url: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 
 nav:
   - Home: index.md
-  - Tutorial: tutorial/tutorial.md
+  - Tutorial: tutorial/sharing_a_perovskite_composition.md
   - How-to guides:
       - Install this plugin: how_to/install_this_plugin.md
       - Explore the databases: how_to/explore_the_databases.md
