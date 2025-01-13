@@ -1,30 +1,20 @@
 # Install This Plugin
 
-To add a new plugin to the docker image you should add it to the plugins table in the [`pyproject.toml`](pyproject.toml) file of a [NOMAD distribution repository](https://github.com/FAIRmat-NFDI/nomad-distro-template?tab=readme-ov-file).
+If you want to run this plugin locally on your Oasis to use the defined schemas, you 
+need to add the plugin to your Oasis image.
+The recommended way od doing this is to add it to the plugins table in the 
+[`pyproject.toml`](pyproject.toml) file of your
+ [NOMAD distribution repository](https://github.com/FAIRmat-NFDI/nomad-distro-template?tab=readme-ov-file).
 
-Here you can put either plugins distributed to PyPI, e.g.
-
-```toml
-[project.optional-dependencies]
-plugins = [
-  "perovskite-solar-cell-database>=1.0.0",
-]
-```
-
-or plugins in a git repository with either the commit hash
+ Currently the plugin is not published to PyPI and you will need to specify a git 
+ source. For this you also need to specify a version tag, branch, or commit. 
+ For example, to use the v0.1.1 release you should add the following the to the 
+ `pyproject.toml`:
 
 ```toml
 [project.optional-dependencies]
 plugins = [
-  "perovskite-solar-cell-database @ git+https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database.git@4b10f9927fb51d5779a386727867c7542c54f3f7"]
-```
-
-or with a tag
-
-```toml
-[project.optional-dependencies]
-plugins = [
-  "perovskite-solar-cell-database @ git+https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database.git@v1.0.0"
+  "perovskite-solar-cell-database @ git+https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database.git@v0.1.1"
 ]
 ```
 
