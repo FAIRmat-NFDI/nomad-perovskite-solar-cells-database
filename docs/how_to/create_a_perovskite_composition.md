@@ -10,7 +10,7 @@ The documentation below contains instructions for the following tasks:
 
 
 
-<!-- A standarized perovskite composition entry can be created using the ions database.
+<!-- A standardized perovskite composition entry can be created using the ions database.
 To create one you would need to follow the steps below in which we will create a Cs<sub>0.05</sub>FA<sub>0.76</sub>MA<sub>0.16</sub>PbBr<sub>1.5</sub>I<sub>1.5</sub>
 composition entry: -->
 
