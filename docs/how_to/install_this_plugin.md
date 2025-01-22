@@ -2,7 +2,7 @@
 
 If you want to run this plugin locally on your Oasis to use the defined schemas, you 
 need to add the plugin to your Oasis image.
-The recommended way od doing this is to add it to the plugins table in the 
+The recommended way of doing this is to add it to the plugins table in the 
 [`pyproject.toml`](pyproject.toml) file of your
  [NOMAD distribution repository](https://github.com/FAIRmat-NFDI/nomad-distro-template?tab=readme-ov-file).
 

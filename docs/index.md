@@ -51,6 +51,7 @@ How-to guides provide step-by-step instructions for a wide range of tasks:
 - [Create a perovskite composition](how_to/create_a_perovskite_composition.md)
 - [Add a new perovskite ion to the database](how_to/add_a_new_ion.md)
 - [Export structure files](how_to/export_structures.md)
+- [Download data](how_to/download_data.md)
 
 </div>
 
