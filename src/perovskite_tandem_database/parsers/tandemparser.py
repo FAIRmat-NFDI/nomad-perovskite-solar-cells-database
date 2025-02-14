@@ -14,6 +14,19 @@ from nomad.parsing.parser import MatchingParser
 from pint import UnitRegistry, errors
 
 from perovskite_tandem_database.parsers.utils import create_archive
+from perovskite_tandem_database.schema_packages.measurements import (
+    EQEResults,
+    ExternalQuantumEfficiency,
+    Illumination,
+    JVConditions,
+    JVMeasurement,
+    JVResults,
+    MeasurementConditions,
+    PerformedMeasurements,
+    Preconditioning,
+    StabilisedPerformance,
+    StabilisedPerformanceConditions,
+)
 from perovskite_tandem_database.schema_packages.schema import PerovskiteTandemSolarCell
 from perovskite_tandem_database.schema_packages.tandem import (
     ChalcopyriteAlkaliMetalDoping,
@@ -72,13 +85,17 @@ class TandemParser(MatchingParser):
             # Set proper Boolean values and remove rows with all NaN values
             column_data = cleanup_dataframe(data_frame[col])
 
-            stack = extract_layer_stack(column_data)
+            # Extract the data
+            layer_stack = extract_layer_stack(column_data)
             general = extract_general(column_data)
             reference = extract_reference(column_data)
-            # reference.normalize(entry_archive, logger)
+            measurements = extract_measurements(column_data)
 
             tandem = PerovskiteTandemSolarCell(
-                general=general, reference=reference, layer_stack=stack
+                general=general,
+                reference=reference,
+                layer_stack=layer_stack,
+                measurements=measurements,
             )
 
             entry_archive.data = tandem
@@ -228,9 +245,9 @@ def convert_value(value, unit=None):  # noqa: PLR0911
     """
 
     ureg = UnitRegistry()
-    unit_pattern = re.compile(
-        r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
-    )  # Matches ".9kg", "10mA", "1.5 kg", "2 cm^2/(V*s)", "1e-6 m" etc.
+
+    if unit and isinstance(value, (int, float)) and not isinstance(value, bool):
+        return ureg.Quantity(value, unit)
 
     if isinstance(value, str):
         value = value.strip()
@@ -253,6 +270,9 @@ def convert_value(value, unit=None):  # noqa: PLR0911
             pass
 
         # Check for unit values
+        unit_pattern = re.compile(
+            r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
+        )  # Matches ".9kg", "10mA", "1.5 kg", "2 cm^2/(V*s)", "1e-6 m" etc.
         if unit_pattern.match(value):
             try:
                 quantity = ureg.Quantity(value)
@@ -382,12 +402,14 @@ def extract_reactants(data_frame):
                     df_components[component], 'Reaction solutions. Concentrations'
                 ),
                 'volume': partial_get(
-                    df_components[component], 'Reaction solutions. Volumes'
+                    df_components[component],
+                    'Reaction solutions. Volumes',
+                    default_unit='ml',
                 ),
                 'age': partial_get(
                     df_components[component],
                     'Reaction solutions. Age',
-                    default_unit='h',
+                    default_unit='hour',
                 ),
                 'temperature': partial_get(
                     df_components[component],
@@ -552,7 +574,7 @@ def extract_storage(data_frame):
         storage_conditions = {
             'atmosphere': atmosphere if atmosphere in Storage.atmosphere.type else None,
             'time_until_next_step': partial_get(
-                df_temp, 'Time until', default_unit='h'
+                df_temp, 'Time until', default_unit='hour'
             ),
             'humidity_relative': partial_get(df_temp, 'Relative humidity'),
         }
@@ -866,3 +888,321 @@ def extract_layer_stack(data_frame):
                     )
 
     return layer_stack
+
+
+def extract_jv_results(data_frame):
+    """
+    Extracts the JV results from the data subframe and returns a JVResults object.
+    """
+    return JVResults(
+        short_circuit_current_density=partial_get(
+            data_frame, 'Jsc', default_unit='mA/cm^2'
+        ),
+        open_circuit_voltage=partial_get(data_frame, 'Voc', default_unit='V'),
+        fill_factor=partial_get(data_frame, 'FF'),
+        power_conversion_efficiency=partial_get(data_frame, 'PCE'),
+        maximum_power_point_voltage=partial_get(data_frame, 'Vmp', default_unit='V'),
+        maximum_power_point_current_density=partial_get(
+            data_frame, 'Jmp', default_unit='mA/cm^2'
+        ),
+        resistance_series=partial_get(
+            data_frame, 'Series resistance', default_unit='ohm*cm^2'
+        ),
+        resistance_shunt=partial_get(
+            data_frame, 'Shunt resistance', default_unit='ohm*cm^2'
+        ),
+    )
+
+
+def extract_jv(data_frame):
+    """
+    Extracts the JV measurements from the data subframe and returns a dictionary of JVMeasurement objects.
+    """
+    jv_dict = {}
+
+    # Full device
+    df_temp = data_frame[~data_frame.index.str.contains('Subcell')]
+    if not df_temp.empty:
+        component = 'Whole Device'
+        source = 'This device'
+
+        # Storage Information
+        df_storage = df_temp[df_temp.index.str.contains('Storage.')]
+        if not df_storage.empty:
+            storage = Storage(
+                atmosphere=partial_get(df_storage, 'Atmosphere'),
+                time_until_next_step=partial_get(
+                    df_storage, 'Age of cell', default_unit='day'
+                ),
+                humidity_relative=partial_get(df_storage, 'Relative humidity'),
+            )
+        else:
+            storage = None
+
+        # Preconditioning Information
+        df_preconditioning = df_temp[df_temp.index.str.contains('Preconditioning.')]
+        if (
+            not df_preconditioning.empty
+            and partial_get(df_preconditioning, 'Procotol') is not None
+        ):
+            preconditioning = Preconditioning(
+                protocol=partial_get(df_preconditioning, 'Procotol'),
+                duration=partial_get(
+                    df_preconditioning, 'Preconditioning. Time', default_unit='hour'
+                ),
+                potential=partial_get(
+                    df_preconditioning, 'Preconditioning. Potential', default_unit='V'
+                ),
+                light_intensity=partial_get(
+                    df_preconditioning,
+                    'Preconditioning. Light intensity',
+                    default_unit='mW/cm^2',
+                ),
+            )
+        else:
+            preconditioning = None
+
+        # Illumination Information
+        df_illumination = df_temp[df_temp.index.str.contains('Light')]
+        if not df_illumination.empty:
+            illumination = Illumination(
+                type=partial_get(df_illumination, 'Type'),
+                brand=partial_get(df_illumination, 'Brand name'),
+                simulator_class=partial_get(df_illumination, 'Simulator class'),
+                intensity=partial_get(
+                    df_illumination, 'Intensity', default_unit='mW/cm^2'
+                ),
+                spectrum=partial_get(df_illumination, 'Spectra'),
+                wavelength=partial_get(
+                    df_illumination, 'Wavelength', default_unit='nm'
+                ),  # TODO: check if this is correct
+                direction=partial_get(df_illumination, 'Illumination direction')
+                if partial_get(df_illumination, 'Illumination direction')
+                in Illumination.direction.type
+                else None,
+                mask=partial_get(df_illumination, 'Masked cell'),
+                mask_area=partial_get(
+                    df_illumination, 'Mask area', default_unit='cm^2'
+                ),
+            )
+        else:
+            illumination = None
+
+        # JV Conditions
+        conditions = JVConditions(
+            atmosphere=partial_get(df_temp, 'Test. Atmosphere'),
+            humidity_relative=partial_get(df_temp, 'Test. Relative humidity'),
+            temperature=partial_get(
+                df_temp, 'Test. Temperature', default_unit='celsius'
+            ),
+            speed=partial_get(df_temp, 'Scan. Speed', default_unit='mV/s'),
+            delay_time=partial_get(df_temp, 'Scan. Delay time', default_unit='ms'),
+            integration_time=partial_get(
+                df_temp, 'Scan. Integration time', default_unit='ms'
+            ),
+            voltage_step=partial_get(df_temp, 'Scan. Voltage step', default_unit='mV'),
+            illumination=illumination,
+        )
+
+        # JV Results
+        # forward scan
+        df_forward = df_temp[df_temp.index.str.contains('Forward scan.')]
+        if not df_forward.empty:
+            results = extract_jv_results(df_forward)
+            jv_dict['jv_full_device_forward'] = JVMeasurement(
+                component=component,
+                source=source,
+                results=results,
+                storage=storage,
+                preconditioning=preconditioning,
+                conditions=conditions,
+            )
+        # reverse scan
+        df_reverse = df_temp[df_temp.index.str.contains('Reverse scan.')]
+        if not df_reverse.empty:
+            results = extract_jv_results(df_reverse)
+            jv_dict['jv_full_device_reverse'] = JVMeasurement(
+                component=component,
+                source=source,
+                results=results,
+                storage=storage,
+                preconditioning=preconditioning,
+                conditions=conditions,
+            )
+
+    # Subcell 1, Bottom Cell
+    df_temp = data_frame[data_frame.index.str.contains('Subcell 1.')]
+    if not df_temp.empty:
+        component = 'Bottom Cell'
+        if partial_get(df_temp, 'Cell is identical to cell') and not partial_get(
+            df_temp, 'JV data is a best estimate based'
+        ):
+            source = 'This device'
+        elif not partial_get(df_temp, 'Cell is identical to cell') and partial_get(
+            df_temp, 'JV data is a best estimate based'
+        ):
+            source = 'Analogous free standing cell'
+        else:
+            source = 'Unknown'
+
+        # not shaded
+        df_subcell = df_temp[~df_temp.index.str.contains('Shaded by top cell')]
+        if not df_subcell.empty:
+            results = extract_jv_results(df_subcell)
+            jv_dict['jv_bottom_cell'] = JVMeasurement(
+                component=component, source=source, results=results
+            )
+
+        # shaded
+        df_subcell = df_temp[df_temp.index.str.contains('Shaded by top cell')]
+        if not df_subcell.empty:
+            results = extract_jv_results(df_subcell)
+            jv_dict['jv_bottom_cell_shaded'] = JVMeasurement(
+                component=component, source=source, results=results
+            )
+
+    # Subcell 2, Top Cell
+    df_temp = data_frame[data_frame.index.str.contains('Subcell 2.')]
+    if not df_temp.empty:
+        component = 'Top Cell'
+        if partial_get(df_temp, 'Cell is identical to cell') and not partial_get(
+            df_temp, 'JV data is a best estimate based'
+        ):
+            source = 'This device'
+        elif not partial_get(df_temp, 'Cell is identical to cell') and partial_get(
+            df_temp, 'JV data is a best estimate based'
+        ):
+            source = 'Analogous free standing cell'
+        else:
+            source = 'Unknown'
+
+        # not shaded
+        df_subcell = df_temp[~df_temp.index.str.contains('Shaded by top cell')]
+        if not df_subcell.empty:
+            results = extract_jv_results(df_subcell)
+            jv_dict['jv_top_cell'] = JVMeasurement(
+                component=component, source=source, results=results
+            )
+
+    return jv_dict
+
+
+def extract_stabilised_performance(data_frame):
+    """ """
+
+    performance_dict = {}
+
+    # Full device
+    if partial_get(data_frame, 'Stabilised performance. Measured'):
+        df_temp = data_frame[~data_frame.index.str.contains('Stacked cell')]
+
+        # metric_value = partial_get(df_temp, 'Value')
+        conditions = StabilisedPerformanceConditions(
+            procedure=partial_get(df_temp, 'Procedure '),
+            duration=partial_get(df_temp, 'Measurement time', default_unit='min'),
+        )
+
+        results = JVResults(
+            power_conversion_efficiency=partial_get(df_temp, 'PCE'),
+            maximum_power_point_voltage=partial_get(df_temp, 'Vmp', default_unit='V'),
+            maximum_power_point_current_density=partial_get(
+                df_temp, 'Jmp', default_unit='mA/cm^2'
+            ),
+        )
+
+        performance_dict['stabilised_performance_full_device'] = StabilisedPerformance(
+            component='Whole Device',
+            conditions=conditions,
+            results=results,
+        )
+
+    return performance_dict
+
+
+def construct_eqe(intensity, jsc, component):
+    """
+    Constructs an ExternalQuantumEfficiency object from the given parameters.
+    Helper function for extract_eqe.
+    """
+
+    if intensity is not None:
+        illumination = Illumination(intensity=intensity)
+        conditions = MeasurementConditions(illumination=illumination)
+    else:
+        conditions = None
+
+    results = EQEResults(integrated_short_circuit_current_density=jsc)
+    return ExternalQuantumEfficiency(
+        component=component,
+        results=results,
+        conditions=conditions,
+    )
+
+
+def extract_eqe(data_frame):
+    """
+    Extracts the EQE measurements from the data subframe
+    and returns a dictionary of ExternalQuantumEfficiency objects.
+    """
+
+    eqe_dict = {}
+
+    # Full device
+    df_temp = data_frame[data_frame.index.str.contains('Full cell')]
+    if not df_temp.empty and partial_get(df_temp, 'Measured'):
+        intensity = partial_get(df_temp, 'Light bias', default_unit='mW/cm^2')
+        jsc = partial_get(df_temp, 'Full cell. Integrated Jsc', default_unit='mA/cm^2')
+        if jsc is not None:
+            eqe_dict['eqe_full_device'] = construct_eqe(intensity, jsc, 'Whole Device')
+
+    # Subcell 1, Bottom Cell
+    df_temp = data_frame[data_frame.index.str.contains('Subcell 1.')]
+    if not df_temp.empty and partial_get(df_temp, 'Measured'):
+        intensity = partial_get(df_temp, 'Light bias', default_unit='mW/cm^2')
+        jsc = partial_get(df_temp, 'Subcell 1. Integrated Jsc', default_unit='mA/cm^2')
+        jsc_shaded = partial_get(
+            df_temp, 'Shaded. Integrated Jsc', default_unit='mA/cm^2'
+        )
+        if jsc is not None:
+            eqe_dict['eqe_bottom_cell'] = construct_eqe(intensity, jsc, 'Bottom Cell')
+        if jsc_shaded is not None:
+            eqe_dict['eqe_bottom_cell_shaded'] = construct_eqe(
+                intensity, jsc_shaded, 'Bottom Cell'
+            )
+
+    # Subcell 2, Top Cell
+    df_temp = data_frame[data_frame.index.str.contains('Subcell 2.')]
+    if not df_temp.empty and partial_get(df_temp, 'Measured'):
+        intensity = partial_get(df_temp, 'Light bias', default_unit='mW/cm^2')
+        jsc = partial_get(df_temp, 'Subcell 2. Integrated Jsc', default_unit='mA/cm^2')
+        if jsc is not None:
+            eqe_dict['eqe_top_cell'] = construct_eqe(intensity, jsc, 'Top Cell')
+
+    # TODO: Add more subcells and shaded measurements
+
+    return eqe_dict
+
+
+def extract_measurements(data_frame):
+    """
+    Extracts the measurements from the data subframe and returns a PerformedMeasurements object.
+    """
+
+    performed_measurements = {}
+
+    # extract JV measurements
+    df_temp = data_frame[data_frame.index.str.contains('JV.')]
+    if not df_temp.empty:
+        performed_measurements.update(extract_jv(df_temp))
+
+    # extract stabilised performance measurements
+    df_temp = data_frame[data_frame.index.str.contains('Stabilised performance.')]
+    if not df_temp.empty:
+        performed_measurements.update(extract_stabilised_performance(df_temp))
+
+    # extract EQE measurements
+    df_temp = data_frame[data_frame.index.str.contains('EQE.')]
+    if not df_temp.empty:
+        performed_measurements.update(extract_eqe(df_temp))
+
+    return PerformedMeasurements(**performed_measurements)

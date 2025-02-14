@@ -59,3 +59,37 @@ def test_schema():
     assert entry_archive.data.layer_stack[2].composition[0].name == 'Cu'
     assert entry_archive.data.layer_stack[2].composition[0].coefficient == 1
     # assert entry_archive.data.layer_stack[2].composition == [Ion('Cu', 1), Ion('In', 0.59), Ion('Ga', 0.41), Ion('Se', 2.0)]
+
+    ## test measurements
+
+    # jv
+    assert entry_archive.data.measurements.jv_bottom_cell.method == 'JV'
+    assert entry_archive.data.measurements.jv_bottom_cell.results.fill_factor == 0.782
+    assert (
+        entry_archive.data.measurements.jv_bottom_cell.results.open_circuit_voltage
+        == ureg.Quantity(0.682, 'volt')
+    )
+
+    # stabilised performance
+    assert (
+        entry_archive.data.measurements.stabilised_performance_full_device.method
+        == 'Stabilised performance'
+    )
+    assert (
+        entry_archive.data.measurements.stabilised_performance_full_device.conditions.procedure
+        == 'MPPT'
+    )
+    assert (
+        entry_archive.data.measurements.stabilised_performance_full_device.results.power_conversion_efficiency
+        == 22.7
+    )
+
+    # eqe
+    assert (
+        entry_archive.data.measurements.eqe_top_cell.method
+        == 'External quantum efficiency'
+    )
+    assert (
+        entry_archive.data.measurements.eqe_top_cell.results.integrated_short_circuit_current_density
+        == ureg.Quantity(19.9, 'milliampere / centimeter ** 2')
+    )
