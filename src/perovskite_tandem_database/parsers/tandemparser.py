@@ -571,12 +571,13 @@ def extract_storage(data_frame):
         return None
     else:
         atmosphere = partial_get(df_temp, 'Atmosphere')
+        humidity = partial_get(df_temp, 'Relative humidity')
         storage_conditions = {
             'atmosphere': atmosphere if atmosphere in Storage.atmosphere.type else None,
             'time_until_next_step': partial_get(
                 df_temp, 'Time until', default_unit='hour'
             ),
-            'humidity_relative': partial_get(df_temp, 'Relative humidity'),
+            'humidity_relative': humidity / 100 if humidity else None,
         }
         return Storage(**storage_conditions)
 
@@ -729,6 +730,7 @@ def extract_layer_stack(data_frame):
                     df_process, 'Aggregation state'
                 )
                 atmosphere = partial_get(df_process, 'Synthesis atmosphere ')
+                humidity =partial_get(df_process, 'atmosphere. Relative humidity')
                 process_conditions = {
                     'procedure': partial_get(df_process, 'Deposition. Procedure'),
                     'atmosphere': atmosphere
@@ -743,9 +745,7 @@ def extract_layer_stack(data_frame):
                         'atmosphere. Pressure. Total',
                         default_unit='mbar',
                     ),
-                    'humidity_relative': partial_get(
-                        df_process, 'atmosphere. Relative humidity'
-                    ),
+                    'humidity_relative': humidity / 100 if humidity else None,
                 }
 
                 # Liquid based synthesis
@@ -894,13 +894,14 @@ def extract_jv_results(data_frame):
     """
     Extracts the JV results from the data subframe and returns a JVResults object.
     """
+    pce = partial_get(data_frame, 'PCE')
     return JVResults(
         short_circuit_current_density=partial_get(
             data_frame, 'Jsc', default_unit='mA/cm^2'
         ),
         open_circuit_voltage=partial_get(data_frame, 'Voc', default_unit='V'),
         fill_factor=partial_get(data_frame, 'FF'),
-        power_conversion_efficiency=partial_get(data_frame, 'PCE'),
+        power_conversion_efficiency=pce/100 if pce else None,
         maximum_power_point_voltage=partial_get(data_frame, 'Vmp', default_unit='V'),
         maximum_power_point_current_density=partial_get(
             data_frame, 'Jmp', default_unit='mA/cm^2'
@@ -929,12 +930,13 @@ def extract_jv(data_frame):
         # Storage Information
         df_storage = df_temp[df_temp.index.str.contains('Storage.')]
         if not df_storage.empty:
+            humidity = partial_get(df_storage, 'Relative humidity'),
             storage = Storage(
                 atmosphere=partial_get(df_storage, 'Atmosphere'),
                 time_until_next_step=partial_get(
                     df_storage, 'Age of cell', default_unit='day'
                 ),
-                humidity_relative=partial_get(df_storage, 'Relative humidity'),
+                humidity_relative=humidity / 100 if humidity else None,
             )
         else:
             storage = None
@@ -989,9 +991,10 @@ def extract_jv(data_frame):
             illumination = None
 
         # JV Conditions
+        humidity = partial_get(df_temp, 'Test. Relative humidity')
         conditions = JVConditions(
             atmosphere=partial_get(df_temp, 'Test. Atmosphere'),
-            humidity_relative=partial_get(df_temp, 'Test. Relative humidity'),
+            humidity_relative=humidity / 100 if humidity else None,
             temperature=partial_get(
                 df_temp, 'Test. Temperature', default_unit='celsius'
             ),
@@ -1102,8 +1105,9 @@ def extract_stabilised_performance(data_frame):
             duration=partial_get(df_temp, 'Measurement time', default_unit='min'),
         )
 
+        pce = partial_get(df_temp, 'PCE')
         results = JVResults(
-            power_conversion_efficiency=partial_get(df_temp, 'PCE'),
+            power_conversion_efficiency=pce / 100 if pce else None,
             maximum_power_point_voltage=partial_get(df_temp, 'Vmp', default_unit='V'),
             maximum_power_point_current_density=partial_get(
                 df_temp, 'Jmp', default_unit='mA/cm^2'
