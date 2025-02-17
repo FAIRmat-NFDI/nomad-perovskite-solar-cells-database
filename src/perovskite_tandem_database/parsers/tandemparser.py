@@ -730,7 +730,7 @@ def extract_layer_stack(data_frame):
                     df_process, 'Aggregation state'
                 )
                 atmosphere = partial_get(df_process, 'Synthesis atmosphere ')
-                humidity =partial_get(df_process, 'atmosphere. Relative humidity')
+                humidity = partial_get(df_process, 'atmosphere. Relative humidity')
                 process_conditions = {
                     'procedure': partial_get(df_process, 'Deposition. Procedure'),
                     'atmosphere': atmosphere
@@ -901,7 +901,7 @@ def extract_jv_results(data_frame):
         ),
         open_circuit_voltage=partial_get(data_frame, 'Voc', default_unit='V'),
         fill_factor=partial_get(data_frame, 'FF'),
-        power_conversion_efficiency=pce/100 if pce else None,
+        power_conversion_efficiency=pce / 100 if pce else None,
         maximum_power_point_voltage=partial_get(data_frame, 'Vmp', default_unit='V'),
         maximum_power_point_current_density=partial_get(
             data_frame, 'Jmp', default_unit='mA/cm^2'
@@ -930,7 +930,7 @@ def extract_jv(data_frame):
         # Storage Information
         df_storage = df_temp[df_temp.index.str.contains('Storage.')]
         if not df_storage.empty:
-            humidity = partial_get(df_storage, 'Relative humidity'),
+            humidity = partial_get(df_storage, 'Relative humidity')
             storage = Storage(
                 atmosphere=partial_get(df_storage, 'Atmosphere'),
                 time_until_next_step=partial_get(

@@ -5,27 +5,14 @@ from typing import (
 if TYPE_CHECKING:
     pass
 
+from itertools import cycle
+
+import plotly.graph_objects as go
 from nomad.datamodel.data import Schema, UseCaseElnCategory
+from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import SchemaPackage, Section, SubSection
 
-from perovskite_solar_cell_database.schema_sections import (
-    EQE,
-    ETL,
-    HTL,
-    JV,
-    Add,
-    Backcontact,
-    Cell,
-    Encapsulation,
-    Module,
-    Outdoor,
-    Perovskite,
-    PerovskiteDeposition,
-    Ref,
-    Stabilised,
-    Stability,
-    Substrate,
-)
+from perovskite_solar_cell_database.utils import create_cell_stack_figure
 
 from .measurements import PerformedMeasurements
 from .reference import Reference
@@ -37,7 +24,7 @@ from .tandem import (
 m_package = SchemaPackage()
 
 
-class PerovskiteTandemSolarCell(Schema):
+class PerovskiteTandemSolarCell(Schema, PlotSection):
     """
     This is schema for representing Perovskite Tandem Solar Cells.
     The descriptions in the quantities represent the instructions given to the user
@@ -73,5 +60,79 @@ class PerovskiteTandemSolarCell(Schema):
         description='The measurements performed on the device.',
     )
 
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
 
-m_package.__init_metainfo__()
+        # A few different shades of gray for intermediate layers
+        gray_shades = ['#D3D3D3', '#BEBEBE', '#A9A9A9', '#909090']
+        gray_cycle = cycle(gray_shades)
+        # A few different shades of red for absorber layers
+        absorber_colors = ['red', 'orange', 'orangered', 'firebrick']
+        absorber_cycle = cycle(absorber_colors)
+
+        # Initialize thicknesses and colors
+        thicknesses = []
+        colors = []
+        layer_names = []
+        opacities = []
+
+        # construct the layer stack
+        for layer in self.layer_stack:
+            layer_names.append(layer.name)
+            if 'Substrate' in layer.functionality and (
+                not thicknesses or thicknesses[-1] != 1.0
+            ):
+                thicknesses.append(1.0)
+                colors.append('lightblue')
+                opacities.append(1)
+            elif 'Photoabsorber' in layer.functionality:
+                thicknesses.append(0.5)
+                colors.append(next(absorber_cycle))
+                opacities.append(1)
+            elif 'Subcell spacer' in layer.functionality:
+                thicknesses.append(0.5)
+                colors.append('white')
+                opacities.append(0.05)
+            else:
+                thicknesses.append(0.1)
+                colors.append(next(gray_cycle))
+                opacities.append(1)
+
+        # Averaged device parameters
+        parameters = {
+            'efficiency': 'power_conversion_efficiency',
+            'voc': 'open_circuit_voltage',
+            'jsc': 'short_circuit_current_density',
+            'ff': 'fill_factor',
+        }
+        values = {key: [] for key in parameters}
+
+        for name in [
+            'jv_full_device_forward',
+            'jv_full_device_reverse',
+            'stabilised_performance_full_device',
+        ]:
+            measurement = getattr(self.measurements, name, None)
+            if measurement and hasattr(measurement, 'results'):
+                for key, attr in parameters.items():
+                    value = getattr(measurement.results, attr, None)
+                    if value is not None:
+                        values[key].append(value)
+
+        averaged_values = {
+            key: sum(val) / len(val) if val else None for key, val in values.items()
+        }
+
+        fig = create_cell_stack_figure(
+            layers=layer_names,
+            thicknesses=thicknesses,
+            colors=colors,
+            opacities=opacities,
+            **averaged_values,
+            x_min=0,
+            x_max=10,
+            y_min=0,
+            y_max=10,
+        )
+
+        self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
