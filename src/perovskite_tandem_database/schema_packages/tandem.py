@@ -448,6 +448,10 @@ class PhotoAbsorber(Layer):
         This category is for enabling those cells to easily be identified and filtered.""",
     )
 
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.functionality = 'Photoabsorber'
+
 
 class PerovskiteComposition(ArchiveSection):
     # TODO: basis = Quantity()  # ???

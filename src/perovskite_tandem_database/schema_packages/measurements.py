@@ -226,13 +226,11 @@ class JVResults(ArchiveSection):
     fill_factor = Quantity(
         type=float,
         description='Fill factor.',
-        unit='dimensionless',
     )
 
     power_conversion_efficiency = Quantity(
         type=float,
         description='Power conversion efficiency.',
-        unit='dimensionless',
     )
 
     maximum_power_point_voltage = Quantity(
