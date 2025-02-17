@@ -63,7 +63,6 @@ class PerovskiteSolarCell(Schema, PlotSection):
     stability = SubSection(section_def=Stability)
     outdoor = SubSection(section_def=Outdoor)
 
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
@@ -115,5 +114,6 @@ class PerovskiteSolarCell(Schema, PlotSection):
         )
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
+
 
 m_package.__init_metainfo__()
