@@ -45,6 +45,9 @@ def create_archive(entity, archive, file_name) -> str:
     )
 
 
+# Helper functions to plot the device stack
+
+
 def add_cuboid_edges(fig, x0, x1, y0, y1, z0, z1):  # noqa: PLR0913
     """
     Creates a Scatter3d trace with lines connecting the cuboid's edges
@@ -106,6 +109,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
     voc,
     jsc,
     ff,
+    opacities=1,
     x_min=0,
     x_max=10,
     y_min=0,
@@ -126,8 +130,14 @@ def create_cell_stack_figure(  # noqa: PLR0913
     """
     fig = go.Figure()
 
+    # Ensure opacities is a list of the same length as layers
+    if isinstance(opacities, (int, float)):
+        opacities = [opacities] * len(layers)
+
     z_current = 0
-    for layer_name, thickness, color in zip(layers, thicknesses, colors):
+    for layer_name, thickness, color, opacity in zip(
+        layers, thicknesses, colors, opacities
+    ):
         z0 = z_current
         z1 = z_current + thickness
 
@@ -143,6 +153,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
                 y=y_corners,
                 z=z_corners,
                 color=color,
+                opacity=opacity,
                 alphahull=1,
                 name=layer_name,
                 showlegend=True,
@@ -155,14 +166,26 @@ def create_cell_stack_figure(  # noqa: PLR0913
 
         z_current = z1
 
-        # Create an annotation for device parameters
-        annotation_text = (
-            f'<b>Device Parameters</b><br>'
-            f'Efficiency = {efficiency:.1f} %<br>'
-            f'V<sub>OC</sub> = {voc:.1f}<br>'
-            f'J<sub>SC</sub> = {jsc:.1f}<br>'
-            f'FF = {ff:.1f} %'
+    # Create an annotation for device parameters
+    annotation_text = (
+        '<b>Device Parameters</b><br>'
+        + (
+            f'Efficiency = {efficiency:.3f}<br>'
+            if efficiency is not None
+            else 'Efficiency = N/A<br>'
         )
+        + (
+            f'V<sub>OC</sub> = {voc:.1f}<br>'
+            if voc is not None
+            else 'V<sub>OC</sub> = N/A<br>'
+        )
+        + (
+            f'J<sub>SC</sub> = {jsc:.1f}<br>'
+            if jsc is not None
+            else 'J<sub>SC</sub> = N/A<br>'
+        )
+        + (f'FF = {ff:.3f}' if ff is not None else 'FF = N/A')
+    )
 
     # Update layout
     fig.update_layout(
