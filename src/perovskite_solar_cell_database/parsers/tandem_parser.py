@@ -13,8 +13,8 @@ from nomad.metainfo import Quantity
 from nomad.parsing.parser import MatchingParser
 from pint import UnitRegistry, errors
 
-from perovskite_tandem_database.parsers.utils import create_archive
-from perovskite_tandem_database.schema_packages.measurements import (
+from perovskite_solar_cell_database.parsers.utils import create_archive
+from perovskite_solar_cell_database.schema_packages.tandem.measurements import (
     EQEResults,
     ExternalQuantumEfficiency,
     Illumination,
@@ -27,8 +27,10 @@ from perovskite_tandem_database.schema_packages.measurements import (
     StabilisedPerformance,
     StabilisedPerformanceConditions,
 )
-from perovskite_tandem_database.schema_packages.schema import PerovskiteTandemSolarCell
-from perovskite_tandem_database.schema_packages.tandem import (
+from perovskite_solar_cell_database.schema_packages.tandem.schema import (
+    PerovskiteTandemSolarCell,
+)
+from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     ChalcopyriteAlkaliMetalDoping,
     ChalcopyriteLayer,
     Cleaning,
