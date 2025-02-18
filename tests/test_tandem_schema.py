@@ -81,7 +81,7 @@ def test_schema():
     )
     assert (
         entry_archive.data.measurements.stabilised_performance_full_device.results.power_conversion_efficiency
-        == 22.7
+        == 0.227
     )
 
     # eqe
