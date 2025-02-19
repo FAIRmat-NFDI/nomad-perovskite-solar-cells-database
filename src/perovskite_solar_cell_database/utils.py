@@ -15,7 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import pint
 import plotly.graph_objects as go
+
+ureg = pint.UnitRegistry()
 
 
 def get_reference(upload_id, entry_id):
@@ -101,6 +104,20 @@ def add_cuboid_edges(fig, x0, x1, y0, y1, z0, z1):  # noqa: PLR0913
     )
 
 
+def format_value(label, value, preferred_unit=None, fmt='.1f'):
+    """Formats a value for display, handling both floats and pint quantities with compact units."""
+    if value is None:
+        return f'{label} = N/A<br>'
+
+    elif isinstance(value, pint.Quantity):
+        if preferred_unit:
+            value = value.to(preferred_unit)
+        return f'{label} = {value:~{fmt}}<br>'  # Uses Pint's '~' for compact units
+
+    else:  # Assume a float
+        return f'{label} = {value:{fmt}}{f" {preferred_unit}" if preferred_unit else ""}<br>'
+
+
 def create_cell_stack_figure(  # noqa: PLR0913
     layers,
     thicknesses,
@@ -169,22 +186,10 @@ def create_cell_stack_figure(  # noqa: PLR0913
     # Create an annotation for device parameters
     annotation_text = (
         '<b>Device Parameters</b><br>'
-        + (
-            f'Efficiency = {efficiency:.3f}<br>'
-            if efficiency is not None
-            else 'Efficiency = N/A<br>'
-        )
-        + (
-            f'V<sub>OC</sub> = {voc:.1f}<br>'
-            if voc is not None
-            else 'V<sub>OC</sub> = N/A<br>'
-        )
-        + (
-            f'J<sub>SC</sub> = {jsc:.1f}<br>'
-            if jsc is not None
-            else 'J<sub>SC</sub> = N/A<br>'
-        )
-        + (f'FF = {ff:.3f}' if ff is not None else 'FF = N/A')
+        + format_value('Efficiency', efficiency, fmt='.3f')
+        + format_value('V<sub>OC</sub>', voc, preferred_unit='V', fmt='.1f')
+        + format_value('J<sub>SC</sub>', jsc, preferred_unit='mA/cm²', fmt='.1f')
+        + format_value('FF', ff, fmt='.3f').replace('<br>', '')
     )
 
     # Update layout
