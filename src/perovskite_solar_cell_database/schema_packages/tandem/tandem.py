@@ -12,6 +12,8 @@ from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.data_type import Enum
 from nomad.metainfo.util import MEnum
 
+from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
+
 # from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
 from .reference import Reference
 
@@ -453,11 +455,12 @@ class PhotoAbsorber(Layer):
         self.functionality = 'Photoabsorber'
 
 
-class PerovskiteComposition(ArchiveSection):
-    # TODO: basis = Quantity()  # ???
-    ion_a = SubSection(section_def=Ion, repeats=True)
-    ion_b = SubSection(section_def=Ion, repeats=True)
-    ion_c = SubSection(section_def=Ion, repeats=True)
+# class PerovskiteComposition(ArchiveSection):
+#     # TODO: basis = Quantity()  # ???
+#     ion_a = SubSection(section_def=Ion, repeats=True)
+#     ion_b = SubSection(section_def=Ion, repeats=True)
+#     ion_c = SubSection(section_def=Ion, repeats=True)
+#     # TODO: assumption = Quantity()  # ???
 
 
 class PerovskiteLayer(PhotoAbsorber):
@@ -474,7 +477,7 @@ class PerovskiteLayer(PhotoAbsorber):
         description="""
             The dimension of the perovskite layer.""",
     )
-    composition = SubSection(section_def=PerovskiteComposition)
+    composition = SubSection(section_def=PerovskiteCompositionSection)
 
     # General properties
     single_crystal = Quantity(

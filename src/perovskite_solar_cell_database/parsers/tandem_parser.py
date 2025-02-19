@@ -13,6 +13,12 @@ from nomad.metainfo import Quantity
 from nomad.parsing.parser import MatchingParser
 from pint import UnitRegistry, errors
 
+from perovskite_solar_cell_database.composition import (
+    PerovskiteAIonComponent,
+    PerovskiteBIonComponent,
+    PerovskiteCompositionSection,
+    PerovskiteXIonComponent,
+)
 from perovskite_solar_cell_database.parsers.utils import create_archive
 from perovskite_solar_cell_database.schema_packages.tandem.measurements import (
     EQEResults,
@@ -41,7 +47,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     Layer,
     LiquidSynthesis,
     NonAbsorbingLayer,
-    PerovskiteComposition,
+    # PerovskiteComposition,
     PerovskiteLayer,
     PhotoAbsorber,
     QuenchingSolvent,
@@ -469,27 +475,41 @@ def extract_perovskite_composition(data_frame):
             df_temp[df_temp.index.str.contains('A-ions')], delimiter=';'
         )
         for component in df_components.columns:
-            type = partial_get(df_components[component], '-ions ')
+            abbreviation = partial_get(df_components[component], '-ions ')
             coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
-                ions_a.append(Ion(name=type, coefficient=coefficient))
+                ions_a.append(
+                    PerovskiteAIonComponent(
+                        abbreviation=abbreviation, coefficient=coefficient
+                    )
+                )
         df_components = split_data(
             df_temp[df_temp.index.str.contains('B-ions')], delimiter=';'
         )
         for component in df_components.columns:
-            type = partial_get(df_components[component], '-ions ')
+            abbreviation = partial_get(df_components[component], '-ions ')
             coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
-                ions_b.append(Ion(name=type, coefficient=coefficient))
+                ions_b.append(
+                    PerovskiteBIonComponent(
+                        abbreviation=abbreviation, coefficient=coefficient
+                    )
+                )
         df_components = split_data(
             df_temp[df_temp.index.str.contains('C-ions')], delimiter=';'
         )
         for component in df_components.columns:
-            type = partial_get(df_components[component], '-ions ')
+            abbreviation = partial_get(df_components[component], '-ions ')
             coefficient = partial_get(df_components[component], '-ions. Coefficients ')
             if type:
-                ions_c.append(Ion(name=type, coefficient=coefficient))
-    return PerovskiteComposition(ion_a=ions_a, ion_b=ions_b, ion_c=ions_c)
+                ions_c.append(
+                    PerovskiteXIonComponent(
+                        abbreviation=abbreviation, coefficient=coefficient
+                    )
+                )
+    return PerovskiteCompositionSection(
+        ions_a_site=ions_a, ions_b_site=ions_b, ions_x_site=ions_c
+    )
 
 
 def extract_chalcopyrite_composition(data_frame):
