@@ -1,13 +1,6 @@
 from ase.data import chemical_symbols
 from nomad.datamodel.data import ArchiveSection, EntryData
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
-from nomad.datamodel.metainfo.basesections import (
-    Activity,
-    ActivityStep,
-    ElementalComposition,
-    Process,
-    ProcessStep,
-)
 from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.data_type import Enum
 from nomad.metainfo.util import MEnum
@@ -50,7 +43,6 @@ class Ion(ArchiveSection):
     )
 
 
-# TODO : Check inheritance > material processing solution or basesections
 class Substance(ArchiveSection):
     """
     A section describing a pure substance, i.e. a chemical compound or a material.
@@ -61,22 +53,36 @@ class Substance(ArchiveSection):
     name = Quantity(type=str, description='The name of the substance.')
     supplier = Quantity(type=str, description='The supplier of the substance.')
     purity = Quantity(type=str, shape=[], description='The purity of the substance.')
-    concentration = Quantity(
-        type=str,  # TODO: Resolve this workaround for Parsing
-        # type=float,
-        # unit='mg/ml',
-        description='The concentration of the substance.',
+    molar_concentration = Quantity(
+        type=float,
+        description='The molarity of the substance.',
+        unit='mol/l',
+    )
+    mass_concentration = Quantity(
+        type=float,
+        description='The mass concentration of the substance.',
+        unit='g/l',
+        a_eln=ELNAnnotation(defaultDisplayUnit='mg/ml'),
+    )
+    mass_fraction = Quantity(
+        type=float,
+        description='The mass fraction of the substance.',
+    )
+    volume_fraction = Quantity(
+        type=float,
+        description='The volume fraction of the substance.',
     )
     volume = Quantity(
         type=float,
         unit='ml',
-        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(defaultDisplayUnit='ml'),
         description='The volume of the substance.',
     )
     age = Quantity(
         type=float,
         unit='minute',  # days?
         description='The age of the substance.',
+        a_eln=ELNAnnotation(defaultDisplayUnit='minute'),
     )
     temperature = Quantity(
         type=float,
@@ -160,6 +166,17 @@ class QuenchingSolvent(Solvent):
 # Processing and deposition methods
 
 
+class ProcessStep(ArchiveSection):
+    """
+    A section describing a general process.
+    """
+
+    name = Quantity(
+        type=str,
+        description='The name of the process step.',
+    )
+
+
 class Storage(ArchiveSection):
     """
     A section describing the storage conditions of a sample before the next Sythesis step.
@@ -236,7 +253,7 @@ class SynthesisStep(ProcessStep):
         description='The maximum temperature reached during the synthesis step',
     )
 
-    reactant = SubSection(
+    reactants = SubSection(
         section_def=ReactionComponent,
         description='The reactants used in the synthesis step',
         repeats=True,
@@ -249,20 +266,6 @@ class CleaningStep(ProcessStep):
     """
 
     pass
-
-
-class Cleaning(Process):
-    """
-    A section describing a cleaning procedure. Typically before a subsequent synthesis step.
-    """
-
-    steps = SubSection(
-        section_def=CleaningStep,
-        description="""
-        An ordered list of all the cleaning steps that make up this activity.
-        """,
-        repeats=True,
-    )
 
 
 class ThermalAnnealing(SynthesisStep):
@@ -311,10 +314,6 @@ class GasPhaseSynthesis(SynthesisStep):
         unit='mbar',
         description='The partial pressure of the gas phase reactants',
     )
-
-
-class Synthesis(Process):
-    steps = SubSection(section_def=SynthesisStep, repeats=True)
 
 
 # Material layers and their properties
@@ -384,8 +383,8 @@ class Layer(ArchiveSection):
         type=str,
         description='The specific brand name of a commercially purchased layer',
     )
-    cleaning = SubSection(section_def=Cleaning)
-    synthesis = SubSection(section_def=Synthesis)
+    cleaning = SubSection(section_def=CleaningStep, repeats=True)
+    synthesis = SubSection(section_def=SynthesisStep, repeats=True)
 
     # Storage
     storage = SubSection(section_def=Storage)
@@ -464,19 +463,6 @@ class PhotoAbsorber(Layer):
 
 
 class PerovskiteLayer(PhotoAbsorber):
-    dimension = Quantity(
-        type=Enum(
-            [
-                '0D (Quantum dot)',
-                '2D',
-                '2D/3D mixture',
-                '3D',
-                '3D with 2D capping layer',
-            ]
-        ),
-        description="""
-            The dimension of the perovskite layer.""",
-    )
     composition = SubSection(section_def=PerovskiteCompositionSection)
 
     # General properties
