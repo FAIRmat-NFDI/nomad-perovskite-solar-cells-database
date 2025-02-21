@@ -514,11 +514,11 @@ def extract_perovskite_composition(data_frame):
     if not df_temp.empty:
         if partial_get(df_temp, 'Dimension. 0D'):
             dimensionality = '0D'
-        elif partial_get(df_temp, 'Dimension. 2D \['):
+        elif partial_get(df_temp, r'Dimension. 2D \['):
             dimensionality = '2D'
         elif partial_get(df_temp, 'Dimension. 2D/3D'):
             dimensionality = '2D/3D'
-        elif partial_get(df_temp, 'Dimension. 3D \['):
+        elif partial_get(df_temp, r'Dimension. 3D \['):
             dimensionality = '3D'
         else:
             dimensionality = 'Other'

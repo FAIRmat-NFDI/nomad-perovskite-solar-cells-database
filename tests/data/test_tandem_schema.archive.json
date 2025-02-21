@@ -44,8 +44,7 @@
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.Substrate",
                 "name": "SLG",
                 "functionality": "Substrate",
-                "origin": "Commercial",
-                "synthesis": {}
+                "origin": "Commercial"
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -53,20 +52,18 @@
                 "functionality": "Back contact",
                 "thickness": 700.0,
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Sputtering",
-                            "aggregation_state_of_reactants": "Gas",
-                            "reactant": [
-                                {
-                                    "name": "Mo"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Sputtering",
+                        "aggregation_state_of_reactants": "Gas",
+                        "reactants": [
+                            {
+                                "name": "Mo"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ChalcopyriteLayer",
@@ -75,15 +72,13 @@
                 "origin": "Unknown",
                 "bandgap": 1.18,
                 "bandgap_graded": true,
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Co-evaporation",
-                            "aggregation_state_of_reactants": "Gas"
-                        }
-                    ]
-                },
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Co-evaporation",
+                        "aggregation_state_of_reactants": "Gas"
+                    }
+                ],
                 "composition": [
                     {
                         "name": "Cu",
@@ -115,14 +110,12 @@
                 "functionality": "Buffer layer",
                 "thickness": 40.0,
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "CBD"
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "CBD"
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -130,20 +123,18 @@
                 "functionality": "Window layer",
                 "thickness": 100.0,
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Sputtering",
-                            "atmosphere": "Vacuum",
-                            "reactant": [
-                                {
-                                    "name": "ZnO"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Sputtering",
+                        "atmosphere": "Vacuum",
+                        "reactants": [
+                            {
+                                "name": "ZnO"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -151,73 +142,66 @@
                 "functionality": "Window layer",
                 "thickness": 200.0,
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Sputtering",
-                            "atmosphere": "Vacuum",
-                            "reactant": [
-                                {
-                                    "name": "Al"
-                                },
-                                {
-                                    "name": "ZnO"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Sputtering",
+                        "atmosphere": "Vacuum",
+                        "reactants": [
+                            {
+                                "name": "Al"
+                            },
+                            {
+                                "name": "ZnO"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
                 "name": "Ni:Al-grid",
                 "functionality": "Window layer",
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Evaporation",
-                            "atmosphere": "Vacuum",
-                            "reactant": [
-                                {
-                                    "name": "Al"
-                                },
-                                {
-                                    "name": "Ni"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Evaporation",
+                        "atmosphere": "Vacuum",
+                        "reactants": [
+                            {
+                                "name": "Al"
+                            },
+                            {
+                                "name": "Ni"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
                 "name": "MgF2",
                 "functionality": "Window layer",
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Evaporation",
-                            "atmosphere": "Vacuum",
-                            "reactant": [
-                                {
-                                    "name": "MgF2"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Evaporation",
+                        "atmosphere": "Vacuum",
+                        "reactants": [
+                            {
+                                "name": "MgF2"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
                 "name": "Air-gap",
                 "functionality": "Subcell spacer",
-                "origin": "Lab made",
-                "synthesis": {}
+                "origin": "Lab made"
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.Substrate",
@@ -225,26 +209,23 @@
                 "functionality": "Substrate",
                 "area": 6.25,
                 "origin": "Commercial",
-                "cleaning": {
-                    "steps": [
-                        {
-                            "name": "Soap"
-                        },
-                        {
-                            "name": "Water"
-                        },
-                        {
-                            "name": "Ultrasonification"
-                        },
-                        {
-                            "name": "Heating"
-                        },
-                        {
-                            "name": "N2"
-                        }
-                    ]
-                },
-                "synthesis": {}
+                "cleaning": [
+                    {
+                        "name": "Soap"
+                    },
+                    {
+                        "name": "Water"
+                    },
+                    {
+                        "name": "Ultrasonification"
+                    },
+                    {
+                        "name": "Heating"
+                    },
+                    {
+                        "name": "N2"
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.Substrate",
@@ -252,26 +233,23 @@
                 "functionality": "Substrate",
                 "area": 6.25,
                 "origin": "Commercial",
-                "cleaning": {
-                    "steps": [
-                        {
-                            "name": "Soap"
-                        },
-                        {
-                            "name": "Water"
-                        },
-                        {
-                            "name": "Ultrasonification"
-                        },
-                        {
-                            "name": "Heating"
-                        },
-                        {
-                            "name": "N2"
-                        }
-                    ]
-                },
-                "synthesis": {}
+                "cleaning": [
+                    {
+                        "name": "Soap"
+                    },
+                    {
+                        "name": "Water"
+                    },
+                    {
+                        "name": "Ultrasonification"
+                    },
+                    {
+                        "name": "Heating"
+                    },
+                    {
+                        "name": "N2"
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -279,45 +257,43 @@
                 "functionality": "HTL",
                 "origin": "Lab made",
                 "supplier": "Unknown; Sigma Aldrich",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
-                            "procedure": "Spin-coating",
-                            "aggregation_state_of_reactants": "Liquid",
-                            "reactant": [
-                                {
-                                    "name": "F4-TCNQ",
-                                    "supplier": "Unknown",
-                                    "concentration": "1 wt%",
-                                    "age": 1.7999999999999998
-                                },
-                                {
-                                    "name": "PTAA",
-                                    "supplier": "Sigma Aldrich",
-                                    "concentration": "5.0",
-                                    "age": 1.7999999999999998
-                                }
-                            ],
-                            "solvent": [
-                                {
-                                    "name": "Toluene",
-                                    "mixing_ratio": 1.0
-                                }
-                            ]
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
-                            "duration": 10.0,
-                            "procedure": "Thermal annealing",
-                            "temperature": 373.15
-                        }
-                    ]
-                },
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
+                        "procedure": "Spin-coating",
+                        "aggregation_state_of_reactants": "Liquid",
+                        "reactants": [
+                            {
+                                "name": "F4-TCNQ",
+                                "supplier": "Unknown",
+                                "mass_fraction": 1.0,
+                                "age": 1.7999999999999998
+                            },
+                            {
+                                "name": "PTAA",
+                                "supplier": "Sigma Aldrich",
+                                "mass_concentration": 5.000000000000001,
+                                "age": 1.7999999999999998
+                            }
+                        ],
+                        "solvent": [
+                            {
+                                "name": "Toluene",
+                                "mixing_ratio": 1.0
+                            }
+                        ]
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
+                        "procedure": "Thermal annealing",
+                        "temperature": 373.15,
+                        "duration": 10.0
+                    }
+                ],
                 "additives": [
                     {
                         "name": "F4-TCNQ",
-                        "concentration": "1 wt%"
+                        "mass_fraction": 1.0
                     }
                 ]
             },
@@ -329,101 +305,97 @@
                 "bandgap": 1.62,
                 "bandgap_graded": false,
                 "bandgap_estimation_basis": "Absorption Tauc-plot",
-                "dimension": "3D",
                 "single_crystal": false,
                 "inorganic": false,
                 "lead_free": false,
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "Evaporation",
-                            "aggregation_state_of_reactants": "Solid",
-                            "atmosphere": "Vacuum",
-                            "reactant": [
-                                {
-                                    "name": "PbI2",
-                                    "concentration": "1"
-                                }
-                            ]
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
-                            "procedure": "Spin-coating",
-                            "aggregation_state_of_reactants": "Liquid",
-                            "atmosphere": "N2",
-                            "reactant": [
-                                {
-                                    "name": "MAI",
-                                    "concentration": "65.0",
-                                    "volume": 0.3
-                                }
-                            ],
-                            "solvent": [
-                                {
-                                    "name": "IPA",
-                                    "mixing_ratio": 1.0
-                                }
-                            ]
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
-                            "duration": 10.0,
-                            "procedure": "Thermal annealing",
-                            "temperature": 373.15
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
-                            "procedure": "Spin-coating",
-                            "aggregation_state_of_reactants": "Liquid",
-                            "atmosphere": "N2",
-                            "reactant": [
-                                {
-                                    "name": "FABr",
-                                    "concentration": "65.0"
-                                }
-                            ],
-                            "solvent": [
-                                {
-                                    "name": "IPA",
-                                    "mixing_ratio": 1.0
-                                }
-                            ]
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
-                            "duration": 60.0,
-                            "procedure": "Thermal annealing",
-                            "temperature": 373.15
-                        }
-                    ]
-                },
-                "additives": [
+                "synthesis": [
                     {
-                        "concentration": "Under"
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "Evaporation",
+                        "aggregation_state_of_reactants": "Solid",
+                        "atmosphere": "Vacuum",
+                        "reactants": [
+                            {
+                                "name": "PbI2"
+                            }
+                        ]
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
+                        "procedure": "Spin-coating",
+                        "aggregation_state_of_reactants": "Liquid",
+                        "atmosphere": "N2",
+                        "reactants": [
+                            {
+                                "name": "MAI",
+                                "mass_concentration": 65.00000000000001,
+                                "volume": 0.3
+                            }
+                        ],
+                        "solvent": [
+                            {
+                                "name": "IPA",
+                                "mixing_ratio": 1.0
+                            }
+                        ]
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
+                        "procedure": "Thermal annealing",
+                        "temperature": 373.15,
+                        "duration": 10.0
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
+                        "procedure": "Spin-coating",
+                        "aggregation_state_of_reactants": "Liquid",
+                        "atmosphere": "N2",
+                        "reactants": [
+                            {
+                                "name": "FABr",
+                                "mass_concentration": 65.00000000000001
+                            }
+                        ],
+                        "solvent": [
+                            {
+                                "name": "IPA",
+                                "mixing_ratio": 1.0
+                            }
+                        ]
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
+                        "procedure": "Thermal annealing",
+                        "temperature": 373.15,
+                        "duration": 60.0
                     }
                 ],
+                "additives": [
+                    {}
+                ],
                 "composition": {
-                    "ion_a": [
+                    "composition_estimate": "Other",
+                    "dimensionality": "3D",
+                    "ions_a_site": [
                         {
-                            "name": "MA",
-                            "coefficient": 1.0
+                            "abbreviation": "MA",
+                            "coefficient": "1"
                         }
                     ],
-                    "ion_b": [
+                    "ions_b_site": [
                         {
-                            "name": "Pb",
-                            "coefficient": 1.0
+                            "abbreviation": "Pb",
+                            "coefficient": "1"
                         }
                     ],
-                    "ion_c": [
+                    "ions_x_site": [
                         {
-                            "name": "Br",
-                            "coefficient": 0.17
+                            "abbreviation": "Br",
+                            "coefficient": "0.17"
                         },
                         {
-                            "name": "I",
-                            "coefficient": 2.83
+                            "abbreviation": "I",
+                            "coefficient": "2.83"
                         }
                     ]
                 }
@@ -434,34 +406,32 @@
                 "functionality": "ETL",
                 "origin": "Lab made",
                 "supplier": "Solenne",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
-                            "procedure": "Spin-coating",
-                            "aggregation_state_of_reactants": "Liquid",
-                            "reactant": [
-                                {
-                                    "name": "PCBM-60",
-                                    "supplier": "Solenne",
-                                    "concentration": "20.0",
-                                    "volume": 0.03
-                                }
-                            ],
-                            "solvent": [
-                                {
-                                    "name": "Chlorobenzene"
-                                }
-                            ]
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
-                            "duration": 60.0,
-                            "procedure": "Thermal annealing",
-                            "temperature": 373.15
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
+                        "procedure": "Spin-coating",
+                        "aggregation_state_of_reactants": "Liquid",
+                        "reactants": [
+                            {
+                                "name": "PCBM-60",
+                                "supplier": "Solenne",
+                                "mass_concentration": 20.000000000000004,
+                                "volume": 0.03
+                            }
+                        ],
+                        "solvent": [
+                            {
+                                "name": "Chlorobenzene"
+                            }
+                        ]
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
+                        "procedure": "Thermal annealing",
+                        "temperature": 373.15,
+                        "duration": 60.0
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -469,42 +439,39 @@
                 "functionality": "ETL",
                 "origin": "Lab made",
                 "supplier": "Sigma-Aldrich",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
-                            "procedure": "Spin-coating",
-                            "aggregation_state_of_reactants": "Liquid",
-                            "reactant": [
-                                {
-                                    "name": "ZnO-np",
-                                    "supplier": "Sigma-Aldrich",
-                                    "concentration": "2.7 wt%",
-                                    "volume": 0.03
-                                }
-                            ],
-                            "solvent": [
-                                {
-                                    "name": "IPA"
-                                }
-                            ]
-                        },
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
-                            "duration": 1.0,
-                            "procedure": "Thermal annealing",
-                            "temperature": 373.15
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis",
+                        "procedure": "Spin-coating",
+                        "aggregation_state_of_reactants": "Liquid",
+                        "reactants": [
+                            {
+                                "name": "ZnO-np",
+                                "supplier": "Sigma-Aldrich",
+                                "mass_fraction": 2.7,
+                                "volume": 0.03
+                            }
+                        ],
+                        "solvent": [
+                            {
+                                "name": "IPA"
+                            }
+                        ]
+                    },
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.ThermalAnnealing",
+                        "procedure": "Thermal annealing",
+                        "temperature": 373.15,
+                        "duration": 1.0
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
                 "name": "AZO",
                 "functionality": "Front contact",
                 "thickness": 50.0,
-                "origin": "Lab made",
-                "synthesis": {}
+                "origin": "Lab made"
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -512,15 +479,13 @@
                 "functionality": "Front contact",
                 "thickness": 4000.0,
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "E-beam evaporation",
-                            "aggregation_state_of_reactants": "Gas"
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "E-beam evaporation",
+                        "aggregation_state_of_reactants": "Gas"
+                    }
+                ]
             },
             {
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer",
@@ -528,14 +493,12 @@
                 "functionality": "Anti reflective coating",
                 "thickness": 105.0,
                 "origin": "Lab made",
-                "synthesis": {
-                    "steps": [
-                        {
-                            "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
-                            "procedure": "E-beam evaporation"
-                        }
-                    ]
-                }
+                "synthesis": [
+                    {
+                        "m_def": "perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis",
+                        "procedure": "E-beam evaporation"
+                    }
+                ]
             }
         ],
         "measurements": {
