@@ -39,7 +39,6 @@ from perovskite_solar_cell_database.schema_packages.tandem.schema import (
 from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     ChalcopyriteAlkaliMetalDoping,
     ChalcopyriteLayer,
-    Cleaning,
     CleaningStep,
     GasPhaseSynthesis,
     General,
@@ -59,7 +58,6 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     SubCell,
     Substance,
     Substrate,
-    Synthesis,
     SynthesisStep,
     ThermalAnnealing,
 )
@@ -67,6 +65,16 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
     from structlog.stdlib import BoundLogger
+
+
+ureg = UnitRegistry()
+ureg.define('% = 0.01 * [] = percent')
+ureg.define('wt% = 0.01* [] = weight_percent')
+ureg.define('vol% = 0.01* [] = volume_percent')
+
+unit_pattern = re.compile(
+    r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
+)  # Matches ".9kg", "10mA", "1.5 kg", "2 cm^2/(V*s)", "1e-6 m" etc.
 
 
 class TandemParser(MatchingParser):
@@ -183,7 +191,8 @@ gas_phase_processes = [
 
 def cleanup_dataframe(data_frame):
     """
-    Cleans the data frame by setting proper Boolean values and removing rows with all NaN values.
+    Cleans the data frame by setting proper Boolean values and
+    removing rows with all NaN values. Returns the cleaned data frame.
     """
     bool_mask = data_frame.index.str.contains(r'\[TRUE/FALSE\]')
     data_frame.loc[bool_mask] = data_frame.loc[bool_mask].replace(
@@ -252,8 +261,6 @@ def convert_value(value, unit=None):  # noqa: PLR0911
     Returns the original string if conversion is not possible.
     """
 
-    ureg = UnitRegistry()
-
     if unit and isinstance(value, (int, float)) and not isinstance(value, bool):
         return ureg.Quantity(value, unit)
 
@@ -278,9 +285,6 @@ def convert_value(value, unit=None):  # noqa: PLR0911
             pass
 
         # Check for unit values
-        unit_pattern = re.compile(
-            r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
-        )  # Matches ".9kg", "10mA", "1.5 kg", "2 cm^2/(V*s)", "1e-6 m" etc.
         if unit_pattern.match(value):
             try:
                 quantity = ureg.Quantity(value)
@@ -322,9 +326,41 @@ def exact_get(data, label, default=None, default_unit=None):
         return default
 
 
+def handle_concentration(concentration):
+    """
+    Converts the concentration string to a Quantity object and returns a dictionary with the appropriate concentration type.
+    """
+
+    result_dict = {}
+
+    if isinstance(concentration, str):
+        concentration = concentration.replace('wt%', 'weight_percent')
+        concentration = concentration.replace('vol%', 'volume_percent')
+        concentration = concentration.replace('%', 'percent')
+        concentration = concentration.replace('dm3', 'liter')
+        concentration = concentration.replace('cm3', 'ml')
+        concentration = convert_value(concentration)
+    if isinstance(concentration, ureg.Quantity):
+        if concentration.dimensionality == '[mass]/[length]**3':
+            result_dict['mass_concentration'] = concentration.to('g/l')
+        elif concentration.dimensionality == '[substance]/[length]**3':
+            result_dict['molar_concentration'] = concentration.to('mol/l')
+        elif str(concentration.dimensionality) == str(
+            ureg.dimensionless.dimensionality
+        ):
+            if 'gram' in str(concentration.units) or 'wt%' == str(concentration.units):
+                result_dict['mass_fraction'] = concentration.to('g/g')
+            elif 'liter' in str(concentration.units) or 'vol%' == str(
+                concentration.units
+            ):
+                result_dict['volume_fraction'] = concentration.to('l/l')
+
+    return result_dict
+
+
 def extract_cleaning(data_frame):
     """
-    Extracts the cleaning steps from the data subframe.
+    Extracts the cleaning steps from the data subframe and returns a list of CleaningStep objects.
     """
 
     df_cleaning = data_frame[data_frame.index.str.contains('Cleaning')]
@@ -338,102 +374,107 @@ def extract_cleaning(data_frame):
             cleaning_steps.append(
                 CleaningStep(name=partial_get(df_cleaning[syn_step], 'procedure'))
             )
-        return Cleaning(steps=cleaning_steps)
+        return cleaning_steps
 
 
 def extract_additives(data_frame):
     """
-    Extracts the additives from the data subframe.
+    Extracts the additives from the data subframe and returns a list of Substance objects.
     """
-    additives = []
     df_temp = data_frame[data_frame.index.str.contains('Additives.')]
-    if not df_temp.empty:
-        df_components = split_data(df_temp, delimiter=';')
-        for component in df_components.columns:
-            additives_properties = {
-                'name': partial_get(df_components[component], 'Additives. Compounds'),
-                'concentration': partial_get(
-                    df_components[component], 'Additives. Concentrations'
-                ),
-            }
-            additives.append(Substance(**additives_properties))
-    if len(additives) == 0:
+    if df_temp.empty:
         return None
-    else:
-        return additives
+
+    additives = []
+    df_components = split_data(df_temp, delimiter=';')
+    for component in df_components.columns:
+        concentration = partial_get(
+            df_components[component], 'Additives. Concentrations'
+        )
+        additives.append(
+            Substance(
+                name=partial_get(df_components[component], 'Additives. Compounds'),
+                **handle_concentration(concentration),
+            )
+        )
+
+    return additives if len(additives) > 0 else None
 
 
 def extract_solvents(data_frame):
     """
-    Extracts the solvents from the data subframe.
+    Extracts the solvents from the data subframe and returns a list of Solvent objects.
     """
-    solvents = []
     df_temp = data_frame[data_frame.index.str.contains('Solvents')]
-    if not df_temp.empty:
-        df_components = split_data(df_temp, delimiter=';')
-        for component in df_components.columns:
-            solvent_properties = {
-                'name': partial_get(df_components[component], 'Solvents '),
-                'mixing_ratio': partial_get(df_components[component], 'Mixing ratio'),
-                'supplier': partial_get(df_components[component], 'Solvents. Supplier'),
-                'purity': partial_get(df_components[component], 'Solvents. Purity'),
-            }
-            solvents.append(Solvent(**solvent_properties))
-    if len(solvents) == 0:
+    if df_temp.empty:
         return None
-    else:
-        return solvents
+
+    solvents = []
+    df_components = split_data(df_temp, delimiter=';')
+    for component in df_components.columns:
+        solvent_properties = {
+            'name': partial_get(df_components[component], 'Solvents '),
+            'mixing_ratio': partial_get(df_components[component], 'Mixing ratio'),
+            'supplier': partial_get(df_components[component], 'Solvents. Supplier'),
+            'purity': partial_get(df_components[component], 'Solvents. Purity'),
+        }
+        solvents.append(Solvent(**solvent_properties))
+
+    return solvents if len(solvents) > 0 else None
 
 
 def extract_reactants(data_frame):
     """
-    Extracts the reactants from the data subframe.
+    Extracts the reactants from the data subframe and returns a list of ReactionComponent objects.
     """
-    reactants = []
     df_temp = data_frame[data_frame.index.str.contains('Reaction solutions.')]
     if df_temp.empty:
         return None
-    else:
-        df_components = split_data(df_temp, delimiter=';')
-        for component in df_components.columns:
-            reactant_properties = {
-                'name': partial_get(
-                    df_components[component], 'Reaction solutions. Compounds '
-                ),
-                'supplier': partial_get(
-                    df_components[component], 'Reaction solutions. Compounds. Supplier'
-                ),
-                'purity': partial_get(
-                    df_components[component], 'Reaction solutions. Compounds. Purity'
-                ),
-                'concentration': partial_get(
-                    df_components[component], 'Reaction solutions. Concentrations'
-                ),
-                'volume': partial_get(
-                    df_components[component],
-                    'Reaction solutions. Volumes',
-                    default_unit='ml',
-                ),
-                'age': partial_get(
-                    df_components[component],
-                    'Reaction solutions. Age',
-                    default_unit='hour',
-                ),
-                'temperature': partial_get(
-                    df_components[component],
-                    'Reaction solutions. Temperature',
-                    default_unit='celsius',
-                ),
-            }
 
-            reactants.append(ReactionComponent(**reactant_properties))
+    reactants = []
+    df_components = split_data(df_temp, delimiter=';')
+    for component in df_components.columns:
+        properties = {
+            'name': partial_get(
+                df_components[component], 'Reaction solutions. Compounds '
+            ),
+            'supplier': partial_get(
+                df_components[component], 'Reaction solutions. Compounds. Supplier'
+            ),
+            'purity': partial_get(
+                df_components[component], 'Reaction solutions. Compounds. Purity'
+            ),
+            'volume': partial_get(
+                df_components[component],
+                'Reaction solutions. Volumes',
+                default_unit='ml',
+            ),
+            'age': partial_get(
+                df_components[component],
+                'Reaction solutions. Age',
+                default_unit='hour',
+            ),
+            'temperature': partial_get(
+                df_components[component],
+                'Reaction solutions. Temperature',
+                default_unit='celsius',
+            ),
+        }
+        # Handle destinction between mg/ml, mol/l, and wt%
+        concentration = partial_get(
+            df_components[component], 'Reaction solutions. Concentrations'
+        )
+        if concentration:
+            properties.update(handle_concentration(concentration))
+
+        reactants.append(ReactionComponent(**properties))
 
     return reactants if len(reactants) > 0 else None
 
 
 def extract_quenching_solvents(data_frame):
     """
-    Extracts the quenching solvents from the data subframe.
+    Extracts the quenching solvents from the data subframe and returns a list of QuenchingSolvent objects.
     """
     quenching_solvents = []
     df_temp = data_frame[data_frame.index.str.contains('Quenching media')]
@@ -466,11 +507,45 @@ def extract_quenching_solvents(data_frame):
 
 def extract_perovskite_composition(data_frame):
     """
-    Extracts the composition from the data subframe.
+    Extracts the composition from the data subframe and returns a PerovskiteCompositionSection object.
     """
+
+    df_temp = data_frame[data_frame.index.str.contains('Perovskite. Dimension')]
+    if not df_temp.empty:
+        if partial_get(df_temp, 'Dimension. 0D'):
+            dimensionality = '0D'
+        elif partial_get(df_temp, 'Dimension. 2D \['):
+            dimensionality = '2D'
+        elif partial_get(df_temp, 'Dimension. 2D/3D'):
+            dimensionality = '2D/3D'
+        elif partial_get(df_temp, 'Dimension. 3D \['):
+            dimensionality = '3D'
+        else:
+            dimensionality = 'Other'
+
     ions_a, ions_b, ions_c = [], [], []
     df_temp = data_frame[data_frame.index.str.contains('Perovskite. Composition')]
     if not df_temp.empty:
+        assumption = partial_get(df_temp, 'Assumption')
+        if assumption:
+            assumption = assumption.lower()
+            if 'solution' in assumption:
+                composition_estimate = 'Estimated from precursor solutions'
+            elif 'literature' in assumption:
+                composition_estimate = 'Literature value'
+            elif 'xrd' in assumption:
+                composition_estimate = 'Estimated from XRD data'
+            elif 'spectroscop' in assumption:
+                composition_estimate = 'Estimated from spectroscopic data'
+            elif 'simulation' in assumption:
+                composition_estimate = 'Theoretical simulation'
+            elif 'hypothetical' in assumption:
+                composition_estimate = 'Hypothetical compound'
+            else:
+                composition_estimate = 'Other'
+        else:
+            composition_estimate = 'Other'
+
         df_components = split_data(
             df_temp[df_temp.index.str.contains('A-ions')], delimiter=';'
         )
@@ -508,13 +583,17 @@ def extract_perovskite_composition(data_frame):
                     )
                 )
     return PerovskiteCompositionSection(
-        ions_a_site=ions_a, ions_b_site=ions_b, ions_x_site=ions_c
+        ions_a_site=ions_a,
+        ions_b_site=ions_b,
+        ions_x_site=ions_c,
+        dimensionality=dimensionality,
+        composition_estimate=composition_estimate,
     )
 
 
 def extract_chalcopyrite_composition(data_frame):
     """
-    Extracts the composition from the data subframe.
+    Extracts the composition from the data subframe and returns a list of Ion objects.
     """
     composition = []
     df_temp = data_frame[data_frame.index.str.contains('Chalcopyrite. Composition')]
@@ -537,7 +616,8 @@ def extract_chalcopyrite_composition(data_frame):
 
 def extract_alkali_doping(data_frame):
     """
-    Extracts the alkali doping from the data subframe.
+    Extracts the alkali doping from the data subframe and
+    returns a list of ChalcopyriteAlkaliMetalDoping objects.
     """
     alkali_doping = []
     df_temp = data_frame[data_frame.index.str.contains('lkali')]
@@ -557,7 +637,8 @@ def extract_alkali_doping(data_frame):
 
 def extract_annealing(data_frame):
     """
-    Extracts the annealing conditions from the data subframe.
+    Extracts the annealing conditions from the data subframe and
+    returns a list of ThermalAnnealing objects.
     """
     df_temp = data_frame[data_frame.index.str.contains('Thermal annealing.')]
 
@@ -585,7 +666,8 @@ def extract_annealing(data_frame):
 
 def extract_storage(data_frame):
     """
-    Extracts the storage condition from the dataframe.
+    Extracts the storage condition from the dataframe and
+    returns a Storage object.
     """
 
     df_temp = data_frame[data_frame.index.str.contains('Storage. ')]
@@ -606,7 +688,8 @@ def extract_storage(data_frame):
 
 def extract_reference(data_frame):
     """
-    Extracts the reference from the data subframe.
+    Extracts the reference from the data subframe and
+    returns a Reference object.
     """
 
     df_temp = data_frame[data_frame.index.str.contains('Ref. ')]
@@ -626,7 +709,8 @@ def extract_reference(data_frame):
 
 def extract_general(data_frame):
     """
-    Extracts the general information from the data subframe.
+    Extracts the general information from the data subframe and
+    returns a General object.
     """
     # TODO: Can this used as quality check?
     df_temp = data_frame[data_frame.index.str.contains('Tandem.')]
@@ -776,7 +860,7 @@ def extract_layer_stack(data_frame):
                         LiquidSynthesis(
                             **process_conditions,
                             solvent=extract_solvents(df_process),
-                            reactant=extract_reactants(df_process),
+                            reactants=extract_reactants(df_process),
                             quenching_solvent=extract_quenching_solvents(df_process),
                         )
                     )
@@ -786,7 +870,7 @@ def extract_layer_stack(data_frame):
                     synthesis_steps.append(
                         GasPhaseSynthesis(
                             **process_conditions,
-                            reactant=extract_reactants(df_process),
+                            reactants=extract_reactants(df_process),
                         )
                     )
 
@@ -805,7 +889,7 @@ def extract_layer_stack(data_frame):
                         Substrate(
                             **sublayer_properties,
                             cleaning=cleaning,
-                            synthesis=Synthesis(steps=synthesis_steps),
+                            synthesis=synthesis_steps,
                             storage=storage,
                         )
                     )
@@ -814,7 +898,7 @@ def extract_layer_stack(data_frame):
                         NonAbsorbingLayer(
                             **sublayer_properties,
                             cleaning=cleaning,
-                            synthesis=Synthesis(steps=synthesis_steps),
+                            synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
                         )
@@ -840,28 +924,13 @@ def extract_layer_stack(data_frame):
                         'lead_free': partial_get(df_sublayer, 'Lead free'),
                     }
 
-                    dimension = next(
-                        (
-                            idx
-                            for idx in df_sublayer.index
-                            if 'Dimension. ' in idx
-                            and 'Dimension. List of layers' not in idx
-                            and df_layer[idx]
-                        ),
-                        None,
-                    )
-                    if dimension:
-                        perovskite_properties['dimension'] = dimension.split(
-                            'Dimension. '
-                        )[1].split(' [')[0]
-
                     layer_stack.append(
                         PerovskiteLayer(
                             **sublayer_properties,
                             **perovskite_properties,
                             composition=extract_perovskite_composition(df_sublayer),
                             cleaning=cleaning,
-                            synthesis=Synthesis(steps=synthesis_steps),
+                            synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
                         )
@@ -879,7 +948,7 @@ def extract_layer_stack(data_frame):
                             **silicon_properties,
                             perovskite_inspired=None,
                             cleaning=cleaning,
-                            synthesis=Synthesis(steps=synthesis_steps),
+                            synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
                         )
@@ -892,7 +961,7 @@ def extract_layer_stack(data_frame):
                             alkali_metal_doping=extract_alkali_doping(df_sublayer),
                             perovskite_inspired=None,
                             cleaning=cleaning,
-                            synthesis=Synthesis(steps=synthesis_steps),
+                            synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
                         )
@@ -903,7 +972,7 @@ def extract_layer_stack(data_frame):
                             **sublayer_properties,
                             perovskite_inspired=None,
                             cleaning=cleaning,
-                            synthesis=Synthesis(steps=synthesis_steps),
+                            synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
                         )
