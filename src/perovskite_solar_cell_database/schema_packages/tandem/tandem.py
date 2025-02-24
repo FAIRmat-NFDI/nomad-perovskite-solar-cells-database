@@ -152,15 +152,7 @@ class QuenchingSolvent(Solvent):
     A section describing a quenching solvent.
     """
 
-    # TODO: Check if this is correct
-    additive_name = Quantity(
-        type=str,
-        description='The name of the additive.',
-    )
-    additive_concentration = Quantity(
-        type=float,
-        description='The concentration of the additive.',
-    )
+    additives = SubSection(section_def=Substance, repeats=True)
 
 
 # Processing and deposition methods
@@ -205,12 +197,11 @@ class SynthesisStep(ProcessStep):
     More specific synthesis steps are inherited from this class.
     """
 
-    m_def = Section(label_quantity='procedure')
+    m_def = Section()
 
     # General
-    procedure = Quantity(
+    name = Quantity(
         type=str,
-        default='Unknown',
         description='Name of the the synthesis step',
     )
 
@@ -260,12 +251,20 @@ class SynthesisStep(ProcessStep):
     )
 
 
-class CleaningStep(ProcessStep):
+class Cleaning(ProcessStep):
     """
-    A cleaning procedure step.
+    A cleaning procedure as a synthesis step.
     """
 
-    pass
+    steps = Quantity(
+        type=str,
+        description='The steps in the cleaning procedure',
+        shape=['*'],
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.name = 'Cleaning'
 
 
 class ThermalAnnealing(SynthesisStep):
@@ -285,6 +284,10 @@ class ThermalAnnealing(SynthesisStep):
         a_eln=ELNAnnotation(defaultDisplayUnit='minute'),
         description='The duration of the thermal annealing step',
     )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.name = 'Thermal Annealing'
 
 
 class LiquidSynthesis(SynthesisStep):
@@ -383,8 +386,7 @@ class Layer(ArchiveSection):
         type=str,
         description='The specific brand name of a commercially purchased layer',
     )
-    cleaning = SubSection(section_def=CleaningStep, repeats=True)
-    synthesis = SubSection(section_def=SynthesisStep, repeats=True)
+    synthesis = SubSection(section_def=ProcessStep, repeats=True)
 
     # Storage
     storage = SubSection(section_def=Storage)
