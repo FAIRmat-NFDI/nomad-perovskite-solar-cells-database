@@ -39,7 +39,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.schema import (
 from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     ChalcopyriteAlkaliMetalDoping,
     ChalcopyriteLayer,
-    CleaningStep,
+    Cleaning,
     GasPhaseSynthesis,
     General,
     Ion,
@@ -257,8 +257,11 @@ def split_data(data, delimiter='|'):
 
 def convert_value(value, unit=None):  # noqa: PLR0911
     """
-    Attempts to convert the string value to its appropriate type (int, float, bool).
-    Returns the original string if conversion is not possible.
+    Tries to convert the value to a Quantity object using the specified unit.
+
+    Parameters:
+    value (int, float, str): The value to be converted. Can be an integer, float, or string.
+    unit (str, optional): The unit to convert the value to. Defaults to None.
     """
 
     if unit and isinstance(value, (int, float)) and not isinstance(value, bool):
@@ -295,33 +298,58 @@ def convert_value(value, unit=None):  # noqa: PLR0911
     return value
 
 
-def partial_get(data, label, default=None, default_unit=None):
+def partial_get(data, label, default=None, convert=False, unit=None):
     """
-    Extracts the first entry from a DataFrame or Series whose index partially matches a label.
+    Retrieve a value from a DataFrame or Series based on a partial match of the label.
+
+    Parameters:
+    data (pd.DataFrame or pd.Series): The data source to search within.
+    label (str): The label to partially match against the index of the data.
+    default (any, optional): The default value to return if no match is found. Defaults to None.
+    convert (bool, optional): Whether to convert the retrieved value using the specified unit. Defaults to False.
+    unit (str, optional): The unit to use for conversion if convert is True. Defaults to None.
+
+    Returns:
+    any: The matched value from the data, converted if specified, or the default value if no match is found.
     """
+
     df_matched = data[data.index.str.contains(label)]
     if df_matched.empty:
         return default
+
+    if isinstance(data, pd.DataFrame):
+        value = df_matched.iloc[0, 0]
+    elif isinstance(data, pd.Series):
+        value = df_matched.iloc[0]
     else:
-        if isinstance(data, pd.DataFrame):
-            value = df_matched.iloc[0, 0]
-        elif isinstance(data, pd.Series):
-            value = df_matched.iloc[0]
-        else:
-            return default
-        return convert_value(value, default_unit)
+        return default
+
+    if convert or unit:
+        return convert_value(value, unit)
+    else:
+        return value.strip() if isinstance(value, str) else value
 
 
-def exact_get(data, label, default=None, default_unit=None):
+def exact_get(data, label, default=None, convert=False, unit=None):
     """
-    Extracts the first entry from a DataFrame or Series whose index exactly matches a label.
+    Retrieve a value from a DataFrame or Series based on an exact match of the label.
+
+    Parameters:
+    data (pd.DataFrame or pd.Series): The data source to search within.
+    label (str): The label to match against the index of the data.
+    default (any, optional): The default value to return if no match is found. Defaults to None.
+    convert (bool, optional): Whether to convert the retrieved value using the specified unit. Defaults to False.
+    unit (str, optional): The unit to use for conversion if convert is True. Defaults to None.
+
+    Returns:
+    any: The matched value from the data, converted if specified, or the default value if no match is found.
     """
     if label in data.index:
         if isinstance(data, pd.DataFrame):
             value = data.loc[label, data.columns[0]]
         elif isinstance(data, pd.Series):
             value = data.loc[label]
-        return convert_value(value, default_unit)
+        return convert_value(value, unit) if convert or unit else value
     else:
         return default
 
@@ -371,10 +399,8 @@ def extract_cleaning(data_frame):
         df_cleaning = split_data(df_cleaning, delimiter='>>')
         cleaning_steps = []
         for syn_step in df_cleaning.columns:
-            cleaning_steps.append(
-                CleaningStep(name=partial_get(df_cleaning[syn_step], 'procedure'))
-            )
-        return cleaning_steps
+            cleaning_steps.append(partial_get(df_cleaning[syn_step], 'procedure'))
+        return Cleaning(steps=cleaning_steps)
 
 
 def extract_additives(data_frame):
@@ -414,7 +440,9 @@ def extract_solvents(data_frame):
     for component in df_components.columns:
         solvent_properties = {
             'name': partial_get(df_components[component], 'Solvents '),
-            'mixing_ratio': partial_get(df_components[component], 'Mixing ratio'),
+            'mixing_ratio': partial_get(
+                df_components[component], 'Mixing ratio', convert=True
+            ),
             'supplier': partial_get(df_components[component], 'Solvents. Supplier'),
             'purity': partial_get(df_components[component], 'Solvents. Purity'),
         }
@@ -447,17 +475,17 @@ def extract_reactants(data_frame):
             'volume': partial_get(
                 df_components[component],
                 'Reaction solutions. Volumes',
-                default_unit='ml',
+                unit='ml',
             ),
             'age': partial_get(
                 df_components[component],
                 'Reaction solutions. Age',
-                default_unit='hour',
+                unit='hour',
             ),
             'temperature': partial_get(
                 df_components[component],
                 'Reaction solutions. Temperature',
-                default_unit='celsius',
+                unit='celsius',
             ),
         }
         # Handle destinction between mg/ml, mol/l, and wt%
@@ -476,33 +504,37 @@ def extract_quenching_solvents(data_frame):
     """
     Extracts the quenching solvents from the data subframe and returns a list of QuenchingSolvent objects.
     """
-    quenching_solvents = []
     df_temp = data_frame[data_frame.index.str.contains('Quenching media')]
-    if not df_temp.empty:
-        df_components = split_data(df_temp, delimiter=';')
-        for component in df_components.columns:
-            solvent_properties = {
-                'name': partial_get(df_components[component], 'Quenching media '),
-                'mixing_ratio': partial_get(
-                    df_components[component], 'Mixing media. Mixing ratios'
-                ),
-                'volume': partial_get(
-                    df_components[component], 'Quenching media. Volume'
-                ),
-                'additive_name': partial_get(
-                    df_components[component], 'Quenching media. Additives'
-                ),
-                'additive_concentration': partial_get(
-                    df_components[component],
-                    'Quenching media. Additives. Concentrations',
-                ),
-            }
-            quenching_solvents.append(QuenchingSolvent(**solvent_properties))
-
-    if len(quenching_solvents) == 0:
+    if df_temp.empty:
         return None
-    else:
-        return quenching_solvents
+
+    quenching_solvents = []
+
+    df_components = split_data(df_temp, delimiter=';')
+    for component in df_components.columns:
+        solvent_properties = {
+            'name': partial_get(df_components[component], 'Quenching media '),
+            'mixing_ratio': partial_get(
+                df_components[component], 'Mixing media. Mixing ratios', convert=True
+            ),
+            'volume': partial_get(
+                df_components[component], 'Quenching media. Volume', unit='microliter'
+            ),
+        }
+
+        # partial_get(
+        #     df_components[component], 'Quenching media. Additives'
+        # ),
+        ### >>>
+        # Handle destinction between mg/ml, mol/l, and wt%
+        # concentration = partial_get(
+        #     df_components[component], 'Quenching media. Additives. Concentrations',
+        # ),
+        # if concentration:
+        #     solvent_properties.update(handle_concentration(concentration))
+        quenching_solvents.append(QuenchingSolvent(**solvent_properties))
+
+    return quenching_solvents if len(quenching_solvents) > 0 else None
 
 
 def extract_perovskite_composition(data_frame):
@@ -526,20 +558,20 @@ def extract_perovskite_composition(data_frame):
     ions_a, ions_b, ions_c = [], [], []
     df_temp = data_frame[data_frame.index.str.contains('Perovskite. Composition')]
     if not df_temp.empty:
-        assumption = partial_get(df_temp, 'Assumption')
-        if assumption:
-            assumption = assumption.lower()
-            if 'solution' in assumption:
+        estimate_string = partial_get(df_temp, 'Assumption')
+        if estimate_string:
+            estimate_string = estimate_string.lower()
+            if 'solution' in estimate_string:
                 composition_estimate = 'Estimated from precursor solutions'
-            elif 'literature' in assumption:
+            elif 'literature' in estimate_string:
                 composition_estimate = 'Literature value'
-            elif 'xrd' in assumption:
+            elif 'xrd' in estimate_string:
                 composition_estimate = 'Estimated from XRD data'
-            elif 'spectroscop' in assumption:
+            elif 'spectroscop' in estimate_string:
                 composition_estimate = 'Estimated from spectroscopic data'
-            elif 'simulation' in assumption:
+            elif 'simulation' in estimate_string:
                 composition_estimate = 'Theoretical simulation'
-            elif 'hypothetical' in assumption:
+            elif 'hypothetical' in estimate_string:
                 composition_estimate = 'Hypothetical compound'
             else:
                 composition_estimate = 'Other'
@@ -551,7 +583,9 @@ def extract_perovskite_composition(data_frame):
         )
         for component in df_components.columns:
             abbreviation = partial_get(df_components[component], '-ions ')
-            coefficient = partial_get(df_components[component], '-ions. Coefficients ')
+            coefficient = partial_get(
+                df_components[component], '-ions. Coefficients ', convert=True
+            )
             if type:
                 ions_a.append(
                     PerovskiteAIonComponent(
@@ -563,7 +597,9 @@ def extract_perovskite_composition(data_frame):
         )
         for component in df_components.columns:
             abbreviation = partial_get(df_components[component], '-ions ')
-            coefficient = partial_get(df_components[component], '-ions. Coefficients ')
+            coefficient = partial_get(
+                df_components[component], '-ions. Coefficients ', convert=True
+            )
             if type:
                 ions_b.append(
                     PerovskiteBIonComponent(
@@ -575,7 +611,9 @@ def extract_perovskite_composition(data_frame):
         )
         for component in df_components.columns:
             abbreviation = partial_get(df_components[component], '-ions ')
-            coefficient = partial_get(df_components[component], '-ions. Coefficients ')
+            coefficient = partial_get(
+                df_components[component], '-ions. Coefficients ', convert=True
+            )
             if type:
                 ions_c.append(
                     PerovskiteXIonComponent(
@@ -606,6 +644,7 @@ def extract_chalcopyrite_composition(data_frame):
             coefficient = partial_get(
                 df_components[component],
                 'Chalcopyrite. Composition. Ions. Coefficients',
+                convert=True,
             )
             composition.append(Ion(name=name, coefficient=coefficient))
     if len(composition) == 0:
@@ -619,20 +658,18 @@ def extract_alkali_doping(data_frame):
     Extracts the alkali doping from the data subframe and
     returns a list of ChalcopyriteAlkaliMetalDoping objects.
     """
-    alkali_doping = []
     df_temp = data_frame[data_frame.index.str.contains('lkali')]
-    if not df_temp.empty:
-        df_components = split_data(df_temp, delimiter=';')
-        for component in df_components.columns:
-            name = partial_get(df_components[component], 'Alkali metal doping')
-            source = partial_get(df_components[component], 'Sources of alkali doping')
-            alkali_doping.append(
-                ChalcopyriteAlkaliMetalDoping(name=name, source=source)
-            )
-    if len(alkali_doping) == 0:
+    if df_temp.empty:
         return None
-    else:
-        return alkali_doping
+
+    alkali_doping = []
+    df_components = split_data(df_temp, delimiter=';')
+    for component in df_components.columns:
+        name = partial_get(df_components[component], 'Alkali metal doping')
+        source = partial_get(df_components[component], 'Sources of alkali doping')
+        alkali_doping.append(ChalcopyriteAlkaliMetalDoping(name=name, source=source))
+
+    return alkali_doping if len(alkali_doping) > 0 else None
 
 
 def extract_annealing(data_frame):
@@ -641,27 +678,24 @@ def extract_annealing(data_frame):
     returns a list of ThermalAnnealing objects.
     """
     df_temp = data_frame[data_frame.index.str.contains('Thermal annealing.')]
-
     if df_temp.empty:
         return None
-    else:
-        annealing = []
-        df_temp = split_data(df_temp, delimiter=';')
-        for column in df_temp.columns:
-            atmosphere = partial_get(df_temp[column], 'Atmosphere')
-            annealing_conditions = {
-                'procedure': 'Thermal annealing',
-                'temperature': partial_get(
-                    df_temp[column], 'Temperature', default_unit='celsius'
-                ),
-                'duration': partial_get(df_temp[column], 'Time', default_unit='minute'),
-                'atmosphere': atmosphere
-                if atmosphere in ThermalAnnealing.atmosphere.type
-                else None,
-            }
-            if annealing_conditions['temperature'] is not None:
-                annealing.append(ThermalAnnealing(**annealing_conditions))
-        return annealing
+
+    annealing = []
+    df_temp = split_data(df_temp, delimiter=';')
+    for column in df_temp.columns:
+        atmosphere = partial_get(df_temp[column], 'Atmosphere')
+        annealing_conditions = {
+            'temperature': partial_get(df_temp[column], 'Temperature', unit='celsius'),
+            'duration': partial_get(df_temp[column], 'Time', unit='minute'),
+            'atmosphere': atmosphere
+            if atmosphere in ThermalAnnealing.atmosphere.type
+            else None,
+        }
+        if annealing_conditions['temperature'] is not None:
+            annealing.append(ThermalAnnealing(**annealing_conditions))
+
+    return annealing if len(annealing) > 0 else None
 
 
 def extract_storage(data_frame):
@@ -669,21 +703,18 @@ def extract_storage(data_frame):
     Extracts the storage condition from the dataframe and
     returns a Storage object.
     """
-
     df_temp = data_frame[data_frame.index.str.contains('Storage. ')]
     if df_temp.empty:
         return None
-    else:
-        atmosphere = partial_get(df_temp, 'Atmosphere')
-        humidity = partial_get(df_temp, 'Relative humidity')
-        storage_conditions = {
-            'atmosphere': atmosphere if atmosphere in Storage.atmosphere.type else None,
-            'time_until_next_step': partial_get(
-                df_temp, 'Time until', default_unit='hour'
-            ),
-            'humidity_relative': round(humidity / 100, 5) if humidity else None,
-        }
-        return Storage(**storage_conditions)
+
+    atmosphere = partial_get(df_temp, 'Atmosphere')
+    humidity = partial_get(df_temp, 'Relative humidity', convert=True)
+    storage_conditions = {
+        'atmosphere': atmosphere if atmosphere in Storage.atmosphere.type else None,
+        'time_until_next_step': partial_get(df_temp, 'Time until', unit='hour'),
+        'humidity_relative': round(humidity / 100, 5) if humidity else None,
+    }
+    return Storage(**storage_conditions)
 
 
 def extract_reference(data_frame):
@@ -720,13 +751,17 @@ def extract_general(data_frame):
         'architecture': architecture
         if architecture in General.architecture.type
         else None,
-        'number_of_terminals': partial_get(df_temp, 'Tandem. Number of terminals'),
-        'number_of_junctions': partial_get(df_temp, 'Tandem. Number of junctions'),
-        'number_of_cells': partial_get(df_temp, 'Tandem. Number of cells'),
-        'area': partial_get(df_temp, 'Tandem. Area. Total', default_unit='cm^2'),
-        'area_measured': partial_get(
-            df_temp, 'Tandem. Area. Measured', default_unit='cm^2'
+        'number_of_terminals': partial_get(
+            df_temp, 'Tandem. Number of terminals', convert=True
         ),
+        'number_of_junctions': partial_get(
+            df_temp, 'Tandem. Number of junctions', convert=True
+        ),
+        'number_of_cells': partial_get(
+            df_temp, 'Tandem. Number of cells', convert=True
+        ),
+        'area': partial_get(df_temp, 'Tandem. Area. Total', unit='cm^2'),
+        'area_measured': partial_get(df_temp, 'Tandem. Area. Measured', unit='cm^2'),
         'flexibility': partial_get(df_temp, 'Tandem. Flexible'),
         'semitransparent': partial_get(df_temp, 'Tandem. Semitransparent'),
         'contains_textured_layers': partial_get(df_temp, 'Textured layers'),
@@ -744,7 +779,9 @@ def extract_general(data_frame):
         if absorber in General.photoabsorber.type:
             absorbers.append(absorber)
             bandgaps.append(
-                partial_get(df_absorber[column], 'Photoabsorbers. Band gaps')
+                partial_get(
+                    df_absorber[column], 'Photoabsorbers. Band gaps', convert=True
+                )
             )
 
     subcells = []
@@ -753,9 +790,11 @@ def extract_general(data_frame):
     )
     for column in df_subcells.columns:
         subcell_data = {
-            'area': partial_get(df_subcells[column], 'Area', default_unit='cm^2'),
-            'module': partial_get(df_subcells[column], 'Module'),
-            'commercial_unit': partial_get(df_subcells[column], 'Comercial unit'),
+            'area': partial_get(df_subcells[column], 'Area', unit='cm^2'),
+            'module': partial_get(df_subcells[column], 'Module', convert=True),
+            'commercial_unit': partial_get(
+                df_subcells[column], 'Comercial unit', convert=True
+            ),
             'supplier': partial_get(df_subcells[column], 'Supplier'),
         }
         subcells.append(SubCell(**subcell_data))
@@ -801,10 +840,10 @@ def extract_layer_stack(data_frame):
                 'functionality': functionality
                 if functionality in Layer.functionality.type
                 else None,
-                'thickness': partial_get(df_sublayer, 'Thickness', default_unit='nm'),
-                'area': partial_get(df_sublayer, 'Area', default_unit='cm^2'),
+                'thickness': partial_get(df_sublayer, 'Thickness', unit='nm'),
+                'area': partial_get(df_sublayer, 'Area', unit='cm^2'),
                 'surface_roughness': partial_get(
-                    df_sublayer, 'Surface roughness', default_unit='nm'
+                    df_sublayer, 'Surface roughness', unit='nm'
                 ),
                 'supplier': partial_get(df_sublayer, 'Supplier'),
                 'supplier_brand': partial_get(df_sublayer, 'Brand name'),
@@ -822,12 +861,13 @@ def extract_layer_stack(data_frame):
 
             # Split synthesis into single steps
             synthesis_steps = []
+            if cleaning:
+                synthesis_steps.append(cleaning)
             df_processes = split_data(df_sublayer, delimiter='>>')
             for syn_step in df_processes.columns:
                 df_process = df_processes[syn_step]
 
                 # Sublayer name
-                # TODO: check if this is correct
                 sublayer_properties['name'] = partial_get(df_process, 'Stack sequence ')
 
                 # Synthesis process information
@@ -836,9 +876,12 @@ def extract_layer_stack(data_frame):
                     df_process, 'Aggregation state'
                 )
                 atmosphere = partial_get(df_process, 'Synthesis atmosphere ')
-                humidity = partial_get(df_process, 'atmosphere. Relative humidity')
+                humidity = partial_get(
+                    df_process, 'atmosphere. Relative humidity', convert=True
+                )
+                # TODO: implement partial gas pressure
                 process_conditions = {
-                    'procedure': partial_get(df_process, 'Deposition. Procedure'),
+                    'name': partial_get(df_process, 'Deposition. Procedure'),
                     'atmosphere': atmosphere
                     if atmosphere in SynthesisStep.atmosphere.type
                     else None,
@@ -849,13 +892,13 @@ def extract_layer_stack(data_frame):
                     'pressure_total': partial_get(
                         df_process,
                         'atmosphere. Pressure. Total',
-                        default_unit='mbar',
+                        unit='mbar',
                     ),
                     'humidity_relative': round(humidity / 100, 5) if humidity else None,
                 }
 
                 # Liquid based synthesis
-                if process_conditions['procedure'] in liquid_based_processes:
+                if process_conditions['name'] in liquid_based_processes:
                     synthesis_steps.append(
                         LiquidSynthesis(
                             **process_conditions,
@@ -866,7 +909,7 @@ def extract_layer_stack(data_frame):
                     )
 
                 # Physical vapour deposition & similar
-                elif process_conditions['procedure'] in gas_phase_processes:
+                elif process_conditions['name'] in gas_phase_processes:
                     synthesis_steps.append(
                         GasPhaseSynthesis(
                             **process_conditions,
@@ -888,7 +931,6 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         Substrate(
                             **sublayer_properties,
-                            cleaning=cleaning,
                             synthesis=synthesis_steps,
                             storage=storage,
                         )
@@ -897,7 +939,6 @@ def extract_layer_stack(data_frame):
                     layer_stack.append(
                         NonAbsorbingLayer(
                             **sublayer_properties,
-                            cleaning=cleaning,
                             synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
@@ -907,12 +948,14 @@ def extract_layer_stack(data_frame):
                 sublayer_properties.update(
                     {
                         'name': partial_get(df_sublayer, 'Photoabsorber material'),
-                        'bandgap': partial_get(df_sublayer, 'Band gap '),
-                        'bandgap_graded': partial_get(df_sublayer, 'Band gap. Graded'),
+                        'bandgap': partial_get(df_sublayer, 'Band gap ', unit='eV'),
+                        'bandgap_graded': partial_get(
+                            df_sublayer, 'Band gap. Graded', convert=True
+                        ),
                         'bandgap_estimation_basis': partial_get(
                             df_sublayer, 'Band gap. Estimation basis'
                         ),
-                        'PL_max': partial_get(df_sublayer, 'Pl max'),
+                        'PL_max': partial_get(df_sublayer, 'Pl max', unit='nm'),
                     }
                 )
 
@@ -929,7 +972,6 @@ def extract_layer_stack(data_frame):
                             **sublayer_properties,
                             **perovskite_properties,
                             composition=extract_perovskite_composition(df_sublayer),
-                            cleaning=cleaning,
                             synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
@@ -947,7 +989,6 @@ def extract_layer_stack(data_frame):
                             **sublayer_properties,
                             **silicon_properties,
                             perovskite_inspired=None,
-                            cleaning=cleaning,
                             synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
@@ -960,7 +1001,6 @@ def extract_layer_stack(data_frame):
                             composition=extract_chalcopyrite_composition(df_sublayer),
                             alkali_metal_doping=extract_alkali_doping(df_sublayer),
                             perovskite_inspired=None,
-                            cleaning=cleaning,
                             synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
@@ -971,7 +1011,6 @@ def extract_layer_stack(data_frame):
                         PhotoAbsorber(
                             **sublayer_properties,
                             perovskite_inspired=None,
-                            cleaning=cleaning,
                             synthesis=synthesis_steps,
                             storage=storage,
                             additives=additives,
@@ -985,24 +1024,18 @@ def extract_jv_results(data_frame):
     """
     Extracts the JV results from the data subframe and returns a JVResults object.
     """
-    pce = partial_get(data_frame, 'PCE')
+    pce = partial_get(data_frame, 'PCE', convert=True)
     return JVResults(
-        short_circuit_current_density=partial_get(
-            data_frame, 'Jsc', default_unit='mA/cm^2'
-        ),
-        open_circuit_voltage=partial_get(data_frame, 'Voc', default_unit='V'),
+        short_circuit_current_density=partial_get(data_frame, 'Jsc', unit='mA/cm^2'),
+        open_circuit_voltage=partial_get(data_frame, 'Voc', unit='V'),
         fill_factor=partial_get(data_frame, 'FF'),
         power_conversion_efficiency=round(pce / 100, 5) if pce else None,
-        maximum_power_point_voltage=partial_get(data_frame, 'Vmp', default_unit='V'),
+        maximum_power_point_voltage=partial_get(data_frame, 'Vmp', unit='V'),
         maximum_power_point_current_density=partial_get(
-            data_frame, 'Jmp', default_unit='mA/cm^2'
+            data_frame, 'Jmp', unit='mA/cm^2'
         ),
-        resistance_series=partial_get(
-            data_frame, 'Series resistance', default_unit='ohm*cm^2'
-        ),
-        resistance_shunt=partial_get(
-            data_frame, 'Shunt resistance', default_unit='ohm*cm^2'
-        ),
+        resistance_series=partial_get(data_frame, 'Series resistance', unit='ohm*cm^2'),
+        resistance_shunt=partial_get(data_frame, 'Shunt resistance', unit='ohm*cm^2'),
     )
 
 
@@ -1021,12 +1054,10 @@ def extract_jv(data_frame):
         # Storage Information
         df_storage = df_temp[df_temp.index.str.contains('Storage.')]
         if not df_storage.empty:
-            humidity = partial_get(df_storage, 'Relative humidity')
+            humidity = partial_get(df_storage, 'Relative humidity', convert=True)
             storage = Storage(
                 atmosphere=partial_get(df_storage, 'Atmosphere'),
-                time_until_next_step=partial_get(
-                    df_storage, 'Age of cell', default_unit='day'
-                ),
+                time_until_next_step=partial_get(df_storage, 'Age of cell', unit='day'),
                 humidity_relative=round(humidity / 100, 5) if humidity else None,
             )
         else:
@@ -1041,15 +1072,15 @@ def extract_jv(data_frame):
             preconditioning = Preconditioning(
                 protocol=partial_get(df_preconditioning, 'Procotol'),
                 duration=partial_get(
-                    df_preconditioning, 'Preconditioning. Time', default_unit='hour'
+                    df_preconditioning, 'Preconditioning. Time', unit='hour'
                 ),
                 potential=partial_get(
-                    df_preconditioning, 'Preconditioning. Potential', default_unit='V'
+                    df_preconditioning, 'Preconditioning. Potential', unit='V'
                 ),
                 light_intensity=partial_get(
                     df_preconditioning,
                     'Preconditioning. Light intensity',
-                    default_unit='mW/cm^2',
+                    unit='mW/cm^2',
                 ),
             )
         else:
@@ -1062,39 +1093,31 @@ def extract_jv(data_frame):
                 type=partial_get(df_illumination, 'Type'),
                 brand=partial_get(df_illumination, 'Brand name'),
                 simulator_class=partial_get(df_illumination, 'Simulator class'),
-                intensity=partial_get(
-                    df_illumination, 'Intensity', default_unit='mW/cm^2'
-                ),
+                intensity=partial_get(df_illumination, 'Intensity', unit='mW/cm^2'),
                 spectrum=partial_get(df_illumination, 'Spectra'),
                 wavelength=partial_get(
-                    df_illumination, 'Wavelength', default_unit='nm'
+                    df_illumination, 'Wavelength', unit='nm'
                 ),  # TODO: check if this is correct
                 direction=partial_get(df_illumination, 'Illumination direction')
                 if partial_get(df_illumination, 'Illumination direction')
                 in Illumination.direction.type
                 else None,
                 mask=partial_get(df_illumination, 'Masked cell'),
-                mask_area=partial_get(
-                    df_illumination, 'Mask area', default_unit='cm^2'
-                ),
+                mask_area=partial_get(df_illumination, 'Mask area', unit='cm^2'),
             )
         else:
             illumination = None
 
         # JV Conditions
-        humidity = partial_get(df_temp, 'Test. Relative humidity')
+        humidity = partial_get(df_temp, 'Test. Relative humidity', convert=True)
         conditions = JVConditions(
             atmosphere=partial_get(df_temp, 'Test. Atmosphere'),
             humidity_relative=round(humidity / 100, 5) if humidity else None,
-            temperature=partial_get(
-                df_temp, 'Test. Temperature', default_unit='celsius'
-            ),
-            speed=partial_get(df_temp, 'Scan. Speed', default_unit='mV/s'),
-            delay_time=partial_get(df_temp, 'Scan. Delay time', default_unit='ms'),
-            integration_time=partial_get(
-                df_temp, 'Scan. Integration time', default_unit='ms'
-            ),
-            voltage_step=partial_get(df_temp, 'Scan. Voltage step', default_unit='mV'),
+            temperature=partial_get(df_temp, 'Test. Temperature', unit='celsius'),
+            speed=partial_get(df_temp, 'Scan. Speed', unit='mV/s'),
+            delay_time=partial_get(df_temp, 'Scan. Delay time', unit='ms'),
+            integration_time=partial_get(df_temp, 'Scan. Integration time', unit='ms'),
+            voltage_step=partial_get(df_temp, 'Scan. Voltage step', unit='mV'),
             illumination=illumination,
         )
 
@@ -1193,15 +1216,15 @@ def extract_stabilised_performance(data_frame):
         # metric_value = partial_get(df_temp, 'Value')
         conditions = StabilisedPerformanceConditions(
             procedure=partial_get(df_temp, 'Procedure '),
-            duration=partial_get(df_temp, 'Measurement time', default_unit='min'),
+            duration=partial_get(df_temp, 'Measurement time', unit='min'),
         )
 
-        pce = partial_get(df_temp, 'PCE')
+        pce = partial_get(df_temp, 'PCE', convert=True)
         results = JVResults(
             power_conversion_efficiency=round(pce / 100, 5) if pce else None,
-            maximum_power_point_voltage=partial_get(df_temp, 'Vmp', default_unit='V'),
+            maximum_power_point_voltage=partial_get(df_temp, 'Vmp', unit='V'),
             maximum_power_point_current_density=partial_get(
-                df_temp, 'Jmp', default_unit='mA/cm^2'
+                df_temp, 'Jmp', unit='mA/cm^2'
             ),
         )
 
@@ -1245,19 +1268,17 @@ def extract_eqe(data_frame):
     # Full device
     df_temp = data_frame[data_frame.index.str.contains('Full cell')]
     if not df_temp.empty and partial_get(df_temp, 'Measured'):
-        intensity = partial_get(df_temp, 'Light bias', default_unit='mW/cm^2')
-        jsc = partial_get(df_temp, 'Full cell. Integrated Jsc', default_unit='mA/cm^2')
+        intensity = partial_get(df_temp, 'Light bias', unit='mW/cm^2')
+        jsc = partial_get(df_temp, 'Full cell. Integrated Jsc', unit='mA/cm^2')
         if jsc is not None:
             eqe_dict['eqe_full_device'] = construct_eqe(intensity, jsc, 'Whole Device')
 
     # Subcell 1, Bottom Cell
     df_temp = data_frame[data_frame.index.str.contains('Subcell 1.')]
     if not df_temp.empty and partial_get(df_temp, 'Measured'):
-        intensity = partial_get(df_temp, 'Light bias', default_unit='mW/cm^2')
-        jsc = partial_get(df_temp, 'Subcell 1. Integrated Jsc', default_unit='mA/cm^2')
-        jsc_shaded = partial_get(
-            df_temp, 'Shaded. Integrated Jsc', default_unit='mA/cm^2'
-        )
+        intensity = partial_get(df_temp, 'Light bias', unit='mW/cm^2')
+        jsc = partial_get(df_temp, 'Subcell 1. Integrated Jsc', unit='mA/cm^2')
+        jsc_shaded = partial_get(df_temp, 'Shaded. Integrated Jsc', unit='mA/cm^2')
         if jsc is not None:
             eqe_dict['eqe_bottom_cell'] = construct_eqe(intensity, jsc, 'Bottom Cell')
         if jsc_shaded is not None:
@@ -1268,8 +1289,8 @@ def extract_eqe(data_frame):
     # Subcell 2, Top Cell
     df_temp = data_frame[data_frame.index.str.contains('Subcell 2.')]
     if not df_temp.empty and partial_get(df_temp, 'Measured'):
-        intensity = partial_get(df_temp, 'Light bias', default_unit='mW/cm^2')
-        jsc = partial_get(df_temp, 'Subcell 2. Integrated Jsc', default_unit='mA/cm^2')
+        intensity = partial_get(df_temp, 'Light bias', unit='mW/cm^2')
+        jsc = partial_get(df_temp, 'Subcell 2. Integrated Jsc', unit='mA/cm^2')
         if jsc is not None:
             eqe_dict['eqe_top_cell'] = construct_eqe(intensity, jsc, 'Top Cell')
 

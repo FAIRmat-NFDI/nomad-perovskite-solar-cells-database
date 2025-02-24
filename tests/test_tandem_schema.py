@@ -46,11 +46,11 @@ def test_schema():
         700, 'nanometer'
     )
     assert entry_archive.data.layer_stack[1].origin == 'Lab made'
-    assert entry_archive.data.layer_stack[1].synthesis[0].procedure == 'Sputtering'
+    assert entry_archive.data.layer_stack[1].synthesis[0].name == 'Sputtering'
 
     assert entry_archive.data.layer_stack[2].name == 'CIGS'
     assert entry_archive.data.layer_stack[2].thickness == ureg.Quantity(3, 'micrometer')
-    assert entry_archive.data.layer_stack[2].synthesis[0].procedure == 'Co-evaporation'
+    assert entry_archive.data.layer_stack[2].synthesis[0].name == 'Co-evaporation'
     assert entry_archive.data.layer_stack[2].composition[0].name == 'Cu'
     assert entry_archive.data.layer_stack[2].composition[0].coefficient == 1
     # assert entry_archive.data.layer_stack[2].composition == [Ion('Cu', 1), Ion('In', 0.59), Ion('Ga', 0.41), Ion('Se', 2.0)]
