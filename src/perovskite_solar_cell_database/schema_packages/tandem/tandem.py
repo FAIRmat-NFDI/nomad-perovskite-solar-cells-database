@@ -10,16 +10,15 @@ from perovskite_solar_cell_database.composition import PerovskiteCompositionSect
 # from perovskite_solar_cell_database.schema_sections.ions.ion import Ion
 from .reference import Reference
 
-# Chemicals and materials and their treatment
+##### Chemicals and materials and their treatment
 
 
-# TODO: Improve this section, check inheritence
-class Ion(ArchiveSection):
+class Elemental(ArchiveSection):
     """
     A section describing a substance that is an element.
     """
 
-    m_def = Section(label_quantity='ion_type')
+    m_def = Section()#label_quantity='ion_type')
 
     name = Quantity(
         type=str,
@@ -155,12 +154,11 @@ class QuenchingSolvent(Solvent):
     additives = SubSection(section_def=Substance, repeats=True)
 
 
-# Processing and deposition methods
+##### Processing and deposition methods
 
-
-class ProcessStep(ArchiveSection):
+class SynthesisStep(ArchiveSection):
     """
-    A section describing a general process.
+    A section describing a general synthesis step.
     """
 
     name = Quantity(
@@ -169,32 +167,10 @@ class ProcessStep(ArchiveSection):
     )
 
 
-class Storage(ArchiveSection):
+class DepositionStep(SynthesisStep):
     """
-    A section describing the storage conditions of a sample before the next Sythesis step.
-    """
-
-    atmosphere = Quantity(
-        type=Enum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
-        description='The atmosphere in which the sample is stored.',
-    )
-    humidity_relative = Quantity(
-        type=float,
-        unit='dimensionless',
-        description='The relative humidity in the storage atmosphere.',
-    )
-    time_until_next_step = Quantity(
-        type=float,
-        unit='hour',
-        a_eln=ELNAnnotation(defaultDisplayUnit='hour'),
-        description='The time between the perovskite stack is finalised and the next layer is deposited.',
-    )
-
-
-class SynthesisStep(ProcessStep):
-    """
-    A section describing a general synthesis step.
-    More specific synthesis steps are inherited from this class.
+    A section describing a general deposition step.
+    More specific deposition steps are inherited from this class.
     """
 
     m_def = Section()
@@ -251,7 +227,36 @@ class SynthesisStep(ProcessStep):
     )
 
 
-class Cleaning(ProcessStep):
+class LiquidSynthesis(DepositionStep):
+    """
+    A section describing a wet chemical synthesis step such as spin-coating or dip-coating.
+    """
+
+    solvent = SubSection(
+        section_def=Solvent,
+        description='The solvents used in the synthesis step',
+        repeats=True,
+    )
+    quenching_solvent = SubSection(
+        section_def=QuenchingSolvent,
+        description='The quenching solvent used in the synthesis step',
+        repeats=True,
+    )
+
+
+class GasPhaseSynthesis(DepositionStep):
+    """
+    A section describing a gas phase synthesis step such as CVD or PVD.
+    """
+
+    pressure_partial = Quantity(
+        type=float,
+        unit='mbar',
+        description='The partial pressure of the gas phase reactants',
+    )
+
+
+class Cleaning(SynthesisStep):
     """
     A cleaning procedure as a synthesis step.
     """
@@ -284,45 +289,103 @@ class ThermalAnnealing(SynthesisStep):
         a_eln=ELNAnnotation(defaultDisplayUnit='minute'),
         description='The duration of the thermal annealing step',
     )
+    atmosphere = Quantity(
+        type=Enum(['Air', 'Ar', 'Dry air', 'N2', 'O2', 'Vacuum', 'Unknown']),
+        default='Unknown',
+        description='The atmosphere present during the synthesis step',
+    )
+    pressure_total = Quantity(
+        type=float,
+        unit='mbar',
+        a_eln=ELNAnnotation(defaultDisplayUnit='mbar'),
+        description='The total pressure during each synthesis step',
+    )
+    humidity_relative = Quantity(
+        type=float,
+        unit='dimensionless',
+        description='The relative humidity in the storage atmosphere.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.name = 'Thermal Annealing'
 
 
-class LiquidSynthesis(SynthesisStep):
-    """
-    A section describing a wet chemical synthesis step such as spin-coating or dip-coating.
-    """
+class Synthesis(ArchiveSection):
+    """ """
 
-    solvent = SubSection(
-        section_def=Solvent,
-        description='The solvents used in the synthesis step',
-        repeats=True,
+    # Origin and manufacturing
+    origin = Quantity(
+        type=Enum(['Commercial', 'Lab made', 'Unknown']),
+        description='Origin of the layer',
     )
-    quenching_solvent = SubSection(
-        section_def=QuenchingSolvent,
-        description='The quenching solvent used in the synthesis step',
-        repeats=True,
+    supplier = Quantity(
+        type=str,
+        description='The supplier of a commercially purchased layer',
+    )
+    supplier_brand = Quantity(
+        type=str,
+        description='The specific brand name of a commercially purchased layer',
     )
 
+    steps = SubSection(section_def=SynthesisStep, repeats=True)
 
-class GasPhaseSynthesis(SynthesisStep):
+
+class Storage(ArchiveSection):
     """
-    A section describing a gas phase synthesis step such as CVD or PVD.
+    A section describing the storage conditions of a sample before the next layer is deposited.
     """
 
-    pressure_partial = Quantity(
+    atmosphere = Quantity(
+        type=Enum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
+        description='The atmosphere in which the sample is stored.',
+    )
+    humidity_relative = Quantity(
         type=float,
-        unit='mbar',
-        description='The partial pressure of the gas phase reactants',
+        unit='dimensionless',
+        description='The relative humidity in the storage atmosphere.',
+    )
+    time_until_next_step = Quantity(
+        type=float,
+        unit='hour',
+        a_eln=ELNAnnotation(defaultDisplayUnit='hour'),
+        description='The time between the perovskite stack is finalised and the next layer is deposited.',
     )
 
 
-# Material layers and their properties
+##### Material layers and their properties
+
+
+class LayerProperties(ArchiveSection):
+    """
+    A section storing general properties of a layer.
+    """
+
+    thickness = Quantity(
+        type=float,
+        unit='nm',
+        a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
+        description='The thickness of the layer',
+    )
+    area = Quantity(
+        type=float,
+        unit='cm^2',
+        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
+        description='The area of the layer',
+    )
+    surface_roughness = Quantity(
+        type=float,
+        unit='nm',
+        a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
+        description='The root mean square value of the surface roughness',
+    )
 
 
 class Layer(ArchiveSection):
+    """
+    General layer class for inheriting specific layer types.
+    """
+
     name = Quantity(
         type=str,
         description='The name of the layer',
@@ -354,39 +417,10 @@ class Layer(ArchiveSection):
     )
 
     # Basic properties
-    thickness = Quantity(
-        type=float,
-        unit='nm',
-        a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
-        description='The thickness of the layer',
-    )
-    area = Quantity(
-        type=float,
-        unit='cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
-        description='The area of the layer',
-    )
-    surface_roughness = Quantity(
-        type=float,
-        unit='nm',
-        a_eln=ELNAnnotation(defaultDisplayUnit='nm'),
-        description='The root mean square value of the surface roughness',
-    )
+    properties = SubSection(section_def=LayerProperties)
 
-    # Origin and manufacturing
-    origin = Quantity(
-        type=Enum(['Commercial', 'Lab made', 'Unknown']),
-        description='Origin of the layer',
-    )
-    supplier = Quantity(
-        type=str,
-        description='The supplier of a commercially purchased layer',
-    )
-    supplier_brand = Quantity(
-        type=str,
-        description='The specific brand name of a commercially purchased layer',
-    )
-    synthesis = SubSection(section_def=ProcessStep, repeats=True)
+    # Synthesis
+    synthesis = SubSection(section_def=Synthesis)
 
     # Storage
     storage = SubSection(section_def=Storage)
@@ -400,22 +434,21 @@ class NonAbsorbingLayer(Layer):
 
 
 class Substrate(NonAbsorbingLayer):
-    m_def = Section(
-        a_template=dict(functionality='Substrate'),
-    )
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.functionality = 'Substrate'
 
 
-class PhotoAbsorber(Layer):
-    m_def = Section(
-        a_template=dict(functionality='Photoabsorber'),
-    )
+class PhotoAbsorberProperties(LayerProperties):
+    """
+    A section storing general properties of a photoabsorber layer.
+    """
 
     bandgap = Quantity(
         type=float,
         unit='eV',
         description='The band gap of the photoabsorber',
     )
-    # TODO: See if joining these two fields makes sense
     bandgap_graded = Quantity(
         type=bool,
         description='TRUE if the band gap varies as a function of the vertical position in the photoabsorber layer',
@@ -451,29 +484,29 @@ class PhotoAbsorber(Layer):
         This category is for enabling those cells to easily be identified and filtered.""",
     )
 
+
+class PhotoAbsorber(Layer):
+    """
+    A section describing a photoabsorber layer.
+    """
+
+    properties = SubSection(section_def=PhotoAbsorberProperties)
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.functionality = 'Photoabsorber'
 
 
-# class PerovskiteComposition(ArchiveSection):
-#     # TODO: basis = Quantity()  # ???
-#     ion_a = SubSection(section_def=Ion, repeats=True)
-#     ion_b = SubSection(section_def=Ion, repeats=True)
-#     ion_c = SubSection(section_def=Ion, repeats=True)
-#     # TODO: assumption = Quantity()  # ???
+class PerovskiteLayerProperties(PhotoAbsorberProperties):
+    """
+    A section storing general properties of a perovskite layer.
+    """
 
-
-class PerovskiteLayer(PhotoAbsorber):
-    composition = SubSection(section_def=PerovskiteCompositionSection)
-
-    # General properties
     single_crystal = Quantity(
         type=bool,
         default=False,
         description='TRUE if the perovskite layer is single crystal, FALSE if it is polycrystalline.',
     )
-    # stoichiometry = Quantity()
     inorganic = Quantity(
         type=bool,
         description='TRUE if the perovskite layer is inorganic, FALSE if it is organic.',
@@ -482,9 +515,60 @@ class PerovskiteLayer(PhotoAbsorber):
         type=bool,
         description='TRUE if the perovskite layer is lead-free, FALSE if it contains lead.',
     )
+    # non_stoichiometry = Quantity(
+    #     type=str,
+    #     description='Excess components in the perovskite layer.',
+    # )
+
+
+class PerovskiteLayer(PhotoAbsorber):
+    """
+    A section describing a perovskite layer.
+    """
+
+    composition = SubSection(section_def=PerovskiteCompositionSection)
+    properties = SubSection(section_def=PerovskiteLayerProperties)
+
+
+class SiliconLayerProperties(PhotoAbsorberProperties):
+    """
+    A section storing general properties of a silicon layer.
+    """
+
+    cell_type = Quantity(
+        type=str,
+        description="""The type of silicon cell.
+        Examples: AL-BSF, c-type, HIT, Homojunction, n-type, PERC, PERC n-type c-Si bifacial
+        SC/nFAB, PERL, Single heterojunction""",
+    )
+
+    silicon_type = Quantity(
+        type=Enum(
+            [
+                'Amorphous',
+                'CZ',
+                'Float-zone',
+                'Monocrystaline',
+                'Polycrystaline',
+                'Unknown',
+            ]
+        ),
+        description='The type of silicon used in the layer',
+    )
+    doping_sequence = Quantity(
+        type=Enum(['n-aSi', 'i-aSi', 'n-Si', 'p-aSi', 'n-SI', 'i-Si', 'p-Si']),
+        description='The doping sequence of the silicon, starting from the bottom',
+        repeats=True,
+    )
 
 
 class SiliconLayer(PhotoAbsorber):
+    """
+    A section describing a silicon layer.
+    """
+
+    properties = SubSection(section_def=SiliconLayerProperties)
+
     cell_type = Quantity(
         type=str,
         description="""The type of silicon cell.
@@ -510,7 +594,7 @@ class SiliconLayer(PhotoAbsorber):
     )
 
 
-class ChalcopyriteAlkaliMetalDoping(Ion):
+class ChalcopyriteAlkaliMetalDoping(Elemental):
     source = Quantity(
         type=str,
         description="""The source of the alkali metal doping.
@@ -521,7 +605,7 @@ class ChalcopyriteAlkaliMetalDoping(Ion):
 class ChalcopyriteLayer(PhotoAbsorber):
     # TODO: Reevaluate inheritance
     composition = SubSection(
-        section_def=Ion,
+        section_def=Elemental,
         description='The composition of the chalcopyrite layer',
         repeats=True,
     )
