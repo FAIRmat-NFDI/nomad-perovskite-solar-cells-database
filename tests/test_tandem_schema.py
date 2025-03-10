@@ -38,22 +38,40 @@ def test_schema():
     assert len(entry_archive.data.layer_stack) == 18
     assert entry_archive.data.layer_stack[0].name == 'SLG'
     assert entry_archive.data.layer_stack[0].functionality == 'Substrate'
-    assert entry_archive.data.layer_stack[0].origin == 'Commercial'
+    assert entry_archive.data.layer_stack[0].synthesis.origin == 'Commercial'
 
     assert entry_archive.data.layer_stack[1].name == 'Mo'
     assert entry_archive.data.layer_stack[1].functionality == 'Back contact'
-    assert entry_archive.data.layer_stack[1].thickness == ureg.Quantity(
+    assert entry_archive.data.layer_stack[1].properties.thickness == ureg.Quantity(
         700, 'nanometer'
     )
-    assert entry_archive.data.layer_stack[1].origin == 'Lab made'
-    assert entry_archive.data.layer_stack[1].synthesis[0].name == 'Sputtering'
+    assert entry_archive.data.layer_stack[1].synthesis.origin == 'Lab made'
+    assert entry_archive.data.layer_stack[1].synthesis.steps[0].name == 'Sputtering'
 
+    # CIGS layer
     assert entry_archive.data.layer_stack[2].name == 'CIGS'
-    assert entry_archive.data.layer_stack[2].thickness == ureg.Quantity(3, 'micrometer')
-    assert entry_archive.data.layer_stack[2].synthesis[0].name == 'Co-evaporation'
+    assert entry_archive.data.layer_stack[2].properties.thickness == ureg.Quantity(3, 'micrometer')
+    assert entry_archive.data.layer_stack[2].properties.bandgap == ureg.Quantity(1.18, 'electron_volt')
+    assert entry_archive.data.layer_stack[2].synthesis.steps[0].name == 'Co-evaporation'
     assert entry_archive.data.layer_stack[2].composition[0].name == 'Cu'
     assert entry_archive.data.layer_stack[2].composition[0].coefficient == 1
-    # assert entry_archive.data.layer_stack[2].composition == [Ion('Cu', 1), Ion('In', 0.59), Ion('Ga', 0.41), Ion('Se', 2.0)]
+
+    # Perovskite layer
+    assert entry_archive.data.layer_stack[12].name == 'Perovskite'
+    assert entry_archive.data.layer_stack[12].properties.bandgap == ureg.Quantity(1.62, 'electron_volt')
+    assert entry_archive.data.layer_stack[12].properties.thickness == ureg.Quantity(520, 'nanometer')
+    assert entry_archive.data.layer_stack[12].synthesis.steps[0].name == 'Evaporation'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[0].atmosphere == 'Vacuum'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[0].reactants[0].name == 'PbI2'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[1].name == 'Spin-coating'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[1].atmosphere == 'N2'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[1].reactants[0].name == 'MAI'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[1].solvent[0].name == 'IPA'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[2].name == 'Thermal Annealing'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[2].atmosphere == 'Unknown'
+    assert entry_archive.data.layer_stack[12].synthesis.steps[2].duration == ureg.Quantity(10, 'minute')
+    assert entry_archive.data.layer_stack[12].synthesis.steps[2].temperature == ureg.Quantity(100, 'celsius')
+
 
     ## test measurements
 
