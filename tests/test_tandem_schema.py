@@ -50,28 +50,49 @@ def test_schema():
 
     # CIGS layer
     assert entry_archive.data.layer_stack[2].name == 'CIGS'
-    assert entry_archive.data.layer_stack[2].properties.thickness == ureg.Quantity(3, 'micrometer')
-    assert entry_archive.data.layer_stack[2].properties.bandgap == ureg.Quantity(1.18, 'electron_volt')
+    assert entry_archive.data.layer_stack[2].properties.thickness == ureg.Quantity(
+        3, 'micrometer'
+    )
+    assert entry_archive.data.layer_stack[2].properties.bandgap == ureg.Quantity(
+        1.18, 'electron_volt'
+    )
     assert entry_archive.data.layer_stack[2].synthesis.steps[0].name == 'Co-evaporation'
     assert entry_archive.data.layer_stack[2].composition[0].name == 'Cu'
     assert entry_archive.data.layer_stack[2].composition[0].coefficient == 1
 
     # Perovskite layer
     assert entry_archive.data.layer_stack[12].name == 'Perovskite'
-    assert entry_archive.data.layer_stack[12].properties.bandgap == ureg.Quantity(1.62, 'electron_volt')
-    assert entry_archive.data.layer_stack[12].properties.thickness == ureg.Quantity(520, 'nanometer')
+    assert entry_archive.data.layer_stack[12].properties.bandgap == ureg.Quantity(
+        1.62, 'electron_volt'
+    )
+    assert entry_archive.data.layer_stack[12].properties.thickness == ureg.Quantity(
+        520, 'nanometer'
+    )
     assert entry_archive.data.layer_stack[12].synthesis.steps[0].name == 'Evaporation'
     assert entry_archive.data.layer_stack[12].synthesis.steps[0].atmosphere == 'Vacuum'
-    assert entry_archive.data.layer_stack[12].synthesis.steps[0].reactants[0].name == 'PbI2'
+    assert (
+        entry_archive.data.layer_stack[12].synthesis.steps[0].reactants[0].name
+        == 'PbI2'
+    )
     assert entry_archive.data.layer_stack[12].synthesis.steps[1].name == 'Spin-coating'
     assert entry_archive.data.layer_stack[12].synthesis.steps[1].atmosphere == 'N2'
-    assert entry_archive.data.layer_stack[12].synthesis.steps[1].reactants[0].name == 'MAI'
-    assert entry_archive.data.layer_stack[12].synthesis.steps[1].solvent[0].name == 'IPA'
-    assert entry_archive.data.layer_stack[12].synthesis.steps[2].name == 'Thermal Annealing'
+    assert (
+        entry_archive.data.layer_stack[12].synthesis.steps[1].reactants[0].name == 'MAI'
+    )
+    assert (
+        entry_archive.data.layer_stack[12].synthesis.steps[1].solvent[0].name == 'IPA'
+    )
+    assert (
+        entry_archive.data.layer_stack[12].synthesis.steps[2].name
+        == 'Thermal Annealing'
+    )
     assert entry_archive.data.layer_stack[12].synthesis.steps[2].atmosphere == 'Unknown'
-    assert entry_archive.data.layer_stack[12].synthesis.steps[2].duration == ureg.Quantity(10, 'minute')
-    assert entry_archive.data.layer_stack[12].synthesis.steps[2].temperature == ureg.Quantity(100, 'celsius')
-
+    assert entry_archive.data.layer_stack[12].synthesis.steps[
+        2
+    ].duration == ureg.Quantity(10, 'minute')
+    assert entry_archive.data.layer_stack[12].synthesis.steps[
+        2
+    ].temperature == ureg.Quantity(100, 'celsius')
 
     ## test measurements
 
