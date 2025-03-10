@@ -18,7 +18,7 @@ class Elemental(ArchiveSection):
     A section describing a substance that is an element.
     """
 
-    m_def = Section()#label_quantity='ion_type')
+    m_def = Section()  # label_quantity='ion_type')
 
     name = Quantity(
         type=str,
@@ -155,6 +155,7 @@ class QuenchingSolvent(Solvent):
 
 
 ##### Processing and deposition methods
+
 
 class SynthesisStep(ArchiveSection):
     """
