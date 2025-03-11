@@ -348,14 +348,13 @@ def exact_get(data, label, default=None, convert=False, unit=None):
     Returns:
     any: The matched value from the data, converted if specified, or the default value if no match is found.
     """
-    if label in data.index:
-        if isinstance(data, pd.DataFrame):
-            value = data.loc[label, data.columns[0]]
-        elif isinstance(data, pd.Series):
-            value = data.loc[label]
-        return convert_value(value, unit) if convert or unit else value
-    else:
+    if label not in data.index:
         return default
+    elif isinstance(data, pd.DataFrame):
+        value = data.loc[label, data.columns[0]]
+    elif isinstance(data, pd.Series):
+        value = data.loc[label]
+    return convert_value(value, unit) if convert or unit else value
 
 
 def handle_concentration(concentration):
@@ -380,10 +379,11 @@ def handle_concentration(concentration):
         elif str(concentration.dimensionality) == str(
             ureg.dimensionless.dimensionality
         ):
-            if 'gram' in str(concentration.units) or 'wt%' == str(concentration.units):
+            if 'gram' in str(concentration.units) or str(concentration.units) == 'wt%':
                 result_dict['mass_fraction'] = concentration.to('g/g')
-            elif 'liter' in str(concentration.units) or 'vol%' == str(
-                concentration.units
+            elif (
+                'liter' in str(concentration.units)
+                or str(concentration.units) == 'vol%'
             ):
                 result_dict['volume_fraction'] = concentration.to('l/l')
 
@@ -398,13 +398,13 @@ def extract_cleaning(data_frame):
     df_cleaning = data_frame[data_frame.index.str.contains('Cleaning')]
     if df_cleaning.empty:
         return None
-    else:
-        df_cleaning = split_data(df_cleaning, delimiter='|')  # probably not necessary
-        df_cleaning = split_data(df_cleaning, delimiter='>>')
-        cleaning_steps = []
-        for syn_step in df_cleaning.columns:
-            cleaning_steps.append(partial_get(df_cleaning[syn_step], 'procedure'))
-        return Cleaning(steps=cleaning_steps)
+
+    df_cleaning = split_data(df_cleaning, delimiter='|')  # probably not necessary
+    df_cleaning = split_data(df_cleaning, delimiter='>>')
+    cleaning_steps = [
+        partial_get(df_cleaning[column], 'procedure') for column in df_cleaning.columns
+    ]
+    return Cleaning(steps=cleaning_steps)
 
 
 def extract_additives(data_frame):
@@ -428,7 +428,7 @@ def extract_additives(data_frame):
             )
         )
 
-    return additives if len(additives) > 0 else None
+    return additives if additives else None
 
 
 def extract_solvents(data_frame):
@@ -452,7 +452,7 @@ def extract_solvents(data_frame):
         }
         solvents.append(Solvent(**solvent_properties))
 
-    return solvents if len(solvents) > 0 else None
+    return solvents if solvents else None
 
 
 def extract_reactants(data_frame):
@@ -538,7 +538,7 @@ def extract_quenching_solvents(data_frame):
         #     solvent_properties.update(handle_concentration(concentration))
         quenching_solvents.append(QuenchingSolvent(**solvent_properties))
 
-    return quenching_solvents if len(quenching_solvents) > 0 else None
+    return quenching_solvents if quenching_solvents else None
 
 
 def extract_perovskite_composition(data_frame):
@@ -651,10 +651,7 @@ def extract_chalcopyrite_composition(data_frame):
                 convert=True,
             )
             composition.append(Elemental(name=name, coefficient=coefficient))
-    if len(composition) == 0:
-        return None
-    else:
-        return composition
+    return composition if composition else None
 
 
 def extract_alkali_doping(data_frame):
@@ -673,7 +670,7 @@ def extract_alkali_doping(data_frame):
         source = partial_get(df_components[component], 'Sources of alkali doping')
         alkali_doping.append(ChalcopyriteAlkaliMetalDoping(name=name, source=source))
 
-    return alkali_doping if len(alkali_doping) > 0 else None
+    return alkali_doping if alkali_doping else None
 
 
 def extract_annealing(data_frame):
@@ -699,7 +696,7 @@ def extract_annealing(data_frame):
         if annealing_conditions['temperature'] is not None:
             annealing.append(ThermalAnnealing(**annealing_conditions))
 
-    return annealing if len(annealing) > 0 else None
+    return annealing if annealing else None
 
 
 def extract_storage(data_frame):
