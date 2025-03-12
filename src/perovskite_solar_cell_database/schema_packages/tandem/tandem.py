@@ -357,6 +357,15 @@ class Storage(ArchiveSection):
 ##### Material layers and their properties
 
 
+class LayerComposition(ArchiveSection):
+    """
+    A section describing the composition of a layer.
+    """
+
+    impurities = SubSection(section_def=Elemental, repeats=True)
+    additives = SubSection(section_def=Substance, repeats=True)
+
+
 class LayerProperties(ArchiveSection):
     """
     A section storing general properties of a layer.
@@ -420,14 +429,14 @@ class Layer(ArchiveSection):
     # Basic properties
     properties = SubSection(section_def=LayerProperties)
 
+    # Composition
+    composition = SubSection(section_def=LayerComposition)
+
     # Synthesis
     synthesis = SubSection(section_def=Synthesis)
 
     # Storage
     storage = SubSection(section_def=Storage)
-
-    # Misc
-    additives = SubSection(section_def=Substance, repeats=True)
 
 
 class NonAbsorbingLayer(Layer):
@@ -595,7 +604,7 @@ class SiliconLayer(PhotoAbsorber):
     )
 
 
-class ChalcopyriteAlkaliMetalDoping(Elemental):
+class ChalcopyriteAlkaliAdditives(Substance):
     source = Quantity(
         type=str,
         description="""The source of the alkali metal doping.
@@ -603,18 +612,21 @@ class ChalcopyriteAlkaliMetalDoping(Elemental):
     )
 
 
+class ChalcopyriteLayerComposition(LayerComposition):
+    """
+    A section describing the composition of a chalcopyrite layer.
+    """
+
+    ions = SubSection(section_def=Elemental, repeats=True)
+    additives = SubSection(section_def=ChalcopyriteAlkaliAdditives, repeats=True)
+
+
 class ChalcopyriteLayer(PhotoAbsorber):
-    # TODO: Reevaluate inheritance
-    composition = SubSection(
-        section_def=Elemental,
-        description='The composition of the chalcopyrite layer',
-        repeats=True,
-    )
-    alkali_metal_doping = SubSection(
-        section_def=ChalcopyriteAlkaliMetalDoping,
-        description='The alkali metal doping of the chalcopyrite layer',
-        repeats=True,
-    )
+    """
+    A section describing a chalcopyrite layer.
+    """
+
+    composition = SubSection(section_def=ChalcopyriteLayerComposition)
 
 
 # Device architecture

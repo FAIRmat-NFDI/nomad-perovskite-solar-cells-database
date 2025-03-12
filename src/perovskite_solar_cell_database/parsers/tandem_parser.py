@@ -37,14 +37,16 @@ from perovskite_solar_cell_database.schema_packages.tandem.schema import (
     PerovskiteTandemSolarCell,
 )
 from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
-    ChalcopyriteAlkaliMetalDoping,
+    ChalcopyriteAlkaliAdditives,
     ChalcopyriteLayer,
+    ChalcopyriteLayerComposition,
     Cleaning,
     DepositionStep,
     Elemental,
     GasPhaseSynthesis,
     General,
     Layer,
+    LayerComposition,
     LayerProperties,
     LiquidSynthesis,
     NonAbsorbingLayer,
@@ -624,53 +626,75 @@ def extract_perovskite_composition(data_frame):
                         abbreviation=abbreviation, coefficient=coefficient
                     )
                 )
+    additives = extract_additives(data_frame)
+
     return PerovskiteCompositionSection(
         ions_a_site=ions_a,
         ions_b_site=ions_b,
         ions_x_site=ions_c,
         dimensionality=dimensionality,
         composition_estimate=composition_estimate,
+        additives=additives,
     )
+
+
+def extract_chalcopyrite_additives(data_frame):
+    """
+    Extracts the additives from the data subframe and returns a list of Substance objects.
+    """
+    df_temp = data_frame[data_frame.index.str.contains('Additives.')]
+    if df_temp.empty:
+        return None
+
+    additives = []
+    df_components = split_data(df_temp, delimiter=';')
+    for component in df_components.columns:
+        concentration = partial_get(
+            df_components[component], 'Additives. Concentrations'
+        )
+        additives.append(
+            ChalcopyriteAlkaliAdditives(
+                name=partial_get(df_components[component], 'Additives. Compounds'),
+                source=partial_get(
+                    df_components[component], 'Sources of alkali doping'
+                ),
+                **handle_concentration(concentration),
+            )
+        )
+
+    return additives if additives else None
 
 
 def extract_chalcopyrite_composition(data_frame):
     """
     Extracts the composition from the data subframe and returns a list of Ion objects.
     """
-    composition = []
+
     df_temp = data_frame[data_frame.index.str.contains('Chalcopyrite. Composition')]
-    if not df_temp.empty:
-        df_components = split_data(df_temp, delimiter=';')
-        for component in df_components.columns:
-            name = partial_get(
-                df_components[component], 'Chalcopyrite. Composition. Ions '
-            )
-            coefficient = partial_get(
-                df_components[component],
-                'Chalcopyrite. Composition. Ions. Coefficients',
-                convert=True,
-            )
-            composition.append(Elemental(name=name, coefficient=coefficient))
-    return composition if composition else None
-
-
-def extract_alkali_doping(data_frame):
-    """
-    Extracts the alkali doping from the data subframe and
-    returns a list of ChalcopyriteAlkaliMetalDoping objects.
-    """
-    df_temp = data_frame[data_frame.index.str.contains('lkali')]
     if df_temp.empty:
         return None
 
-    alkali_doping = []
     df_components = split_data(df_temp, delimiter=';')
-    for component in df_components.columns:
-        name = partial_get(df_components[component], 'Alkali metal doping')
-        source = partial_get(df_components[component], 'Sources of alkali doping')
-        alkali_doping.append(ChalcopyriteAlkaliMetalDoping(name=name, source=source))
+    ions = [
+        Elemental(
+            name=partial_get(
+                df_components[component], 'Chalcopyrite. Composition. Ions '
+            ),
+            coefficient=partial_get(
+                df_components[component],
+                'Chalcopyrite. Composition. Ions. Coefficients',
+                convert=True,
+            ),
+        )
+        for component in df_components.columns
+    ]
 
-    return alkali_doping if alkali_doping else None
+    additives = extract_chalcopyrite_additives(df_temp)
+
+    return ChalcopyriteLayerComposition(
+        ions=ions,
+        additives=additives,
+    )
 
 
 def extract_annealing(data_frame):
@@ -931,6 +955,12 @@ def extract_layer_stack(data_frame):
             # Storage conditions
             storage = extract_storage(df_sublayer)
 
+            # Additives
+            if additives:
+                composition = LayerComposition(additives=additives)
+            else:
+                composition = None
+
             # Differentiate between type of layers
             if 'NAlayer' in label:
                 if general_properties['functionality'] == 'Substrate':
@@ -938,6 +968,7 @@ def extract_layer_stack(data_frame):
                         Substrate(
                             **general_properties,
                             properties=LayerProperties(**properties),
+                            composition=composition,
                             synthesis=synthesis,
                             storage=storage,
                         )
@@ -947,9 +978,9 @@ def extract_layer_stack(data_frame):
                         NonAbsorbingLayer(
                             **general_properties,
                             properties=LayerProperties(**properties),
+                            composition=composition,
                             synthesis=synthesis,
                             storage=storage,
-                            additives=additives,
                         )
                     )
             elif 'P' in label:
@@ -993,7 +1024,6 @@ def extract_layer_stack(data_frame):
                             composition=extract_perovskite_composition(df_sublayer),
                             synthesis=synthesis,
                             storage=storage,
-                            additives=additives,
                         )
                     )
                 elif general_properties['name'] == 'Silicon':
@@ -1007,14 +1037,13 @@ def extract_layer_stack(data_frame):
                             'perovskite_inspired': None,
                         }
                     )
-
                     layer_stack.append(
                         SiliconLayer(
                             **general_properties,
                             properties=SiliconLayerProperties(**properties),
+                            composition=composition,
                             synthesis=synthesis,
                             storage=storage,
-                            additives=additives,
                         )
                     )
                 elif general_properties['name'] == 'CIGS':
@@ -1023,10 +1052,8 @@ def extract_layer_stack(data_frame):
                             **general_properties,
                             properties=PhotoAbsorberProperties(**properties),
                             composition=extract_chalcopyrite_composition(df_sublayer),
-                            alkali_metal_doping=extract_alkali_doping(df_sublayer),
                             synthesis=synthesis,
                             storage=storage,
-                            additives=additives,
                         )
                     )
                 else:
@@ -1034,9 +1061,9 @@ def extract_layer_stack(data_frame):
                         PhotoAbsorber(
                             **general_properties,
                             properties=PhotoAbsorberProperties(**properties),
+                            composition=composition,
                             synthesis=synthesis,
                             storage=storage,
-                            additives=additives,
                         )
                     )
 
