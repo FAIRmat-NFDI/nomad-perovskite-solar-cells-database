@@ -137,3 +137,5 @@ perovskite_solar_cell_database_app = "perovskite_solar_cell_database.apps:perovs
 perovskite_composition = "perovskite_solar_cell_database:perovskite_composition"
 ion_parser = "perovskite_solar_cell_database:ion_parser"
 perovskite_ions_app = "perovskite_solar_cell_database.apps:perovskite_ions"
+
+[tool.setuptools_scm]
