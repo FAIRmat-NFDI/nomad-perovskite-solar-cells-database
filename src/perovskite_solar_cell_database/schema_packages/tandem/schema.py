@@ -66,9 +66,6 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         # A few different shades of gray for intermediate layers
         gray_shades = ['#D3D3D3', '#BEBEBE', '#A9A9A9', '#909090']
         gray_cycle = cycle(gray_shades)
-        # A few different shades of red for absorber layers
-        absorber_colors = ['red', 'orange', 'orangered', 'firebrick']
-        absorber_cycle = cycle(absorber_colors)
 
         # Initialize thicknesses and colors
         thicknesses = []
@@ -86,9 +83,16 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 colors.append('lightblue')
                 opacities.append(1)
             elif 'Photoabsorber' in layer.functionality:
-                thicknesses.append(0.5)
-                colors.append(next(absorber_cycle))
+                thicknesses.append(0.8)
                 opacities.append(1)
+                if layer.name == 'Perovskite':
+                    colors.append('red')
+                elif layer.name == 'CIGS':
+                    colors.append('orange')
+                elif layer.name == 'Silicon':
+                    colors.append('orangered')
+                else:
+                    colors.append('firebrick')
             elif 'Subcell spacer' in layer.functionality:
                 thicknesses.append(0.5)
                 colors.append('white')
