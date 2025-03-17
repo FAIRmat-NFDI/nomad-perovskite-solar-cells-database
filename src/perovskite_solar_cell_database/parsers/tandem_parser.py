@@ -65,6 +65,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     SubCell,
     Substance,
     Substrate,
+    SurfaceTreatment,
     Synthesis,
     ThermalAnnealing,
 )
@@ -962,7 +963,10 @@ def extract_layer_stack(data_frame):
                 synthesis_steps.extend(extract_thermal_annealing(df_process))
                 synthesis_steps.extend(extract_solvent_annealing(df_process))
 
-            # Synthesis
+            ## Synthesis
+            treatment = partial_get(df_sublayer, 'Surface treatment')
+            if treatment:
+                synthesis_steps.extend(SurfaceTreatment(method=treatment))
             synthesis_properties = {
                 'supplier': exact_get(df_sublayer, label + ' Supplier'),
                 'supplier_brand': exact_get(df_sublayer, label + ' Brand name'),
@@ -974,7 +978,7 @@ def extract_layer_stack(data_frame):
                 synthesis_properties['origin'] = 'Lab made'
             else:
                 synthesis_properties['origin'] = 'Unknown'
-            synthesis = Synthesis(**synthesis_properties, steps=synthesis_steps)
+            synthesis = Synthesis(**synthesis_properties, process_steps=synthesis_steps)
 
             # Storage conditions
             storage = extract_storage(df_sublayer)

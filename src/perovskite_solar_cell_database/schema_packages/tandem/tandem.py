@@ -303,7 +303,14 @@ class SurfaceTreatment(SynthesisStep):
     A section describing a surface treatment step.
     """
 
-    pass
+    method = Quantity(
+        type=str,
+        description="The method used for the surface treatment."
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.name = 'Surface Treatment'
 
 
 class Synthesis(ArchiveSection):
@@ -325,7 +332,7 @@ class Synthesis(ArchiveSection):
         description='The specific brand name of a commercially purchased layer',
     )
 
-    steps = SubSection(section_def=SynthesisStep, repeats=True)
+    process_steps = SubSection(section_def=SynthesisStep, repeats=True)
 
 
 class Storage(ArchiveSection):
