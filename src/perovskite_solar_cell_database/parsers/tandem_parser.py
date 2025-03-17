@@ -60,6 +60,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     SiliconLayer,
     SiliconLayerProperties,
     Solvent,
+    SolventAnnealing,
     Storage,
     SubCell,
     Substance,
@@ -75,8 +76,8 @@ if TYPE_CHECKING:
 
 ureg = UnitRegistry()
 ureg.define('% = 0.01 * [] = percent')
-ureg.define('wt% = 0.01* [] = weight_percent')
-ureg.define('vol% = 0.01* [] = volume_percent')
+ureg.define('wt% = 0.01 * gram/gram = weight_percent')
+ureg.define('vol% = 0.01* liter/liter = volume_percent')
 
 unit_pattern = re.compile(
     r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
@@ -697,14 +698,14 @@ def extract_chalcopyrite_composition(data_frame):
     )
 
 
-def extract_annealing(data_frame):
+def extract_thermal_annealing(data_frame):
     """
     Extracts the annealing conditions from the data subframe and
     returns a list of ThermalAnnealing objects.
     """
     df_temp = data_frame[data_frame.index.str.contains('Thermal annealing.')]
     if df_temp.empty:
-        return None
+        return []
 
     annealing = []
     df_temp = split_data(df_temp, delimiter=';')
@@ -720,7 +721,31 @@ def extract_annealing(data_frame):
         if annealing_conditions['temperature'] is not None:
             annealing.append(ThermalAnnealing(**annealing_conditions))
 
-    return annealing if annealing else None
+    return annealing
+
+
+def extract_solvent_annealing(data_frame):
+    """
+    Extracts the annealing conditions from the data subframe and
+    returns a list of SolventAnnealing objects.
+    """
+    df_temp = data_frame[data_frame.index.str.contains('Solvent annealing.')]
+    if df_temp.empty:
+        return []
+
+    annealing = []
+    df_temp = split_data(df_temp, delimiter=';')
+    for column in df_temp.columns:
+        annealing_conditions = {
+            'point_in_time': partial_get(df_temp[column], 'Time vs thermal annealing'),
+            'atmosphere': partial_get(df_temp[column], 'atmosphere'),
+            'duration': partial_get(df_temp[column], r'Time \[', unit='minute'),
+            'temperature': partial_get(df_temp[column], 'Temperature', unit='celsius'),
+        }
+        if annealing_conditions['temperature'] is not None:
+            annealing.append(SolventAnnealing(**annealing_conditions))
+
+    return annealing
 
 
 def extract_storage(data_frame):
@@ -934,14 +959,13 @@ def extract_layer_stack(data_frame):
                     )
 
                 # Annealing
-                annealing = extract_annealing(df_process)
-                if annealing:
-                    synthesis_steps.extend(annealing)
+                synthesis_steps.extend(extract_thermal_annealing(df_process))
+                synthesis_steps.extend(extract_solvent_annealing(df_process))
 
             # Synthesis
             synthesis_properties = {
-                'supplier': partial_get(df_sublayer, 'Supplier'),
-                'supplier_brand': partial_get(df_sublayer, 'Brand name'),
+                'supplier': exact_get(df_sublayer, label + ' Supplier'),
+                'supplier_brand': exact_get(df_sublayer, label + ' Brand name'),
             }
             bought_commercially = partial_get(df_sublayer, 'Bought commercially')
             if bought_commercially is True:
@@ -955,7 +979,7 @@ def extract_layer_stack(data_frame):
             # Storage conditions
             storage = extract_storage(df_sublayer)
 
-            # Additives
+            # Create composition for general layer types
             if additives:
                 composition = LayerComposition(additives=additives)
             else:

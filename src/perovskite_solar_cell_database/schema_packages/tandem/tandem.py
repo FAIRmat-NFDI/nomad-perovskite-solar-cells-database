@@ -92,42 +92,11 @@ class Substance(ArchiveSection):
 
 
 class ReactionComponent(Substance):
+    """
+    A section describing a reactant in a synthesis step.
+    """
+
     pass
-
-
-class SolventAnnealing(ArchiveSection):
-    """
-    Section for a separate solvent annealing step, i.e. a step where the perovskite has been annealing in an atmosphere with a significant amount of solvents.
-    This step should also be included deposition procedure sequence but is also stated separately here to simplify downstream filtering.
-    """
-
-    temperature = Quantity(
-        type=float,
-        unit='K',
-        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
-        description="""The temperature during the solvent annealing step.
-        - The temperature refers to the temperature of the sample
-        - If the temperature is not known, state that by ‘nan’""",
-        repeats=True,
-    )
-    duration = Quantity(
-        type=float,
-        unit='minute',
-        a_eln=ELNAnnotation(defaultDisplayUnit='minute'),
-    )
-    atmosphere = Quantity(
-        type=str,
-        description='The solvents used in the solvent annealing step.',
-        repeats=True,
-    )
-    point_in_time = Quantity(
-        type=Enum(['After', 'Before', 'Under']),
-        description="""
-        The timing of the solvent annealing with respect to the thermal annealing step under which the perovskite is formed. There are three options.
-        - The solvent annealing is conducted before the perovskite is formed.
-        - The solvent annealing is conducted under the same annealing step in which the perovskite is formed
-        - The solvent annealing is conducted after the perovskite has formed.""",
-    )
 
 
 class Solvent(Substance):
@@ -138,11 +107,6 @@ class Solvent(Substance):
     mixing_ratio = Quantity(
         type=float,
         description='The mixing ratio of the solvent.',
-    )
-
-    annealing = SubSection(
-        section_def=SolventAnnealing,
-        description='Pre-deposition solvent annealing step.',
     )
 
 
@@ -173,8 +137,6 @@ class DepositionStep(SynthesisStep):
     A section describing a general deposition step.
     More specific deposition steps are inherited from this class.
     """
-
-    m_def = Section()
 
     # General
     name = Quantity(
@@ -312,8 +274,42 @@ class ThermalAnnealing(SynthesisStep):
         self.name = 'Thermal Annealing'
 
 
+class SolventAnnealing(ThermalAnnealing):
+    """
+    A section describing a solvent annealing step.
+    """
+
+    atmosphere = Quantity(
+        type=str,
+        description='The solvent used in this annealing step.',
+    )
+
+    point_in_time = Quantity(
+        type=Enum(['After', 'Before', 'Under']),
+        description="""
+        The timing of the solvent annealing with respect to the thermal annealing step under which the perovskite is formed. There are three options.
+        - The solvent annealing is conducted before the perovskite is formed.
+        - The solvent annealing is conducted under the same annealing step in which the perovskite is formed
+        - The solvent annealing is conducted after the perovskite has formed.""",
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.name = 'Solvent Annealing'
+
+
+class SurfaceTreatment(SynthesisStep):
+    """
+    A section describing a surface treatment step.
+    """
+
+    pass
+
+
 class Synthesis(ArchiveSection):
-    """ """
+    """
+    A section describing the synthesis of a layer.
+    """
 
     # Origin and manufacturing
     origin = Quantity(
