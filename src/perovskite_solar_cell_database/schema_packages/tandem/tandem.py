@@ -304,8 +304,7 @@ class SurfaceTreatment(SynthesisStep):
     """
 
     method = Quantity(
-        type=str,
-        description="The method used for the surface treatment."
+        type=str, description='The method used for the surface treatment.'
     )
 
     def normalize(self, archive, logger):
