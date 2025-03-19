@@ -489,7 +489,7 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         """
         super().normalize(archive, logger)
         if not isinstance(self.system, PerovskiteIon):
-            if self.abbreviation is None:
+            if self.abbreviation is None or archive.metadata.main_author is None:
                 return
             from nomad.search import (
                 MetadataPagination,

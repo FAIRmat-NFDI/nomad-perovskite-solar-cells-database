@@ -959,14 +959,21 @@ def extract_layer_stack(data_frame):
                         )
                     )
 
-                # Annealing
+                # Thermal Annealing
                 synthesis_steps.extend(extract_thermal_annealing(df_process))
-                synthesis_steps.extend(extract_solvent_annealing(df_process))
+
+            # Solvent Annealing (not part of the >> process scheme)
+            # TODO: respect point_in_time quantity
+            synthesis_steps.extend(extract_solvent_annealing(df_process))
 
             ## Synthesis
             treatment = partial_get(df_sublayer, 'Surface treatment')
-            if treatment:
-                synthesis_steps.extend(SurfaceTreatment(method=treatment))
+            if (
+                treatment
+                and isinstance(treatment, str)
+                and treatment.lower() not in ['none', 'nan']
+            ):
+                synthesis_steps.append(SurfaceTreatment(method=treatment))
             synthesis_properties = {
                 'supplier': exact_get(df_sublayer, label + ' Supplier'),
                 'supplier_brand': exact_get(df_sublayer, label + ' Brand name'),
