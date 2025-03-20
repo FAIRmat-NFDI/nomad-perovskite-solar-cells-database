@@ -5,6 +5,9 @@ from perovskite_solar_cell_database.apps.perovskite_solar_cell_database_app impo
     perovskite_database_app,
 )
 from perovskite_solar_cell_database.apps.solar_cell_app import solar_cell_app
+from perovskite_solar_cell_database.apps.tandem_solar_cell_app import (
+    perovskite_tandem_solar_cell_app,
+)
 
 solar_cells = AppEntryPoint(
     name='Solar Cells',
@@ -34,4 +37,15 @@ perovskite_ions = AppEntryPoint(
       interactive statistics about the data.
     """,
     app=perovskite_ions_app,
+)
+
+perovskite_tandem_solar_cell = AppEntryPoint(
+    name='Perovskite Tandem Solar Cells',
+    description="""
+      This app allows you to search **perovskite tandem solar cell data** within NOMAD. The filter
+      menu on the left and the shown default columns are specifically designed
+      for perovskite tandem solar cell exploration. The dashboard directly shows useful
+      interactive statistics about the data.
+    """,
+    app=perovskite_tandem_solar_cell_app,
 )
