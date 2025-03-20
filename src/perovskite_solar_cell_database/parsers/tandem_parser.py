@@ -79,6 +79,8 @@ ureg = UnitRegistry()
 ureg.define('% = 0.01 * [] = percent')
 ureg.define('wt% = 0.01 * gram/gram = weight_percent')
 ureg.define('vol% = 0.01* liter/liter = volume_percent')
+ureg.define('mTorr = millitorr')
+ureg.define('Torr = torr')
 
 unit_pattern = re.compile(
     r'^(\d+(\.\d+)?|\.\d+)([eE][-+]?\d+)?\s*\w+([*/^]\w+)*(\s*[/()]\s*\w+)*$'
@@ -676,6 +678,14 @@ def extract_chalcopyrite_composition(data_frame):
     Extracts the composition from the data subframe and returns a list of Ion objects.
     """
 
+    def get_coefficient(component_data):
+        coefficient = partial_get(
+            component_data,
+            'Chalcopyrite. Composition. Ions. Coefficients',
+            convert=True,
+        )
+        return coefficient if isinstance(coefficient, (float, int)) else None
+
     df_temp = data_frame[data_frame.index.str.contains('Chalcopyrite. Composition')]
     if df_temp.empty:
         return None
@@ -686,11 +696,7 @@ def extract_chalcopyrite_composition(data_frame):
             name=partial_get(
                 df_components[component], 'Chalcopyrite. Composition. Ions '
             ),
-            coefficient=partial_get(
-                df_components[component],
-                'Chalcopyrite. Composition. Ions. Coefficients',
-                convert=True,
-            ),
+            coefficient=get_coefficient(df_components[component]),
         )
         for component in df_components.columns
     ]
