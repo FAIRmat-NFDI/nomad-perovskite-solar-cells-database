@@ -2,11 +2,9 @@ import os.path
 
 from nomad.client import normalize_all, parse
 from nomad.metainfo import Quantity
-from pint import UnitRegistry
+from nomad.units import ureg
 
 # from perovskite_tandem_database.schema_packages.tandem import Ion
-
-ureg = UnitRegistry()
 
 
 def test_schema():

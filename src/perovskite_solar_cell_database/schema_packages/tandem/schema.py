@@ -3,7 +3,8 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    pass
+    from nomad.datamodel.datamodel import EntryArchive
+    from structlog.stdlib import BoundLogger
 
 from itertools import cycle
 
@@ -60,7 +61,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         description='The measurements performed on the device.',
     )
 
-    def normalize(self, archive, logger):
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         super().normalize(archive, logger)
 
         # A few different shades of gray for intermediate layers

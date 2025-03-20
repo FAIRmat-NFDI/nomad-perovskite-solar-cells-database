@@ -15,10 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import pint
 import plotly.graph_objects as go
-
-ureg = pint.UnitRegistry()
+from nomad.units import ureg
 
 
 def get_reference(upload_id, entry_id):
@@ -109,7 +107,7 @@ def format_value(label, value, preferred_unit=None, fmt='.1f'):
     if value is None:
         return f'{label} = N/A<br>'
 
-    elif isinstance(value, pint.Quantity):
+    elif isinstance(value, ureg.Quantity):
         if preferred_unit:
             value = value.to(preferred_unit)
         return f'{label} = {value:~{fmt}}<br>'  # Uses Pint's '~' for compact units

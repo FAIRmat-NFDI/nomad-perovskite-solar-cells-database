@@ -512,7 +512,10 @@ def extract_quenching_solvents(data_frame):
     """
     Extracts the quenching solvents from the data subframe and returns a list of QuenchingSolvent objects.
     """
-    df_temp = data_frame[data_frame.index.str.contains('Quenching media')]
+    df_temp = data_frame[
+        data_frame.index.str.contains('Quenching media')
+        & ~data_frame.index.str.contains('Additives')
+    ]
     if df_temp.empty:
         return None
 
@@ -530,16 +533,17 @@ def extract_quenching_solvents(data_frame):
             ),
         }
 
-        # partial_get(
-        #     df_components[component], 'Quenching media. Additives'
-        # ),
-        ### >>>
-        # Handle destinction between mg/ml, mol/l, and wt%
-        # concentration = partial_get(
-        #     df_components[component], 'Quenching media. Additives. Concentrations',
-        # ),
-        # if concentration:
-        #     solvent_properties.update(handle_concentration(concentration))
+        # Handle additives: untested, no data available
+        df_temp = data_frame[
+            data_frame.index.str.contains('Quenching media. Additives')
+        ]
+        if not df_temp.empty:
+            df_additives = split_data(df_temp, delimiter=';')
+            for additive in df_additives.columns:
+                solvent_properties['additives'] = extract_additives(
+                    df_additives[additive]
+                )
+
         quenching_solvents.append(QuenchingSolvent(**solvent_properties))
 
     return quenching_solvents if quenching_solvents else None
