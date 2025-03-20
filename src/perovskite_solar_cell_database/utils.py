@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 import plotly.graph_objects as go
+from nomad.units import ureg
 
 
 def get_reference(upload_id, entry_id):
@@ -43,6 +44,9 @@ def create_archive(entity, archive, file_name) -> str:
     return get_reference(
         archive.metadata.upload_id, get_entry_id_from_file_name(file_name, archive)
     )
+
+
+# Helper functions to plot the device stack
 
 
 def add_cuboid_edges(fig, x0, x1, y0, y1, z0, z1):  # noqa: PLR0913
@@ -98,6 +102,20 @@ def add_cuboid_edges(fig, x0, x1, y0, y1, z0, z1):  # noqa: PLR0913
     )
 
 
+def format_value(label, value, preferred_unit=None, fmt='.1f'):
+    """Formats a value for display, handling both floats and pint quantities with compact units."""
+    if value is None:
+        return f'{label} = N/A<br>'
+
+    elif isinstance(value, ureg.Quantity):
+        if preferred_unit:
+            value = value.to(preferred_unit)
+        return f'{label} = {value:~{fmt}}<br>'  # Uses Pint's '~' for compact units
+
+    else:  # Assume a float
+        return f'{label} = {value:{fmt}}{f" {preferred_unit}" if preferred_unit else ""}<br>'
+
+
 def create_cell_stack_figure(  # noqa: PLR0913
     layers,
     thicknesses,
@@ -106,6 +124,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
     voc,
     jsc,
     ff,
+    opacities=1,
     x_min=0,
     x_max=10,
     y_min=0,
@@ -126,8 +145,14 @@ def create_cell_stack_figure(  # noqa: PLR0913
     """
     fig = go.Figure()
 
+    # Ensure opacities is a list of the same length as layers
+    if isinstance(opacities, (int, float)):
+        opacities = [opacities] * len(layers)
+
     z_current = 0
-    for layer_name, thickness, color in zip(layers, thicknesses, colors):
+    for layer_name, thickness, color, opacity in zip(
+        layers, thicknesses, colors, opacities
+    ):
         z0 = z_current
         z1 = z_current + thickness
 
@@ -143,6 +168,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
                 y=y_corners,
                 z=z_corners,
                 color=color,
+                opacity=opacity,
                 alphahull=1,
                 name=layer_name,
                 showlegend=True,
@@ -155,14 +181,14 @@ def create_cell_stack_figure(  # noqa: PLR0913
 
         z_current = z1
 
-        # Create an annotation for device parameters
-        annotation_text = (
-            f'<b>Device Parameters</b><br>'
-            f'Efficiency = {efficiency:.1f} %<br>'
-            f'V<sub>OC</sub> = {voc:.1f}<br>'
-            f'J<sub>SC</sub> = {jsc:.1f}<br>'
-            f'FF = {ff:.1f} %'
-        )
+    # Create an annotation for device parameters
+    annotation_text = (
+        '<b>Device Parameters</b><br>'
+        + format_value('Efficiency', efficiency, fmt='.3f')
+        + format_value('V<sub>OC</sub>', voc, preferred_unit='V', fmt='.1f')
+        + format_value('J<sub>SC</sub>', jsc, preferred_unit='mA/cm²', fmt='.1f')
+        + format_value('FF', ff, fmt='.3f').replace('<br>', '')
+    )
 
     # Update layout
     fig.update_layout(

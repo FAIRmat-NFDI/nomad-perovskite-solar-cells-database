@@ -489,7 +489,7 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
         """
         super().normalize(archive, logger)
         if not isinstance(self.system, PerovskiteIon):
-            if self.abbreviation is None:
+            if self.abbreviation is None or archive.metadata.main_author is None:
                 return
             from nomad.search import (
                 MetadataPagination,
@@ -545,6 +545,7 @@ class PerovskiteIonComponent(SystemComponent, PerovskiteIonSection):
 
 class PerovskiteAIonComponent(PerovskiteIonComponent):
     m_def = Section(
+        label_quantity='abbreviation',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 visible=Filter(
@@ -569,7 +570,7 @@ class PerovskiteAIonComponent(PerovskiteIonComponent):
                     'source_compound_cas_number',
                 ],
             )
-        )
+        ),
     )
     system = Quantity(
         type=Reference(PerovskiteAIon.m_def),
@@ -585,6 +586,7 @@ class PerovskiteAIonComponent(PerovskiteIonComponent):
 
 class PerovskiteBIonComponent(PerovskiteIonComponent):
     m_def = Section(
+        label_quantity='abbreviation',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 visible=Filter(
@@ -609,7 +611,7 @@ class PerovskiteBIonComponent(PerovskiteIonComponent):
                     'source_compound_cas_number',
                 ],
             )
-        )
+        ),
     )
     system = Quantity(
         type=Reference(PerovskiteBIon.m_def),
@@ -625,6 +627,7 @@ class PerovskiteBIonComponent(PerovskiteIonComponent):
 
 class PerovskiteXIonComponent(PerovskiteIonComponent):
     m_def = Section(
+        label_quantity='abbreviation',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 visible=Filter(
@@ -648,8 +651,8 @@ class PerovskiteXIonComponent(PerovskiteIonComponent):
                     'source_compound_iupac_name',
                     'source_compound_cas_number',
                 ],
-            )
-        )
+            ),
+        ),
     )
     system = Quantity(
         type=Reference(PerovskiteXIon.m_def),
