@@ -354,130 +354,130 @@ class ExternalQuantumEfficiency(Measurement):
         self.method = 'External quantum efficiency'
 
 
-# class TransmissionResults(ArchiveSection):
-#     integrated_transmission = Quantity(
-#         type=float,
-#         description='Integrated transmission in the relevant wavelength range.',
-#         unit='dimensionless',
-#     )
+class TransmissionResults(ArchiveSection):
+    integrated_transmission = Quantity(
+        type=float,
+        description='Integrated transmission in the relevant wavelength range.',
+        unit='dimensionless',
+    )
 
 
-# class Transmission(Measurement):
-#     """
-#     Transmission measurement.
-#     """
+class Transmission(Measurement):
+    """
+    Transmission measurement.
+    """
 
-#     results = SubSection(
-#         section_def=TransmissionResults,
-#         description='Results of the transmission measurement.',
-#     )
+    results = SubSection(
+        section_def=TransmissionResults,
+        description='Results of the transmission measurement.',
+    )
 
-#     def normalize(self, archive, logger):
-#         super().normalize(archive, logger)
-#         self.method = 'Transmission'
-
-
-# class StabilityConditions(MeasurementConditions):
-#     pass
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.method = 'Transmission'
 
 
-# class StabilityResults(ArchiveSection):
-#     power_conversion_efficiency_initial = Quantity(
-#         type=float,
-#         description='Initial power conversion efficiency.',
-#     )
-
-#     burn_in_observed = Quantity(
-#         type=bool,
-#         description='Burn in observed.',
-#     )
-
-#     power_conversion_efficiency_end = Quantity(
-#         type=float,
-#         description='End of experiment power conversion efficiency.',
-#     )
-
-#     power_conversion_efficiency_t95 = Quantity(
-#         type=float,
-#         description=(
-#             'The time after which the cell performance has degraded by 5 % '
-#             'with respect to the initial performance.'
-#         ),
-#         unit='h',
-#     )
-
-#     power_conversion_efficiency_ts95 = Quantity(
-#         type=float,
-#         description=(
-#             'The time after which the cell performance has degraded by 5 % '
-#             'with respect to the performance after any initial burn in phase.'
-#         ),
-#         unit='h',
-#     )
-
-#     power_conversion_efficiency_t80 = Quantity(
-#         type=float,
-#         description=(
-#             'The time after which the cell performance has degraded by 20 % '
-#             'with respect to the initial performance.'
-#         ),
-#         unit='h',
-#     )
-
-#     power_conversion_efficiency_ts80 = Quantity(
-#         type=float,
-#         description=(
-#             'The time after which the cell performance has degraded by 20 % '
-#             'with respect to the performance after any initial burn in phase.'
-#         ),
-#         unit='h',
-#     )
-
-#     power_conversion_efficiency_t80_est = Quantity(
-#         type=float,
-#         description=(
-#             'An estimated T80 for cells that were not measured sufficiently long '
-#             'for them to degrade by 20 %, with respect to the initial performance.'
-#         ),
-#         unit='h',
-#     )
-
-#     power_conversion_efficiency_ts80_est = Quantity(
-#         type=float,
-#         description=(
-#             'An estimated Ts80 for cells that were not measured sufficiently long '
-#             'for them to degrade by 20 %, with respect to the performance after any '
-#             'initial burn in phase.'
-#         ),
-#         unit='h',
-#     )
-
-#     power_conversion_efficiency_after_1000h = Quantity(
-#         type=float,
-#         description='Power conversion efficiency after 1000 hours.',
-#     )
-
-#     lifetime_energy_yield = Quantity(
-#         type=float,
-#         description='Lifetime energy yield.',
-#         unit='kWh/m^2',
-#     )
+class StabilityConditions(MeasurementConditions):
+    pass
 
 
-# class StabilityMeasurement(Measurement):
-#     """
-#     Stability measurement.
-#     """
+class StabilityResults(ArchiveSection):
+    power_conversion_efficiency_initial = Quantity(
+        type=float,
+        description='Initial power conversion efficiency.',
+    )
 
-#     conditions = SubSection(
-#         section_def=StabilityConditions,
-#         description='Conditions of the stability measurement.',
-#     )
+    burn_in_observed = Quantity(
+        type=bool,
+        description='Burn in observed.',
+    )
 
-#     results = SubSection(
-#         section_def=StabilityResults,
-#         description='Results of the stability measurement.',
-#     )
+    power_conversion_efficiency_end = Quantity(
+        type=float,
+        description='End of experiment power conversion efficiency.',
+    )
+
+    power_conversion_efficiency_t95 = Quantity(
+        type=float,
+        description=(
+            'The time after which the cell performance has degraded by 5 % '
+            'with respect to the initial performance.'
+        ),
+        unit='hour',
+    )
+
+    power_conversion_efficiency_ts95 = Quantity(
+        type=float,
+        description=(
+            'The time after which the cell performance has degraded by 5 % '
+            'with respect to the performance after any initial burn in phase.'
+        ),
+        unit='hour',
+    )
+
+    power_conversion_efficiency_t80 = Quantity(
+        type=float,
+        description=(
+            'The time after which the cell performance has degraded by 20 % '
+            'with respect to the initial performance.'
+        ),
+        unit='hour',
+    )
+
+    power_conversion_efficiency_ts80 = Quantity(
+        type=float,
+        description=(
+            'The time after which the cell performance has degraded by 20 % '
+            'with respect to the performance after any initial burn in phase.'
+        ),
+        unit='hour',
+    )
+
+    power_conversion_efficiency_t80_est = Quantity(
+        type=float,
+        description=(
+            'An estimated T80 for cells that were not measured sufficiently long '
+            'for them to degrade by 20 %, with respect to the initial performance.'
+        ),
+        unit='hour',
+    )
+
+    power_conversion_efficiency_ts80_est = Quantity(
+        type=float,
+        description=(
+            'An estimated Ts80 for cells that were not measured sufficiently long '
+            'for them to degrade by 20 %, with respect to the performance after any '
+            'initial burn in phase.'
+        ),
+        unit='hour',
+    )
+
+    power_conversion_efficiency_after_1000h = Quantity(
+        type=float,
+        description='Power conversion efficiency after 1000 hours.',
+    )
+
+    lifetime_energy_yield = Quantity(
+        type=float,
+        description='Lifetime energy yield.',
+        unit='kWh/m^2',
+    )
+
+
+class StabilityMeasurement(Measurement):
+    """
+    Stability measurement.
+    """
+
+    conditions = SubSection(
+        section_def=StabilityConditions,
+        description='Conditions of the stability measurement.',
+    )
+
+    results = SubSection(
+        section_def=StabilityResults,
+        description='Results of the stability measurement.',
+    )
 
 
 class PerformedMeasurements(ArchiveSection):
@@ -541,4 +541,23 @@ class PerformedMeasurements(ArchiveSection):
     eqe_top_cell = SubSection(
         section_def=ExternalQuantumEfficiency,
         description='External quantum efficiency measurement of the top cell.',
+    )
+
+    # Transmission
+
+    transmission_bottom_cell = SubSection(
+        section_def=Transmission,
+        description='Transmission measurement of the bottom cell.',
+    )
+
+    transmission_top_cell = SubSection(
+        section_def=Transmission,
+        description='Transmission measurement of the top cell.',
+    )
+
+    # Stability
+
+    stability = SubSection(
+        section_def=StabilityMeasurement,
+        description='Stability measurement.',
     )
