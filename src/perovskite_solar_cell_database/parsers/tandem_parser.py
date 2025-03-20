@@ -673,7 +673,7 @@ def extract_chalcopyrite_additives(data_frame):
     return additives if additives else None
 
 
-ef extract_chalcopyrite_composition(data_frame):
+def extract_chalcopyrite_composition(data_frame):
     """
     Extracts the composition from the data subframe and returns a list of Ion objects.
     """
