@@ -1,19 +1,21 @@
 from nomad.config.models.plugins import ParserEntryPoint
 
 
-class TandemParserEntryPoint(ParserEntryPoint):
+class TandemXLSParserEntryPoint(ParserEntryPoint):
     """
     Tandem Parser plugin entry point.
     """
 
     def load(self):
         # lazy import to avoid circular dependencies
-        from perovskite_solar_cell_database.parsers.tandem_parser import TandemParser
+        from perovskite_solar_cell_database.parsers.tandem_xls_parser import (
+            TandemXLSParser,
+        )
 
-        return TandemParser(**self.dict())
+        return TandemXLSParser(**self.dict())
 
 
-tandem_parser = TandemParserEntryPoint(
+tandem_xls_parser = TandemXLSParserEntryPoint(
     name='TandemParser',
     description='Tandem Parser for .xlsx files.',
     mainfile_name_re=r'.*\.xlsx',
