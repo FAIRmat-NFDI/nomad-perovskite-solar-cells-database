@@ -30,6 +30,26 @@ tandem_xls_parser = TandemXLSParserEntryPoint(
 )
 
 
+class TandemJSONParserEntryPoint(ParserEntryPoint):
+    """
+    Tandem Parser plugin entry point.
+    """
+
+    def load(self):
+        from perovskite_solar_cell_database.parsers.tandem_json_parser import (
+            TandemJSONParser,
+        )
+
+        return TandemJSONParser(**self.dict())
+
+
+tandem_json_parser = TandemJSONParserEntryPoint(
+    name='TandemJSONParser',
+    description='Tandem Parser for .json files.',
+    mainfile_name_re=r'.*tandem.*initialdata.*\.json',
+)
+
+
 class IonParserEntryPoint(ParserEntryPoint):
     def load(self):
         from perovskite_solar_cell_database.parsers.ion_parser import IonParser
