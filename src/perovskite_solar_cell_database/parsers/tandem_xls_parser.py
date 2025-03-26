@@ -52,7 +52,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     NonAbsorbingLayer,
     PerovskiteLayer,
     PerovskiteLayerProperties,
-    PhotoAbsorber,
+    PhotoAbsorberLayer,
     PhotoAbsorberProperties,
     QuenchingSolvent,
     ReactionComponent,
@@ -1103,7 +1103,7 @@ def extract_layer_stack(data_frame):
                     )
                 else:
                     layer_stack.append(
-                        PhotoAbsorber(
+                        PhotoAbsorberLayer(
                             **general_properties,
                             properties=PhotoAbsorberProperties(**properties),
                             composition=composition,

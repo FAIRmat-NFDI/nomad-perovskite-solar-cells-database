@@ -497,7 +497,7 @@ class PhotoAbsorberProperties(LayerProperties):
     )
 
 
-class PhotoAbsorber(Layer):
+class PhotoAbsorberLayer(Layer):
     """
     A section describing a photoabsorber layer.
     """
@@ -533,7 +533,7 @@ class PerovskiteLayerProperties(PhotoAbsorberProperties):
     # )
 
 
-class PerovskiteLayer(PhotoAbsorber):
+class PerovskiteLayer(PhotoAbsorberLayer):
     """
     A section describing a perovskite layer.
     """
@@ -574,7 +574,7 @@ class SiliconLayerProperties(PhotoAbsorberProperties):
     )
 
 
-class SiliconLayer(PhotoAbsorber):
+class SiliconLayer(PhotoAbsorberLayer):
     """
     A section describing a silicon layer.
     """
@@ -623,7 +623,7 @@ class ChalcopyriteLayerComposition(LayerComposition):
     additives = SubSection(section_def=ChalcopyriteAlkaliAdditives, repeats=True)
 
 
-class ChalcopyriteLayer(PhotoAbsorber):
+class ChalcopyriteLayer(PhotoAbsorberLayer):
     """
     A section describing a chalcopyrite layer.
     """
