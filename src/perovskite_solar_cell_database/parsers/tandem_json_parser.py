@@ -1,6 +1,8 @@
+import json
 import os
 from typing import TYPE_CHECKING
 
+from jmespath import search
 from nomad.datamodel.datamodel import EntryArchive
 from nomad.parsing.parser import MatchingParser
 
@@ -14,8 +16,6 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
 
 if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
-
-import json
 
 
 class TandemJSONParser(MatchingParser):
@@ -48,25 +48,11 @@ class TandemJSONParser(MatchingParser):
         tandem.m_update_from_dict(update_dict)
         archive.data = tandem
 
-        # entry_archive = EntryArchive()
-        # entry_archive.data = tandem
-
-        # create_archive(
-        #     entry_archive.m_to_dict(),
-        #     archive.m_context,
-        #     'tandem' + '.archive.json',
-        #     # os.path.splitext(filename)[0] + '.archive.json',
-        #     'json',
-        #     logger,
-        # )
-
 
 def map_json_to_schema(source: dict) -> dict:
     """
     Maps the JSON data to the PerovskiteTandemSolarCell schema.
     """
-
-    from jmespath import search
 
     data = {}
 
@@ -128,6 +114,15 @@ def map_json_to_schema(source: dict) -> dict:
 
         # Specify layer type
         if functionality == 'Photoabsorber':
+            layer['properties'].update(
+                {
+                    'bandgap': search('band_gap.value', layer_from_source),
+                    'bandgap_graded': search('band_gap.is_graded', layer_from_source),
+                    'bandgap_estimation_basis': search(
+                        'band_gap.estimated_from', layer_from_source
+                    ),
+                }
+            )
             photoabsorber = search('photoabsorber_material', layer_from_source)
             if photoabsorber == 'Perovskite':
                 layer = update_perovskite_layer(layer, layer_from_source)
@@ -148,14 +143,65 @@ def map_json_to_schema(source: dict) -> dict:
     return data
 
 
-def update_perovskite_layer(layer: dict, lay: dict) -> dict:
+def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
     """
     Maps the JSON data to the Perovskite layer schema.
     """
 
-    layer['m_def'] = (
-        'perovskite_solar_cell_database.schema_packages.tandem.tandem.PerovskiteLayer'
+    layer.update(
+        {
+            'm_def': (
+                'perovskite_solar_cell_database.schema_packages.tandem.tandem.PerovskiteLayer'
+            ),
+            'name': 'Perovskite',
+        }
     )
+
+    # Layer properties
+    layer['properties'].update(
+        {
+            'inorganic': search('is_inorganic', layer_from_source),
+            'lead_free': search('is_lead_free', layer_from_source),
+        }
+    )
+
+    # Layer composition
+    layer['composition'] = {
+        'm_def': 'perovskite_solar_cell_database.composition.PerovskiteCompositionSection',
+        'ions_a_site': [],
+        'ions_b_site': [],
+        'ions_x_site': [],
+        # 'composition_estimate': search('composition_estimate', layer_from_source), # TODO: Check how this is called in the JSON
+    }
+    dim_map = {0: '0D', 1: '1D', 2: '2D', 2.5: '2D/3D', 3: '3D'}
+    dimensionality = search('dimensionality', layer_from_source)
+    if dimensionality:
+        layer['properties']['dimensionality'] = dim_map.get(dimensionality, 'Other')
+    # Ions
+    for ion in search('composition.a_ions', layer_from_source):
+        layer['composition']['ions_a_site'].append(
+            {
+                'm_def': 'perovskite_solar_cell_database.composition.PerovskiteAIonComponent',
+                'abbreviation': search('ion', ion),
+                'coefficient': search('coefficient', ion),
+            }
+        )
+    for ion in search('composition.b_ions', layer_from_source):
+        layer['composition']['ions_b_site'].append(
+            {
+                'm_def': 'perovskite_solar_cell_database.composition.PerovskiteBIonComponent',
+                'abbreviation': search('ion', ion),
+                'coefficient': search('coefficient', ion),
+            }
+        )
+    for ion in search('composition.x_ions', layer_from_source):
+        layer['composition']['ions_x_site'].append(
+            {
+                'm_def': 'perovskite_solar_cell_database.composition.PerovskiteXIonComponent',
+                'abbreviation': search('ion', ion),
+                'coefficient': search('coefficient', ion),
+            }
+        )
 
     return layer
 
@@ -168,6 +214,7 @@ def update_CIGS_layer(layer: dict, lay: dict) -> dict:
     layer['m_def'] = (
         'perovskite_solar_cell_database.schema_packages.tandem.tandem.ChalcopyriteLayer'
     )
+    layer['name'] = 'CIGS'
 
     return layer
 
@@ -180,6 +227,7 @@ def update_silicon_layer(layer: dict, lay: dict) -> dict:
     layer['m_def'] = (
         'perovskite_solar_cell_database.schema_packages.tandem.tandem.SiliconLayer'
     )
+    layer['name'] = 'Silicon'
 
     return layer
 
