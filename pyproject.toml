@@ -48,7 +48,17 @@ Repository = "https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-datab
 index-url = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple"
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "structlog"]
+dev = [
+    "pytest",
+    "ruff",
+    "structlog",
+    "mkdocs", 
+    "mkdocs-material>=9.0",
+    "pymdown-extensions",
+    "mkdocs-click",
+    "mkdocs-macros-plugin>=1.0",
+    "pydantic>=2.0,<2.11"
+]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
