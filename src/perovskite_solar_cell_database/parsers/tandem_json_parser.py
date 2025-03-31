@@ -139,6 +139,23 @@ def map_json_to_schema(source: dict) -> dict:
         data['layer_stack'].append(layer)
 
     # Measurements
+    data['measurements'] = {}
+
+    # JV measurements
+    JV_from_source = search('measurements.jv_measurements', source) or []
+    for jv in JV_from_source:
+        data = update_jv_measurement(data, jv)
+
+    # EQE measurements
+    EQE_from_source = search('measurements.EQE', source) or []
+    for eqe in EQE_from_source:
+        data = update_eqe_measurement(data, eqe)
+
+    # Transmission measurements
+    transmission_from_source = search('measurements.Transmission', source) or []
+    for transmission in transmission_from_source:
+        data = update_transmission_measurement(data, transmission)
+        
 
     return data
 
@@ -254,3 +271,129 @@ def update_nonabsorbing_layer(layer: dict, lay: dict) -> dict:
     )
 
     return layer
+
+def map_source_of_measurement(measurement: dict) -> str:
+    """
+    Maps the source of the measurement to the correct value.
+    """
+    if search('measurement_done_on', measurement) == "Compleat_device" or search('is_identical_to_cell_in_tandem_stack', measurement) is True:
+        source = 'This device'
+    elif search('is_identical_to_cell_in_tandem_stack', measurement) is False: 
+        source = 'Analogous free standing cell'
+    else:
+        source = 'Unknown'
+
+    return source
+
+def update_jv_measurement(data: dict, jv: dict) -> dict:
+    """
+    Maps the JSON data to the JV measurement schema.
+    """
+
+    # Map source
+    source = map_source_of_measurement(jv)
+
+    # Conditions
+    conditions = {
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVConditions',
+        'atmosphere': search('environmental_conditions.atmosphere', jv),
+        # 'duration' : search('environmental_conditions.duration', jv), # TODO: Check how this is called in the JSON
+        # 'temperature': search('environmental_conditions.temperature', jv), # TODO: Check how this is called in the JSON
+        # 'humidity_relative': search('environmental_conditions.humidity', jv), # TODO: Check how this is called in the JSON
+        'illumination': {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Illumination',
+            'type': search('light_conditions.light_source', jv),
+            'brand': search('light_conditions.light_source_brand_name', jv),
+            'spectrum': search('light_conditions.light_spectra', jv),
+            'intensity': search('light_conditions.light_intensity', jv),
+            'mask': search('light_conditions.shadow_mask_is_used', jv),
+        },
+    }
+
+    # JV measurement
+    jv_measurement = {
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVMeasurement',
+        'source': source,
+        'conditions': conditions,
+        'results': {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVResults',
+            'short_circuit_current_density': search('jv_metrics.j_sc', jv),
+            'open_circuit_voltage': search('jv_metrics.voc', jv),
+            'fill_factor': search('jv_metrics.ff', jv),
+            'efficiency': round(float(search('jv_metrics.pce', jv)) / 100, 5) if search('jv_metrics.pce', jv) else None,
+        },
+    }
+
+    # assign to the correct attribute
+    if source == 'This device':
+        if search('jv_metrics.scan_direction', jv) == 'Reversed':
+            data['measurements']['jv_full_device_reverse'] = jv_measurement
+        else:
+            data['measurements']['jv_full_device_forward'] = jv_measurement
+    elif source == 'Analogous free standing cell':
+        if search('measurement_done_on', jv) == 'Top_cell':
+            data['measurements']['jv_top_cell'] = jv_measurement
+        elif search('measurement_done_on', jv) == 'Bottom_cell':
+            data['measurements']['jv_bottom_cell'] = jv_measurement
+
+    # TODO: Shaded cell
+
+    return data
+
+def update_eqe_measurement(data: dict, eqe: dict) -> dict:
+    """
+    Maps the JSON data to the EQE measurement schema.
+    """
+
+    # Map source
+    source = map_source_of_measurement(eqe)
+
+    # Conditions
+    conditions = {}
+
+    # EQE measurement
+    eqe_measurement = {
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.ExternalQuantumEfficiency',
+        'source': source,
+        'conditions': conditions,
+        'results': {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.EQEResults',
+            'integrated_short_circuit_current_density': search('EQE_metrics.integrated_current', eqe),
+        },
+    }
+
+    # assign to the correct attribute
+    if source == 'This device':
+        data['measurements']['eqe_full_device'] = eqe_measurement
+    elif source == 'Analogous free standing cell':
+        if search('measurement_done_on', eqe) == 'Top_cell':
+            data['measurements']['eqe_top_cell'] = eqe_measurement
+        elif search('measurement_done_on', eqe) == 'Bottom_cell':
+            data['measurements']['eqe_bottom_cell'] = eqe_measurement
+
+    return data
+
+def update_transmission_measurement(data: dict, transmission: dict) -> dict:
+    """
+    Maps the JSON data to the Transmission measurement schema.
+    """
+
+    # Map source
+    # source = map_source_of_measurement(transmission)
+
+    # Transmission measurement
+    transmission_measurement = {
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
+        'results': {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.TransmissionResults',
+            'integrated_transmission': search('average_transmission_in_the_visible_range', transmission),
+        },
+    }
+
+    # assign to the correct attribute
+    if search('measurement_done_on', transmission) == 'Top_cell':
+        data['measurements']['transmission_top_cell'] = transmission_measurement
+    elif search('measurement_done_on', transmission) == 'Bottom_cell':
+        data['measurements']['transmission_bottom_cell'] = transmission_measurement
+    
+    return data
