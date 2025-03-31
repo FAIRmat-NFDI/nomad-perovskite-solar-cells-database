@@ -1,0 +1,1 @@
+{{ metainfo_package('perovskite_solar_cell_database.composition') }}

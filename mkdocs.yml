@@ -13,9 +13,13 @@ nav:
       - Add a new ion: how_to/add_a_new_ion.md
       - Export a structure: how_to/export_structures.md
       - Download data: how_to/download_data.md
+  - Reference:
+      - Schema: reference/schema.md
 plugins:
   - search
   - glightbox
+  - macros:
+      module_name: docs/main
 
 theme:
   name: material
