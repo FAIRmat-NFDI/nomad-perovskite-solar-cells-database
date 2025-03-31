@@ -158,11 +158,12 @@ def map_json_to_schema(source: dict) -> dict:
     transmission_from_source = search('measurements.Transmission', source) or []
     for transmission in transmission_from_source:
         data = parse_transmission_measurement(data, transmission)
-        
 
     return data
 
+
 #### Layer functions ####
+
 
 def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
     """
@@ -276,6 +277,7 @@ def update_nonabsorbing_layer(layer: dict, lay: dict) -> dict:
 
     return layer
 
+
 #### Synthesis functions ####
 
 # Liquid-based processes
@@ -341,6 +343,7 @@ gas_phase_processes = [
     'Thermal oxidation',
 ]
 
+
 def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
     """
     Maps the JSON data to the Synthesis schema.
@@ -378,18 +381,23 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
 
 #### Measurement functions ####
 
+
 def map_source_of_measurement(measurement: dict) -> str:
     """
     Maps the source of the measurement to the correct value.
     """
-    if search('measurement_done_on', measurement) == "Compleat_device" or search('is_identical_to_cell_in_tandem_stack', measurement) is True:
+    if (
+        search('measurement_done_on', measurement) == 'Compleat_device'
+        or search('is_identical_to_cell_in_tandem_stack', measurement) is True
+    ):
         source = 'This device'
-    elif search('is_identical_to_cell_in_tandem_stack', measurement) is False: 
+    elif search('is_identical_to_cell_in_tandem_stack', measurement) is False:
         source = 'Analogous free standing cell'
     else:
         source = 'Unknown'
 
     return source
+
 
 def parse_jv_measurement(data: dict, jv: dict) -> dict:
     """
@@ -426,7 +434,9 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
             'short_circuit_current_density': search('jv_metrics.j_sc', jv),
             'open_circuit_voltage': search('jv_metrics.voc', jv),
             'fill_factor': search('jv_metrics.ff', jv),
-            'efficiency': round(float(search('jv_metrics.pce', jv)) / 100, 5) if search('jv_metrics.pce', jv) else None,
+            'efficiency': round(float(search('jv_metrics.pce', jv)) / 100, 5)
+            if search('jv_metrics.pce', jv)
+            else None,
         },
     }
 
@@ -446,6 +456,7 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
 
     return data
 
+
 def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
     """
     Maps the JSON data to the EQE measurement schema.
@@ -464,7 +475,9 @@ def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
         'conditions': conditions,
         'results': {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.EQEResults',
-            'integrated_short_circuit_current_density': search('EQE_metrics.integrated_current', eqe),
+            'integrated_short_circuit_current_density': search(
+                'EQE_metrics.integrated_current', eqe
+            ),
         },
     }
 
@@ -479,6 +492,7 @@ def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
 
     return data
 
+
 def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
     """
     Maps the JSON data to the Transmission measurement schema.
@@ -492,7 +506,9 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
         'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
         'results': {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.TransmissionResults',
-            'integrated_transmission': search('average_transmission_in_the_visible_range', transmission),
+            'integrated_transmission': search(
+                'average_transmission_in_the_visible_range', transmission
+            ),
         },
     }
 
@@ -501,5 +517,5 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
         data['measurements']['transmission_top_cell'] = transmission_measurement
     elif search('measurement_done_on', transmission) == 'Bottom_cell':
         data['measurements']['transmission_bottom_cell'] = transmission_measurement
-    
+
     return data
