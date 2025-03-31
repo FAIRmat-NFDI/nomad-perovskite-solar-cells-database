@@ -135,6 +135,9 @@ def map_json_to_schema(source: dict) -> dict:
         else:
             layer = update_nonabsorbing_layer(layer, layer_from_source)
 
+        # Deposition and Synthesis
+        layer = parse_synthesis(layer, layer_from_source)
+
         # Append layer to layer stack
         data['layer_stack'].append(layer)
 
@@ -144,21 +147,22 @@ def map_json_to_schema(source: dict) -> dict:
     # JV measurements
     JV_from_source = search('measurements.jv_measurements', source) or []
     for jv in JV_from_source:
-        data = update_jv_measurement(data, jv)
+        data = parse_jv_measurement(data, jv)
 
     # EQE measurements
     EQE_from_source = search('measurements.EQE', source) or []
     for eqe in EQE_from_source:
-        data = update_eqe_measurement(data, eqe)
+        data = parse_eqe_measurement(data, eqe)
 
     # Transmission measurements
     transmission_from_source = search('measurements.Transmission', source) or []
     for transmission in transmission_from_source:
-        data = update_transmission_measurement(data, transmission)
+        data = parse_transmission_measurement(data, transmission)
         
 
     return data
 
+#### Layer functions ####
 
 def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
     """
@@ -272,6 +276,108 @@ def update_nonabsorbing_layer(layer: dict, lay: dict) -> dict:
 
     return layer
 
+#### Synthesis functions ####
+
+# Liquid-based processes
+liquid_based_processes = [
+    'Air brush spray',
+    'Brush painting',
+    'Centrifuge-casting',
+    'Dip-coating',
+    'Doctor blading',
+    'Dropcasting',
+    'Drop-infiltration',
+    'Electrospinning',
+    'Electrospraying',
+    'Inkjet printing',
+    'Lamination',
+    'Langmuir-Blodgett deposition',
+    'Meniscus-coating',
+    'Painting',
+    'Roller coating',
+    'Sandwiching',
+    'Screen printing',
+    'Slot-die coating',
+    'Spin-coating',
+    'Spray-coating',
+    'Spray-pyrolysis',
+    'Sprinkling',
+    'Substrate vibration assisted dropcasting',
+    'Ultrasonic spray',
+    'Ultrasonic spray pyrolysis',
+]
+
+# Gas-phase processes
+gas_phase_processes = [
+    'Aerosol-assisted CVD',
+    'ALD',
+    'Candle burning',
+    'CBD',
+    'Chemical etching',
+    'Co-evaporation',
+    'Condensation',
+    'CVD',
+    'DC Magnetron Sputtering',
+    'DC Reactive Magnetron Sputtering',
+    'DC Sputtering',
+    'E-beam evaporation',
+    'Evaporation',
+    'Frequency Magnetron Sputtering',
+    'Gelation',
+    'Hydrolysis',
+    'Hydrothermal',
+    'Magnetron sputtering',
+    'Oxidation',
+    'Oxygen plasma treatment',
+    'Pulsed laser deposition',
+    'PVD',
+    'Reactive sputtering',
+    'RF Magnetron Sputtering',
+    'RF plasma sputtering',
+    'RF sputtering',
+    'SILAR',
+    'Solvothermal',
+    'Sputtering',
+    'Thermal oxidation',
+]
+
+def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
+    """
+    Maps the JSON data to the Synthesis schema.
+    """
+
+    layer['synthesis'] = {
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.tandem.Synthesis',
+        'process_steps': [],
+    }
+
+    process_steps = search('deposition_procedure', layer_from_source) or []
+    for step in process_steps:
+        name = search('procedure', step)
+        if name in liquid_based_processes:
+            process = {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis',
+                'name': name,
+            }
+        elif name in gas_phase_processes:
+            process = {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis',
+                'name': name,
+            }
+        else:
+            process = None
+
+        if process:
+            layer['synthesis']['process_steps'].append(process)
+
+    if len(layer['synthesis']['process_steps']) > 0:
+        layer['synthesis']['origin'] = 'Lab made'
+
+    return layer
+
+
+#### Measurement functions ####
+
 def map_source_of_measurement(measurement: dict) -> str:
     """
     Maps the source of the measurement to the correct value.
@@ -285,7 +391,7 @@ def map_source_of_measurement(measurement: dict) -> str:
 
     return source
 
-def update_jv_measurement(data: dict, jv: dict) -> dict:
+def parse_jv_measurement(data: dict, jv: dict) -> dict:
     """
     Maps the JSON data to the JV measurement schema.
     """
@@ -340,7 +446,7 @@ def update_jv_measurement(data: dict, jv: dict) -> dict:
 
     return data
 
-def update_eqe_measurement(data: dict, eqe: dict) -> dict:
+def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
     """
     Maps the JSON data to the EQE measurement schema.
     """
@@ -373,7 +479,7 @@ def update_eqe_measurement(data: dict, eqe: dict) -> dict:
 
     return data
 
-def update_transmission_measurement(data: dict, transmission: dict) -> dict:
+def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
     """
     Maps the JSON data to the Transmission measurement schema.
     """
