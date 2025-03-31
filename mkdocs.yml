@@ -14,7 +14,9 @@ nav:
       - Export a structure: how_to/export_structures.md
       - Download data: how_to/download_data.md
   - Reference:
-      - Schema: reference/schema.md
+      - Composition and ion schema: reference/composition_and_ion_schema.md
+      - Solar cells schema: reference/solar_cell_schema.md
+      - Tandem schema: reference/tandem_schema.md
 plugins:
   - search
   - glightbox
