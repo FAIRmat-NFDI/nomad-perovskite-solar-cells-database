@@ -144,10 +144,7 @@ class MyEncoder(json.JSONEncoder):
             return obj.tolist()
         elif isinstance(
             obj,
-            (
-                datetime,
-                date,
-            ),
+            datetime | date,
         ):
             return obj.isoformat()
         else:

@@ -274,7 +274,7 @@ def convert_value(value, unit=None):  # noqa: PLR0911
     unit (str, optional): The unit to convert the value to. Defaults to None.
     """
 
-    if unit and isinstance(value, (int, float)) and not isinstance(value, bool):
+    if unit and isinstance(value, int | float) and not isinstance(value, bool):
         return ureg.Quantity(value, unit)
 
     if isinstance(value, str):
@@ -684,7 +684,7 @@ def extract_chalcopyrite_composition(data_frame):
             'Chalcopyrite. Composition. Ions. Coefficients',
             convert=True,
         )
-        return coefficient if isinstance(coefficient, (float, int)) else None
+        return coefficient if isinstance(coefficient, float | int) else None
 
     df_temp = data_frame[data_frame.index.str.contains('Chalcopyrite. Composition')]
     if df_temp.empty:

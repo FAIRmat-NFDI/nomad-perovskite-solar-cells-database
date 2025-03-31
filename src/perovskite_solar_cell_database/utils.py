@@ -146,7 +146,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
     fig = go.Figure()
 
     # Ensure opacities is a list of the same length as layers
-    if isinstance(opacities, (int, float)):
+    if isinstance(opacities, int | float):
         opacities = [opacities] * len(layers)
 
     z_current = 0
