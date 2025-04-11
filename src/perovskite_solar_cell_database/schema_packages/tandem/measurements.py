@@ -2,9 +2,9 @@ from nomad.datamodel.data import ArchiveSection, EntryData
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.datamodel.metainfo.basesections import Experiment, ExperimentStep
 from nomad.metainfo import Quantity, Section, SubSection
-from nomad.metainfo.data_type import Enum
+from nomad.metainfo.data_type import MEnum
 
-from .tandem import Storage
+from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import Storage
 
 
 class Illumination(ArchiveSection):
@@ -48,7 +48,7 @@ class Illumination(ArchiveSection):
     )
 
     direction = Quantity(
-        type=Enum('Substrate', 'Superstrate'),
+        type=MEnum('Substrate', 'Superstrate'),
         description='Direction of the illumination.',
     )
 
@@ -144,10 +144,20 @@ class Measurement(ArchiveSection):
         description='Method of the measurement.',
     )
 
-    component = Quantity(
-        type=Enum('Whole Device', 'Bottom Cell', 'Top Cell', 'Other'),
-        description=(
-            'Component of the solar cell that is being measured (e.g., the whole device or a subcell).'
+    certfied = Quantity(
+        description='TRUE if the measurement was certified, FALSE otherwise.',
+        type=bool,
+        a_eln=ELNAnnotation(
+            component='BoolEditQuantity',
+        ),
+    )
+
+    component_association = Quantity(
+        description='Indicates the association of the layer with a subcell. A value of 0 signifies that the entire device is monolithic. Any value greater than 0 associates the layer with a specific subcell, numbered sequentially from the bottom.',
+        type=int,
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            minValue=0,
         ),
     )
 
@@ -267,7 +277,7 @@ class JVMeasurement(Measurement):
     """
 
     source = Quantity(
-        type=Enum('This device', 'Analogous free standing cell', 'Unknown'),
+        type=MEnum('This device', 'Analogous free standing cell', 'Unknown'),
         description=(
             'Indicates whether the measurement was performed on this specific device '
             'or on an analogous free standing cell.'
@@ -485,79 +495,32 @@ class PerformedMeasurements(ArchiveSection):
     Section for listing all measurements performed on this solar cell.
     """
 
-    # JV measurements
-
-    jv_full_device_forward = SubSection(
+    jv_measurements = SubSection(
+        description='JV measurements performed on this device.',
         section_def=JVMeasurement,
-        description='JV measurement of the full device in the forward direction.',
+        repeats=True,
     )
 
-    jv_full_device_reverse = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the full device in the reverse direction.',
+    eqe_measurements = SubSection(
+        description='EQE measurements performed on this device.',
+        section_def=ExternalQuantumEfficiency,
+        repeats=True,
     )
 
-    jv_bottom_cell = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the bottom cell.',
-    )
-
-    jv_bottom_cell_shaded = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the bottom cell under shading.',
-    )
-
-    jv_top_cell = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the top cell.',
-    )
-
-    # Stabilised performance measurements
-
-    stabilised_performance_full_device = SubSection(
+    performance_measurements = SubSection(
+        description='Performance measurements performed on this device.',
         section_def=StabilisedPerformance,
-        description='Stabilised performance measurement of the full device.',
+        repeats=True,
     )
 
-    # TODO: Add measurements for subcells?
-
-    # EQE
-
-    eqe_full_device = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the full device.',
-    )
-
-    eqe_bottom_cell = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the bottom cell.',
-    )
-
-    eqe_bottom_cell_shaded = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the bottom cell under shading.',
-    )
-
-    eqe_top_cell = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the top cell.',
-    )
-
-    # Transmission
-
-    transmission_bottom_cell = SubSection(
-        section_def=Transmission,
-        description='Transmission measurement of the bottom cell.',
-    )
-
-    transmission_top_cell = SubSection(
-        section_def=Transmission,
-        description='Transmission measurement of the top cell.',
-    )
-
-    # Stability
-
-    stability = SubSection(
+    stability_measurements = SubSection(
+        description='Stability measurements performed on this device.',
         section_def=StabilityMeasurement,
-        description='Stability measurement.',
+        repeats=True,
+    )
+
+    transmission_measurements = SubSection(
+        description='Transmission measurements performed on this device.',
+        section_def=Transmission,
+        repeats=True,
     )

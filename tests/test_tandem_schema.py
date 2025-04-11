@@ -4,8 +4,6 @@ from nomad.client import normalize_all, parse
 from nomad.metainfo import Quantity
 from nomad.units import ureg
 
-# from perovskite_tandem_database.schema_packages.tandem import Ion
-
 
 def test_schema():
     test_file = os.path.join(

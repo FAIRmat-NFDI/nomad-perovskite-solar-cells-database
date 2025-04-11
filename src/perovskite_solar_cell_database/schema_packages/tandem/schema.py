@@ -15,12 +15,10 @@ from nomad.metainfo import SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.utils import create_cell_stack_figure
 
+from .general import General
+from .layer_stack import Layer
 from .measurements import PerformedMeasurements
 from .reference import Reference
-from .tandem import (
-    General,
-    Layer,
-)
 
 m_package = SchemaPackage()
 
@@ -62,8 +60,10 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        """
+        Plot the layer stack of the device and add it to the figures.
+        """
         super().normalize(archive, logger)
-
         # A few different shades of gray for intermediate layers
         gray_shades = ['#D3D3D3', '#BEBEBE', '#A9A9A9', '#909090']
         gray_cycle = cycle(gray_shades)
