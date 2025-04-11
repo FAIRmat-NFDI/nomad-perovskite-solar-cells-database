@@ -15,25 +15,19 @@ class Illumination(ArchiveSection):
     type = Quantity(
         description='Type of illumination.',
         type=str,
-        a_eln=ELNAnnotation(
-            component='TextEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     brand = Quantity(
         description='The brand name and model number of the light source/solar simulator used',
         type=str,
-        a_eln=ELNAnnotation(
-            component='TextEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     simulator_class = Quantity(
         description='Class of the simulator.',
         type=str,
-        a_eln=ELNAnnotation(
-            component='TextEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     intensity = Quantity(
@@ -46,9 +40,7 @@ class Illumination(ArchiveSection):
     spectrum = Quantity(
         description='Spectrum of the illumination.',
         type=str,
-        a_eln=ELNAnnotation(
-            component='TextEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     # TODO: Handle range as well as single value
@@ -62,17 +54,13 @@ class Illumination(ArchiveSection):
     direction = Quantity(
         description='Direction of the illumination.',
         type=MEnum('Substrate', 'Superstrate'),
-        a_eln=ELNAnnotation(
-            component='EnumEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     mask = Quantity(
         description='Mask used for the illumination.',
         type=bool,
-        a_eln=ELNAnnotation(
-            component='BoolEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
     mask_area = Quantity(
@@ -100,7 +88,7 @@ class MeasurementConditions(ArchiveSection):
     atmosphere = Quantity(
         type=str,
         description='Atmosphere during the measurement.',
-        a_eln=ELNAnnotation(component='TextEditQuantity'),
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     humidity_relative = Quantity(
@@ -131,7 +119,7 @@ class Preconditioning(ArchiveSection):
     protocol = Quantity(
         description='Protocol for the preconditioning. Light soaking, potential biasing, etc.',
         type=str,
-        a_eln=ELNAnnotation(component='TextEditQuantity'),
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     duration = Quantity(
@@ -174,9 +162,7 @@ class Measurement(ArchiveSection):
         description='TRUE if the measurement was certified, FALSE otherwise.',
         type=bool,
         default=False,
-        a_eln=ELNAnnotation(
-            component='BoolEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
     component_association = Quantity(
@@ -321,9 +307,7 @@ class JVMeasurement(Measurement):
             'or on an analogous free standing cell.'
         ),
         type=MEnum('This device', 'Analogous free standing cell', 'Unknown'),
-        a_eln=ELNAnnotation(
-            component='EnumEditQuantity',
-        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     conditions = SubSection(
@@ -354,11 +338,13 @@ class StabilisedPerformanceConditions(MeasurementConditions):
     metric_value = Quantity(
         type=float,
         description='Value of the metric to be stabilised.',
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     metric_unit = Quantity(
         type=str,
         description='Unit of the metric to be stabilised.',
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
 
@@ -387,7 +373,9 @@ class EQEResults(ArchiveSection):
         type=float,
         description='Integrated short-circuit current density.',
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='mA/cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
 

@@ -6,12 +6,12 @@ from jmespath import search
 from nomad.datamodel.datamodel import EntryArchive
 from nomad.parsing.parser import MatchingParser
 
-from perovskite_solar_cell_database.parsers.utils import create_archive
+from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import (
+    BandGap,
+    Layer,
+)
 from perovskite_solar_cell_database.schema_packages.tandem.schema import (
     PerovskiteTandemSolarCell,
-)
-from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
-    Layer,
 )
 
 if TYPE_CHECKING:
@@ -68,6 +68,8 @@ def map_json_to_schema(source: dict) -> dict:
     }
 
     # General
+    photoabsorber = search('device_classification.tandem_technology', source)
+    photoabsorber = photoabsorber.split(' | ') if photoabsorber else None
     data['general'] = {
         'architecture': search('device_classification.tandem_architecture', source),
         'number_of_terminals': search(
@@ -79,9 +81,7 @@ def map_json_to_schema(source: dict) -> dict:
         'number_of_cells': search(
             'device_classification.device_area.number_of_cells', source
         ),
-        'photoabsorber': search(
-            'device_classification.tandem_technology', source
-        ).split(' | '),
+        'photoabsorber': photoabsorber,
         'photoabsorber_bandgaps': search('device_classification.band_gaps', source),
         'area_measured': search('device_classification.device_area.cell_area', source),
         'flexibility': search('device_classification.is_flexible', source),
@@ -95,12 +95,10 @@ def map_json_to_schema(source: dict) -> dict:
     data['layer_stack'] = []
     layers_from_source = search('device_stack.layers', source) or []
     for layer_from_source in layers_from_source:
-        # General layer properties
         layer = {}
-        layer['properties'] = {
-            'thickness': search('thickness', layer_from_source),
-        }
+        layer['properties'] = parse_layer_properties(layer_from_source)
 
+        # Functionality
         functionality = search('functionality', layer_from_source)
         if functionality:
             functionality = functionality.replace('_', ' ')
@@ -114,26 +112,19 @@ def map_json_to_schema(source: dict) -> dict:
 
         # Specify layer type
         if functionality == 'Photoabsorber':
-            layer['properties'].update(
-                {
-                    'bandgap': search('band_gap.value', layer_from_source),
-                    'bandgap_graded': search('band_gap.is_graded', layer_from_source),
-                    'bandgap_estimation_basis': search(
-                        'band_gap.estimated_from', layer_from_source
-                    ),
-                }
-            )
             photoabsorber = search('photoabsorber_material', layer_from_source)
+            if photoabsorber:
+                layer['name'] = photoabsorber
             if photoabsorber == 'Perovskite':
-                layer = update_perovskite_layer(layer, layer_from_source)
+                layer = parse_perovskite_layer(layer, layer_from_source)
             elif photoabsorber == 'CIGS':  # TODO: Check how this is called in the JSON.
-                layer = update_CIGS_layer(layer, layer_from_source)
+                layer = parse_CIGS_layer(layer, layer_from_source)
             elif photoabsorber == 'Silicon':
-                layer = update_silicon_layer(layer, layer_from_source)
+                layer = parse_silicon_layer(layer, layer_from_source)
             else:
-                layer = update_other_photoabsorber_layer(layer, layer_from_source)
+                layer = parse_other_photoabsorber_layer(layer, layer_from_source)
         else:
-            layer = update_nonabsorbing_layer(layer, layer_from_source)
+            layer = parse_other_layer(layer, layer_from_source)
 
         # Deposition and Synthesis
         layer = parse_synthesis(layer, layer_from_source)
@@ -165,25 +156,133 @@ def map_json_to_schema(source: dict) -> dict:
 #### Layer functions ####
 
 
-def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
+def parse_layer_properties(layer_from_source: dict) -> dict:
     """
-    Maps the JSON data to the Perovskite layer schema.
+    Maps the JSON data to LayerProperties and returns the properties dictionary.
     """
 
-    layer.update(
-        {
-            'm_def': (
-                'perovskite_solar_cell_database.schema_packages.tandem.tandem.PerovskiteLayer'
-            ),
-            'name': 'Perovskite',
+    properties = {}
+
+    # General layer properties
+    thickness = search('thickness', layer_from_source)
+    if thickness:
+        properties['thickness'] = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Thickness',
+            'value': thickness,
         }
+
+    surface_roughness = search('surface_roughness', layer_from_source)
+    if surface_roughness:
+        properties['surface_roughness'] = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.SurfaceRoughness',
+            'value': surface_roughness,
+        }
+
+    area = search('area', layer_from_source)
+    if area:
+        properties['area'] = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Area',
+            'value': area,
+        }
+
+    bandgap = search('bandgap.value', layer_from_source)
+    if bandgap:
+        determined_by = search('bandgap.determined_by', layer_from_source)
+        if determined_by and determined_by not in BandGap.determined_by.type:
+            determined_by = None
+        properties['bandgap'] = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Bandgap',
+            'value': bandgap,
+            'graded': search('bandgap.is_graded', layer_from_source),
+            'determined_by': determined_by,
+        }
+
+    conductivity = search('conductivity', layer_from_source)
+    if conductivity:
+        properties['conductivity'] = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Conductivity',
+            'value': conductivity,
+        }
+
+    crystallinity = search('crystallinity', layer_from_source)
+    if crystallinity:
+        if crystallinity.lower()[:6] == 'amorph':
+            crystallinity = 'Amorphous'
+        elif crystallinity.lower()[:6] == 'polycr':
+            crystallinity = 'Polycrystalline'
+        elif crystallinity.lower()[:6] == 'single':
+            crystallinity = 'Single Crystal'
+        else:
+            crystallinity = None
+    if crystallinity:
+        properties['crystallinity'] = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Crystallinity',
+            'value': crystallinity,
+        }
+
+    return properties
+
+
+def parse_composition(layer: dict, layer_from_json: dict) -> dict:
+    """
+    Parses the composition of a layer from the JSON data and updates the layer dictionary.
+    """
+
+    materials = search('materials_in_layer', layer_from_json)
+
+    if not materials:
+        return None
+    
+    # Create composition section
+    composition = {
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LayerComposition',
+        'components': [],
+    }
+
+    # Fill in the components
+    for material in materials:
+        role_map = {
+            'majority_phase': 'Majority Phase',
+            'secondary_phase': 'Secondary Phase',
+            'additive': 'Additive',
+            'dopant': 'Dopant',
+        }
+        role = search('functionality_in_layer', material)
+        if role in role_map:
+            role = role_map[role]
+        else:
+            role = None
+        composition['components'].append(
+            {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LayerComponent',
+                'name': search('name', material),
+                'role': role,
+                # TODO: Implement metric for fractions
+            }
+        )
+
+    return composition
+
+
+def parse_perovskite_layer(layer: dict, layer_from_json: dict) -> dict:
+    """
+    Maps the JSON data to the Perovskite layer schema.
+    Returns the layer dictionary with the updated values.
+    """
+
+    # Assign specific layer type
+    layer['m_def'] = (
+        'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.PerovskiteLayer'
     )
 
     # Layer properties
     layer['properties'].update(
         {
-            'inorganic': search('is_inorganic', layer_from_source),
-            'lead_free': search('is_lead_free', layer_from_source),
+            'm_def': (
+                'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.PerovskiteLayerProperties'
+            ),
+            'inorganic': search('is_inorganic', layer_from_json),
+            'lead_free': search('is_lead_free', layer_from_json),
         }
     )
 
@@ -196,11 +295,11 @@ def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
         # 'composition_estimate': search('composition_estimate', layer_from_source), # TODO: Check how this is called in the JSON
     }
     dim_map = {0: '0D', 1: '1D', 2: '2D', 2.5: '2D/3D', 3: '3D'}
-    dimensionality = search('dimensionality', layer_from_source)
+    dimensionality = search('dimensionality', layer_from_json)
     if dimensionality:
         layer['properties']['dimensionality'] = dim_map.get(dimensionality, 'Other')
     # Ions
-    for ion in search('composition.a_ions', layer_from_source):
+    for ion in search('composition.a_ions', layer_from_json):
         layer['composition']['ions_a_site'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.composition.PerovskiteAIonComponent',
@@ -208,7 +307,7 @@ def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
                 'coefficient': search('coefficient', ion),
             }
         )
-    for ion in search('composition.b_ions', layer_from_source):
+    for ion in search('composition.b_ions', layer_from_json):
         layer['composition']['ions_b_site'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.composition.PerovskiteBIonComponent',
@@ -216,7 +315,7 @@ def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
                 'coefficient': search('coefficient', ion),
             }
         )
-    for ion in search('composition.x_ions', layer_from_source):
+    for ion in search('composition.x_ions', layer_from_json):
         layer['composition']['ions_x_site'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.composition.PerovskiteXIonComponent',
@@ -228,52 +327,82 @@ def update_perovskite_layer(layer: dict, layer_from_source: dict) -> dict:
     return layer
 
 
-def update_CIGS_layer(layer: dict, lay: dict) -> dict:
+def parse_CIGS_layer(layer: dict, layer_from_json: dict) -> dict:
     """
     Maps the JSON data to the CIGS layer schema.
     """
 
+    # Assign specific layer type
     layer['m_def'] = (
-        'perovskite_solar_cell_database.schema_packages.tandem.tandem.ChalcopyriteLayer'
+        'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.ChalcopyriteLayer'
     )
-    layer['name'] = 'CIGS'
+
+    # Layer composition
+    layer['composition'] = parse_composition(layer, layer_from_json)
+    layer['composition'].update(
+        {
+            'm_def': 'perovskite_solar_cell_database.composition.ChalcopyriteLayerComposition',
+        }
+    )
+
+    # TODO : Parse composition
 
     return layer
 
 
-def update_silicon_layer(layer: dict, lay: dict) -> dict:
+def parse_silicon_layer(layer: dict, layer_from_json: dict) -> dict:
     """
     Maps the JSON data to the Silicon layer schema.
     """
 
+    # Assign specific layer type
     layer['m_def'] = (
-        'perovskite_solar_cell_database.schema_packages.tandem.tandem.SiliconLayer'
+        'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.SiliconLayer'
     )
-    layer['name'] = 'Silicon'
+
+    # Layer composition
+    layer['composition'] = parse_composition(layer, layer_from_json)
+
+    # Layer properties
+    layer['properties'].update(
+        {
+            'm_def': (
+                'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.SiliconLayerProperties'
+            ),
+        }
+    )
 
     return layer
 
 
-def update_other_photoabsorber_layer(layer: dict, lay: dict) -> dict:
+def parse_other_photoabsorber_layer(layer: dict, layer_from_json: dict) -> dict:
     """
     Maps the JSON data to the Other Photoabsorber layer schema.
     """
 
+    # Assign specific layer type
     layer['m_def'] = (
-        'perovskite_solar_cell_database.schema_packages.tandem.tandem.PhotoAbsorberLayer'
+        'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.PhotoAbsorberLayer'
     )
+
+    # Layer composition
+    layer['composition'] = parse_composition(layer, layer_from_json)
 
     return layer
 
 
-def update_nonabsorbing_layer(layer: dict, lay: dict) -> dict:
+def parse_other_layer(layer: dict, layer_from_json: dict) -> dict:
     """
     Maps the JSON data to the General layer schema.
     """
 
+    # Assign specific layer type
     layer['m_def'] = (
-        'perovskite_solar_cell_database.schema_packages.tandem.tandem.NonAbsorbingLayer'
+        'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Layer'
     )
+
+    # Layer composition
+    layer['composition'] = parse_composition(layer, layer_from_json)
 
     return layer
 
@@ -350,8 +479,8 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
     """
 
     layer['synthesis'] = {
-        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.tandem.Synthesis',
-        'process_steps': [],
+        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Synthesis',
+        'steps': [],
     }
 
     process_steps = search('deposition_procedure', layer_from_source) or []
@@ -359,21 +488,21 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
         name = search('procedure', step)
         if name in liquid_based_processes:
             process = {
-                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.tandem.LiquidSynthesis',
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LiquidSynthesis',
                 'name': name,
             }
         elif name in gas_phase_processes:
             process = {
-                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.tandem.GasPhaseSynthesis',
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.GasPhaseSynthesis',
                 'name': name,
             }
         else:
             process = None
 
         if process:
-            layer['synthesis']['process_steps'].append(process)
+            layer['synthesis']['steps'].append(process)
 
-    if len(layer['synthesis']['process_steps']) > 0:
+    if len(layer['synthesis']['steps']) > 0:
         layer['synthesis']['origin'] = 'Lab made'
 
     return layer
@@ -382,21 +511,25 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
 #### Measurement functions ####
 
 
-def map_source_of_measurement(measurement: dict) -> str:
+def map_component_association(measurement: dict) -> str:
     """
     Maps the source of the measurement to the correct value.
     """
-    if (
-        search('measurement_done_on', measurement) == 'Compleat_device'
-        or search('is_identical_to_cell_in_tandem_stack', measurement) is True
-    ):
-        source = 'This device'
-    elif search('is_identical_to_cell_in_tandem_stack', measurement) is False:
-        source = 'Analogous free standing cell'
-    else:
-        source = 'Unknown'
 
-    return source
+    measurement_done_on = search('measurement_done_on', measurement)
+
+    if not measurement_done_on:
+        return None
+
+    component = None
+    if measurement_done_on.lower() == 'compleat_device':
+        component = 0
+    if measurement_done_on.lower() == 'bottom_cell':
+        component = 1
+    if measurement_done_on.lower() == 'top_cell':
+        component = 2
+
+    return component
 
 
 def parse_jv_measurement(data: dict, jv: dict) -> dict:
@@ -404,8 +537,9 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
     Maps the JSON data to the JV measurement schema.
     """
 
-    # Map source
-    source = map_source_of_measurement(jv)
+    # Check if list of JV measurements exists
+    if 'jv_measurements' not in data['measurements']:
+        data['measurements']['jv_measurements'] = []
 
     # Conditions
     conditions = {
@@ -425,34 +559,23 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
     }
 
     # JV measurement
-    jv_measurement = {
-        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVMeasurement',
-        'source': source,
-        'conditions': conditions,
-        'results': {
-            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVResults',
-            'short_circuit_current_density': search('jv_metrics.j_sc', jv),
-            'open_circuit_voltage': search('jv_metrics.voc', jv),
-            'fill_factor': search('jv_metrics.ff', jv),
-            'efficiency': round(float(search('jv_metrics.pce', jv)) / 100, 5)
-            if search('jv_metrics.pce', jv)
-            else None,
-        },
-    }
-
-    # assign to the correct attribute
-    if source == 'This device':
-        if search('jv_metrics.scan_direction', jv) == 'Reversed':
-            data['measurements']['jv_full_device_reverse'] = jv_measurement
-        else:
-            data['measurements']['jv_full_device_forward'] = jv_measurement
-    elif source == 'Analogous free standing cell':
-        if search('measurement_done_on', jv) == 'Top_cell':
-            data['measurements']['jv_top_cell'] = jv_measurement
-        elif search('measurement_done_on', jv) == 'Bottom_cell':
-            data['measurements']['jv_bottom_cell'] = jv_measurement
-
-    # TODO: Shaded cell
+    data['measurements']['jv_measurements'].append(
+        {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVMeasurement',
+            'certified': search('is_certified', jv),
+            'component_association': map_component_association(jv),
+            'conditions': conditions,
+            'results': {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVResults',
+                'short_circuit_current_density': search('jv_metrics.j_sc', jv),
+                'open_circuit_voltage': search('jv_metrics.voc', jv),
+                'fill_factor': search('jv_metrics.ff', jv),
+                'efficiency': round(float(search('jv_metrics.pce', jv)) / 100, 5)
+                if search('jv_metrics.pce', jv)
+                else None,
+            },
+        }
+    )
 
     return data
 
@@ -462,33 +585,28 @@ def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
     Maps the JSON data to the EQE measurement schema.
     """
 
-    # Map source
-    source = map_source_of_measurement(eqe)
+    # Check if list of EQE measurements exists
+    if 'eqe_measurements' not in data['measurements']:
+        data['measurements']['eqe_measurements'] = []
 
     # Conditions
-    conditions = {}
+    conditions = None  # TODO: Check is this can be extracted from the JSON
 
     # EQE measurement
-    eqe_measurement = {
-        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.ExternalQuantumEfficiency',
-        'source': source,
-        'conditions': conditions,
-        'results': {
-            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.EQEResults',
-            'integrated_short_circuit_current_density': search(
-                'EQE_metrics.integrated_current', eqe
-            ),
-        },
-    }
-
-    # assign to the correct attribute
-    if source == 'This device':
-        data['measurements']['eqe_full_device'] = eqe_measurement
-    elif source == 'Analogous free standing cell':
-        if search('measurement_done_on', eqe) == 'Top_cell':
-            data['measurements']['eqe_top_cell'] = eqe_measurement
-        elif search('measurement_done_on', eqe) == 'Bottom_cell':
-            data['measurements']['eqe_bottom_cell'] = eqe_measurement
+    data['measurements']['eqe_measurements'].append(
+        {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.ExternalQuantumEfficiency',
+            'certified': search('is_certified', eqe),
+            'component_association': map_component_association(eqe),
+            'conditions': conditions,
+            'results': {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.EQEResults',
+                'integrated_short_circuit_current_density': search(
+                    'EQE_metrics.integrated_current', eqe
+                ),
+            },
+        }
+    )
 
     return data
 
@@ -498,24 +616,28 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
     Maps the JSON data to the Transmission measurement schema.
     """
 
-    # Map source
-    # source = map_source_of_measurement(transmission)
+    # Check if list of transmission measurements exists
+    if 'transmission' not in data['measurements']:
+        data['measurements']['transmission'] = []
+
+    # Conditions
+    conditions = None  # TODO: Check is this can be extracted from the JSON
 
     # Transmission measurement
-    transmission_measurement = {
-        'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
-        'results': {
-            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.TransmissionResults',
-            'integrated_transmission': search(
-                'average_transmission_in_the_visible_range', transmission
-            ),
-        },
-    }
-
-    # assign to the correct attribute
-    if search('measurement_done_on', transmission) == 'Top_cell':
-        data['measurements']['transmission_top_cell'] = transmission_measurement
-    elif search('measurement_done_on', transmission) == 'Bottom_cell':
-        data['measurements']['transmission_bottom_cell'] = transmission_measurement
+    avg_transmission = search('average_transmission_in_the_visible_range', transmission)
+    if avg_transmission:
+        avg_transmission = round(float(avg_transmission) / 100, 5)
+        data['measurements']['transmission'].append(
+            {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
+                'certified': search('is_certified', transmission),
+                'component_association': map_component_association(transmission),
+                'conditions': conditions,
+                'results': {
+                    'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.TransmissionResults',
+                    'integrated_transmission': avg_transmission,
+                },
+            }
+        )
 
     return data
