@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
 from itertools import cycle
 
-import plotly.graph_objects as go
 from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import SchemaPackage, Section, SubSection

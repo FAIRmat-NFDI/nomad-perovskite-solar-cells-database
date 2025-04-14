@@ -1,7 +1,6 @@
-from nomad.datamodel.data import ArchiveSection, EntryData
+from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
-from nomad.metainfo import Quantity, Section, SubSection
-from nomad.metainfo.data_type import MEnum
+from nomad.metainfo import MEnum, Quantity, Section, SubSection
 
 
 class SubCell(ArchiveSection):

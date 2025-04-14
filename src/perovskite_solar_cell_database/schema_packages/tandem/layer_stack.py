@@ -6,8 +6,7 @@ from nomad.datamodel.metainfo.annotations import (
     SectionProperties,
 )
 from nomad.datamodel.metainfo.basesections.v2 import PureSubstance
-from nomad.metainfo import Quantity, Section, SubSection
-from nomad.metainfo.data_type import MEnum
+from nomad.metainfo import MEnum, Quantity, Section, SubSection
 
 from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
 

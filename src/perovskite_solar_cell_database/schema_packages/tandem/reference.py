@@ -1,7 +1,6 @@
 import numpy as np
-from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.basesections import PublicationReference
-from nomad.metainfo import Datetime, Quantity, Section
+from nomad.metainfo import Quantity, Section
 
 
 class Reference(PublicationReference):
