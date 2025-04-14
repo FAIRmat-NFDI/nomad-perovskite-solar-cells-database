@@ -97,7 +97,9 @@ def map_json_to_schema(source: dict) -> dict:
     for layer_from_source in layers_from_source:
         layer = {}
         layer['properties'] = parse_layer_properties(layer_from_source)
-        layer['subcell_association'] = map_subcell_association(search('subcell_association', layer_from_source))
+        layer['subcell_association'] = map_subcell_association(
+            search('subcell_association', layer_from_source)
+        )
 
         # Functionality
         functionality = search('functionality', layer_from_source)
@@ -150,6 +152,7 @@ def map_json_to_schema(source: dict) -> dict:
         data = parse_transmission_measurement(data, transmission)
 
     return data
+
 
 def map_subcell_association(mention: str) -> Optional[int]:
     """
@@ -533,6 +536,7 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
 
 #### Measurement functions ####
 
+
 def parse_jv_measurement(data: dict, jv: dict) -> dict:
     """
     Maps the JSON data to the JV measurement schema.
@@ -564,7 +568,9 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
         {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVMeasurement',
             'certified': search('is_certified', jv),
-            'subcell_association': map_subcell_association(search('measurement_done_on', jv)),
+            'subcell_association': map_subcell_association(
+                search('measurement_done_on', jv)
+            ),
             'conditions': conditions,
             'results': {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVResults',
@@ -600,7 +606,9 @@ def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
         {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.ExternalQuantumEfficiency',
             'certified': search('is_certified', eqe),
-            'subcell_association': map_subcell_association(search('measurement_done_on', eqe)),
+            'subcell_association': map_subcell_association(
+                search('measurement_done_on', eqe)
+            ),
             'conditions': conditions,
             'results': {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.EQEResults',
@@ -634,7 +642,9 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
             {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
                 'certified': search('is_certified', transmission),
-                'subcell_association': map_subcell_association(search('measurement_done_on', transmission)),
+                'subcell_association': map_subcell_association(
+                    search('measurement_done_on', transmission)
+                ),
                 'conditions': conditions,
                 'results': {
                     'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.TransmissionResults',

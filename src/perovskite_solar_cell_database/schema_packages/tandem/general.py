@@ -12,8 +12,7 @@ class SubCell(ArchiveSection):
         description='The area of the sub cell',
         type=float,
         unit='cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity',
-            defaultDisplayUnit='cm^2'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
     )
 
     module = Quantity(
@@ -70,7 +69,7 @@ class General(ArchiveSection):
     )
 
     photoabsorber = Quantity(
-        description="List of the photoabsorbers starting from the bottom of the device stack.",
+        description='List of the photoabsorbers starting from the bottom of the device stack.',
         type=MEnum(['Silicon', 'Perovskite', 'CIGS', 'OPV', 'OSC', 'DSSC', 'BHJ']),
         shape=['*'],
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
@@ -99,7 +98,7 @@ class General(ArchiveSection):
         - There is no sharp well-defined boundary between a when a material is best considered as doped to when it is best considered as a mixture of two materials. When in doubt if your material is doped or a mixture, use the notation that best capture the metaphysical essence of the situation
         - Use common abbreviations when possible but spell it out when there is risk for confusion. For consistency, please pay attention to the abbreviation specified under the headline Abbreviations found tandem instructions v4.0 document.
                     """,
-                            type=str,
+        type=str,
         shape=['*'],
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
@@ -108,17 +107,14 @@ class General(ArchiveSection):
         description='The total area of the device.',
         type=float,
         unit='cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity',
-            defaultDisplayUnit='cm^2'),
-        
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
     )
 
     area_measured = Quantity(
         description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
         type=float,
         unit='cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity',
-            defaultDisplayUnit='cm^2'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
     )
 
     flexibility = Quantity(
