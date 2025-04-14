@@ -154,7 +154,7 @@ def map_json_to_schema(source: dict) -> dict:
     return data
 
 
-def map_subcell_association(mention: str) -> Optional[int]:
+def map_subcell_association(mention: str) -> int | None:
     """
     Maps the source of the measurement to the subcell association (int).
     """
