@@ -374,11 +374,6 @@ class PerovskiteLayerProperties(PhotoAbsorberProperties):
     A section storing general properties of a perovskite layer.
     """
 
-    single_crystal = Quantity(
-        type=bool,
-        default=False,
-        description='TRUE if the perovskite layer is single crystal, FALSE if it is polycrystalline.',
-    )
     inorganic = Quantity(
         type=bool,
         description='TRUE if the perovskite layer is inorganic, FALSE if it is organic.',

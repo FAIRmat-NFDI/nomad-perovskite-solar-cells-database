@@ -158,7 +158,7 @@ class Measurement(ArchiveSection):
         description='Method of the measurement.',
     )
 
-    certfied = Quantity(
+    certified = Quantity(
         description='TRUE if the measurement was certified, FALSE otherwise.',
         type=bool,
         default=False,

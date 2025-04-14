@@ -130,7 +130,7 @@ class General(ArchiveSection):
         description='TRUE if the device contains textured layers with the purpose of light management.',
     )
 
-    contains_antireflectie_coating = Quantity(
+    contains_antireflective_coating = Quantity(
         type=bool,
         default=False,
         description='TRUE if the device contains one or more anti reflective coatings.',

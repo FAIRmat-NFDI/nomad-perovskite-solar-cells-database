@@ -87,7 +87,7 @@ def map_json_to_schema(source: dict) -> dict:
         'flexibility': search('device_classification.is_flexible', source),
         'semitransparent': search('device_classification.is_semitransparent', source),
         'contains_textured_layers': None,  # Not available in JSON.
-        'contains_antireflectie_coating': None,  # Not available in JSON.
+        'contains_antireflective_coating': None,  # Not available in JSON.
         'subcell': [],  # Not available in JSON.
     }
 
@@ -185,15 +185,15 @@ def parse_layer_properties(layer_from_source: dict) -> dict:
             'value': area,
         }
 
-    bandgap = search('bandgap.value', layer_from_source)
+    bandgap = search('band_gap.value', layer_from_source)
     if bandgap:
-        determined_by = search('bandgap.determined_by', layer_from_source)
+        determined_by = search('band_gap.estimated_from', layer_from_source)
         if determined_by and determined_by not in BandGap.determined_by.type:
             determined_by = None
         properties['bandgap'] = {
-            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.Bandgap',
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.BandGap',
             'value': bandgap,
-            'graded': search('bandgap.is_graded', layer_from_source),
+            'graded': search('band_gap.is_graded', layer_from_source),
             'determined_by': determined_by,
         }
 
@@ -579,7 +579,9 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
                 'short_circuit_current_density': search('jv_metrics.j_sc', jv),
                 'open_circuit_voltage': search('jv_metrics.voc', jv),
                 'fill_factor': search('jv_metrics.ff', jv),
-                'efficiency': round(float(search('jv_metrics.pce', jv)) / 100, 5)
+                'power_conversion_efficiency': round(
+                    float(search('jv_metrics.pce', jv)) / 100, 5
+                )
                 if search('jv_metrics.pce', jv)
                 else None,
             },
