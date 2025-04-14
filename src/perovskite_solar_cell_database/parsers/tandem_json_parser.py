@@ -232,7 +232,7 @@ def parse_composition(layer: dict, layer_from_json: dict) -> dict:
 
     if not materials:
         return None
-    
+
     # Create composition section
     composition = {
         'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LayerComposition',
@@ -241,6 +241,15 @@ def parse_composition(layer: dict, layer_from_json: dict) -> dict:
 
     # Fill in the components
     for material in materials:
+        # TODO: Refine pubchem search - here or in the schema?
+        # Some material names are not assigned correctly, e.g. SLG or ZnO
+
+        component = {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LayerComponent',
+            'name': search('name', material),
+        }
+
+        # Map the role of the component
         role_map = {
             'majority_phase': 'Majority Phase',
             'secondary_phase': 'Secondary Phase',
@@ -249,17 +258,17 @@ def parse_composition(layer: dict, layer_from_json: dict) -> dict:
         }
         role = search('functionality_in_layer', material)
         if role in role_map:
-            role = role_map[role]
-        else:
-            role = None
-        composition['components'].append(
-            {
-                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LayerComponent',
-                'name': search('name', material),
-                'role': role,
-                # TODO: Implement metric for fractions
-            }
-        )
+            component['role'] = role_map[role]
+
+        # Figure out fraction quantity
+        if search('fraction_of_layer_content_metric', material) == 'mol_fraction':
+            component['molar_fraction'] = search('fraction_of_layer_content', material)
+        elif search('fraction_of_layer_content_metric', material) == 'mass_fraction':
+            component['mass_fraction'] = search('fraction_of_layer_content', material)
+        elif search('fraction_of_layer_content_metric', material) == 'volume_fraction':
+            component['volume_fraction'] = search('fraction_of_layer_content', material)
+
+        composition['components'].append(component)
 
     return composition
 

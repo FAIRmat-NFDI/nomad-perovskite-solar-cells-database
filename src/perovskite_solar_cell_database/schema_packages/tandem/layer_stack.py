@@ -82,6 +82,11 @@ class PureSubstanceComponent(PureSubstance):
         unit='g/l',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mg/ml'),
     )
+    molar_fraction = Quantity(
+        description='The molar fraction of the substance.',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
     mass_fraction = Quantity(
         description='The mass fraction of the substance.',
         type=float,
