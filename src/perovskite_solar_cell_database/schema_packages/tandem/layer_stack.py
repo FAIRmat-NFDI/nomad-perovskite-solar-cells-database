@@ -775,7 +775,7 @@ class Layer(ArchiveSection):
         description='The functionality of the layer',
     )
 
-    component_association = Quantity(
+    subcell_association = Quantity(
         description='Indicates the association of the layer with a subcell. A value of 0 signifies that the entire device is monolithic. Any value greater than 0 associates the layer with a specific subcell, numbered sequentially from the bottom.',
         type=int,
         a_eln=ELNAnnotation(

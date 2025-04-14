@@ -1,6 +1,6 @@
 import json
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from jmespath import search
 from nomad.datamodel.datamodel import EntryArchive
@@ -97,6 +97,7 @@ def map_json_to_schema(source: dict) -> dict:
     for layer_from_source in layers_from_source:
         layer = {}
         layer['properties'] = parse_layer_properties(layer_from_source)
+        layer['subcell_association'] = map_subcell_association(search('subcell_association', layer_from_source))
 
         # Functionality
         functionality = search('functionality', layer_from_source)
@@ -104,9 +105,7 @@ def map_json_to_schema(source: dict) -> dict:
             functionality = functionality.replace('_', ' ')
             if functionality in Layer.functionality.type:
                 layer['functionality'] = functionality
-                layer['name'] = (
-                    functionality  # TODO: What should be the name of the layer?
-                )
+                layer['name'] = functionality
             else:
                 functionality = None
 
@@ -151,6 +150,24 @@ def map_json_to_schema(source: dict) -> dict:
         data = parse_transmission_measurement(data, transmission)
 
     return data
+
+def map_subcell_association(mention: str) -> Optional[int]:
+    """
+    Maps the source of the measurement to the subcell association (int).
+    """
+
+    if not mention:
+        return None
+
+    association = None
+    if mention.lower() == 'compleat_device' or mention.lower() == 'monolitic_device':
+        association = 0
+    if mention.lower() == 'bottom_cell':
+        association = 1
+    if mention.lower() == 'top_cell':
+        association = 2
+
+    return association
 
 
 #### Layer functions ####
@@ -241,9 +258,6 @@ def parse_composition(layer: dict, layer_from_json: dict) -> dict:
 
     # Fill in the components
     for material in materials:
-        # TODO: Refine pubchem search - here or in the schema?
-        # Some material names are not assigned correctly, e.g. SLG or ZnO
-
         component = {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.layer_stack.LayerComponent',
             'name': search('name', material),
@@ -519,28 +533,6 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
 
 #### Measurement functions ####
 
-
-def map_component_association(measurement: dict) -> str:
-    """
-    Maps the source of the measurement to the correct value.
-    """
-
-    measurement_done_on = search('measurement_done_on', measurement)
-
-    if not measurement_done_on:
-        return None
-
-    component = None
-    if measurement_done_on.lower() == 'compleat_device':
-        component = 0
-    if measurement_done_on.lower() == 'bottom_cell':
-        component = 1
-    if measurement_done_on.lower() == 'top_cell':
-        component = 2
-
-    return component
-
-
 def parse_jv_measurement(data: dict, jv: dict) -> dict:
     """
     Maps the JSON data to the JV measurement schema.
@@ -572,7 +564,7 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
         {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVMeasurement',
             'certified': search('is_certified', jv),
-            'component_association': map_component_association(jv),
+            'subcell_association': map_subcell_association(search('measurement_done_on', jv)),
             'conditions': conditions,
             'results': {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVResults',
@@ -608,7 +600,7 @@ def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
         {
             'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.ExternalQuantumEfficiency',
             'certified': search('is_certified', eqe),
-            'component_association': map_component_association(eqe),
+            'subcell_association': map_subcell_association(search('measurement_done_on', eqe)),
             'conditions': conditions,
             'results': {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.EQEResults',
@@ -642,7 +634,7 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
             {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
                 'certified': search('is_certified', transmission),
-                'component_association': map_component_association(transmission),
+                'subcell_association': map_subcell_association(search('measurement_done_on', transmission)),
                 'conditions': conditions,
                 'results': {
                     'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.TransmissionResults',

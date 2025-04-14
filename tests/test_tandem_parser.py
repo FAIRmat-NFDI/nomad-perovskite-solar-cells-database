@@ -41,6 +41,8 @@ def test_schema():
     ## tests for layer stack
     stack = entry_archive.data.layer_stack
     assert len(stack) == 11
+    for layer in stack:
+        assert layer.subcell_association == 0
 
     # Layer 1: Back contact
     layer = stack[0]
@@ -153,19 +155,19 @@ def test_schema():
         assert measurement.conditions.illumination.spectrum == 'AM 1.5'
         assert measurement.conditions.illumination.intensity == ureg('100 W/m^2')
 
-    assert jv[0].component_association == 0
+    assert jv[0].subcell_association == 0
     assert jv[0].results.short_circuit_current_density == ureg('12.67 mA/cm^2')
     assert jv[0].results.open_circuit_voltage == ureg('1.89 V')
     assert jv[0].results.fill_factor == 12.67
     assert jv[0].results.power_conversion_efficiency == 0.1717
 
-    assert jv[1].component_association == 1
+    assert jv[1].subcell_association == 1
     assert jv[1].results.short_circuit_current_density == ureg('15.46 mA/cm^2')
     assert jv[1].results.open_circuit_voltage == ureg('1.15 V')
     assert jv[1].results.fill_factor == 0.812
     assert jv[1].results.power_conversion_efficiency == 0.1443
 
-    assert jv[2].component_association == 2
+    assert jv[2].subcell_association == 2
     assert jv[2].results.short_circuit_current_density == ureg('24.75 mA/cm^2')
     assert jv[2].results.open_circuit_voltage == ureg('0.83 V')
     assert jv[2].results.fill_factor == 0.682
@@ -179,5 +181,5 @@ def test_schema():
         assert measurement.certified is False
         assert (
             measurement.results.integrated_short_circuit_current_density
-            == results[measurement.component_association]
+            == results[measurement.subcell_association]
         )
