@@ -1,5 +1,5 @@
 import os.path
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from nomad.client import normalize_all, parse
 from nomad.metainfo import Quantity
@@ -19,7 +19,7 @@ def test_schema():
     assert reference.ID == 0
     assert reference.publication_date == datetime.fromisoformat(
         '2021-03-18T12:44:28'
-    ).replace(tzinfo=UTC)
+    ).replace(tzinfo=timezone.utc)
     assert reference.journal == 'Journal of Materials Chemistry A'
     assert reference.publication_authors[0] == 'Xin Wu'
     assert reference.name_of_person_entering_the_data == 'Adam Hultqvist'
