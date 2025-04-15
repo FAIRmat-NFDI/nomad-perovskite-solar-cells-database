@@ -5,7 +5,7 @@ from nomad.datamodel.metainfo.annotations import (
     Filter,
     SectionProperties,
 )
-from nomad.datamodel.metainfo.basesections.v2 import PureSubstance
+from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
 from nomad.metainfo import MEnum, Quantity, Section, SubSection
 
 from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
@@ -13,36 +13,7 @@ from perovskite_solar_cell_database.composition import PerovskiteCompositionSect
 ##### Chemicals and materials
 
 
-class Element(ArchiveSection):
-    """
-    A section describing a substance that is an element.
-    """
-
-    m_def = Section()  # label_quantity='ion_type')
-
-    name = Quantity(
-        type=str,
-        description='Name of the ion.',
-    )
-
-    symbol = Quantity(
-        type=MEnum(chemical_symbols[1:]),
-        description="""
-        The symbol of the element, e.g. 'Pb'.
-        """,
-    )
-
-    coefficient = Quantity(
-        type=float,
-        description="""Coefficient for the element.
-        - If a coefficient is unknown, leave the field empty.
-        - If there are uncertainties in the coefficient, only state the best estimate, e.g. write 0.4 and not 0.3-0.5.
-        - If the coefficients are not known precisely, a good guess is worth more than to state that we have absolutely no idea.
-        """,
-    )
-
-
-class PureSubstanceComponent(PureSubstance):
+class PureSubstanceComponent(PubChemPureSubstanceSection):
     """
     A section describing a pure substance being a component in a mixture.
     """
@@ -99,7 +70,7 @@ class PureSubstanceComponent(PureSubstance):
 
     def normalize(self, archive, logger):
         # Fix for non-defined molecular_formula in PureSubstance v2.py
-        self.molecular_formula = self.formula
+        # self.molecular_formula = self.formula
         super().normalize(archive, logger)
 
 
@@ -192,11 +163,13 @@ class PhysicalProperty(ArchiveSection):
     name = Quantity(
         description='The name of the property.',
         type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     value = Quantity(
         description='The value of the property.',
         type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     determined_by = Quantity(
@@ -353,18 +326,20 @@ class PhotoAbsorberProperties(LayerProperties):
     """
 
     PL_max = Quantity(
+        description='The wavelength of the maximum PL intensity',
         type=float,
         unit='nm',
-        description='The wavelength of the maximum PL intensity',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     # Misc
     perovskite_inspired = Quantity(
-        type=bool,
-        default=False,
         description="""TRUE if the photoabsorber is perovskite inspired.
         In the literature we sometimes see cells based on non-perovskite photo absorbers, but which claims to be “perovskite inspired” regardless if the crystal structure has any resemblance to the perovskite ABC3 structure or not.
         This category is for enabling those cells to easily be identified and filtered.""",
+        type=bool,
+        default=False,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
 
@@ -374,12 +349,14 @@ class PerovskiteLayerProperties(PhotoAbsorberProperties):
     """
 
     inorganic = Quantity(
-        type=bool,
         description='TRUE if the perovskite layer is inorganic, FALSE if it is organic.',
+        type=bool,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
     lead_free = Quantity(
-        type=bool,
         description='TRUE if the perovskite layer is lead-free, FALSE if it contains lead.',
+        type=bool,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
     # non_stoichiometry = Quantity(
     #     type=str,
@@ -393,16 +370,21 @@ class SiliconLayerProperties(PhotoAbsorberProperties):
     """
 
     cell_type = Quantity(
-        type=str,
         description="""The type of silicon cell.
         Examples: AL-BSF, c-type, HIT, Homojunction, n-type, PERC, PERC n-type c-Si bifacial
         SC/nFAB, PERL, Single heterojunction""",
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     doping_sequence = Quantity(
-        type=MEnum(['n-aSi', 'i-aSi', 'p-aSi', 'n-Si', 'i-Si', 'p-Si']),
         description='The doping sequence of the silicon, starting from the bottom',
-        repeats=True,
+        type=str,
+        shape=['*'],
+        a_eln=ELNAnnotation(
+            component='StringEditQuantity',
+            suggestions=['n-aSi', 'i-aSi', 'p-aSi', 'n-Si', 'i-Si', 'p-Si'],
+        ),
     )
 
 
@@ -595,7 +577,8 @@ class Cleaning(SynthesisStep):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.name = 'Cleaning'
+        if not self.name:
+            self.name = 'Cleaning'
 
 
 class ThermalAnnealing(SynthesisStep):
@@ -629,7 +612,7 @@ class ThermalAnnealing(SynthesisStep):
         description='The total pressure during each synthesis step',
         type=float,
         unit='mbar',
-        a_eln=ELNAnnotation(defaultDisplayUnit='mbar'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mbar'),
     )
     humidity_relative = Quantity(
         description='The relative humidity in the storage atmosphere.',
@@ -640,7 +623,8 @@ class ThermalAnnealing(SynthesisStep):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.name = 'Thermal Annealing'
+        if not self.name:
+            self.name = 'Thermal Annealing'
 
 
 class SolventAnnealing(ThermalAnnealing):
@@ -666,7 +650,8 @@ class SolventAnnealing(ThermalAnnealing):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.name = 'Solvent Annealing'
+        if not self.name:
+            self.name = 'Solvent Annealing'
 
 
 class SurfaceTreatment(SynthesisStep):
@@ -682,7 +667,8 @@ class SurfaceTreatment(SynthesisStep):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.name = 'Surface Treatment'
+        if not self.name:
+            self.name = 'Surface Treatment'
 
 
 class Storage(ArchiveSection):
@@ -692,24 +678,27 @@ class Storage(ArchiveSection):
     """
 
     atmosphere = Quantity(
-        type=MEnum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
         description='The atmosphere in which the sample is stored.',
+        type=MEnum(['Air', 'Ambient', 'Ar', 'Dry Air', 'N2', 'Vacuum']),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
     humidity_relative = Quantity(
+        description='The relative humidity in the storage atmosphere.',
         type=float,
         unit='dimensionless',
-        description='The relative humidity in the storage atmosphere.',
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
     time_until_next_step = Quantity(
+        description='The time between the perovskite stack is finalised and the next layer is deposited.',
         type=float,
         unit='hour',
-        a_eln=ELNAnnotation(defaultDisplayUnit='hour'),
-        description='The time between the perovskite stack is finalised and the next layer is deposited.',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.name = 'Storage'
+        if not self.name:
+            self.name = 'Storage'
 
 
 class Synthesis(ArchiveSection):
@@ -746,11 +735,13 @@ class Layer(ArchiveSection):
     """
 
     name = Quantity(
-        type=str,
         description='The name of the layer',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
     # Type
     functionality = Quantity(
+        description='The functionality of the layer',
         type=MEnum(
             [
                 'Anti reflective coating',
@@ -772,7 +763,7 @@ class Layer(ArchiveSection):
                 'Window layer',
             ]
         ),
-        description='The functionality of the layer',
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     subcell_association = Quantity(
