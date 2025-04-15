@@ -6,6 +6,7 @@ from jmespath import search
 from nomad.datamodel.datamodel import EntryArchive
 from nomad.parsing.parser import MatchingParser
 
+from perovskite_solar_cell_database.parsers.utils import create_archive
 from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import (
     BandGap,
     Layer,
@@ -33,6 +34,7 @@ class TandemJSONParser(MatchingParser):
         filename = os.path.basename(mainfile)
         logger.info(f'Parsing file {filename}')
 
+        entry_archive = EntryArchive()
         tandem = PerovskiteTandemSolarCell()
 
         with open(mainfile) as file:
@@ -41,12 +43,19 @@ class TandemJSONParser(MatchingParser):
         update_dict = map_json_to_schema(source_dict)
 
         # Get ID from filename
-        update_dict['reference']['ID'] = int(
-            os.path.splitext(filename)[0].split('_')[-1]
-        )
+        ID = int(os.path.splitext(filename)[0].split('_')[-1])
+        update_dict['reference']['ID'] = ID
 
         tandem.m_update_from_dict(update_dict)
-        archive.data = tandem
+        entry_archive.data = tandem
+
+        create_archive(
+            entry_archive.m_to_dict(),
+            archive.m_context,
+            f'tandem_{ID}.archive.json',
+            'json',
+            logger,
+        )
 
 
 def map_json_to_schema(source: dict) -> dict:
@@ -163,7 +172,7 @@ def map_subcell_association(mention: str) -> int | None:
         return None
 
     association = None
-    if mention.lower() == 'compleat_device' or mention.lower() == 'monolitic_device':
+    if mention.lower() in {'compleat_device', 'monolitic_device'}:
         association = 0
     if mention.lower() == 'bottom_cell':
         association = 1
@@ -325,7 +334,7 @@ def parse_perovskite_layer(layer: dict, layer_from_json: dict) -> dict:
     if dimensionality:
         layer['properties']['dimensionality'] = dim_map.get(dimensionality, 'Other')
     # Ions
-    for ion in search('composition.a_ions', layer_from_json):
+    for ion in search('composition.a_ions', layer_from_json) or []:
         layer['composition']['ions_a_site'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.composition.PerovskiteAIonComponent',
@@ -333,7 +342,7 @@ def parse_perovskite_layer(layer: dict, layer_from_json: dict) -> dict:
                 'coefficient': search('coefficient', ion),
             }
         )
-    for ion in search('composition.b_ions', layer_from_json):
+    for ion in search('composition.b_ions', layer_from_json) or []:
         layer['composition']['ions_b_site'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.composition.PerovskiteBIonComponent',
@@ -341,7 +350,7 @@ def parse_perovskite_layer(layer: dict, layer_from_json: dict) -> dict:
                 'coefficient': search('coefficient', ion),
             }
         )
-    for ion in search('composition.x_ions', layer_from_json):
+    for ion in search('composition.x_ions', layer_from_json) or []:
         layer['composition']['ions_x_site'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.composition.PerovskiteXIonComponent',
