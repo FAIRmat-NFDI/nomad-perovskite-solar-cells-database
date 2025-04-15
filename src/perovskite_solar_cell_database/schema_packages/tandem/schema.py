@@ -76,27 +76,32 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         # construct the layer stack
         for layer in self.layer_stack:
             layer_names.append(layer.name)
-            if 'Substrate' in layer.functionality and (
-                not thicknesses or thicknesses[-1] != 1.0
-            ):
-                thicknesses.append(1.0)
-                colors.append('lightblue')
-                opacities.append(1)
-            elif 'Photoabsorber' in layer.functionality:
-                thicknesses.append(0.8)
-                opacities.append(1)
-                if layer.name == 'Perovskite':
-                    colors.append('red')
-                elif layer.name == 'CIGS':
-                    colors.append('orange')
-                elif layer.name == 'Silicon':
-                    colors.append('orangered')
+            if layer.functionality:
+                if 'Substrate' in layer.functionality and (
+                    not thicknesses or thicknesses[-1] != 1.0
+                ):
+                    thicknesses.append(1.0)
+                    colors.append('lightblue')
+                    opacities.append(1)
+                elif 'Photoabsorber' in layer.functionality:
+                    thicknesses.append(0.8)
+                    opacities.append(1)
+                    if layer.name == 'Perovskite':
+                        colors.append('red')
+                    elif layer.name == 'CIGS':
+                        colors.append('orange')
+                    elif layer.name == 'Silicon':
+                        colors.append('orangered')
+                    else:
+                        colors.append('firebrick')
+                elif 'Subcell spacer' in layer.functionality:
+                    thicknesses.append(0.5)
+                    colors.append('white')
+                    opacities.append(0.05)
                 else:
-                    colors.append('firebrick')
-            elif 'Subcell spacer' in layer.functionality:
-                thicknesses.append(0.5)
-                colors.append('white')
-                opacities.append(0.05)
+                    thicknesses.append(0.1)
+                    colors.append(next(gray_cycle))
+                    opacities.append(1)
             else:
                 thicknesses.append(0.1)
                 colors.append(next(gray_cycle))
