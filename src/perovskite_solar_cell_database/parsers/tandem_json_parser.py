@@ -567,7 +567,7 @@ def convert_to_fraction(value: float | None) -> float | None:
     """
     Converts a percentage string to a fraction.
     """
-    if value and value > 1:
+    if value and value > 2:
         return value * 0.01
     return value
 
