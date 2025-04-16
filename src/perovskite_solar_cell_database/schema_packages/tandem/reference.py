@@ -1,7 +1,9 @@
 import numpy as np
-from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.basesections import PublicationReference
-from nomad.metainfo import Datetime, Quantity, Section
+from nomad.metainfo import Quantity, Section
+from nomad.metainfo.metainfo import SchemaPackage
+
+m_package = SchemaPackage()
 
 
 class Reference(PublicationReference):
@@ -58,3 +60,6 @@ class Reference(PublicationReference):
     def normalize(self, archive, logger):
         """Normalize the reference section."""
         super().normalize(archive, logger)
+
+
+m_package.__init_metainfo__()

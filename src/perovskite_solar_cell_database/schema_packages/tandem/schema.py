@@ -8,19 +8,16 @@ if TYPE_CHECKING:
 
 from itertools import cycle
 
-import plotly.graph_objects as go
 from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
-from nomad.metainfo import SchemaPackage, Section, SubSection
+from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.utils import create_cell_stack_figure
 
+from .general import General
+from .layer_stack import Layer
 from .measurements import PerformedMeasurements
 from .reference import Reference
-from .tandem import (
-    General,
-    Layer,
-)
 
 m_package = SchemaPackage()
 
@@ -62,8 +59,10 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        """
+        Plot the layer stack of the device and add it to the figures.
+        """
         super().normalize(archive, logger)
-
         # A few different shades of gray for intermediate layers
         gray_shades = ['#D3D3D3', '#BEBEBE', '#A9A9A9', '#909090']
         gray_cycle = cycle(gray_shades)
@@ -77,63 +76,70 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         # construct the layer stack
         for layer in self.layer_stack:
             layer_names.append(layer.name)
-            if 'Substrate' in layer.functionality and (
-                not thicknesses or thicknesses[-1] != 1.0
-            ):
-                thicknesses.append(1.0)
-                colors.append('lightblue')
-                opacities.append(1)
-            elif 'Photoabsorber' in layer.functionality:
-                thicknesses.append(0.8)
-                opacities.append(1)
-                if layer.name == 'Perovskite':
-                    colors.append('red')
-                elif layer.name == 'CIGS':
-                    colors.append('orange')
-                elif layer.name == 'Silicon':
-                    colors.append('orangered')
+            if layer.functionality:
+                if 'Substrate' in layer.functionality and (
+                    not thicknesses or thicknesses[-1] != 1.0
+                ):
+                    thicknesses.append(1.0)
+                    colors.append('lightblue')
+                    opacities.append(1)
+                elif 'Photoabsorber' in layer.functionality:
+                    thicknesses.append(0.8)
+                    opacities.append(1)
+                    if layer.name == 'Perovskite':
+                        colors.append('red')
+                    elif layer.name == 'CIGS':
+                        colors.append('orange')
+                    elif layer.name == 'Silicon':
+                        colors.append('orangered')
+                    else:
+                        colors.append('firebrick')
+                elif 'Subcell spacer' in layer.functionality:
+                    thicknesses.append(0.5)
+                    colors.append('white')
+                    opacities.append(0.05)
                 else:
-                    colors.append('firebrick')
-            elif 'Subcell spacer' in layer.functionality:
-                thicknesses.append(0.5)
-                colors.append('white')
-                opacities.append(0.05)
+                    thicknesses.append(0.1)
+                    colors.append(next(gray_cycle))
+                    opacities.append(1)
             else:
                 thicknesses.append(0.1)
                 colors.append(next(gray_cycle))
                 opacities.append(1)
 
-        # Averaged device parameters
-        parameters = {
+        # Fetch device parameters from measurement results
+        parameter_map = {
             'efficiency': 'power_conversion_efficiency',
             'voc': 'open_circuit_voltage',
             'jsc': 'short_circuit_current_density',
             'ff': 'fill_factor',
         }
-        values = {key: [] for key in parameters}
 
-        for name in [
-            'jv_full_device_forward',
-            'jv_full_device_reverse',
-            'stabilised_performance_full_device',
-        ]:
-            measurement = getattr(self.measurements, name, None)
-            if measurement and hasattr(measurement, 'results'):
-                for key, attr in parameters.items():
-                    value = getattr(measurement.results, attr, None)
-                    if value is not None:
-                        values[key].append(value)
+        values = {key: None for key in parameter_map}
+        measurement_types = [
+            'jv_measurements',
+        ]
 
-        averaged_values = {
-            key: sum(val) / len(val) if val else None for key, val in values.items()
-        }
+        for param_key, result_attr in parameter_map.items():
+            for measurement_type in measurement_types:
+                measurements = getattr(self.measurements, measurement_type, [])
+                for measurement in measurements:
+                    if getattr(
+                        measurement, 'subcell_association', None
+                    ) == 0 and hasattr(measurement, 'results'):
+                        value = getattr(measurement.results, result_attr, None)
+                        if value is not None:
+                            values[param_key] = value
+                            break
+                if values[param_key] is not None:
+                    break
 
         fig = create_cell_stack_figure(
             layers=layer_names,
             thicknesses=thicknesses,
             colors=colors,
             opacities=opacities,
-            **averaged_values,
+            **values,
             x_min=0,
             x_max=10,
             y_min=0,
@@ -141,3 +147,15 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         )
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
+
+
+class RawFileTandemJson(Schema):
+    """
+    Section for a tandem json data file.
+    """
+
+    tandem = Quantity(type=PerovskiteTandemSolarCell)
+    data = Quantity(type=JSON)
+
+
+m_package.__init_metainfo__()

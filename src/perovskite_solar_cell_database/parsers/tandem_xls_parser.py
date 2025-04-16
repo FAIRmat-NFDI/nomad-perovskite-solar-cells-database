@@ -52,7 +52,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.tandem import (
     NonAbsorbingLayer,
     PerovskiteLayer,
     PerovskiteLayerProperties,
-    PhotoAbsorber,
+    PhotoAbsorberLayer,
     PhotoAbsorberProperties,
     QuenchingSolvent,
     ReactionComponent,
@@ -87,7 +87,7 @@ unit_pattern = re.compile(
 )  # Matches ".9kg", "10mA", "1.5 kg", "2 cm^2/(V*s)", "1e-6 m" etc.
 
 
-class TandemParser(MatchingParser):
+class TandemXLSParser(MatchingParser):
     """
     Parser for matching tandem db files and creating instances of PerovskiteTandemSolarCell.
     """
@@ -99,7 +99,7 @@ class TandemParser(MatchingParser):
         logger: 'BoundLogger',
         child_archives: dict[str, 'EntryArchive'] = None,
     ) -> None:
-        logger.info('TandemParser.parse')
+        logger.info('TandemXLSParser.parse')
         data_frame = pd.read_excel(mainfile, index_col=0)
 
         # Process each column/device/publication separately
@@ -1103,7 +1103,7 @@ def extract_layer_stack(data_frame):
                     )
                 else:
                     layer_stack.append(
-                        PhotoAbsorber(
+                        PhotoAbsorberLayer(
                             **general_properties,
                             properties=PhotoAbsorberProperties(**properties),
                             composition=composition,

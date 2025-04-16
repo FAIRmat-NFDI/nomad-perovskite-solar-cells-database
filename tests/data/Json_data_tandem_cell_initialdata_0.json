@@ -1,0 +1,400 @@
+{
+    "reference_data": {
+        "doi": "10.1039/d0ta12286f",
+        "publication_date": "2021-03-18T00:00:00",
+        "journal": "Journal of Materials Chemistry A",
+        "lead_author": "Wu et al.",
+        "name_of_person_entering_the_data": "Adam Hultqvist",
+        "data_entered_by_author": false,
+        "part_of_initial_dataset": true
+    },
+    "key_performance_metrics": {
+        "pce_from_iv_data": 17.17,
+        "voc": 1.89,
+        "j_sc": 12.67,
+        "ff": 0.715
+    },
+    "device_classification": {
+        "tandem_architecture": "Monolithic",
+        "tandem_technology": "OPV | Perovskite",
+        "number_of_junctions": 2,
+        "number_of_terminals": 2,
+        "is_flexible": false,
+        "is_semitransparent": false,
+        "is_encapsulated": false,
+        "band_gaps": [
+            1.3,
+            1.79
+        ],
+        "device_area": {
+            "number_of_cells_per_substrate": 30
+        }
+    },
+    "measurements": {
+        "jv_measurements": [
+            {
+                "measurement_done_on": "Compleat_device",
+                "is_certified": false,
+                "light_conditions": {
+                    "light_source": "Solar simulator",
+                    "light_spectra": "AM 1.5",
+                    "light_intensity": 100.0,
+                    "shadow_mask_is_used": false,
+                    "light_source_brand_name": "Enlitech SS-F5"
+                },
+                "jv_metrics": {
+                    "pce": 17.17,
+                    "voc": 1.89,
+                    "j_sc": 12.67,
+                    "ff": 12.67,
+                    "scan_direction": "Reversed"
+                },
+                "environmental_conditions": {
+                    "atmosphere": "N2"
+                }
+            },
+            {
+                "measurement_done_on": "Bottom_cell",
+                "is_identical_to_cell_in_tandem_stack": true,
+                "light_conditions": {
+                    "light_source": "Solar simulator",
+                    "light_spectra": "AM 1.5",
+                    "light_intensity": 100.0,
+                    "shadow_mask_is_used": false,
+                    "light_source_brand_name": "Enlitech SS-F5"
+                },
+                "jv_metrics": {
+                    "pce": 14.43,
+                    "voc": 1.15,
+                    "j_sc": 15.46,
+                    "ff": 0.812
+                }
+            },
+            {
+                "measurement_done_on": "Top_cell",
+                "is_identical_to_cell_in_tandem_stack": false,
+                "light_conditions": {
+                    "light_source": "Solar simulator",
+                    "light_spectra": "AM 1.5",
+                    "light_intensity": 100.0,
+                    "shadow_mask_is_used": false,
+                    "light_source_brand_name": "Enlitech SS-F5"
+                },
+                "jv_metrics": {
+                    "pce": 14.01,
+                    "voc": 0.83,
+                    "j_sc": 24.75,
+                    "ff": 0.682
+                }
+            }
+        ],
+        "EQE": [
+            {
+                "measurement_done_on": "Compleat_device",
+                "EQE_metrics": {
+                    "integrated_current": 12.0
+                }
+            },
+            {
+                "measurement_done_on": "Bottom_cell",
+                "EQE_metrics": {
+                    "integrated_current": 14.87
+                }
+            },
+            {
+                "measurement_done_on": "Top_cell",
+                "EQE_metrics": {
+                    "integrated_current": 23.57
+                }
+            }
+        ],
+        "Transmission": [
+            {
+                "measurement_done_on": "Top_cell",
+                "average_transmission_in_the_visible_range": 80.0
+            }
+        ]
+    },
+    "device_stack": {
+        "device_architecture": "Monolithic",
+        "number_of_layers": 11,
+        "stack_sequence": "Ag | MoO3 | OPV | ZnO | Ag | MoO3 | PBDB-T | Perovskite | SnO2 | ITO | SLG",
+        "layers": [
+            {
+                "layer_index": 1,
+                "functionality": "Back_contact",
+                "thickness": 100.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "Ag"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Evaporation",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 2,
+                "functionality": "HTL",
+                "thickness": 10.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "MoO3"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Evaporation",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 3,
+                "functionality": "Photoabsorber",
+                "photoabsorber_material": "OPV",
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "thickness": 110,
+                "cell_type": "BHJ",
+                "blend": "PM6:Y6",
+                "deposition_procedure": [
+                    {
+                        "procedure": "Spin-coating",
+                        "process_step_index": 1
+                    }
+                ],
+                "band_gap": {
+                    "value": 1.3,
+                    "estimated_from": "EQE",
+                    "is_graded": false
+                },
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "PM6",
+                        "coefficient": 0.45,
+                        "fraction_of_layer_content": 0.45,
+                        "fraction_of_layer_content_metric": "mol_fraction"
+                    },
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "Y6",
+                        "coefficient": 0.55,
+                        "fraction_of_layer_content": 0.55,
+                        "fraction_of_layer_content_metric": "mol_fraction"
+                    }
+                ]
+            },
+            {
+                "layer_index": 4,
+                "functionality": "ETL",
+                "thickness": 50.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "ZnO"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Spin-coating",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 5,
+                "functionality": "Recombination_layer",
+                "thickness": 1.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "Ag"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Evaporation",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 6,
+                "functionality": "HTL",
+                "thickness": 6.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "MoO3"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Evaporation",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 7,
+                "functionality": "HTL",
+                "thickness": 25.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "PBDB-T"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Spin-coating",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 8,
+                "functionality": "Photoabsorber",
+                "photoabsorber_material": "Perovskite",
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "thickness": 180.0,
+                "crystallinity": "polycrystalline_film",
+                "dimensionality": 3.0,
+                "has_a_2D_perovskite_caping_layer": false,
+                "is_inorganic": true,
+                "is_lead_free": false,
+                "band_gap": {
+                    "value": 1.79,
+                    "estimated_from": "Absorption Tauc-plot",
+                    "is_graded": false
+                },
+                "composition": {
+                    "short_form": "CsPbBrI",
+                    "long_form": "CsPbBr0.9I2.1",
+                    "a_ions": [
+                        {
+                            "ion": "Cs",
+                            "coefficient": 1.0,
+                            "molecular_formula": "Cs+",
+                            "smile": "[Cs+]",
+                            "common_name": "Cesium ion",
+                            "iupac_name": "Cesium(1+)",
+                            "cas_number": "18459-37-5",
+                            "source_compound_smile": "[Cs]",
+                            "source_compound_iupac_name": "Cesium",
+                            "source_compound_cas_number": "7440-46-2"
+                        }
+                    ],
+                    "b_ions": [
+                        {
+                            "ion": "Pb",
+                            "coefficient": 1.0,
+                            "molecular_formula": "Pb2+",
+                            "smile": "[Pb+2]",
+                            "common_name": "Lead",
+                            "iupac_name": "lead(2+)",
+                            "cas_number": "14280-50-3",
+                            "source_compound_smile": "[Pb]",
+                            "source_compound_iupac_name": "Lead",
+                            "source_compound_cas_number": "7439-92-1"
+                        }
+                    ],
+                    "x_ions": [
+                        {
+                            "ion": "Br",
+                            "coefficient": 0.9,
+                            "molecular_formula": "Br-",
+                            "smile": "[Br-]",
+                            "common_name": "Bromide",
+                            "iupac_name": "Bromide",
+                            "cas_number": "24959-67-9",
+                            "source_compound_smile": "BrBr",
+                            "source_compound_iupac_name": "molecular bromine",
+                            "source_compound_cas_number": "7726-95-6"
+                        },
+                        {
+                            "ion": "I",
+                            "coefficient": 2.1,
+                            "molecular_formula": "I-",
+                            "smile": "[I-]",
+                            "common_name": "Iodide",
+                            "iupac_name": "Iodide",
+                            "cas_number": "20461-54-5",
+                            "source_compound_smile": "II",
+                            "source_compound_iupac_name": "molecular iodine",
+                            "source_compound_cas_number": "7553-56-2"
+                        }
+                    ]
+                },
+                "deposition_procedure": [
+                    {
+                        "method": "Spin-coating"
+                    }
+                ]
+            },
+            {
+                "layer_index": 9,
+                "functionality": "ETL",
+                "thickness": 20.0,
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "SnO2"
+                    }
+                ],
+                "deposition_procedure": [
+                    {
+                        "procedure": "Spin-coating",
+                        "process_step_index": 1
+                    }
+                ]
+            },
+            {
+                "layer_index": 10,
+                "functionality": "Front_contact",
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "from_sun_to_earth",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "ITO"
+                    }
+                ]
+            },
+            {
+                "layer_index": 11,
+                "functionality": "Substrate",
+                "subcell_association": "Monolitic_device",
+                "deposition_direction": "is_a_substrate",
+                "materials_in_layer": [
+                    {
+                        "functionality_in_layer": "majority_phase",
+                        "name": "SLG"
+                    }
+                ]
+            }
+        ]
+    }
+}

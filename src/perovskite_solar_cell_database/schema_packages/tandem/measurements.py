@@ -1,10 +1,11 @@
-from nomad.datamodel.data import ArchiveSection, EntryData
+from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
-from nomad.datamodel.metainfo.basesections import Experiment, ExperimentStep
-from nomad.metainfo import Quantity, Section, SubSection
-from nomad.metainfo.data_type import Enum
+from nomad.metainfo import MEnum, Quantity, Section, SubSection
+from nomad.metainfo.metainfo import SchemaPackage
 
-from .tandem import Storage
+from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import Storage
+
+m_package = SchemaPackage()
 
 
 class Illumination(ArchiveSection):
@@ -13,30 +14,34 @@ class Illumination(ArchiveSection):
     """
 
     type = Quantity(
-        type=str,
         description='Type of illumination.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     brand = Quantity(
-        type=str,
         description='The brand name and model number of the light source/solar simulator used',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     simulator_class = Quantity(
-        type=str,
         description='Class of the simulator.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     intensity = Quantity(
-        type=float,
         description='Intensity of the illumination.',
+        type=float,
         unit='W/m^2',
-        a_el=ELNAnnotation(defaultDisplayUnit='W/m^2'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='W/m^2'),
     )
 
     spectrum = Quantity(
-        type=str,
         description='Spectrum of the illumination.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     # TODO: Handle range as well as single value
@@ -44,24 +49,26 @@ class Illumination(ArchiveSection):
         type=float,
         description='Wavelength of the illumination.',
         unit='nm',
-        a_el=ELNAnnotation(defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     direction = Quantity(
-        type=Enum('Substrate', 'Superstrate'),
         description='Direction of the illumination.',
+        type=MEnum('Substrate', 'Superstrate'),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     mask = Quantity(
-        type=bool,
         description='Mask used for the illumination.',
+        type=bool,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
     mask_area = Quantity(
-        type=float,
         description='Area of the mask.',
+        type=float,
         unit='cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='cm^2'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
     )
 
 
@@ -74,24 +81,29 @@ class MeasurementConditions(ArchiveSection):
         type=float,
         description='Duration of the measurement.',
         unit='minute',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
 
     atmosphere = Quantity(
         type=str,
         description='Atmosphere during the measurement.',
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     humidity_relative = Quantity(
         type=float,
         description='Humidity during the measurement.',
         unit='dimensionless',
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     temperature = Quantity(
         type=float,
         description='Temperature during the measurement.',
         unit='K',
-        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='K'),
     )
 
     illumination = SubSection(
@@ -106,27 +118,30 @@ class Preconditioning(ArchiveSection):
     """
 
     protocol = Quantity(
-        type=str,
         description='Protocol for the preconditioning. Light soaking, potential biasing, etc.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     duration = Quantity(
-        type=float,
         description='Time of the preconditioning.',
+        type=float,
         unit='s',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
 
     potential = Quantity(
-        type=float,
         description='Potential of the preconditioning.',
+        type=float,
         unit='V',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
     )
 
     light_intensity = Quantity(
-        type=float,
         description='Light intensity of the preconditioning.',
+        type=float,
         unit='W/m^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='W/m^2'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='W/m^2'),
     )
 
 
@@ -144,10 +159,19 @@ class Measurement(ArchiveSection):
         description='Method of the measurement.',
     )
 
-    component = Quantity(
-        type=Enum('Whole Device', 'Bottom Cell', 'Top Cell', 'Other'),
-        description=(
-            'Component of the solar cell that is being measured (e.g., the whole device or a subcell).'
+    certified = Quantity(
+        description='TRUE if the measurement was certified, FALSE otherwise.',
+        type=bool,
+        default=False,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
+    )
+
+    subcell_association = Quantity(
+        description='Indicates the association of the layer with a subcell. A value of 0 signifies that the entire device is monolithic. Any value greater than 0 associates the layer with a specific subcell, numbered sequentially from the bottom.',
+        type=int,
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            minValue=0,
         ),
     )
 
@@ -178,30 +202,30 @@ class JVConditions(MeasurementConditions):
     """
 
     speed = Quantity(
-        type=float,
         description='Speed of the scan.',
+        type=float,
         unit='mV/s',
-        a_eln=ELNAnnotation(defaultDisplayUnit='mV/s'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mV/s'),
     )
 
     delay_time = Quantity(
-        type=float,
         description='Delay time before the scan.',
+        type=float,
         unit='milliseconds',
-        a_el=ELNAnnotation(defaultDisplayUnit='ms'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='ms'),
     )
 
     integration_time = Quantity(
-        type=float,
         description='Integration time of the scan.',
+        type=float,
         unit='milliseconds',
-        a_eln=ELNAnnotation(defaultDisplayUnit='ms'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='ms'),
     )
 
     voltage_step = Quantity(
-        type=float,
         description='Voltage step of the scan.',
-        unit='mV',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mV'),
     )
 
 
@@ -211,53 +235,65 @@ class JVResults(ArchiveSection):
     """
 
     short_circuit_current_density = Quantity(
-        type=float,
         description='Short-circuit current density.',
+        type=float,
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='mA/cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
     open_circuit_voltage = Quantity(
-        type=float,
         description='Open-circuit voltage.',
+        type=float,
         unit='V',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
     )
 
     fill_factor = Quantity(
-        type=float,
         description='Fill factor.',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     power_conversion_efficiency = Quantity(
-        type=float,
         description='Power conversion efficiency.',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     maximum_power_point_voltage = Quantity(
-        type=float,
         description='Voltage at maximum power.',
+        type=float,
         unit='V',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
     )
 
     maximum_power_point_current_density = Quantity(
-        type=float,
         description='Current at maximum power.',
+        type=float,
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='mA/cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
     resistance_series = Quantity(
-        type=float,
         description='Series resistance.',
+        type=float,
         unit='ohm*cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='ohm*cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='ohm*cm^2'
+        ),
     )
 
     resistance_shunt = Quantity(
-        type=float,
         description='Shunt resistance.',
+        type=float,
         unit='ohm*cm^2',
-        a_eln=ELNAnnotation(defaultDisplayUnit='ohm*cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='ohm*cm^2'
+        ),
     )
 
 
@@ -267,11 +303,12 @@ class JVMeasurement(Measurement):
     """
 
     source = Quantity(
-        type=Enum('This device', 'Analogous free standing cell', 'Unknown'),
         description=(
             'Indicates whether the measurement was performed on this specific device '
             'or on an analogous free standing cell.'
         ),
+        type=MEnum('This device', 'Analogous free standing cell', 'Unknown'),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     conditions = SubSection(
@@ -299,15 +336,16 @@ class StabilisedPerformanceConditions(MeasurementConditions):
     )
 
     # TODO: Handle different metric types
-
     metric_value = Quantity(
         type=float,
         description='Value of the metric to be stabilised.',
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     metric_unit = Quantity(
         type=str,
         description='Unit of the metric to be stabilised.',
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
 
@@ -336,6 +374,9 @@ class EQEResults(ArchiveSection):
         type=float,
         description='Integrated short-circuit current density.',
         unit='mA/cm^2',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
 
@@ -383,84 +424,97 @@ class StabilityConditions(MeasurementConditions):
 
 class StabilityResults(ArchiveSection):
     power_conversion_efficiency_initial = Quantity(
-        type=float,
         description='Initial power conversion efficiency.',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     burn_in_observed = Quantity(
-        type=bool,
         description='Burn in observed.',
+        type=bool,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
-    power_conversion_efficiency_end = Quantity(
-        type=float,
+    power_conversion_efficiency_final = Quantity(
         description='End of experiment power conversion efficiency.',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
-    power_conversion_efficiency_t95 = Quantity(
-        type=float,
+    time_until_pce_95 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 5 % '
             'with respect to the initial performance.'
         ),
+        type=float,
         unit='hour',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_ts95 = Quantity(
-        type=float,
+    time_after_burn_in_until_pce_95 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 5 % '
             'with respect to the performance after any initial burn in phase.'
         ),
+        type=float,
         unit='hour',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_t80 = Quantity(
-        type=float,
+    time_until_pce_80 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 20 % '
             'with respect to the initial performance.'
         ),
+        type=float,
         unit='hour',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_ts80 = Quantity(
-        type=float,
+    time_after_burn_in_until_pce_80 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 20 % '
             'with respect to the performance after any initial burn in phase.'
         ),
+        type=float,
         unit='hour',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_t80_est = Quantity(
-        type=float,
+    time_after_until_pce_80_estimated = Quantity(
         description=(
             'An estimated T80 for cells that were not measured sufficiently long '
             'for them to degrade by 20 %, with respect to the initial performance.'
         ),
+        type=float,
         unit='hour',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_ts80_est = Quantity(
-        type=float,
+    time_after_burn_in_until_pce_80_estimated = Quantity(
         description=(
             'An estimated Ts80 for cells that were not measured sufficiently long '
             'for them to degrade by 20 %, with respect to the performance after any '
             'initial burn in phase.'
         ),
+        type=float,
         unit='hour',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
     power_conversion_efficiency_after_1000h = Quantity(
-        type=float,
         description='Power conversion efficiency after 1000 hours.',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     lifetime_energy_yield = Quantity(
-        type=float,
         description='Lifetime energy yield.',
         unit='kWh/m^2',
+        type=float,
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='kWh/m^2'
+        ),
     )
 
 
@@ -479,85 +533,45 @@ class StabilityMeasurement(Measurement):
         description='Results of the stability measurement.',
     )
 
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.method = 'Stability'
+
 
 class PerformedMeasurements(ArchiveSection):
     """
     Section for listing all measurements performed on this solar cell.
     """
 
-    # JV measurements
-
-    jv_full_device_forward = SubSection(
+    jv_measurements = SubSection(
+        description='JV measurements performed on this device.',
         section_def=JVMeasurement,
-        description='JV measurement of the full device in the forward direction.',
+        repeats=True,
     )
 
-    jv_full_device_reverse = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the full device in the reverse direction.',
+    eqe_measurements = SubSection(
+        description='EQE measurements performed on this device.',
+        section_def=ExternalQuantumEfficiency,
+        repeats=True,
     )
 
-    jv_bottom_cell = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the bottom cell.',
-    )
-
-    jv_bottom_cell_shaded = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the bottom cell under shading.',
-    )
-
-    jv_top_cell = SubSection(
-        section_def=JVMeasurement,
-        description='JV measurement of the top cell.',
-    )
-
-    # Stabilised performance measurements
-
-    stabilised_performance_full_device = SubSection(
+    performance_measurements = SubSection(
+        description='Performance measurements performed on this device.',
         section_def=StabilisedPerformance,
-        description='Stabilised performance measurement of the full device.',
+        repeats=True,
     )
 
-    # TODO: Add measurements for subcells?
-
-    # EQE
-
-    eqe_full_device = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the full device.',
-    )
-
-    eqe_bottom_cell = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the bottom cell.',
-    )
-
-    eqe_bottom_cell_shaded = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the bottom cell under shading.',
-    )
-
-    eqe_top_cell = SubSection(
-        section_def=ExternalQuantumEfficiency,
-        description='External quantum efficiency measurement of the top cell.',
-    )
-
-    # Transmission
-
-    transmission_bottom_cell = SubSection(
-        section_def=Transmission,
-        description='Transmission measurement of the bottom cell.',
-    )
-
-    transmission_top_cell = SubSection(
-        section_def=Transmission,
-        description='Transmission measurement of the top cell.',
-    )
-
-    # Stability
-
-    stability = SubSection(
+    stability_measurements = SubSection(
+        description='Stability measurements performed on this device.',
         section_def=StabilityMeasurement,
-        description='Stability measurement.',
+        repeats=True,
     )
+
+    transmission_measurements = SubSection(
+        description='Transmission measurements performed on this device.',
+        section_def=Transmission,
+        repeats=True,
+    )
+
+
+m_package.__init_metainfo__()
