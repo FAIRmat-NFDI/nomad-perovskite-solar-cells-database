@@ -107,37 +107,41 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 colors.append(next(gray_cycle))
                 opacities.append(1)
 
-        # Averaged device parameters
-        parameters = {
+        # Fetch device parameters from measurement results
+        parameter_map = {
             'efficiency': 'power_conversion_efficiency',
             'voc': 'open_circuit_voltage',
             'jsc': 'short_circuit_current_density',
             'ff': 'fill_factor',
         }
-        values = {key: [] for key in parameters}
 
-        for name in [
-            'jv_full_device_forward',
-            'jv_full_device_reverse',
-            'stabilised_performance_full_device',
-        ]:
-            measurement = getattr(self.measurements, name, None)
-            if measurement and hasattr(measurement, 'results'):
-                for key, attr in parameters.items():
-                    value = getattr(measurement.results, attr, None)
-                    if value is not None:
-                        values[key].append(value)
+        values = {key: None for key in parameter_map}
+        measurement_types = [
+            'jv_measurements',
+            'stability_measurements',
+            'performance_measurements',
+        ]
 
-        averaged_values = {
-            key: sum(val) / len(val) if val else None for key, val in values.items()
-        }
+        for param_key, result_attr in parameter_map.items():
+            for measurement_type in measurement_types:
+                measurements = getattr(self.measurements, measurement_type, [])
+                for measurement in measurements:
+                    if getattr(
+                        measurement, 'subcell_association', None
+                    ) == 0 and hasattr(measurement, 'results'):
+                        value = getattr(measurement.results, result_attr, None)
+                        if value is not None:
+                            values[param_key] = value
+                            break
+                if values[param_key] is not None:
+                    break
 
         fig = create_cell_stack_figure(
             layers=layer_names,
             thicknesses=thicknesses,
             colors=colors,
             opacities=opacities,
-            **averaged_values,
+            **values,
             x_min=0,
             x_max=10,
             y_min=0,
