@@ -558,6 +558,22 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
 #### Measurement functions ####
 
 
+def convert_to_fraction(value: str) -> float | None:
+    """
+    Converts a percentage string to a fraction.
+    """
+    if value:
+        try:
+            number = float(value)
+            if number > 1:
+                return round(number * 0.01, 6)
+            else:
+                return number
+        except ValueError:
+            return None
+    return None
+
+
 def parse_jv_measurement(data: dict, jv: dict) -> dict:
     """
     Maps the JSON data to the JV measurement schema.
@@ -597,12 +613,10 @@ def parse_jv_measurement(data: dict, jv: dict) -> dict:
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.JVResults',
                 'short_circuit_current_density': search('jv_metrics.j_sc', jv),
                 'open_circuit_voltage': search('jv_metrics.voc', jv),
-                'fill_factor': search('jv_metrics.ff', jv),
-                'power_conversion_efficiency': round(
-                    float(search('jv_metrics.pce', jv)) / 100, 5
-                )
-                if search('jv_metrics.pce', jv)
-                else None,
+                'fill_factor': convert_to_fraction(search('jv_metrics.ff', jv)),
+                'power_conversion_efficiency': convert_to_fraction(
+                    search('jv_metrics.pce', jv)
+                ),
             },
         }
     )
@@ -656,9 +670,10 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
     conditions = None  # TODO: Check is this can be extracted from the JSON
 
     # Transmission measurement
-    avg_transmission = search('average_transmission_in_the_visible_range', transmission)
+    avg_transmission = convert_to_fraction(
+        search('average_transmission_in_the_visible_range', transmission)
+    )
     if avg_transmission:
-        avg_transmission = round(float(avg_transmission) / 100, 5)
         data['measurements']['transmission'].append(
             {
                 'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission',
