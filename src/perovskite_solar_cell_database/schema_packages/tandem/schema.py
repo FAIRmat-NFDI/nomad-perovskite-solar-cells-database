@@ -10,7 +10,7 @@ from itertools import cycle
 
 from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
-from nomad.metainfo import SchemaPackage, Section, SubSection
+from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.utils import create_cell_stack_figure
 
@@ -145,3 +145,14 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         )
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
+
+
+class RawFileTandemJson(Schema):
+    """
+    Section for a tandem json data file.
+    """
+    tandem = Quantity(type=PerovskiteTandemSolarCell)
+    data = Quantity(type=JSON)
+
+
+m_package.__init_metainfo__()

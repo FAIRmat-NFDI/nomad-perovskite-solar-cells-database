@@ -13,10 +13,29 @@ from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import (
 )
 from perovskite_solar_cell_database.schema_packages.tandem.schema import (
     PerovskiteTandemSolarCell,
+    RawFileTandemJson,
 )
 
 if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
+
+
+def get_id_from_mainfile(mainfile: str) -> str:
+    """
+    Extracts the ID from the mainfile name.
+    The ID is expected to be the last part of the filename, separated by an underscore.
+    """
+    try:
+        return os.path.splitext(mainfile)[0].split('_')[-1]
+    except IndexError:
+        raise ValueError(f"Invalid filename format: {mainfile}")
+
+def get_eln_archive_name(mainfile: str) -> str:
+    """
+    Returns the name of the archive file for the ELN.
+    The name is generated based on the mainfile name.
+    """
+    return f'tandem_{get_id_from_mainfile(mainfile)}.archive.json'
 
 
 class TandemJSONParser(MatchingParser):
@@ -31,11 +50,6 @@ class TandemJSONParser(MatchingParser):
         logger: 'BoundLogger',
         child_archives: dict[str, 'EntryArchive'] = None,
     ) -> None:
-        filename = os.path.basename(mainfile)
-        logger.info(f'Parsing file {filename}')
-
-        entry_archive = EntryArchive()
-        tandem = PerovskiteTandemSolarCell()
 
         with open(mainfile) as file:
             source_dict = json.load(file)
@@ -43,19 +57,17 @@ class TandemJSONParser(MatchingParser):
         update_dict = map_json_to_schema(source_dict)
 
         # Get ID from filename
-        ID = int(os.path.splitext(filename)[0].split('_')[-1])
-        update_dict['reference']['ID'] = ID
+        id = get_id_from_mainfile(mainfile)
+        update_dict['reference']['ID'] = id
 
+        tandem = PerovskiteTandemSolarCell()
         tandem.m_update_from_dict(update_dict)
-        entry_archive.data = tandem
 
-        create_archive(
-            entry_archive.m_to_dict(),
-            archive.m_context,
-            f'tandem_{ID}.archive.json',
-            'json',
-            logger,
+        archive.data = RawFileTandemJson(
+            tandem=create_archive(tandem, archive, get_eln_archive_name(mainfile)),
+            data=source_dict,
         )
+        archive.metadata.entry_name = f'Tandem {id} data file'
 
 
 def map_json_to_schema(source: dict) -> dict:

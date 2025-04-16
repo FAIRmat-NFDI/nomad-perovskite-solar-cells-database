@@ -1,8 +1,11 @@
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.metainfo import MEnum, Quantity, Section, SubSection
+from nomad.metainfo.metainfo import SchemaPackage
 
 from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import Storage
+
+m_package = SchemaPackage()
 
 
 class Illumination(ArchiveSection):
@@ -565,3 +568,6 @@ class PerformedMeasurements(ArchiveSection):
         section_def=Transmission,
         repeats=True,
     )
+
+
+m_package.__init_metainfo__()

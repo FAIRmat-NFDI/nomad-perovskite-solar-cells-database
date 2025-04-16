@@ -1,6 +1,9 @@
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.metainfo import MEnum, Quantity, Section, SubSection
+from nomad.metainfo.metainfo import SchemaPackage
+
+m_package = SchemaPackage()
 
 
 class SubCell(ArchiveSection):
@@ -152,3 +155,6 @@ class General(ArchiveSection):
         section_def=SubCell,
         repeats=True,
     )
+
+
+m_package.__init_metainfo__()

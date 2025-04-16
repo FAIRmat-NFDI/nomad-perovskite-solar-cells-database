@@ -7,10 +7,13 @@ from nomad.datamodel.metainfo.annotations import (
 )
 from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
 from nomad.metainfo import MEnum, Quantity, Section, SubSection
+from nomad.metainfo.metainfo import SchemaPackage
 
 from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
 
 ##### Chemicals and materials
+
+m_package = SchemaPackage()
 
 
 class PureSubstanceComponent(PubChemPureSubstanceSection):
@@ -827,3 +830,6 @@ class ChalcopyriteLayer(PhotoAbsorberLayer):
     """
 
     composition = SubSection(section_def=ChalcopyriteLayerComposition)
+
+
+m_package.__init_metainfo__()

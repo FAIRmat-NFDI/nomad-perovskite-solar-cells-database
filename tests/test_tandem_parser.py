@@ -1,20 +1,34 @@
 import os.path
 from datetime import datetime, timezone
 
+import pytest
 from nomad.client import normalize_all, parse
 from nomad.metainfo import Quantity
 from nomad.units import ureg
 
+test_files = [
+    'tests/data/Json_data_tandem_cell_initialdata_0.json'
+]
+log_levels = ['error', 'critical']
 
-def test_schema():
-    test_file = os.path.join(
-        os.path.dirname(__file__), 'data', 'Json_data_tandem_cell_initialdata_0.json'
-    )
-    entry_archive = parse(test_file)[0]
-    normalize_all(entry_archive)
+
+@pytest.mark.parametrize(
+    'parsed_tandem_archive, caplog',
+    [pytest.param(file, log_levels, id=os.path.split(file)[-1]) for file in test_files],
+    indirect=True,
+)
+def test_normalize_all(parsed_tandem_archive, caplog):
+    """
+    Tests the normalization of the parsed archive.
+
+    Args:
+        parsed_archive (pytest.fixture): Fixture to handle the parsing of archive.
+        caplog (pytest.fixture): Fixture to capture errors from the logger.
+    """
+    normalize_all(parsed_tandem_archive)
 
     # test reference
-    reference = entry_archive.data.reference
+    reference = parsed_tandem_archive.data.reference
     assert reference.DOI_number == 'https://doi.org/10.1039/d0ta12286f'
     assert reference.ID == 0
     assert reference.publication_date == datetime.fromisoformat(
@@ -26,7 +40,7 @@ def test_schema():
     assert reference.data_entered_by_author is False
 
     # test general
-    general = entry_archive.data.general
+    general = parsed_tandem_archive.data.general
     assert general.architecture == 'Monolithic'
     assert general.number_of_terminals == 2
     assert general.number_of_junctions == 2
@@ -39,7 +53,7 @@ def test_schema():
     assert general.contains_antireflective_coating is False  # default value
 
     ## tests for layer stack
-    stack = entry_archive.data.layer_stack
+    stack = parsed_tandem_archive.data.layer_stack
     assert len(stack) == 11
     for layer in stack:
         assert layer.subcell_association == 0
@@ -145,7 +159,7 @@ def test_schema():
     ## tests for measurements
 
     # jv
-    jv = entry_archive.data.measurements.jv_measurements
+    jv = parsed_tandem_archive.data.measurements.jv_measurements
     assert len(jv) == 3
     for measurement in jv:
         assert measurement.method == 'JV'
@@ -175,7 +189,7 @@ def test_schema():
 
     # eqe
     results = [ureg('12 mA/cm^2'), ureg('14.87 mA/cm^2'), ureg('23.57 mA/cm^2')]
-    eqe = entry_archive.data.measurements.eqe_measurements
+    eqe = parsed_tandem_archive.data.measurements.eqe_measurements
     for measurement in eqe:
         assert measurement.method == 'External quantum efficiency'
         assert measurement.certified is False
