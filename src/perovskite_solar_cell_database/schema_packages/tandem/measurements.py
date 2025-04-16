@@ -435,13 +435,13 @@ class StabilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
-    power_conversion_efficiency_end = Quantity(
+    power_conversion_efficiency_final = Quantity(
         description='End of experiment power conversion efficiency.',
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
-    power_conversion_efficiency_t95 = Quantity(
+    time_until_pce_95 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 5 % '
             'with respect to the initial performance.'
@@ -451,7 +451,7 @@ class StabilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_ts95 = Quantity(
+    time_after_burn_in_until_pce_95 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 5 % '
             'with respect to the performance after any initial burn in phase.'
@@ -461,7 +461,7 @@ class StabilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_t80 = Quantity(
+    time_until_pce_80 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 20 % '
             'with respect to the initial performance.'
@@ -471,7 +471,7 @@ class StabilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_ts80 = Quantity(
+    time_after_burn_in_until_pce_80 = Quantity(
         description=(
             'The time after which the cell performance has degraded by 20 % '
             'with respect to the performance after any initial burn in phase.'
@@ -481,7 +481,7 @@ class StabilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_t80_est = Quantity(
+    time_after_until_pce_80_estimated = Quantity(
         description=(
             'An estimated T80 for cells that were not measured sufficiently long '
             'for them to degrade by 20 %, with respect to the initial performance.'
@@ -491,7 +491,7 @@ class StabilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hour'),
     )
 
-    power_conversion_efficiency_ts80_est = Quantity(
+    time_after_burn_in_until_pce_80_estimated = Quantity(
         description=(
             'An estimated Ts80 for cells that were not measured sufficiently long '
             'for them to degrade by 20 %, with respect to the performance after any '
@@ -532,6 +532,10 @@ class StabilityMeasurement(Measurement):
         section_def=StabilityResults,
         description='Results of the stability measurement.',
     )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.method = 'Stability'
 
 
 class PerformedMeasurements(ArchiveSection):

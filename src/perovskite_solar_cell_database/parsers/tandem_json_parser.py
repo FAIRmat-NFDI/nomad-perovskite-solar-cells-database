@@ -162,6 +162,11 @@ def map_json_to_schema(source: dict) -> dict:
     for jv in JV_from_source:
         data = parse_jv_measurement(data, jv)
 
+    # Stability measurements
+    stability_from_source = search('measurements.Stability', source) or []
+    for stability in stability_from_source:
+        data = parse_stability_measurement(data, stability)
+
     # EQE measurements
     EQE_from_source = search('measurements.EQE', source) or []
     for eqe in EQE_from_source:
@@ -634,7 +639,7 @@ def parse_eqe_measurement(data: dict, eqe: dict) -> dict:
         data['measurements']['eqe_measurements'] = []
 
     # Conditions
-    conditions = None  # TODO: Check is this can be extracted from the JSON
+    conditions = None  # TODO: Check if this can be extracted from the JSON
 
     # EQE measurement
     data['measurements']['eqe_measurements'].append(
@@ -667,7 +672,7 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
         data['measurements']['transmission'] = []
 
     # Conditions
-    conditions = None  # TODO: Check is this can be extracted from the JSON
+    conditions = None  # TODO: Check if this can be extracted from the JSON
 
     # Transmission measurement
     avg_transmission = convert_to_fraction(
@@ -688,5 +693,50 @@ def parse_transmission_measurement(data: dict, transmission: dict) -> dict:
                 },
             }
         )
+
+    return data
+
+
+def parse_stability_measurement(data: dict, stability: dict) -> dict:
+    """
+    Maps the JSON data to the Stability measurement schema.
+    """
+
+    # Check if list of stability measurements exists
+    if 'stability_measurements' not in data['measurements']:
+        data['measurements']['stability_measurements'] = []
+
+    # Conditions
+    conditions = None  # TODO: Check if this can be extracted from the JSON
+
+    # Stability measurement
+    data['measurements']['stability_measurements'].append(
+        {
+            'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.StabilityMeasurement',
+            'certified': search('is_certified', stability),
+            'subcell_association': map_subcell_association(
+                search('measurement_done_on', stability)
+            )
+            or 0,
+            'conditions': conditions,
+            'results': {
+                'm_def': 'perovskite_solar_cell_database.schema_packages.tandem.measurements.StabilityResults',
+                'power_conversion_efficiency_initial': convert_to_fraction(
+                    search('PCE_at_start', stability)
+                ),
+                'power_conversion_efficiency_final': convert_to_fraction(
+                    search('PCE_at_end', stability)
+                ),
+                'burn_in_observed': search('burn_in_period_observed', stability),
+                'time_until_pce_95': search('T95', stability),
+                'time_after_burn_in_until_pce_95': search('T95s', stability),
+                'time_until_pce_80': search('T80', stability),
+                'time_after_burn_in_until_pce_80': search('T80s', stability),
+                'power_conversion_efficiency_after_1000h': convert_to_fraction(
+                    search('PCE_1000h', stability)
+                ),
+            },
+        }
+    )
 
     return data
