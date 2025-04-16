@@ -170,7 +170,9 @@ def test_normalize_all(parsed_tandem_archive, caplog):
     assert jv[0].subcell_association == 0
     assert jv[0].results.short_circuit_current_density == ureg('12.67 mA/cm^2')
     assert jv[0].results.open_circuit_voltage == ureg('1.89 V')
-    assert jv[0].results.fill_factor == 0.1267 # Probably a duplicate error of jsc in the input
+    assert (
+        jv[0].results.fill_factor == 0.1267
+    )  # Probably a duplicate error of jsc in the input
     assert jv[0].results.power_conversion_efficiency == 0.1717
 
     assert jv[1].subcell_association == 1
