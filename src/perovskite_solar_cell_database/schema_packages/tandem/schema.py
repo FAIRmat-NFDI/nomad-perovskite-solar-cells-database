@@ -151,6 +151,7 @@ class RawFileTandemJson(Schema):
     """
     Section for a tandem json data file.
     """
+
     tandem = Quantity(type=PerovskiteTandemSolarCell)
     data = Quantity(type=JSON)
 

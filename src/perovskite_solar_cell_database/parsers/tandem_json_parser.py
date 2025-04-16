@@ -28,7 +28,8 @@ def get_id_from_mainfile(mainfile: str) -> str:
     try:
         return os.path.splitext(mainfile)[0].split('_')[-1]
     except IndexError:
-        raise ValueError(f"Invalid filename format: {mainfile}")
+        raise ValueError(f'Invalid filename format: {mainfile}')
+
 
 def get_eln_archive_name(mainfile: str) -> str:
     """
@@ -50,7 +51,6 @@ class TandemJSONParser(MatchingParser):
         logger: 'BoundLogger',
         child_archives: dict[str, 'EntryArchive'] = None,
     ) -> None:
-
         with open(mainfile) as file:
             source_dict = json.load(file)
 

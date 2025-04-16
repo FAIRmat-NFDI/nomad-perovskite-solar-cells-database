@@ -6,9 +6,7 @@ from nomad.client import normalize_all, parse
 from nomad.metainfo import Quantity
 from nomad.units import ureg
 
-test_files = [
-    'tests/data/Json_data_tandem_cell_initialdata_0.json'
-]
+test_files = ['tests/data/Json_data_tandem_cell_initialdata_0.json']
 log_levels = ['error', 'critical']
 
 
