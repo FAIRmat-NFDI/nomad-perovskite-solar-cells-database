@@ -118,8 +118,6 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         values = {key: None for key in parameter_map}
         measurement_types = [
             'jv_measurements',
-            'stability_measurements',
-            'performance_measurements',
         ]
 
         for param_key, result_attr in parameter_map.items():
