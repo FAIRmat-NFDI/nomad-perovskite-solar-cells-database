@@ -563,20 +563,13 @@ def parse_synthesis(layer: dict, layer_from_source: dict) -> dict:
 #### Measurement functions ####
 
 
-def convert_to_fraction(value: str) -> float | None:
+def convert_to_fraction(value: float | None) -> float | None:
     """
     Converts a percentage string to a fraction.
     """
-    if value:
-        try:
-            number = float(value)
-            if number > 1:
-                return round(number * 0.01, 6)
-            else:
-                return number
-        except ValueError:
-            return None
-    return None
+    if value and value > 1:
+        return value * 0.01
+    return value
 
 
 def parse_jv_measurement(data: dict, jv: dict) -> dict:

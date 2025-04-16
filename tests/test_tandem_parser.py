@@ -171,21 +171,21 @@ def test_normalize_all(parsed_tandem_archive, caplog):
     assert jv[0].results.short_circuit_current_density == ureg('12.67 mA/cm^2')
     assert jv[0].results.open_circuit_voltage == ureg('1.89 V')
     assert (
-        jv[0].results.fill_factor == 0.1267
+        jv[0].results.fill_factor == pytest.approx(0.1267)
     )  # Probably a duplicate error of jsc in the input
-    assert jv[0].results.power_conversion_efficiency == 0.1717
+    assert jv[0].results.power_conversion_efficiency == pytest.approx(0.1717)
 
     assert jv[1].subcell_association == 1
     assert jv[1].results.short_circuit_current_density == ureg('15.46 mA/cm^2')
     assert jv[1].results.open_circuit_voltage == ureg('1.15 V')
-    assert jv[1].results.fill_factor == 0.812
-    assert jv[1].results.power_conversion_efficiency == 0.1443
+    assert jv[1].results.fill_factor == pytest.approx(0.812)
+    assert jv[1].results.power_conversion_efficiency == pytest.approx(0.1443)
 
     assert jv[2].subcell_association == 2
     assert jv[2].results.short_circuit_current_density == ureg('24.75 mA/cm^2')
     assert jv[2].results.open_circuit_voltage == ureg('0.83 V')
-    assert jv[2].results.fill_factor == 0.682
-    assert jv[2].results.power_conversion_efficiency == 0.1401
+    assert jv[2].results.fill_factor == pytest.approx(0.682)
+    assert jv[2].results.power_conversion_efficiency == pytest.approx(0.1401)
 
     # eqe
     results = [ureg('12 mA/cm^2'), ureg('14.87 mA/cm^2'), ureg('23.57 mA/cm^2')]
