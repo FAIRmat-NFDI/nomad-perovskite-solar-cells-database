@@ -1,33 +1,15 @@
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
-from nomad.metainfo import MEnum, Quantity, Section, SubSection
+from nomad.metainfo import MEnum, Quantity, Datetime, Section, SubSection
 from nomad.metainfo.metainfo import SchemaPackage
 
 m_package = SchemaPackage()
 
-
-class SubCell(ArchiveSection):
+class SubCellOrigin(ArchiveSection):
     """
     A section describing a sub cell in a tandem solar cell.
     """
-
-    area = Quantity(
-        description='The area of the sub cell',
-        type=float,
-        unit='cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    )
-
-    module = Quantity(
-        type=bool,
-        description="""
-        TRUE if a sub cell is in the form of a module, FALSE if it is a single cell
-        It is for example possible to have a silicon bottom cell and a perovskite module as a top cell. In that case this would be marked as FALSE | TRUE
-        """,
-        a_eln=ELNAnnotation(component='BoolEditQuantity'),
-    )
-
-    commercial_unit = Quantity(
+    commercial = Quantity(
         description='TRUE if the sub cell was bought commercially, FALSE if it is a lab-made unit',
         type=bool,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
@@ -44,11 +26,15 @@ class General(ArchiveSection):
     """
     This section stores general configuration information about a tandem solar cell.
     """
-
+    # Top level data
     architecture = Quantity(
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
-        type=MEnum(['Stacked', 'Monolithic', 'Other']),
-        default='Other',
+        type=MEnum(['Stacked', 
+                    'Monolithic', 
+                    'Laminated',
+                    'Spectral_splitter',
+                    'Wide_bandgap_cell_used_as_reflector', 
+                    'Other']),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -64,21 +50,14 @@ class General(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
-    number_of_cells = Quantity(
-        description='The number of individual solar cells, or pixels, on the substrate on which the reported cell is made',
-        type=int,
-        default=0,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    photoabsorber = Quantity(
+    photoabsorbers = Quantity(
         description='List of the photoabsorbers starting from the bottom of the device stack.',
-        type=MEnum(['Silicon', 'Perovskite', 'CIGS', 'OPV', 'OSC', 'DSSC', 'BHJ']),
+        type=MEnum(['Silicon', 'Perovskite', 'CIGS', 'CZTS', 'CIS', 'GaAs', 'OPV', 'OSC', 'DSSC', 'Quantum_dot']),
         shape=['*'],
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
-    photoabsorber_bandgaps = Quantity(
+    photoabsorbers_bandgaps = Quantity(
         description="""
             List of the band gap values of the respective photo absorbers.
             - The layers must line up with the previous filed.
@@ -91,70 +70,124 @@ class General(ArchiveSection):
         shape=['*'],
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-
-    stack_sequence = Quantity(
-        description="""
-        The stack sequence describing the cell.
-        - If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
-        - The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. There are plenty of other fields specifically targeting the perovskite.
-        - If a material is doped, or have an additive, state the pure material here and specify the doping in the columns specifically targeting the doping of those layers.
-        - There is no sharp well-defined boundary between a when a material is best considered as doped to when it is best considered as a mixture of two materials. When in doubt if your material is doped or a mixture, use the notation that best capture the metaphysical essence of the situation
-        - Use common abbreviations when possible but spell it out when there is risk for confusion. For consistency, please pay attention to the abbreviation specified under the headline Abbreviations found tandem instructions v4.0 document.
-                    """,
-        type=str,
-        shape=['*'],
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
+    
+    production_date = Quantity(
+        description='Date the device was finalized.',
+        type=Datetime,
+        a_eln=ELNAnnotation(component='DateTimeEditQuantity'),
     )
-
-    area = Quantity(
-        description='The total area of the device.',
-        type=float,
-        unit='cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    )
-
-    area_measured = Quantity(
-        description="""The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the total cell area.""",
-        type=float,
-        unit='cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    )
-
-    flexibility = Quantity(
+    
+    # Boolean quantities
+    flexible = Quantity(
         description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
         type=bool,
-        default=False,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
     semitransparent = Quantity(
         description="""
-        TRUE if the device is semitransparent which usually is the case when there are no thick completely covering metal electrodes.
+        TRUE if the device is semitransparent. That is usually only the case when there are no thick completely covering metal electrodes.
         FALSE if it is opaque.""",
         type=bool,
-        default=False,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
     contains_textured_layers = Quantity(
         description='TRUE if the device contains textured layers with the purpose of light management.',
         type=bool,
-        default=False,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
+    )
+
+    bifacial = Quantity(
+        description='True if the cell is bifacial, i.e. design to absorb light from both sides.',
+        type=bool,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
+    )
+
+    encapsulated = Quantity(
+        description='True if the cell is encapsulated.',
+        type=bool,
+        a_eln=ELNAnnotation(component='BoolEditQuantity'),
+    )
+
+    module = Quantity(
+        description='TRUE if device is a module composed of several identical cells located side by side, either in series or in parallel.',
+        type=bool,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
     contains_antireflective_coating = Quantity(
-        description='TRUE if the device contains one or more anti reflective coatings.',
+        description='TRUE if the device contains one or more anti reflective coatings or other layers specifically dealing with light management.',
         type=bool,
-        default=False,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
 
+    # Physical footprint
+    substrate_area = Quantity(
+        description='The total area of the substrate on which the device is deposited.',
+        type=float,
+        unit='cm^2',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
+    )    
+    
+    cell_area = Quantity(
+        description='The total area of the cell. The dark area. Is typically defined as the overlap between the front and back contacts.',
+        type=float,
+        unit='cm^2',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
+    )
+
+    active_area = Quantity(
+        description='The effective area of the cell during IV and stability measurements under illumination. If measured with a mask, this corresponds to the area of the hole in the mask. Otherwise this area is the same as the cell area.',
+        type=float,
+        unit='cm^2',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
+    )
+
+    number_of_cells = Quantity(
+        description='The number of individual solar cells, or pixels, on the substrate on which the reported cell is made',
+        type=int,
+        default=0,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    # Derived quantities
+    photoabsorbers_string = Quantity(
+        description="""A single string describing the combination of photoabsorbers in the cell. 
+            Can be generated automatically from the photoabsorbers field.
+            Example: "silicon-perovskite", "CIGS-Perovskite", "silicon-Perovskite-perovskite", etc.
+            """,
+        type=str,
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )      
+    
+    stack_sequence = Quantity(
+        description="""A single string describing the stack sequence of the cell. 
+            If a proper device stack section is provided, the stack sequence can be generated from that one. 
+            This is a concatenation of the stack sequence, which is handy for searching and filtering the data.
+                """,
+        type=str,
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )    
+       
+
+    # Subsections
     subcells = SubSection(
-        description='The sub cells in the device',
-        section_def=SubCell,
+        description="""A list of the origin of each subcell, i.e. if it is lab made or commercially bought. <br/>
+            The list should start with the bottom cell (i.e. the cell furthers from the sun) and work upwards. <br/> 
+            For a monolithic device, there is no hard boundary between the top and the bottom cell, but it is usually quite clear if one part was bought commercially. <br/> 
+            Each entry (subcell) in the list comes with the following key-value pairs.
+            """,
+        section_def=SubCellOrigin,
         repeats=True,
     )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        
+        # Generate the photoabsorber string
+        if self.photoabsorbers and len(self.photoabsorbers) > 0:
+            self.photoabsorbers_string = '-'.join(self.photoabsorbers)
 
 
 m_package.__init_metainfo__()
