@@ -1,6 +1,6 @@
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
-from nomad.metainfo import MEnum, Quantity, Datetime, Section, SubSection
+from nomad.metainfo import Datetime, MEnum, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import SchemaPackage
 
 m_package = SchemaPackage()
