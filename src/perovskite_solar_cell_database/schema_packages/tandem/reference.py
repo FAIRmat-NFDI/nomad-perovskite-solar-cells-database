@@ -17,7 +17,7 @@ class Reference(PublicationReference):
     the DOI number of the publication, the lead author and the publication date."""
 
     m_def = Section(a_eln=dict(lane_width='800px'))
-    
+
     # DOI number and derived quantities are encapsulated in PublicationReference
 
     # custom fields for the tandem database
@@ -62,7 +62,7 @@ class Reference(PublicationReference):
         type=bool,
         shape=[],
         default=False,
-        description="""TRUE if the data is part of the original dataset"""
+        description="""TRUE if the data is part of the original dataset""",
     )
 
     # Fields relevant for tracability in the original data hunt

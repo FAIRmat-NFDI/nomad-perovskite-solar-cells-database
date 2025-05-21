@@ -19,6 +19,7 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
     """
     Environmental conditions during the activity.
     """
+
     ambient_conditions = Quantity(
         description='TRUE if the activity is occurring in in uncontrolled ambient conditions. FALSE otherwise',
         type=bool,
@@ -36,14 +37,16 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
     atmosphere = Quantity(
         description='Atmosphere during the activity.',
         type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'vacuum', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity')
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     ambient_temperature = Quantity(
         description='Ambient temperature during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     relative_humidity = Quantity(
@@ -70,14 +73,14 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
         description='The oxygen concentration during the activity. Given in %. i.e. number between 0 and 100',
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    ) 
+    )
 
 
 class ChemicalComponentIdentity(PubChemPureSubstanceSection):
     """
     PubChem functionality for pure substances.
     """
-    
+
     def normalize(self, archive, logger):
         # Fix for non-defined molecular_formula in PureSubstance v2.py
         # self.molecular_formula = self.formula
@@ -88,12 +91,13 @@ class ChemicalComponentAmount(ArchiveSection):
     """
     This is the section for the amount of a chemical component in a layer.
     """
+
     mass_fraction = Quantity(
         description='The mass fraction of the substance.',
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     molar_fraction = Quantity(
         description='The molar fraction of the substance.',
         type=float,
@@ -105,14 +109,14 @@ class ChemicalComponentAmount(ArchiveSection):
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-     
+
     molar_concentration = Quantity(
         description='The molarity of the substance.',
         type=float,
         unit='mol/l',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mol/l'),
     )
-    
+
     mass_concentration = Quantity(
         description='The mass concentration of the substance.',
         type=float,
@@ -153,6 +157,7 @@ class NanostructureInformation(ArchiveSection):
     """
     This is the section for the nanostructure information of a chemical component.
     """
+
     shape = Quantity(
         description='The nanostructure of the compound',
         type=MEnum(
@@ -166,8 +171,8 @@ class NanostructureInformation(ArchiveSection):
             ]
         ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )    
-    
+    )
+
     diameter = Quantity(
         description='diameter.',
         type=float,
@@ -194,6 +199,7 @@ class SupplierInformation(ArchiveSection):
     """
     This is the section for the supplier information of a chemical component.
     """
+
     supplier = Quantity(
         type=str,
         shape=[],
@@ -211,7 +217,7 @@ class SupplierInformation(ArchiveSection):
     batch_number = Quantity(
         type=str,
         shape=[],
-        description="The suppliers batch number of the substance bought.",
+        description='The suppliers batch number of the substance bought.',
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
@@ -232,6 +238,7 @@ class SynthesisInformation(ArchiveSection):
     """
     Synthesis of substances not sourced from commercial suppliers.
     """
+
     synthesis_method = Quantity(
         type=str,
         shape=[],
@@ -244,7 +251,7 @@ class SynthesisInformation(ArchiveSection):
         type=Datetime,
         a_eln=ELNAnnotation(component='DateTimeEditQuantity'),
     )
-    
+
     free_text_comment = Quantity(
         type=str,
         shape=[],
@@ -259,6 +266,7 @@ class Component(ArchiveSection):
     """
     This is the section for a chemical component in a layer.
     """
+
     ## Top level quantities
     name = Quantity(
         type=str,
@@ -330,27 +338,27 @@ class Component(ArchiveSection):
     # PubChem pure substance section
     identity = SubSection(
         section_def=ChemicalComponentIdentity,
-        description='The identity of the compound.'
+        description='The identity of the compound.',
     )
-    
+
     # Amount of the compound in the layer
     amount = SubSection(
         section_def=ChemicalComponentAmount,
         description='The amount of the compound in the layer.',
     )
-    
+
     # Supplier information
     supplier = SubSection(
-        section_def=SupplierInformation,   
+        section_def=SupplierInformation,
         description='The supplier information of the compound.',
     )
-    
+
     # Nanostructure information
     nanostructuration = SubSection(
         section_def=NanostructureInformation,
         description='The nanostructure information of the compound.',
     )
-    
+
     # Synthesis information
     synthesis = SubSection(
         section_def=SynthesisInformation,
@@ -362,6 +370,7 @@ class SputteringTarget(ArchiveSection):
     """
     Section for a sputtering target.
     """
+
     ## Top level quantities
     name = Quantity(
         type=str,
@@ -370,7 +379,7 @@ class SputteringTarget(ArchiveSection):
         examples: Au, Ag, ITO, NiO""",
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
+
     substrate_distance = Quantity(
         description='The distance between the substrate and the sputtering target.',
         type=float,
@@ -380,10 +389,14 @@ class SputteringTarget(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the compound',
-        type=MEnum(['commercial_supplier',
+        type=MEnum(
+            [
+                'commercial_supplier',
                 'made_in_house',
                 'made_by_collaborator',
-                'other',]),
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -391,12 +404,12 @@ class SputteringTarget(ArchiveSection):
     # PubChem pure substance section
     identity = SubSection(
         section_def=ChemicalComponentIdentity,
-        description='The identity of the compound.'
+        description='The identity of the compound.',
     )
 
     # Supplier information
     supplier = SubSection(
-        section_def=SupplierInformation,   
+        section_def=SupplierInformation,
         description='The supplier information of the compound.',
     )
 
@@ -405,6 +418,7 @@ class EvaporationSource(ArchiveSection):
     """
     This is the section for a evaporation source.
     """
+
     ## Top level quantities
     name = Quantity(
         type=str,
@@ -430,7 +444,13 @@ class EvaporationSource(ArchiveSection):
 
     aggregation_state = Quantity(
         description='The aggregation state of the compound',
-        type=MEnum(['solid','liquid','other',]),
+        type=MEnum(
+            [
+                'solid',
+                'liquid',
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -439,14 +459,18 @@ class EvaporationSource(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
+
     origin = Quantity(
         description='The origin of the compound',
-        type=MEnum(['commercial_supplier',
+        type=MEnum(
+            [
+                'commercial_supplier',
                 'made_in_house',
                 'made_by_collaborator',
                 'collected_in_nature',
-                'other',]),
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -454,15 +478,15 @@ class EvaporationSource(ArchiveSection):
     # PubChem pure substance section
     identity = SubSection(
         section_def=ChemicalComponentIdentity,
-        description='The identity of the compound.'
+        description='The identity of the compound.',
     )
 
     # Supplier information
     supplier = SubSection(
-        section_def=SupplierInformation,   
+        section_def=SupplierInformation,
         description='The supplier information of the compound.',
     )
-    
+
     # Synthesis information
     synthesis = SubSection(
         section_def=SynthesisInformation,
@@ -474,6 +498,7 @@ class LigandsAndDyes(ArchiveSection):
     """
     This is the section for a ligands or dyes.
     """
+
     ## Top level quantities
     name = Quantity(
         type=str,
@@ -502,21 +527,21 @@ class LigandsAndDyes(ArchiveSection):
             ]
         ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )    
+    )
 
     ## Subsections
     # PubChem pure substance section
     identity = SubSection(
         section_def=ChemicalComponentIdentity,
-        description='The identity of the compound.'
+        description='The identity of the compound.',
     )
-    
+
     # Supplier information
     supplier = SubSection(
-        section_def=SupplierInformation,   
+        section_def=SupplierInformation,
         description='The supplier information of the compound.',
     )
-    
+
     # Synthesis information
     synthesis = SubSection(
         section_def=SynthesisInformation,
@@ -527,7 +552,8 @@ class LigandsAndDyes(ArchiveSection):
 class GasComponent(ArchiveSection):
     """
     Section for a chemical component in gas phase.
-    """    
+    """
+
     ## Top level quantities
     name = Quantity(
         type=str,
@@ -535,7 +561,7 @@ class GasComponent(ArchiveSection):
         description="""The common trade name of the substance.
         examples: methylamine, I2, H2O""",
         a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )       
+    )
 
     functionality = Quantity(
         description='The role of this specific substance in the gas mixture.',
@@ -545,13 +571,16 @@ class GasComponent(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the substance.',
-        type=MEnum([
+        type=MEnum(
+            [
                 'reaction_product',
                 'commercial_supplier',
                 'made_in_house',
                 'made_by_collaborator',
                 'collected_in_nature',
-                'other']),
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -559,20 +588,19 @@ class GasComponent(ArchiveSection):
         description='The partial pressure of the gas.',
         type=float,
         unit='Pa',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='Pa'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
     )
 
     ## Subsections
     # PubChem pure substance section
     identity = SubSection(
         section_def=ChemicalComponentIdentity,
-        description='The identity of the compound.'
+        description='The identity of the compound.',
     )
-   
+
     # Supplier information
     supplier = SubSection(
-        section_def=SupplierInformation,   
+        section_def=SupplierInformation,
         description='The supplier information of the compound.',
     )
 
@@ -587,6 +615,7 @@ class SolutionComponent(ArchiveSection):
     """
     Section for a chemical component in a solution.
     """
+
     ## Top level quantities
     name = Quantity(
         type=str,
@@ -594,22 +623,25 @@ class SolutionComponent(ArchiveSection):
         description="""The common trade name of the substance.
         examples: DMF, DMSO, TiO2-mp, PEDOT:PSS, Spiro-MeOTAD""",
         a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )    
-   
+    )
+
     functionality = Quantity(
         description='The role of this specific substance in the solution.',
         type=MEnum(['solvent', 'solute', 'other']),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
+
     origin = Quantity(
         description='The origin of the substance.',
-        type=MEnum([
+        type=MEnum(
+            [
                 'commercial_supplier',
                 'made_in_house',
                 'made_by_collaborator',
                 'collected_in_nature',
-                'other']),
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -618,32 +650,32 @@ class SolutionComponent(ArchiveSection):
         type=bool,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
-    
+
     ## Subsections
     # PubChem pure substance section
     identity = SubSection(
         section_def=ChemicalComponentIdentity,
-        description='The identity of the compound.'
+        description='The identity of the compound.',
     )
-    
+
     # Amount of the compound in the layer
     amount = SubSection(
         section_def=ChemicalComponentAmount,
         description='The amount of the compound in the layer.',
     )
-    
+
     # Supplier information
     supplier = SubSection(
-        section_def=SupplierInformation,   
+        section_def=SupplierInformation,
         description='The supplier information of the compound.',
     )
-    
+
     # Nanostructure information
     nanostructuration = SubSection(
         section_def=NanostructureInformation,
         description='The nanostructure information of the compound.',
     )
-    
+
     # Synthesis information
     synthesis = SubSection(
         section_def=SynthesisInformation,
@@ -655,65 +687,64 @@ class Solution(ArchiveSection):
     """
     Description of a solution
     """
+
     preparation_date = Quantity(
         description='Date of preparation of the solution.',
         type=Datetime,
         a_eln=ELNAnnotation(component='DateTimeEditQuantity'),
-    )    
-    
+    )
+
     age = Quantity(
         description='The time between preparation and the use of the solution.',
         type=float,
         unit='hr',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='hr'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
     )
 
     volume = Quantity(
         description='The volume of the solution used.',
         type=float,
         unit='ml',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='ml'),
-    )    
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='ml'),
+    )
 
     density = Quantity(
         description='The density of the solution.',
         type=float,
         unit='g/ml',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='g/ml'),
-    ) 
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='g/ml'),
+    )
 
     viscosity = Quantity(
         description='The viscosity of the solution.',
         type=float,
         unit='Pa*s',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='Pa*s'),
-    ) 
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa*s'),
+    )
 
     temperature = Quantity(
         description='The temperature of the solution.',
         type=float,
         unit='celsius',
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )    
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     temperature_max = Quantity(
         description='The maximum temperature the solution has experienced.',
         type=float,
         unit='celsius',
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )  
-    
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
     colour = Quantity(
         description='The colour of the solution.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
-    ) 
+    )
 
     stirred = Quantity(
         description="""True if the solution is stirred before use.""",
@@ -735,8 +766,8 @@ class Solution(ArchiveSection):
         unit='µm',
         shape=[],
         a_eln=dict(component='NumberEditQuantity', defaultDisplayUnit='µm'),
-    )    
-    
+    )
+
     # Subsections
     # Compounds in the solution
     components = SubSection(
@@ -744,12 +775,12 @@ class Solution(ArchiveSection):
         description='The substances in the solution.',
         repeats=True,
     )
-    
+
     # Environmental conditions
     environmental_conditions_during_preparation = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )    
+    )
 
 
 ### Photoabsorbers
@@ -757,13 +788,14 @@ class PhotoabsorberPerovskite(ArchiveSection):
     """
     This is the section for a perovskite photoabsorber.
     """
+
     # origin = Quantity(
     #     description='If the perovskite was made in house, by a collaborator, or bought commercially',
     #     type=MEnum(
     #         [
     #             'commercial_supplier',
     #             'deposited_in_house',
-    #             'deposited_by_collaborator', 
+    #             'deposited_by_collaborator',
     #         ]
     #     ),
     #     a_eln=ELNAnnotation(component='EnumEditQuantity'),
@@ -774,8 +806,8 @@ class PhotoabsorberPerovskite(ArchiveSection):
         type=bool,
         shape=[],
         a_eln=dict(component='BoolEditQuantity'),
-    )  
-    
+    )
+
     inorganic = Quantity(
         description="""True if the perovskite is inorganic.""",
         type=bool,
@@ -792,7 +824,7 @@ class PhotoabsorberPerovskite(ArchiveSection):
         shape=[],
         a_eln=dict(component='BoolEditQuantity'),
     )
-    
+
     has_a_2D_perovskite_capping_layer = Quantity(
         description="""True if the perovskite has a thin capping layer of a 2D perovskite.""",
         type=bool,
@@ -811,6 +843,7 @@ class PhotoabsorberSilicon(ArchiveSection):
     """
     This is the section for a silicon photoabsorber.
     """
+
     cell_type = Quantity(
         description='The type of silicon cell.',
         type=MEnum(
@@ -829,7 +862,7 @@ class PhotoabsorberSilicon(ArchiveSection):
                 'PERL',
                 'SC/nFAB',
                 'TOPCon',
-                'other'
+                'other',
             ]
         ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
@@ -844,7 +877,7 @@ class PhotoabsorberSilicon(ArchiveSection):
                 'Polycrystalline',
                 'CZ',
                 'Float-zone',
-                'other'
+                'other',
             ]
         ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
@@ -861,6 +894,7 @@ class PhotoabsorberCIGS(ArchiveSection):
     """
     This is the section for a CIGS photoabsorber.
     """
+
     Cu = Quantity(
         description='The stoichiometric coefficient for Cu',
         type=float,
@@ -878,7 +912,7 @@ class PhotoabsorberCIGS(ArchiveSection):
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     Se = Quantity(
         description='The stoichiometric coefficient for Se',
         type=float,
@@ -894,20 +928,23 @@ class PhotoabsorberCIGS(ArchiveSection):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        
+
         # Generate molecular formula
-        atoms = ["Cu", "In", "Ga", "Se"]
+        atoms = ['Cu', 'In', 'Ga', 'Se']
         index = [self.Cu, self.In, self.Ga, self.Se]
-        index = ["none" for i in index if i in ("0", "0.0", None)]
+        index = ['none' for i in index if i in ('0', '0.0', None)]
         index = [str(i) for i in index]
-        index = ["" for i in index if i == "1"]
-        self.molecular_formula = "".join([a + i for a, i in zip(atoms, index) if i not in ("none")]) 
+        index = ['' for i in index if i == '1']
+        self.molecular_formula = ''.join(
+            [a + i for a, i in zip(atoms, index) if i not in ('none')]
+        )
 
 
 class PhotoabsorberCZTS(ArchiveSection):
     """
     This is the section for a CZTS photoabsorber.
     """
+
     Cu = Quantity(
         description='The stoichiometric coefficient for Cu',
         type=float,
@@ -925,7 +962,7 @@ class PhotoabsorberCZTS(ArchiveSection):
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     S = Quantity(
         description='The stoichiometric coefficient for S',
         type=float,
@@ -940,21 +977,24 @@ class PhotoabsorberCZTS(ArchiveSection):
     )
 
     def normalize(self, archive, logger):
-        super().normalize(archive, logger)  
-        
+        super().normalize(archive, logger)
+
         # Generate molecular formula
-        atoms = ["Cu", "Zn", "Se", "S"]
+        atoms = ['Cu', 'Zn', 'Se', 'S']
         index = [self.Cu, self.Zn, self.Se, self.S]
-        index = ["none" for i in index if i in ("0", "0.0", None)]
+        index = ['none' for i in index if i in ('0', '0.0', None)]
         index = [str(i) for i in index]
-        index = ["" for i in index if i == "1"]
-        self.molecular_formula = "".join([a + i for a, i in zip(atoms, index) if i not in ("none")]) 
-    
+        index = ['' for i in index if i == '1']
+        self.molecular_formula = ''.join(
+            [a + i for a, i in zip(atoms, index) if i not in ('none')]
+        )
+
 
 class PhotoabsorberGaAs(ArchiveSection):
     """
     This is the section for a CIGS photoabsorber.
     """
+
     Ga = Quantity(
         description='The stoichiometric coefficient for Ga',
         type=float,
@@ -976,20 +1016,23 @@ class PhotoabsorberGaAs(ArchiveSection):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        
+
         # Generate molecular formula
-        atoms = ["Ga", "As"]
+        atoms = ['Ga', 'As']
         index = [self.Ga, self.As]
-        index = ["none" for i in index if i in ("0", "0.0", None)]
+        index = ['none' for i in index if i in ('0', '0.0', None)]
         index = [str(i) for i in index]
-        index = ["" for i in index if i == "1"]
-        self.molecular_formula = "".join([a + i for a, i in zip(atoms, index) if i not in ("none")]) 
+        index = ['' for i in index if i == '1']
+        self.molecular_formula = ''.join(
+            [a + i for a, i in zip(atoms, index) if i not in ('none')]
+        )
 
 
 class PhotoabsorberOPV(ArchiveSection):
     """
     This is the section for a organic photoabsorber.
     """
+
     blend = Quantity(
         description='The name of the OPV blend. Often in the form - "name of acceptor:"name of donor"',
         type=str,
@@ -1017,87 +1060,93 @@ class PhotoabsorberOPV(ArchiveSection):
         type=float,
         unit='nm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
-    ) 
+    )
 
     molar_extinction_coefficient = Quantity(
         description='The molar extinction coefficient',
         type=float,
         unit='L*mol^1*cm^-1',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'),
-    ) 
- 
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'
+        ),
+    )
+
     homo_level = Quantity(
         description='The energy of the HOMO level',
         type=float,
         unit='eV',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )  
-    
+    )
+
     lumo_level = Quantity(
         description='The energy of the LUMO level',
         type=float,
         unit='eV',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )      
-  
-  
+    )
+
+
 class PhotoabsorberDSSC(ArchiveSection):
     """
     This is the section for a organic photoabsorber.
     """
+
     peak_absorption_wavelength = Quantity(
         description='The wavelength at maximum absorption',
         type=float,
         unit='nm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
-    ) 
+    )
 
     molar_extinction_coefficient = Quantity(
         description='The molar extinction coefficient',
         type=float,
         unit='L*mol^1*cm^-1',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'),
-    ) 
- 
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'
+        ),
+    )
+
     homo_level = Quantity(
         description='The energy of the HOMO level',
         type=float,
         unit='eV',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )  
-    
+    )
+
     lumo_level = Quantity(
         description='The energy of the LUMO level',
         type=float,
         unit='eV',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )    
-    
+    )
+
     oxidation_potential = Quantity(
         description='The oxidation potential vs the normal hydrogen electrode',
         type=float,
         unit='V',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
-    )      
- 
+    )
+
     # subsections
     dye = SubSection(
         section_def=LigandsAndDyes,
         description='The components.',
         repeats=True,
-    )        
+    )
 
 
 class PhotoabsorberQD(ArchiveSection):
     """
     This is the section for a quantum dot photoabsorbers.
     """
+
     material = Quantity(
         description='The material of the quantum dots. e.g PbS',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-       
+
     # subsections
     # Nanostructure information
     nanostructuration = SubSection(
@@ -1109,8 +1158,9 @@ class PhotoabsorberQD(ArchiveSection):
         section_def=LigandsAndDyes,
         description='The components.',
         repeats=True,
-    )     
-   
+    )
+
+
 ### Material and layer properties
 class Area(ArchiveSection):
     value = Quantity(
@@ -1118,7 +1168,7 @@ class Area(ArchiveSection):
         type=float,
         unit='cm^2',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    ) 
+    )
 
 
 class BandGap(ArchiveSection):
@@ -1128,13 +1178,13 @@ class BandGap(ArchiveSection):
         unit='eV',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
     )
-    
+
     graded = Quantity(
         description='TRUE if the band gap varies as a function of the vertical position in the layer',
         type=bool,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
-    
+
     determined_by = Quantity(
         description="""The method by which the band gap was estimated.
         The band gap can be estimated from absorption data, 
@@ -1175,7 +1225,17 @@ class Conductivity(ArchiveSection):
 class Crystallinity(ArchiveSection):
     value = Quantity(
         description='The crystallinity of the layer',
-        type=MEnum(['amorphous', 'polycrystalline', 'single_crystal', 'nanoparticles', 'nanorods', 'qunatum_dots', 'other']),
+        type=MEnum(
+            [
+                'amorphous',
+                'polycrystalline',
+                'single_crystal',
+                'nanoparticles',
+                'nanorods',
+                'qunatum_dots',
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -1198,7 +1258,9 @@ class ElectronMobility(ArchiveSection):
         description='The electron mobility of the layer',
         type=float,
         unit='cm**2/(V*s)',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm**2/(V*s)'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='cm**2/(V*s)'
+        ),
     )
 
     determined_by = Quantity(
@@ -1213,7 +1275,9 @@ class HoleMobility(ArchiveSection):
         description='The hole mobility of the layer',
         type=float,
         unit='cm**2/(V*s)',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm**2/(V*s)'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='cm**2/(V*s)'
+        ),
     )
 
     determined_by = Quantity(
@@ -1227,6 +1291,7 @@ class Photoluminesence(ArchiveSection):
     """
     This is the section for the photoluminesence of a layer.
     """
+
     pl_max = Quantity(
         description='The wavelength of the maximum PL intensity',
         type=float,
@@ -1258,8 +1323,8 @@ class RefractiveIndex(ArchiveSection):
         description='The measurement or estimation method used to determine the property.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )    
-    
+    )
+
 
 class SheetResistance(ArchiveSection):
     value = Quantity(
@@ -1274,8 +1339,8 @@ class SheetResistance(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
- 
-    
+
+
 class SurfaceRoughness(ArchiveSection):
     value = Quantity(
         description='The root mean square value of the surface roughness',
@@ -1289,8 +1354,8 @@ class SurfaceRoughness(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
-    
+
+
 class Thickness(ArchiveSection):
     value = Quantity(
         description='The thickness of the layer',
@@ -1304,69 +1369,72 @@ class Thickness(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
- 
-    
+
+
 class LayerProperties(ArchiveSection):
     """
     A section storing general properties of a layer.
     """
+
     area = SubSection(
         description='The area of the layer',
         section_def=Area,
     )
-    
+
     band_gap = SubSection(
         description='The band gap of the layer',
         section_def=BandGap,
     )
-    
+
     conductivity = SubSection(
         description='The conductivity of the layer',
         section_def=Conductivity,
-    )   
-    
+    )
+
     crystallinity = SubSection(
         description='The crystallinity of the layer',
         section_def=Crystallinity,
     )
-    
+
     electron_mobility = SubSection(
         description='The electron mobility of the layer',
         section_def=ElectronMobility,
     )
-    
+
     hole_mobility = SubSection(
         description='The hole mobility of the layer',
         section_def=HoleMobility,
     )
-  
+
     photoluminesence = SubSection(
         description='The photoluminesence of the layer',
         section_def=Photoluminesence,
     )
-    
+
     refractive_index = SubSection(
         description='The refractive index of the layer',
         section_def=RefractiveIndex,
     )
-    
+
     sheet_resistance = SubSection(
         description='The sheet resistance of the layer',
         section_def=SheetResistance,
     )
-    
+
     thickness = SubSection(
         description='The thickness of the layer',
         section_def=Thickness,
     )
-      
+
 
 ### Deposition procedures general sections
+
 
 class DepositionSegment(ArchiveSection):
     """
     This is a collection point for deposition procedures
     """
+
     pass
 
 
@@ -1375,13 +1443,14 @@ class ALDSegment(ArchiveSection):
     """
     ALD segments
     """
+
     time_of_segment = Quantity(
         description='The length of the segment.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     chamber_pressure = Quantity(
         description='The pressure in the reaction chamber.',
         type=float,
@@ -1390,24 +1459,23 @@ class ALDSegment(ArchiveSection):
     )
 
     gases = SubSection(
-        section_def=GasComponent,
-        description='The gases in the mixture',
-        repeats=True
+        section_def=GasComponent, description='The gases in the mixture', repeats=True
     )
 
 
 class SpinCoatingSegments(ArchiveSection):
     """
-    A spin-coating program can be composed of several different segments. 
+    A spin-coating program can be composed of several different segments.
     This is a repeating section for describing all the spin-coating segments
     """
+
     duration = Quantity(
         description='The length of the segment.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     speed_start = Quantity(
         description='The spin speed of the start of the segment.',
         type=float,
@@ -1434,22 +1502,19 @@ class Dipping(ArchiveSection):
     """
     Details for a dipping treatment.
     """
+
     time_in_solution = Quantity(
         description='The time of the dipping.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     drying_procedure = Quantity(
         description='The methode by which the liquid is removed from the sample after dipping.',
-        type=MEnum([
-                'gas_blowing',
-                'self_drying',
-                'heating',
-                'tissue_paper',
-                'none',
-                'other']),
+        type=MEnum(
+            ['gas_blowing', 'self_drying', 'heating', 'tissue_paper', 'none', 'other']
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -1457,16 +1522,20 @@ class Dipping(ArchiveSection):
         description='The temperature of the sample during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     solution_temperature = Quantity(
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     solution = SubSection(
         section_def=Solution,
         description='Details about the solution.',
@@ -1477,44 +1546,54 @@ class TemperatureSegment(ArchiveSection):
     """
     Details for heaating segments
     """
+
     time_of_segment = Quantity(
         description='Time of the segment.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
 
     temperature_start = Quantity(
         description='Temperature at the start of the segment.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )    
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     temperature_end = Quantity(
         description='Temperature at the end of the segment.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )      
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     temperature_acceleration = Quantity(
         description='Temperature acceleration',
         type=float,
         unit='C/min',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='C/min'),
-    )  
+    )
 
 
 class SputteringSegment(ArchiveSection):
     """
     Details for heaating segments
     """
+
     time_of_segment = Quantity(
         description='Time of the segment.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
 
     deposition_rate = Quantity(
@@ -1537,12 +1616,13 @@ class SputteringSegment(ArchiveSection):
         unit='Pa',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
     )
- 
+
 
 class AntiSolventDetails(ArchiveSection):
     """
     Details for an antisolvent treatment.
     """
+
     volume = Quantity(
         description='The volume of the antisolvent.',
         type=float,
@@ -1582,12 +1662,13 @@ class GasQuenchingDetails(ArchiveSection):
     """
     Details for a gas quenching treatment.
     """
+
     gas = Quantity(
         description='The gas used for the quenching.',
         type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
+
     start_time = Quantity(
         description='Time of the start of the dispensing in seconds after the start of the spin-coating program.',
         type=float,
@@ -1601,7 +1682,7 @@ class GasQuenchingDetails(ArchiveSection):
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     pressure = Quantity(
         description='The pressure of the gas.',
         type=float,
@@ -1613,21 +1694,24 @@ class GasQuenchingDetails(ArchiveSection):
         description='The temperature of the gas.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     distance_between_nozzle_and_substrate = Quantity(
         description='Distance between the nozzle and the substrate',
         type=float,
         unit='mm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mm'),
-    )    
+    )
 
 
 class PostDepositionProcedure(DepositionSegment):
     """
-    Post deposition procedure. 
+    Post deposition procedure.
     """
+
     # Top level sections
     time_stamp = Quantity(
         description='Date of the operation',
@@ -1643,7 +1727,7 @@ class PostDepositionProcedure(DepositionSegment):
             component='NumberEditQuantity', defaultDisplayUnit='minute'
         ),
     )
-    
+
     time_from_last_step = Quantity(
         description="""The time from the finalization of the last layer 
         and the start of the deposition of this.""",
@@ -1664,7 +1748,7 @@ class PostDepositionProcedure(DepositionSegment):
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
     )
-    
+
     sample_history = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description="""A description of the conditions under which the sample have been stored between
@@ -1676,41 +1760,46 @@ class AtomicLayerDeposition(DepositionSegment):
     """
     Details for an ALD process.
     """
+
     # Numerical qunatities
     duration = Quantity(
         description='The total time of the procedure.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    ) 
+    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     flow_rate = Quantity(
         description='The flow rate.',
         type=float,
         unit='cm^3/minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^3/minute'),
-    ) 
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='cm^3/minute'
+        ),
+    )
 
     number_of_cycles = Quantity(
         description='The number of deposition cycles.',
         type=int,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    ) 
+    )
 
     # Categorical qunatities
     carrier_gas = Quantity(
         description='The carrier gas.',
-        type=MEnum(['air', 'dry_air', 'N2', 'Ar','other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),    
+        type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'other']),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
+
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
@@ -1721,22 +1810,23 @@ class AtomicLayerDeposition(DepositionSegment):
     segments = SubSection(
         section_def=ALDSegment,
         description='Details about the four ALD segments.',
-        repeats=True,  
-    ) 
+        repeats=True,
+    )
 
     method = Quantity(
         type=str,
     )
-      
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'AtomicLayerDeposition' 
+        self.method = 'AtomicLayerDeposition'
 
 
 class ChemicalBathDeposition(DepositionSegment):
     """
     Details for a chemical bath deposition process.
     """
+
     # Numerical quantities
     time_in_solution = Quantity(
         description='The time of the dipping.',
@@ -1744,41 +1834,41 @@ class ChemicalBathDeposition(DepositionSegment):
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     sample_temperature = Quantity(
         description='The temperature of the sample during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     solution_temperature = Quantity(
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )    
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     # Categorical quantities
     drying_procedure = Quantity(
         description='The method by which the liquid is removed from the sample after dipping.',
-        type=MEnum([
-                'gas_blowing',
-                'self_drying',
-                'heating',
-                'tissue_paper',
-                'none',
-                'other']),
+        type=MEnum(
+            ['gas_blowing', 'self_drying', 'heating', 'tissue_paper', 'none', 'other']
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
+
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
-    # Subsection    
+
+    # Subsection
     solution = SubSection(
         section_def=Solution,
         description='Details about the solution.',
@@ -1795,19 +1885,22 @@ class ChemicalBathDeposition(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'ChemicalBathDeposition'      
+        self.method = 'ChemicalBathDeposition'
 
 
 class Cleaning(DepositionSegment):
     """
     Cleaning procedures
     """
+
     # Numerical quantities
     duration = Quantity(
         description='The time of the evaporation.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
 
     # Categorical quantities
@@ -1825,7 +1918,7 @@ class Cleaning(DepositionSegment):
             """,
         a_eln=dict(component='RichTextEditQuantity'),
     )
-            
+
     # Subsections
     solution = SubSection(
         section_def=Solution,
@@ -1840,16 +1933,17 @@ class Cleaning(DepositionSegment):
     method = Quantity(
         type=str,
     )
-    
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Cleaning'  
+        self.method = 'Cleaning'
 
 
 class DipCoating(DepositionSegment):
     """
     Details for a dip coating process.
     """
+
     # Numerical quantities
     time_in_solution = Quantity(
         description='The time of the dipping.',
@@ -1857,44 +1951,46 @@ class DipCoating(DepositionSegment):
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     sample_temperature = Quantity(
         description='The temperature of the sample during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     solution_temperature = Quantity(
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )    
-     
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
     number_of_repetitions = Quantity(
         description='The number of repetitions (dippings).',
         type=int,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     time_between_repetitions = Quantity(
         description='The time between the repetitions.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
-    
+
     # Categorical quantities
     drying_procedure = Quantity(
         description='The methode by which the liquid is removed from the sample after dipping.',
-        type=MEnum([
-                'gas_blowing',
-                'self_drying',
-                'heating',
-                'tissue_paper',
-                'none',
-                'other']),
+        type=MEnum(
+            ['gas_blowing', 'self_drying', 'heating', 'tissue_paper', 'none', 'other']
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -1903,8 +1999,8 @@ class DipCoating(DepositionSegment):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
-    # Subsection    
+
+    # Subsection
     solution = SubSection(
         section_def=Solution,
         description='Details about the solution.',
@@ -1921,13 +2017,14 @@ class DipCoating(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'DipCoating'  
+        self.method = 'DipCoating'
 
 
 class DoctorBlading(DepositionSegment):
     """
     Details for a doctor blading process.
     """
+
     # Numerical quantities
     duration = Quantity(
         description='The time of the doctor blading.',
@@ -1935,7 +2032,7 @@ class DoctorBlading(DepositionSegment):
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     blade_speed = Quantity(
         description='The speed of the blade.',
         type=float,
@@ -1947,7 +2044,9 @@ class DoctorBlading(DepositionSegment):
         description='The angle of the blade.',
         type=float,
         unit='degree',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degree'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degree'
+        ),
     )
 
     blade_height = Quantity(
@@ -1968,23 +2067,27 @@ class DoctorBlading(DepositionSegment):
         description='The temperature of the sample during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     solution_temperature = Quantity(
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )     
-    
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
     # categorical quantities
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
+
     # Subsections
     ink = SubSection(
         section_def=Solution,
@@ -2002,41 +2105,46 @@ class DoctorBlading(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'DoctorBlading'  
+        self.method = 'DoctorBlading'
 
 
 class Evaporation(DepositionSegment):
     """
     Details for a evaporation process.
     """
+
     # Numerical quantities
     number_of_sources = Quantity(
         description='The number of sources used for the evaporation.',
         type=int,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     duration = Quantity(
         description='The time of the evaporation.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
-    
+
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     substrate_rotation_speed = Quantity(
         description='The rotation speed of the substrate during the activity.',
         type=float,
         unit='rpm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='rpm'),
     )
-    
+
     deposition_rate = Quantity(
         description='The rate of deposition.',
         type=float,
@@ -2051,7 +2159,7 @@ class Evaporation(DepositionSegment):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
     )
 
-    # Categorical qunatities 
+    # Categorical qunatities
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
@@ -2064,7 +2172,7 @@ class Evaporation(DepositionSegment):
         description='Details about the evaporation sources.',
         repeats=True,
     )
-    
+
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description="""Environmental conditions during the activity. 
@@ -2074,42 +2182,43 @@ class Evaporation(DepositionSegment):
     method = Quantity(
         type=str,
     )
-    
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Evaporation'  
+        self.method = 'Evaporation'
 
 
 class Heating(DepositionSegment):
     """
     Details for a heating process.
     """
+
     # Numerical quantities
     duration = Quantity(
         description='The duration of the process.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )    
+    )
 
     # categorical quantities
     heating_medium = Quantity(
         description='The way by which the temperature is controlled',
         type=MEnum(['hotplate', 'furnace', 'liquid_bath', 'gas', 'other']),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )    
-    
+    )
+
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
+
     # Subsections
     temperature_segments = SubSection(
         section_def=TemperatureSegment,
         description='Details about the temperature segments.',
-        repeats=True,  
+        repeats=True,
     )
 
     environmental_conditions = SubSection(
@@ -2123,21 +2232,22 @@ class Heating(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Heating'    
-    
+        self.method = 'Heating'
+
 
 class InkjetPrinting(DepositionSegment):
     """
     Details for a inkjet printing process.
     """
+
     # Numerical qunatities
     duration = Quantity(
         description='The total time of the procedure.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    ) 
-        
+    )
+
     drop_volume = Quantity(
         description='Drop volume.',
         type=float,
@@ -2170,16 +2280,20 @@ class InkjetPrinting(DepositionSegment):
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )  
-     
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
     ink_temperature = Quantity(
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )  
-     
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
     # categorical qunatities
     equipment = Quantity(
         description='Brand name and model of the spin-coater.',
@@ -2196,58 +2310,63 @@ class InkjetPrinting(DepositionSegment):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )  
+    )
 
     method = Quantity(
         type=str,
     )
-      
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'InkjetPrinting'     
+        self.method = 'InkjetPrinting'
 
 
 class IonExchangeByDipping(DipCoating):
     """
-    Details for a process where ions in a perovksite is exchanged by 
-    dipping it in a solution 
+    Details for a process where ions in a perovksite is exchanged by
+    dipping it in a solution
     """
-    
+
     method = Quantity(
         type=str,
     )
-    
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'IonExchangeByDipping'  
+        self.method = 'IonExchangeByDipping'
 
 
 class IonExchangeByGasDiffusion(DepositionSegment):
     """
-    Details for a process where ions in a perovksite is exchanged by 
-    a gas diffusion process 
-    
+    Details for a process where ions in a perovksite is exchanged by
+    a gas diffusion process
+
     """
+
     # Numerical quantities
     duration = Quantity(
         description='The total time of the procedure.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )     
+    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     gas_temperature = Quantity(
         description='The temperature of the reaction gas during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     # Categorical qunatities
@@ -2259,9 +2378,7 @@ class IonExchangeByGasDiffusion(DepositionSegment):
 
     # Subsections
     gases = SubSection(
-        section_def=GasComponent,
-        description='The gases in the mixture',
-        repeats=True
+        section_def=GasComponent, description='The gases in the mixture', repeats=True
     )
 
     environmental_conditions = SubSection(
@@ -2275,13 +2392,14 @@ class IonExchangeByGasDiffusion(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'IonExchangeByGasDiffusion'  
+        self.method = 'IonExchangeByGasDiffusion'
 
 
 class SlotDieCoating(DepositionSegment):
     """
     Details for a slot dye coatig process
     """
+
     # Numerical qunatities
     duration = Quantity(
         description='The time of the doctor blading.',
@@ -2289,7 +2407,7 @@ class SlotDieCoating(DepositionSegment):
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     blade_speed = Quantity(
         description='The speed of the blade.',
         type=float,
@@ -2301,7 +2419,9 @@ class SlotDieCoating(DepositionSegment):
         description='The angle of the blade.',
         type=float,
         unit='degree',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degree'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degree'
+        ),
     )
 
     blade_height = Quantity(
@@ -2322,24 +2442,28 @@ class SlotDieCoating(DepositionSegment):
         description='The temperature of the sample during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     solution_temperature = Quantity(
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )     
-    
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
     # Categorical qunatities
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-   
-    # Subsectinos 
+
+    # Subsectinos
     ink = SubSection(
         section_def=Solution,
         description='Details about the solution.',
@@ -2356,13 +2480,14 @@ class SlotDieCoating(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'SlotDieCoating'  
+        self.method = 'SlotDieCoating'
 
 
 class SpinCoating(DepositionSegment):
     """
     This is the section for a spin coating segment of a layer.
     """
+
     # Boolean quantities
     dynamic_spin_coating = Quantity(
         description="""
@@ -2372,7 +2497,7 @@ class SpinCoating(DepositionSegment):
         shape=[],
         a_eln=dict(component='BoolEditQuantity'),
     )
-    
+
     antisolvent = Quantity(
         description="""
             True if an antisolvent is used during spin-coating.',
@@ -2389,14 +2514,16 @@ class SpinCoating(DepositionSegment):
         type=bool,
         shape=[],
         a_eln=dict(component='BoolEditQuantity'),
-    )      
-    
+    )
+
     # Numeric quantities
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     solvent_volume = Quantity(
@@ -2446,9 +2573,9 @@ class SpinCoating(DepositionSegment):
     spin_coating_segments = SubSection(
         section_def=SpinCoatingSegments,
         description='Description of each spin-coating segment.',
-        repeats=True,   
+        repeats=True,
     )
-    
+
     solution = SubSection(
         section_def=Solution,
         description='Details about the solution.',
@@ -2463,9 +2590,9 @@ class SpinCoating(DepositionSegment):
         section_def=AntiSolventDetails,
         description='Details about the antisolvent treatment.',
     )
-    
+
     gas_quenching_details = SubSection(
-        section_def=GasQuenchingDetails,    
+        section_def=GasQuenchingDetails,
         description='Details about the gas quenching treatment.',
     )
 
@@ -2475,13 +2602,14 @@ class SpinCoating(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'SpinCoating'  
+        self.method = 'SpinCoating'
 
 
 class SprayCoating(DepositionSegment):
     """
     Details for a spray coating process
     """
+
     # Numerical qunatities
     duration = Quantity(
         description='The time of the doctor blading.',
@@ -2489,7 +2617,7 @@ class SprayCoating(DepositionSegment):
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     nozzle_speed = Quantity(
         description='The speed of the nozzle.',
         type=float,
@@ -2501,7 +2629,9 @@ class SprayCoating(DepositionSegment):
         description='The angle of the nozzle.',
         type=float,
         unit='degree',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degree'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degree'
+        ),
     )
 
     nozzle_height = Quantity(
@@ -2522,44 +2652,48 @@ class SprayCoating(DepositionSegment):
         description='The temperature of the solution during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    ) 
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     sample_temperature = Quantity(
         description='The temperature of the sample during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     sample_area = Quantity(
         description='The area of the samples being sprayed.',
         type=float,
         unit='cm^2',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    )    
+    )
 
     gas_pressure = Quantity(
         description='The gas pressure.',
         type=float,
         unit='Pa',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
-    ) 
-    
+    )
+
     # categorical qunatities
     carrier_gas = Quantity(
         description='The carrier gas.',
         type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),    
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-  
+
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-   
-    # Subsectinos 
+
+    # Subsectinos
     solution = SubSection(
         section_def=Solution,
         description='Details about the solution.',
@@ -2576,28 +2710,31 @@ class SprayCoating(DepositionSegment):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'SprayCoating'  
+        self.method = 'SprayCoating'
 
 
 class Sputtering(DepositionSegment):
     """
     Details for a sputtering process
     """
-    # Numerical qunatities  
+
+    # Numerical qunatities
     duration = Quantity(
         description='The total time of the process.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
-    
+
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     substrate_rotation_speed = Quantity(
         description='The rotation speed of the substrate during the activity.',
         type=float,
@@ -2607,16 +2744,20 @@ class Sputtering(DepositionSegment):
 
     # Categorical qunatities
     type_of_sputering = Quantity(
-        description="The type of sputtering process",
-        type=MEnum(['DC_sputtering', 
-                    'RF_sputtering', 
-                    'Magnetron_sputtering', 
-                    'Reactive_sputtering', 
-                    'Pulsed_DC_sputtering',  
-                    'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),           
+        description='The type of sputtering process',
+        type=MEnum(
+            [
+                'DC_sputtering',
+                'RF_sputtering',
+                'Magnetron_sputtering',
+                'Reactive_sputtering',
+                'Pulsed_DC_sputtering',
+                'other',
+            ]
+        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
+
     equipment = Quantity(
         description='Brand name and model of the equipment used for the process.',
         type=str,
@@ -2627,33 +2768,34 @@ class Sputtering(DepositionSegment):
     segments = SubSection(
         section_def=SputteringSegment,
         description='Details about the sputtering segments.',
-        repeats=True,  
-    )    
-    
+        repeats=True,
+    )
+
     target = SubSection(
         section_def=SputteringTarget,
         description='Details about the sputtering target.',
     )
-  
+
     gases = SubSection(
         section_def=GasComponent,
         description='The gases in the mixture. For reactive sputtering',
-        repeats=True
-    )  
+        repeats=True,
+    )
 
     method = Quantity(
         type=str,
     )
-  
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Sputtering'  
+        self.method = 'Sputtering'
 
 
 class UVOzonTreatment(DepositionSegment):
     """
     UVOzon treatment
     """
+
     # Boolean qunatities
     uv_illuminated = Quantity(
         description="""
@@ -2663,20 +2805,22 @@ class UVOzonTreatment(DepositionSegment):
         shape=[],
         a_eln=dict(component='BoolEditQuantity'),
     )
-    
+
     # Numerical quantities
     duration = Quantity(
         description='The total time of the procedure.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )     
+    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     uv_wavelength = Quantity(
@@ -2709,10 +2853,10 @@ class UVOzonTreatment(DepositionSegment):
     method = Quantity(
         type=str,
     )
-    
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'UVOzonTreatment'      
+        self.method = 'UVOzonTreatment'
 
 
 ### Deposition procedures top sections
@@ -2720,6 +2864,7 @@ class DepositionProcedure(ArchiveSection):
     """
     This is the section for the deposition procedure of a layer.
     """
+
     ## Top layer quantities
     substrate_layer = Quantity(
         description="""The layer on which the layer is deposited.
@@ -2731,21 +2876,24 @@ class DepositionProcedure(ArchiveSection):
         and it could be a layer that is not deposited at all (like an air gap) 
         """,
         type=MEnum(
-            ['is_substrate',
-             'on_lower_layer',
-             'on_upper_layer',
-             'laminate_layers',
-             'not-deposited']),
+            [
+                'is_substrate',
+                'on_lower_layer',
+                'on_upper_layer',
+                'laminate_layers',
+                'not-deposited',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-         
+
     origin = Quantity(
         description='The place where the layer was deposited. i.e. was it deposited in the lab or was it bought. An example of a layer that often is bought is the ITO layer on glass substrates',
         type=MEnum(
             [
                 'commercial_supplier',
                 'deposited_in_house',
-                'deposited_by_collaborator', 
+                'deposited_by_collaborator',
             ]
         ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
@@ -2756,7 +2904,7 @@ class DepositionProcedure(ArchiveSection):
         type=Datetime,
         a_eln=ELNAnnotation(component='DateTimeEditQuantity'),
     )
-    
+
     duration = Quantity(
         type=float,
         description='The time it takes to deposit the layer from start to finish.',
@@ -2765,7 +2913,7 @@ class DepositionProcedure(ArchiveSection):
             component='NumberEditQuantity', defaultDisplayUnit='minute'
         ),
     )
-    
+
     time_from_last_step = Quantity(
         description="""The time from the finalization of the last layer 
         and the start of the deposition of this.""",
@@ -2773,7 +2921,7 @@ class DepositionProcedure(ArchiveSection):
         unit='hr',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
     )
-    
+
     ## Subsections
     # Deposition segments
     segments = SubSection(
@@ -2781,7 +2929,7 @@ class DepositionProcedure(ArchiveSection):
         description='The segments of the deposition procedure.',
         repeats=True,
     )
-    
+
     # Sample history
     sample_history = SubSection(
         section_def=EnvironmentalConditionsDeposition,
@@ -2795,6 +2943,7 @@ class Layer(ArchiveSection):
     """
     This is the section for a layer in the device stack.
     """
+
     # Top level quantities
     name = Quantity(
         type=str,
@@ -2826,79 +2975,82 @@ class Layer(ArchiveSection):
     )
 
     functionality = Quantity(
-        type=MEnum([''
-            'air_gap',
-            'anti_reflection',
-            'back_contact',
-            'back_reflector',
-            'buffer_layer',
-            'down_conversion',
-            'edge_sealing',
-            'electrolyte',
-            'encapsulation',
-            'electron_transport_layer',
-            'front_contact',
-            'hole_transport_layer',
-            'interface_modifier',
-            'mesoporous_scaffold',
-            'middle_contact',
-            'optical_spacer',
-            'organic_dye',
-            'photoabsorber',
-            'recombination_layer',
-            'refractive_index_matching',
-            'self_assembled_monolayer',
-            'spectral_splitter',
-            'substrate',
-            'transparent_conducting_oxide',
-            'other']),
+        type=MEnum(
+            [
+                'air_gap',
+                'anti_reflection',
+                'back_contact',
+                'back_reflector',
+                'buffer_layer',
+                'down_conversion',
+                'edge_sealing',
+                'electrolyte',
+                'encapsulation',
+                'electron_transport_layer',
+                'front_contact',
+                'hole_transport_layer',
+                'interface_modifier',
+                'mesoporous_scaffold',
+                'middle_contact',
+                'optical_spacer',
+                'organic_dye',
+                'photoabsorber',
+                'recombination_layer',
+                'refractive_index_matching',
+                'self_assembled_monolayer',
+                'spectral_splitter',
+                'substrate',
+                'transparent_conducting_oxide',
+                'other',
+            ]
+        ),
         shape=[],
-        description="The primary functionality of the layer in the device stack.",
+        description='The primary functionality of the layer in the device stack.',
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     ### Subsections
-    ## Photoabsorbers 
+    ## Photoabsorbers
     perovskite = SubSection(
         section_def=PhotoabsorberPerovskite,
         description='Perovskite specific information.',
     )
-    
+
     silicon = SubSection(
         section_def=PhotoabsorberSilicon,
         description='Silicon specific information.',
     )
-    
+
     CIGS = SubSection(
         section_def=PhotoabsorberCIGS,
         description='CIGS specific information.',
-    )   
-    
+    )
+
     CZTS = SubSection(
         section_def=PhotoabsorberCZTS,
         description='CZTS specific information.',
-    )   
-    
+    )
+
     OPV = SubSection(
         section_def=PhotoabsorberOPV,
         description='OPV specific information.',
     )
-    
-    DSSC = SubSection( 
+
+    DSSC = SubSection(
         section_def=PhotoabsorberDSSC,
         description='DSSC specific information.',
-    )   
-    
+    )
+
     quantum_dot = SubSection(
         section_def=PhotoabsorberQD,
         description='Quantum dot specific information.',
     )
-    
+
     GaAs = SubSection(
         section_def=PhotoabsorberGaAs,
         description='GaAs specific information.',
     )
-    
+
     ## Other subsections
     # Compounds in the layer
     components = SubSection(
@@ -2915,7 +3067,7 @@ class Layer(ArchiveSection):
 
     # Post deposition procedure
     post_deposition_procedure = SubSection(
-        section_def=PostDepositionProcedure,    
+        section_def=PostDepositionProcedure,
         description='Post deposition procedure.',
     )
 
@@ -2938,17 +3090,18 @@ class Layer(ArchiveSection):
         shape=[],
         description="""The position in the device stack for the layer. Counted from the bottom. Can be populated automatically """,
         # a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )    
-     
+    )
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
+
 
 ### Master class putting everything together
 class DeviceStack(ArchiveSection):
     """
     This is the master class for the device stack. It contains all the layers in the device stack.
     """
-    
+
     ## Derived qunatities
     n_layers = Quantity(
         description='Number of layers in the stack.',
@@ -2968,22 +3121,22 @@ class DeviceStack(ArchiveSection):
             """,
         type=str,
         shape=[],
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),  
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
+
     ## Subsections
     layers = SubSection(
         section_def=Layer,
         description='The stack of layers in the device starting from the bottom.',
         repeats=True,
     )
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        
+
         # Number of layers
         self.n_layers = len(self.layers)
-        
+
         # Stack sequence
         stack_sequence = []
         for i in range(self.n_layers):
@@ -2994,12 +3147,12 @@ class DeviceStack(ArchiveSection):
                     stack_sequence.append('unknown')
             else:
                 stack_sequence.append('unknown')
-          
-        self.stack_sequence = " | ".join(stack_sequence)       
-        
+
+        self.stack_sequence = ' | '.join(stack_sequence)
+
         # Layer index
         for i, layer in enumerate(self.layers):
             self.layers[i].layer_index = i + 1
 
-                
+
 m_package.__init_metainfo__()

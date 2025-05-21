@@ -7,6 +7,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import St
 
 m_package = SchemaPackage()
 
+
 ### Subsections called by measurements
 class Measurement(ArchiveSection):
     """
@@ -62,8 +63,8 @@ class Measurement(ArchiveSection):
             minValue=0,
         ),
     )
-        
-        
+
+
 class JVResults(ArchiveSection):
     """
     Results of a single JV scan.
@@ -130,21 +131,21 @@ class JVResults(ArchiveSection):
             component='NumberEditQuantity', defaultDisplayUnit='ohm*cm^2'
         ),
     )
-   
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        
+
         # Ensure FF is between 0 and 1
         if hasattr(self, 'fill_factor') and self.fill_factor is not None:
             if self.fill_factor > 2.0:
                 self.fill_factor = self.fill_factor / 100
 
-            
+
 class JVConditions(ArchiveSection):
     """
     Parameters of a JV scan.
     """
-    
+
     scan_direction = Quantity(
         description=('The scan direction of the JV measurement. Forward or reverse.'),
         type=MEnum(['forward', 'reversed']),
@@ -161,7 +162,7 @@ class JVConditions(ArchiveSection):
     voltage_step = Quantity(
         description='Voltage step of the scan.',
         type=float,
-        unit ='mV',
+        unit='mV',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mV'),
     )
 
@@ -190,6 +191,7 @@ class EnvironmentalConditions(ArchiveSection):
     """
     Environmental conditions during the activity.
     """
+
     ambient_conditions = Quantity(
         description='TRUE if the activity is occurring in in uncontrolled ambient conditions. FALSE otherwise',
         type=bool,
@@ -207,9 +209,9 @@ class EnvironmentalConditions(ArchiveSection):
     atmosphere = Quantity(
         description='Atmosphere during the activity.',
         type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'vacuum', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity')
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-   
+
     relative_humidity = Quantity(
         description='Relative humidity during the activity. In %, i.e. a number between 0 and 100.',
         type=float,
@@ -221,14 +223,18 @@ class EnvironmentalConditions(ArchiveSection):
         description='Ambient temperature during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     device_temperature = Quantity(
         description='The temperature of the device during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     pressure = Quantity(
@@ -243,54 +249,67 @@ class EnvironmentalConditions(ArchiveSection):
         type=float,
         # unit='%',
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    ) 
+    )
 
 
 class EnvironmentalConditionsOutdoor(ArchiveSection):
     """
     Environmental conditions during the activity.
     """
+
     ambient_temperature_min = Quantity(
         description='Minimum ambient temperature during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     ambient_temperature_max = Quantity(
         description='Maximum ambient temperature during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     ambient_temperature_average = Quantity(
         description='Average ambient temperature during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )    
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     device_temperature_min = Quantity(
         description='Minimum temperature of the device during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-    
+
     device_temperature_max = Quantity(
         description='Maximum temperature of the device during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
-        
+
     device_temperature_average = Quantity(
         description='Average temperature of the device during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    )        
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
 
     relative_humidity_min = Quantity(
         description='Minimum relative humidity during the activity. In %, i.e. a number between 0 and 100.',
@@ -305,20 +324,20 @@ class EnvironmentalConditionsOutdoor(ArchiveSection):
         # unit='%',
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     relative_humidity_average = Quantity(
         description='Average relative humidity during the activity. In %, i.e. a number between 0 and 100.',
         type=float,
         # unit='%',
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )    
+    )
 
 
 class Illumination(ArchiveSection):
     """
     Details about the illumination used for the measurement.
     """
-  
+
     intensity = Quantity(
         description='Intensity of the illumination.',
         type=float,
@@ -331,8 +350,8 @@ class Illumination(ArchiveSection):
         type=float,
         unit='lx',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='lx'),
-    )    
-        
+    )
+
     direction = Quantity(
         description='Direction of the illumination with respect to the device.',
         type=MEnum(['substrate', 'superstrate']),
@@ -350,97 +369,110 @@ class Illumination(ArchiveSection):
         type=float,
         unit='cm^2',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    )    
+    )
 
     uv_filter = Quantity(
         description='TRUE if a UV-filter is used. FALSE otherwise.',
         type=bool,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
-    ) 
+    )
 
     top_cell_filter = Quantity(
-        description='TRUE if the measurement is done on a subcell and the light is filtered trough the remaining subcells. e.g. a silicon bottom cell is measured under light flittered by a perovskite top cell.', 
+        description='TRUE if the measurement is done on a subcell and the light is filtered trough the remaining subcells. e.g. a silicon bottom cell is measured under light flittered by a perovskite top cell.',
         type=bool,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
-    ) 
+    )
 
-    
+
 class LightSource(ArchiveSection):
     """
     Details about the light source used for the measurement.
     """
+
     spectrum = Quantity(
         description='Spectrum of the illumination.',
-        type=MEnum(['Dark', 
-                    'AM1.5', 
-                    'AM1.5G', 
-                    'AM0', 
-                    'AM1.0',
-                    'UV', 
-                    'UVA', 
-                    'UVB', 
-                    'Monochromatic', 
-                    'Ambient_indoor', 
-                    'Ambient_outdoor', 
-                    'Other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )
-    
-    light_source = Quantity(
-        description='Type of illumination.',
-        type=MEnum(['Dark_conditions',
-                    'Solar_simulator_unspecified',  
-                    'Metal_halide', 
-                    'Sulfur_plasma', 
-                    'LED', 
-                    'Withe_led', 
-                    'Xenon', 
-                    'Halogen', 
-                    'Laser', 
-                    'Incandescent', 
-                    'Fluorescent', 
-                    'Ambient_indoor', 
-                    'Ambient_outdoor', 
-                    'UV',
-                    'Proton_source', 
-                    'Other']),
+        type=MEnum(
+            [
+                'Dark',
+                'AM1.5',
+                'AM1.5G',
+                'AM0',
+                'AM1.0',
+                'UV',
+                'UVA',
+                'UVB',
+                'Monochromatic',
+                'Ambient_indoor',
+                'Ambient_outdoor',
+                'Other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
-    solar_simulator_class= Quantity(
-        description='Class of the solar simulator.',
-        type=MEnum(['AAA',
-                    'AAB',
-                    'AAC',
-                    'ABA',
-                    'ABB',
-                    'ABC',
-                    'ACA',
-                    'ACB',
-                    'ACC',
-                    'BAA',
-                    'BAB',
-                    'BAC',
-                    'BBA',
-                    'BBB',
-                    'BBC',
-                    'BCA',
-                    'BCB',
-                    'BCC',
-                    'CAA',
-                    'CAB',
-                    'CAC',
-                    'CBA',
-                    'CBB',
-                    'CBC',
-                    'CCA',
-                    'CCB',
-                    'CCC',
-                    'Unknown',
-                    'Other']),
+    light_source = Quantity(
+        description='Type of illumination.',
+        type=MEnum(
+            [
+                'Dark_conditions',
+                'Solar_simulator_unspecified',
+                'Metal_halide',
+                'Sulfur_plasma',
+                'LED',
+                'Withe_led',
+                'Xenon',
+                'Halogen',
+                'Laser',
+                'Incandescent',
+                'Fluorescent',
+                'Ambient_indoor',
+                'Ambient_outdoor',
+                'UV',
+                'Proton_source',
+                'Other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )        
-        
+    )
+
+    solar_simulator_class = Quantity(
+        description='Class of the solar simulator.',
+        type=MEnum(
+            [
+                'AAA',
+                'AAB',
+                'AAC',
+                'ABA',
+                'ABB',
+                'ABC',
+                'ACA',
+                'ACB',
+                'ACC',
+                'BAA',
+                'BAB',
+                'BAC',
+                'BBA',
+                'BBB',
+                'BBC',
+                'BCA',
+                'BCB',
+                'BCC',
+                'CAA',
+                'CAB',
+                'CAC',
+                'CBA',
+                'CBB',
+                'CBC',
+                'CCA',
+                'CCB',
+                'CCC',
+                'Unknown',
+                'Other',
+            ]
+        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+    )
+
     light_source_model = Quantity(
         description='The brand name and model of the light source/solar simulator used',
         type=str,
@@ -464,11 +496,15 @@ class Preconditioning(ArchiveSection):
 
     protocol = Quantity(
         description='Protocol for the preconditioning. Light soaking, potential biasing, etc.',
-        type=MEnum(['Light_soaking', 
-                    'Potential_biasing',
-                    'Current_biasing', 
-                    'Temperature_biasing',
-                    'Other']),
+        type=MEnum(
+            [
+                'Light_soaking',
+                'Potential_biasing',
+                'Current_biasing',
+                'Temperature_biasing',
+                'Other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -497,20 +533,23 @@ class Preconditioning(ArchiveSection):
         description='Current density during the activity.',
         type=float,
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
     # Subsections
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
-    ) 
+    )
 
 
 class CertificationDetails(ArchiveSection):
     """
     Details about the certification of the measurement.
     """
+
     certifying_institution = Quantity(
         description='Name of the certifying institution.',
         type=str,
@@ -522,7 +561,7 @@ class CertificationDetails(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
+
     certification_date = Quantity(
         description='The date of the official certificate.',
         type=Datetime,
@@ -540,33 +579,32 @@ class EQEResults(ArchiveSection):
         type=float,
         unit='mA/cm^2',
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'),
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
     eqe_onset = Quantity(
         description='The onset where the EQE starts to increase. Is a proxy for the band gap',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
-    
+
     eqe_inflection_point = Quantity(
         description='The inflection point after which the EQE starts to increase. Is a proxy for the band gap',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
-    )    
-    
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
+    )
+
     eqe_max = Quantity(
         description='The maximum EQE value. In %, i.e. a number between 0 and 100.',
         type=float,
         # unit='%',
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )    
- 
-    
+    )
+
+
 class EQEConditions(ArchiveSection):
     """
     EQE conditions
@@ -576,53 +614,49 @@ class EQEConditions(ArchiveSection):
         description='Wavelength at start of measurement',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     wavelength_at_end = Quantity(
         description='Wavelength at end of measurement',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     step_size = Quantity(
         description='The size of the steps in the scanning',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
-    
+
     integration_time = Quantity(
         description='Integration time for each wavelength',
         type=float,
         unit='s',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )    
-    
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
+    )
+
     scan_speed = Quantity(
         description='Scan speed',
         type=float,
         unit='nm/s',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm/s'),
-    ) 
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm/s'),
+    )
 
     equipment = Quantity(
         description='Brand name and model of the equipment used for the measurement.',
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
-    
+
+
 class StabilizedPerformanceResults(ArchiveSection):
     """
     Results of a stabilized measurement .
     """
+
     power_conversion_efficiency = Quantity(
         description='Power conversion efficiency.',
         type=float,
@@ -644,7 +678,7 @@ class StabilizedPerformanceResults(ArchiveSection):
             component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
         ),
     )
-    
+
     short_circuit_current_density = Quantity(
         description='Short-circuit current density.',
         type=float,
@@ -666,11 +700,12 @@ class StabilizedPerformanceDetails(ArchiveSection):
     """
     Details for stabilized performance measurements.
     """
+
     type_of_measurement = Quantity(
         description='Type of measurement.',
-        type=MEnum(['constant_potential', 
-                    'constant_current', 
-                    'maximum_power_point_tracking']),
+        type=MEnum(
+            ['constant_potential', 'constant_current', 'maximum_power_point_tracking']
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -679,14 +714,16 @@ class StabilizedPerformanceDetails(ArchiveSection):
         type=float,
         unit='V',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
-    )  
-            
+    )
+
     current_density = Quantity(
         description='The current density (if measured at constant current)',
         type=float,
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'),
-    )  
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
+    )
 
     source_meter = Quantity(
         description='Brand name of the Source-meter used for the measurement.',
@@ -699,6 +736,7 @@ class StabilityResults(ArchiveSection):
     """
     Results of a stability measurement.
     """
+
     power_conversion_efficiency_start = Quantity(
         description='Power conversion efficiency at the start of the measurement.',
         type=float,
@@ -730,13 +768,13 @@ class StabilityResults(ArchiveSection):
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     power_conversion_efficiency_1000h = Quantity(
         description='Power conversion efficiency after 1000h.',
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     T95 = Quantity(
         description='The time after which the cell have degraded to 95 % of the initial efficiency.',
         type=float,
@@ -750,7 +788,7 @@ class StabilityResults(ArchiveSection):
         unit='hr',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
     )
- 
+
     T80 = Quantity(
         description='The time after which the cell have degraded to 80 % of the initial efficiency.',
         type=float,
@@ -764,12 +802,14 @@ class StabilityResults(ArchiveSection):
         unit='hr',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
     )
-  
+
     energy_yield = Quantity(
         description='The energy yield during the measurement.',
         type=float,
         unit='kWh/m^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='kWh/m^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='kWh/m^2'
+        ),
     )
 
     energy_yield = Quantity(
@@ -783,14 +823,19 @@ class StabilityDetails(ArchiveSection):
     """
     Details for stability measurements.
     """
+
     potential_bias_regime = Quantity(
         description='The potential regime during the measurement e.g. open circuit, constant potential, constant current,  maximum powerpoint tracking, etc.',
-        type=MEnum(['maximum_power_point_tracking',
-                    'open_circuit',
-                    'constant_potential', 
-                    'constant_current',
-                    'constant_resistance',
-                    'other']), 
+        type=MEnum(
+            [
+                'maximum_power_point_tracking',
+                'open_circuit',
+                'constant_potential',
+                'constant_current',
+                'constant_resistance',
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -807,20 +852,22 @@ class StabilityDetails(ArchiveSection):
         type=float,
         unit='hr',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
-    )  
+    )
 
     potential = Quantity(
         description='The potential (if measured at constant potential)',
         type=float,
         unit='V',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
-    )  
-            
+    )
+
     current_density = Quantity(
         description='The current density (if measured at constant current)',
         type=float,
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
     resistance = Quantity(
@@ -829,7 +876,7 @@ class StabilityDetails(ArchiveSection):
         unit='ohm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='ohm'),
     )
-  
+
     source_meter = Quantity(
         description='Brand name and model of the Source-meter used for the measurement.',
         type=str,
@@ -840,22 +887,29 @@ class StabilityDetails(ArchiveSection):
 class LoadCycleSegments(ArchiveSection):
     """
     Details for load cycling measurements.
-    """  
+    """
+
     duration = Quantity(
         description='Duration of the segment.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
 
     potential_bias_regime = Quantity(
         description='The potential regime during the measurement e.g. open circuit, constant potential, constant current,  maximum powerpoint tracking, etc.',
-        type=MEnum(['maximum_power_point_tracking',
-                    'open_circuit',
-                    'constant_potential', 
-                    'constant_current',
-                    'constant_resistance',
-                    'other']), 
+        type=MEnum(
+            [
+                'maximum_power_point_tracking',
+                'open_circuit',
+                'constant_potential',
+                'constant_current',
+                'constant_resistance',
+                'other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -864,13 +918,15 @@ class LoadCycleSegments(ArchiveSection):
         type=float,
         unit='V',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
-    )  
-            
+    )
+
     current_density = Quantity(
         description='The current density (if measured at constant current)',
         type=float,
         unit='mA/cm^2',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='mA/cm^2'
+        ),
     )
 
     resistance = Quantity(
@@ -879,38 +935,39 @@ class LoadCycleSegments(ArchiveSection):
         unit='ohm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='ohm'),
     )
-    
+
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
     )
- 
+
     light_source = SubSection(
         section_def=LightSource,
         description='Details about the light source used for the measurement.',
     )
- 
+
     illumination = SubSection(
         section_def=Illumination,
         description='Details about the illumination used for the measurement.',
-    )    
+    )
 
 
 class LoadCycle(ArchiveSection):
     """
     Details for load cycling measurements.
     """
+
     number_of_cycles = Quantity(
         description='The number of load cycles during the measurement.',
         type=int,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )  
-    
+    )
+
     number_of_segments_in_cycle = Quantity(
         description='The number of segments in the load cycle.',
         type=int,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    ) 
+    )
 
     segments = SubSection(
         section_def=LoadCycleSegments,
@@ -923,6 +980,7 @@ class OutdoorPerformanceDetails(StabilityDetails):
     """
     Details for outdoor performance measurements.
     """
+
     time_stamp_start = Quantity(
         description='Date and time the measurement was started.',
         type=Datetime,
@@ -958,21 +1016,27 @@ class OutdoorPerformanceDetails(StabilityDetails):
         description='The latitude of the measurement location.',
         type=float,
         unit='degrees',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degrees'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degrees'
+        ),
     )
 
     longitude = Quantity(
         description='The latitude of the measurement location.',
         type=float,
         unit='degrees',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degrees'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degrees'
+        ),
     )
 
     tilt = Quantity(
         description='The tilt of the device during the measurement.',
         type=float,
         unit='degrees',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degrees'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degrees'
+        ),
     )
 
     direction = Quantity(
@@ -983,7 +1047,9 @@ class OutdoorPerformanceDetails(StabilityDetails):
         270 is west""",
         type=float,
         unit='degrees',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='degrees'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='degrees'
+        ),
     )
 
     number_of_solar_tracking_axes = Quantity(
@@ -997,6 +1063,7 @@ class TransmissionResults(ArchiveSection):
     """
     Results of a transmission measurement.
     """
+
     average_transmission = Quantity(
         description='The average transmission in the visible range (400-700 nm)',
         type=float,
@@ -1008,28 +1075,26 @@ class TransmissionDetails(ArchiveSection):
     """
     Details for transmission measurements.
     """
+
     wavelength_at_start = Quantity(
         description='Wavelength at start of measurement',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     wavelength_at_end = Quantity(
         description='Wavelength at end of measurement',
         type=float,
         unit='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     step_size = Quantity(
         description='The size of the steps in the scanning',
         type=float,
-        unit ='nm',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='nm'),
+        unit='nm',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
     equipment = Quantity(
@@ -1037,12 +1102,13 @@ class TransmissionDetails(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
-    
-    
+
+
 class FlexibilityResults(ArchiveSection):
     """
     Results of a flexibility measurement.
     """
+
     power_conversion_efficiency_start = Quantity(
         description='Power conversion efficiency at the start of the measurement.',
         type=float,
@@ -1055,11 +1121,12 @@ class FlexibilityResults(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
-    
+
 class FlexibilityDetails(ArchiveSection):
     """
     Details for flexibility measurements.
     """
+
     number_of_bending_cycles = Quantity(
         description='The number of bending cycles.',
         type=int,
@@ -1071,16 +1138,20 @@ class FlexibilityDetails(ArchiveSection):
         type=float,
         unit='degree',
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='degree'),
+            component='NumberEditQuantity', defaultDisplayUnit='degree'
+        ),
     )
-   
-### Measurements   
+
+
+### Measurements
 class JV(Measurement):
     """
     JV measurement.
     """
+
     light_regime = Quantity(
-        description=("""
+        description=(
+            """
                      The light regime during the JV measurement e.g.
                      Standard light (AM 1.5)
                      Dark
@@ -1089,7 +1160,9 @@ class JV(Measurement):
                      Other 
                      """
         ),
-        type=MEnum(['dark', 'standard_light', 'concentrated_light', 'indoor_light', 'other']),
+        type=MEnum(
+            ['dark', 'standard_light', 'concentrated_light', 'indoor_light', 'other']
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -1110,46 +1183,46 @@ class JV(Measurement):
         section_def=JVConditions,
         description='Measurement details.',
     )
-    
+
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
     )
- 
+
     light_source = SubSection(
         section_def=LightSource,
         description='Details about the light source used for the measurement.',
     )
- 
+
     illumination = SubSection(
         section_def=Illumination,
         description='Details about the illumination used for the measurement.',
     )
-    
+
     preconditioned_conditions = SubSection(
         section_def=Preconditioning,
         description='Preconditioning conditions before the measurement.',
-    ) 
- 
+    )
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
     )
-    
+
     # Raw data
     # TODO add functionality for reading in and storing raw data
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'JV'    
+        self.method = 'JV'
 
-        
+
 class ExternalQuantumEfficiency(Measurement):
     """
     EQE measurement.
@@ -1161,29 +1234,29 @@ class ExternalQuantumEfficiency(Measurement):
         default=False,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
-    
+
     bias_light = Quantity(
         description='TRUE if the measurement is done under bias light, FALSE otherwise.',
         type=bool,
         default=False,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
-    )   
-   
-    # Subsections   
+    )
+
+    # Subsections
     results = SubSection(
         section_def=EQEResults,
         description='Results of the EQE measurement.',
     )
-    
+
     eqe_conditions = SubSection(
         section_def=EQEConditions,
         description='Measurement details.',
     )
-    
+
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
-    )    
+    )
 
     bias_light_source = SubSection(
         section_def=LightSource,
@@ -1194,37 +1267,39 @@ class ExternalQuantumEfficiency(Measurement):
         section_def=Illumination,
         description='Details about the bias illumination used for the measurement.',
     )
-   
+
     preconditioned_conditions = SubSection(
         section_def=Preconditioning,
         description='Preconditioning conditions before the measurement.',
-    ) 
- 
+    )
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
-    )   
+    )
 
     # Raw data
     # TODO add functionality for reading in and storing raw data
-    
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'EQE'     
- 
-        
+        self.method = 'EQE'
+
+
 class StabilizedPerformance(Measurement):
     """
     Stabilized performance
     """
+
     light_regime = Quantity(
-        description=("""
+        description=(
+            """
                      The light regime during the JV measurement e.g.
                      Standard light (AM 1.5)
                      Dark
@@ -1233,7 +1308,9 @@ class StabilizedPerformance(Measurement):
                      Other 
                      """
         ),
-        type=MEnum(['dark', 'standard_light', 'concentrated_light', 'indoor_light', 'other']),
+        type=MEnum(
+            ['dark', 'standard_light', 'concentrated_light', 'indoor_light', 'other']
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -1243,50 +1320,50 @@ class StabilizedPerformance(Measurement):
         default=False,
         a_eln=ELNAnnotation(component='BoolEditQuantity'),
     )
-    
-   # Subsections
+
+    # Subsections
     results = SubSection(
         section_def=StabilizedPerformanceResults,
         description='The results from the measurement.',
     )
-   
+
     measurement_details = SubSection(
         section_def=StabilizedPerformanceDetails,
         description='The results from the measurement.',
     )
-   
+
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
     )
- 
+
     light_source = SubSection(
         section_def=LightSource,
         description='Details about the light source used for the measurement.',
     )
- 
+
     illumination = SubSection(
         section_def=Illumination,
         description='Details about the illumination used for the measurement.',
     )
-    
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
     )
-    
+
     # Raw data
     # TODO add functionality for reading in and storing raw data
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Stabilized_performance'    
+        self.method = 'Stabilized_performance'
 
 
 class Stability(Measurement):
@@ -1309,61 +1386,65 @@ class Stability(Measurement):
     )
 
     stability_protocol = Quantity(
-        description=("""
+        description=(
+            """
                          The measurement protocol. For definitions and classifications of stability protocols, 
                          see https://www.nature.com/articles/s41560-019-0529-5  
                      """
         ),
-        type=MEnum([
-             'ISOS-D-1',
-             'ISOS-D-1I',
-             'ISOS-D-2',
-             'ISOS-D-2I',
-             'ISOS-D-3',
-             'ISOS-V-1',
-             'ISOS-V-1I',
-             'ISOS-V-2',
-             'ISOS-V-2I',
-             'ISOS-V-3',
-             'ISOS-L-1',
-             'ISOS-L-1I',
-             'ISOS-L-2',
-             'ISOS-L-2I',
-             'ISOS-L-3',
-             'ISOS-O-1',
-             'ISOS-O-2',
-             'ISOS-O-3',
-             'ISOS-T-1',
-             'ISOS-T-1I',
-             'ISOS-T-2',
-             'ISOS-T-2I',
-             'ISOS-T-3',
-             'ISOS-T-3I',
-             'ISOS-LC-1',
-             'ISOS-LC-1I',
-             'ISOS-LC-2',
-             'ISOS-LC-2I',
-             'ISOS-LC-3',
-             'ISOS-LC-3I',
-             'ISOS-LT-1',
-             'ISOS-LT-2',
-             'ISOS-LT-3',
-             'IEC 61215',
-             'Other']),
+        type=MEnum(
+            [
+                'ISOS-D-1',
+                'ISOS-D-1I',
+                'ISOS-D-2',
+                'ISOS-D-2I',
+                'ISOS-D-3',
+                'ISOS-V-1',
+                'ISOS-V-1I',
+                'ISOS-V-2',
+                'ISOS-V-2I',
+                'ISOS-V-3',
+                'ISOS-L-1',
+                'ISOS-L-1I',
+                'ISOS-L-2',
+                'ISOS-L-2I',
+                'ISOS-L-3',
+                'ISOS-O-1',
+                'ISOS-O-2',
+                'ISOS-O-3',
+                'ISOS-T-1',
+                'ISOS-T-1I',
+                'ISOS-T-2',
+                'ISOS-T-2I',
+                'ISOS-T-3',
+                'ISOS-T-3I',
+                'ISOS-LC-1',
+                'ISOS-LC-1I',
+                'ISOS-LC-2',
+                'ISOS-LC-2I',
+                'ISOS-LC-3',
+                'ISOS-LC-3I',
+                'ISOS-LT-1',
+                'ISOS-LT-2',
+                'ISOS-LT-3',
+                'IEC 61215',
+                'Other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
+
     # Subsections
-    results= SubSection(
+    results = SubSection(
         section_def=StabilityResults,
         description='Results of the stability measurement.',
     )
-    
+
     measurement_conditions = SubSection(
         section_def=StabilityDetails,
         description='Measurement details.',
     )
-    
+
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
@@ -1373,44 +1454,43 @@ class Stability(Measurement):
         section_def=Illumination,
         description='Details about the illumination used for the measurement.',
     )
-     
+
     light_source = SubSection(
         section_def=LightSource,
         description='Details about the light source used for the measurement.',
     )
- 
+
     load_cycling = SubSection(
         section_def=LoadCycle,
         description='Details about how the load of the cell have varied during the stability.',
     )
- 
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
     )
-    
+
     # JV measurements
     jv_measurements = SubSection(
         section_def=JV,
         description='JV measurements during the stability measurement.',
         repeats=True,
     )
-    
-    
+
     # Raw data
     # TODO add functionality for reading in and storing raw data
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Stability' 
-        
-        
+        self.method = 'Stability'
+
+
 class OutdoorPerformance(Measurement):
     """
     Outdoor performance measurements.
@@ -1424,24 +1504,21 @@ class OutdoorPerformance(Measurement):
     )
 
     stability_protocol = Quantity(
-        description=("""
+        description=(
+            """
                          The measurement protocol. For definitions and classifications of stability protocols, 
                          see https://www.nature.com/articles/s41560-019-0529-5  
                      """
         ),
-        type=MEnum([
-             'ISOS-O-1',
-             'ISOS-O-2',
-             'ISOS-O-3',
-             'Other']),
+        type=MEnum(['ISOS-O-1', 'ISOS-O-2', 'ISOS-O-3', 'Other']),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
-    
-   # Subsections
-    results= SubSection(
+
+    # Subsections
+    results = SubSection(
         section_def=StabilityResults,
         description='Results of the stability measurement.',
-    )   
+    )
 
     outdoor_performance_details = SubSection(
         section_def=OutdoorPerformanceDetails,
@@ -1453,7 +1530,6 @@ class OutdoorPerformance(Measurement):
         description='Environmental conditions during the activity.',
     )
 
-
     measurement_conditions = SubSection(
         section_def=StabilityDetails,
         description='Measurement details.',
@@ -1463,18 +1539,18 @@ class OutdoorPerformance(Measurement):
         section_def=LoadCycle,
         description='Details about how the load of the cell have varied during the stability.',
     )
-   
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
     )
-    
+
     # JV measurements
     jv_measurements = SubSection(
         section_def=JV,
@@ -1484,22 +1560,23 @@ class OutdoorPerformance(Measurement):
 
     # Raw data
     # TODO add functionality for reading in and storing raw data
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.method = 'OutdoorPerformance'
-        
+
 
 class Transmission(Measurement):
     """
     Transmission measurement.
     """
+
     # Subsections
     results = SubSection(
         section_def=TransmissionResults,
         description='Results of the EQE measurement.',
     )
-    
+
     transmission_conditions = SubSection(
         section_def=TransmissionDetails,
         description='Measurement details.',
@@ -1508,14 +1585,14 @@ class Transmission(Measurement):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
-    )  
-    
+    )
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
@@ -1523,22 +1600,23 @@ class Transmission(Measurement):
 
     # Raw data
     # TODO add functionality for reading in and storing raw data
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Transmission'   
-        
+        self.method = 'Transmission'
+
 
 class Flexibility(Measurement):
     """
     Flexibility measurement.
     """
+
     # Subsections
     results = SubSection(
         section_def=FlexibilityResults,
         description='Results of the flexibility measurement.',
     )
-    
+
     flexibility_conditions = SubSection(
         section_def=FlexibilityDetails,
         description='Measurement details.',
@@ -1547,14 +1625,14 @@ class Flexibility(Measurement):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditions,
         description='Environmental conditions during the activity.',
-    )  
-    
+    )
+
     sample_history = SubSection(
         section_def=EnvironmentalConditions,
         description="""A description of the conditions under which the sample have been stored between
         the finalization of the device and the described measurement.""",
     )
-    
+
     certification_details = SubSection(
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
@@ -1562,7 +1640,7 @@ class Flexibility(Measurement):
 
     # Raw data
     # TODO add functionality for reading in and storing raw data
-     
+
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.method = 'Flexibility'
@@ -1609,12 +1687,12 @@ class PerformedMeasurements(ArchiveSection):
         section_def=Flexibility,
         repeats=True,
     )
-    
+
     outdoor_performance = SubSection(
         description='Outdoor measurements.',
         section_def=OutdoorPerformance,
         repeats=True,
     )
 
-        
-m_package.__init_metainfo__()          
+
+m_package.__init_metainfo__()

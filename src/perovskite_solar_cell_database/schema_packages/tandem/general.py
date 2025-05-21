@@ -5,10 +5,12 @@ from nomad.metainfo.metainfo import SchemaPackage
 
 m_package = SchemaPackage()
 
+
 class SubCellOrigin(ArchiveSection):
     """
     A section describing a sub cell in a tandem solar cell.
     """
+
     commercial = Quantity(
         description='TRUE if the sub cell was bought commercially, FALSE if it is a lab-made unit',
         type=bool,
@@ -26,15 +28,20 @@ class General(ArchiveSection):
     """
     This section stores general configuration information about a tandem solar cell.
     """
+
     # Top level data
     architecture = Quantity(
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
-        type=MEnum(['Stacked', 
-                    'Monolithic', 
-                    'Laminated',
-                    'Spectral_splitter',
-                    'Wide_bandgap_cell_used_as_reflector', 
-                    'Other']),
+        type=MEnum(
+            [
+                'Stacked',
+                'Monolithic',
+                'Laminated',
+                'Spectral_splitter',
+                'Wide_bandgap_cell_used_as_reflector',
+                'Other',
+            ]
+        ),
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -52,7 +59,20 @@ class General(ArchiveSection):
 
     photoabsorbers = Quantity(
         description='List of the photoabsorbers starting from the bottom of the device stack.',
-        type=MEnum(['Silicon', 'Perovskite', 'CIGS', 'CZTS', 'CIS', 'GaAs', 'OPV', 'OSC', 'DSSC', 'Quantum_dot']),
+        type=MEnum(
+            [
+                'Silicon',
+                'Perovskite',
+                'CIGS',
+                'CZTS',
+                'CIS',
+                'GaAs',
+                'OPV',
+                'OSC',
+                'DSSC',
+                'Quantum_dot',
+            ]
+        ),
         shape=['*'],
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
@@ -70,13 +90,13 @@ class General(ArchiveSection):
         shape=['*'],
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     production_date = Quantity(
         description='Date the device was finalized.',
         type=Datetime,
         a_eln=ELNAnnotation(component='DateTimeEditQuantity'),
     )
-    
+
     # Boolean quantities
     flexible = Quantity(
         description='TRUE if the device is flexible and bendable, FALSE if it is rigid.',
@@ -128,8 +148,8 @@ class General(ArchiveSection):
         type=float,
         unit='cm^2',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='cm^2'),
-    )    
-    
+    )
+
     cell_area = Quantity(
         description='The total area of the cell. The dark area. Is typically defined as the overlap between the front and back contacts.',
         type=float,
@@ -159,8 +179,8 @@ class General(ArchiveSection):
             """,
         type=str,
         # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )      
-    
+    )
+
     stack_sequence = Quantity(
         description="""A single string describing the stack sequence of the cell. 
             If a proper device stack section is provided, the stack sequence can be generated from that one. 
@@ -168,8 +188,7 @@ class General(ArchiveSection):
                 """,
         type=str,
         # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )    
-       
+    )
 
     # Subsections
     subcells = SubSection(
@@ -184,7 +203,7 @@ class General(ArchiveSection):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        
+
         # Generate the photoabsorber string
         if self.photoabsorbers and len(self.photoabsorbers) > 0:
             self.photoabsorbers_string = '-'.join(self.photoabsorbers)

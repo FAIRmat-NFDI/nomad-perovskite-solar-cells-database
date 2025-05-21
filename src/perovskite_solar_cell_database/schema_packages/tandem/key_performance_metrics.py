@@ -24,7 +24,7 @@ class KeyPerformanceMetrics(ArchiveSection):
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     short_circuit_current_density = Quantity(
         description='Short-circuit current density.',
         type=float,
@@ -86,14 +86,13 @@ class KeyPerformanceMetrics(ArchiveSection):
         unit='hr',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
     )
-    
+
     t80_isos_l3 = Quantity(
         description='Time to 80 percent of initial power conversion efficiency after 1000 h under ISOS L3 conditions, i.e. AM 1.5, Maximum powerpoint, 85°C and 50 % RH',
         type=float,
         unit='hr',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='hr'),
-    ) 
-
+    )
 
 
 m_package.__init_metainfo__()
