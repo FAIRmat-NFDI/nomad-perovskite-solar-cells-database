@@ -40,6 +40,19 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
+    relative_humidity = Quantity(
+        description='Relative humidity during the activity. Given in %. i.e. number between 0 and 100',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+    
+    pressure = Quantity(
+        description='The atmospheric pressure during the activity.',
+        type=float,
+        unit='Pa',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
+    )
+
     ambient_temperature = Quantity(
         description='Ambient temperature during the activity.',
         type=float,
@@ -49,25 +62,12 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
         ),
     )
 
-    relative_humidity = Quantity(
-        description='Relative humidity during the activity. Given in %. i.e. number between 0 and 100',
+    device_temperature = Quantity(
+        description='The temperature of the device during the activity.',
         type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+        unit='celsius',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
     )
-
-    pressure = Quantity(
-        description='The atmospheric pressure during the activity.',
-        type=float,
-        unit='Pa',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
-    )
-
-    # substrate_temperature = Quantity(
-    #     description='The temperature of the substrate during the activity.',
-    #     type=float,
-    #     unit='celsius',
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
-    # )
 
     oxygen_concentration = Quantity(
         description='The oxygen concentration during the activity. Given in %. i.e. number between 0 and 100',
@@ -788,19 +788,6 @@ class PhotoabsorberPerovskite(ArchiveSection):
     """
     This is the section for a perovskite photoabsorber.
     """
-
-    # origin = Quantity(
-    #     description='If the perovskite was made in house, by a collaborator, or bought commercially',
-    #     type=MEnum(
-    #         [
-    #             'commercial_supplier',
-    #             'deposited_in_house',
-    #             'deposited_by_collaborator',
-    #         ]
-    #     ),
-    #     a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    # )
-
     lead_free = Quantity(
         description="""True if the perovskite does not contain any lead.""",
         type=bool,
@@ -1414,6 +1401,11 @@ class LayerProperties(ArchiveSection):
     refractive_index = SubSection(
         description='The refractive index of the layer',
         section_def=RefractiveIndex,
+    )
+
+    surface_roughness = SubSection(
+        description='The surface roughness of the layer',
+        section_def=SurfaceRoughness,
     )
 
     sheet_resistance = SubSection(
@@ -2791,6 +2783,33 @@ class Sputtering(DepositionSegment):
         self.method = 'Sputtering'
 
 
+class Storage(DepositionSegment):
+    """
+    Details for a storage process
+    """
+    # Numerical quantities
+    duration = Quantity(
+        description='The total time of the procedure.',
+        type=float,
+        unit='minute',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+    )
+
+    # Subsections
+    environmental_conditions = SubSection(
+        section_def=EnvironmentalConditionsDeposition,
+        description='Environmental conditions during the activity.',
+    )
+
+    method = Quantity(
+        type=str,
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.method = 'Storage'
+
+
 class UVOzonTreatment(DepositionSegment):
     """
     UVOzon treatment
@@ -3001,11 +3020,13 @@ class Layer(ArchiveSection):
                 'spectral_splitter',
                 'substrate',
                 'transparent_conducting_oxide',
+                'up_conversion',
+                'window_layer',
                 'other',
             ]
         ),
         shape=[],
-        description='The primary functionality of the layer in the device stack.',
+        description='The primary functionality the layer has in the device stack.',
         a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
@@ -3078,11 +3099,11 @@ class Layer(ArchiveSection):
     )
 
     # Sample history
-    sample_history = SubSection(
-        section_def=EnvironmentalConditionsDeposition,
-        description="""A description of the conditions under which the sample have been stored between
-        the finalization of the last layer and the deposition of this layer.""",
-    )
+    # sample_history = SubSection(
+    #     section_def=EnvironmentalConditionsDeposition,
+    #     description="""A description of the conditions under which the sample have been stored between
+    #     the finalization of the last layer and the deposition of this layer.""",
+    # )
 
     # Derived quantities
     layer_index = Quantity(

@@ -1248,7 +1248,7 @@ class ExternalQuantumEfficiency(Measurement):
         description='Results of the EQE measurement.',
     )
 
-    eqe_conditions = SubSection(
+    measurement_conditions = SubSection(
         section_def=EQEConditions,
         description='Measurement details.',
     )
@@ -1327,7 +1327,7 @@ class StabilizedPerformance(Measurement):
         description='The results from the measurement.',
     )
 
-    measurement_details = SubSection(
+    measurement_conditions = SubSection(
         section_def=StabilizedPerformanceDetails,
         description='The results from the measurement.',
     )
@@ -1345,6 +1345,11 @@ class StabilizedPerformance(Measurement):
     illumination = SubSection(
         section_def=Illumination,
         description='Details about the illumination used for the measurement.',
+    )
+
+    preconditioned_conditions = SubSection(
+        section_def=Preconditioning,
+        description='Preconditioning conditions before the measurement.',
     )
 
     sample_history = SubSection(
@@ -1460,7 +1465,7 @@ class Stability(Measurement):
         description='Details about the light source used for the measurement.',
     )
 
-    load_cycling = SubSection(
+    load_cycling_conditions = SubSection(
         section_def=LoadCycle,
         description='Details about how the load of the cell have varied during the stability.',
     )
@@ -1535,7 +1540,7 @@ class OutdoorPerformance(Measurement):
         description='Measurement details.',
     )
 
-    load_cycling = SubSection(
+    load_cycling_conditions = SubSection(
         section_def=LoadCycle,
         description='Details about how the load of the cell have varied during the stability.',
     )
@@ -1577,7 +1582,7 @@ class Transmission(Measurement):
         description='Results of the EQE measurement.',
     )
 
-    transmission_conditions = SubSection(
+    measurement_conditions = SubSection(
         section_def=TransmissionDetails,
         description='Measurement details.',
     )
@@ -1617,7 +1622,7 @@ class Flexibility(Measurement):
         description='Results of the flexibility measurement.',
     )
 
-    flexibility_conditions = SubSection(
+    measurement_conditions = SubSection(
         section_def=FlexibilityDetails,
         description='Measurement details.',
     )

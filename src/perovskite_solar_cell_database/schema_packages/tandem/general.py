@@ -83,7 +83,7 @@ class General(ArchiveSection):
             - The layers must line up with the previous filed.
             - State band gaps in eV
             - If there are uncertainties, state the best estimate, e.g write 1.5 and not 1.45-1.55
-            - Every photo absorber has a band gap. If it is unknown, state this as ‘nan’
+            - Every photo absorber has a band gap. If it is unknown, state this as 0
         """,
         type=float,
         # unit = 'eV', # arrays with units not yet supported
