@@ -45,7 +45,7 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
-    
+
     pressure = Quantity(
         description='The atmospheric pressure during the activity.',
         type=float,
@@ -66,7 +66,9 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
         description='The temperature of the device during the activity.',
         type=float,
         unit='celsius',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='celsius'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
     )
 
     oxygen_concentration = Quantity(
@@ -788,6 +790,7 @@ class PhotoabsorberPerovskite(ArchiveSection):
     """
     This is the section for a perovskite photoabsorber.
     """
+
     lead_free = Quantity(
         description="""True if the perovskite does not contain any lead.""",
         type=bool,
@@ -2787,12 +2790,15 @@ class Storage(DepositionSegment):
     """
     Details for a storage process
     """
+
     # Numerical quantities
     duration = Quantity(
         description='The total time of the procedure.',
         type=float,
         unit='minute',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='minute'),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='minute'
+        ),
     )
 
     # Subsections
