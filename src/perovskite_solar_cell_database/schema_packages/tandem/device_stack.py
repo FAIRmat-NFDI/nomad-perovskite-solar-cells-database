@@ -785,372 +785,6 @@ class Solution(ArchiveSection):
     )
 
 
-### Photoabsorbers
-class PhotoabsorberPerovskite(ArchiveSection):
-    """
-    This is the section for a perovskite photoabsorber.
-    """
-
-    lead_free = Quantity(
-        description="""True if the perovskite does not contain any lead.""",
-        type=bool,
-        shape=[],
-        a_eln=dict(component='BoolEditQuantity'),
-    )
-
-    inorganic = Quantity(
-        description="""True if the perovskite is inorganic.""",
-        type=bool,
-        shape=[],
-        a_eln=dict(component='BoolEditQuantity'),
-    )
-
-    double_perovskite = Quantity(
-        description="""True if it is a double perovskite structure. 
-        A double perovksite is strictly not a perovskite, but as if 
-        in terms of PV development often is treated as a perovskite, 
-        it is worth including it but with a flag indicating the structure.""",
-        type=bool,
-        shape=[],
-        a_eln=dict(component='BoolEditQuantity'),
-    )
-
-    has_a_2D_perovskite_capping_layer = Quantity(
-        description="""True if the perovskite has a thin capping layer of a 2D perovskite.""",
-        type=bool,
-        shape=[],
-        a_eln=dict(component='BoolEditQuantity'),
-    )
-
-    # Subsections
-    composition = SubSection(
-        section_def=PerovskiteCompositionSection,
-        description='The composition of the perovskite.',
-    )
-
-
-class PhotoabsorberSilicon(ArchiveSection):
-    """
-    This is the section for a silicon photoabsorber.
-    """
-
-    cell_type = Quantity(
-        description='The type of silicon cell.',
-        type=MEnum(
-            [
-                'Amorphous',
-                'Al-BSF',
-                'c-type',
-                'HIT',
-                'HJT',
-                'Heterojunction',
-                'Homojunction',
-                'IBC',
-                'n-type',
-                'p-type',
-                'PERC',
-                'PERL',
-                'SC/nFAB',
-                'TOPCon',
-                'other',
-            ]
-        ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )
-
-    type_of_silicon = Quantity(
-        description='The type of silicon.',
-        type=MEnum(
-            [
-                'Amorphous',
-                'Monocrystalline',
-                'Polycrystalline',
-                'CZ',
-                'Float-zone',
-                'other',
-            ]
-        ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )
-
-    doping_sequence = Quantity(
-        description='Description of the doping sequence.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-
-class PhotoabsorberCIGS(ArchiveSection):
-    """
-    This is the section for a CIGS photoabsorber.
-    """
-
-    Cu = Quantity(
-        description='The stoichiometric coefficient for Cu',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    In = Quantity(
-        description='The stoichiometric coefficient for In',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    Ga = Quantity(
-        description='The stoichiometric coefficient for Ga',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    Se = Quantity(
-        description='The stoichiometric coefficient for Se',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    # Derived quantities
-    molecular_formula = Quantity(
-        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
-        type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-    def normalize(self, archive, logger):
-        super().normalize(archive, logger)
-
-        # Generate molecular formula
-        atoms = ['Cu', 'In', 'Ga', 'Se']
-        index = [self.Cu, self.In, self.Ga, self.Se]
-        index = ['none' for i in index if i in ('0', '0.0', None)]
-        index = [str(i) for i in index]
-        index = ['' for i in index if i == '1']
-        self.molecular_formula = ''.join(
-            [a + i for a, i in zip(atoms, index) if i not in ('none')]
-        )
-
-
-class PhotoabsorberCZTS(ArchiveSection):
-    """
-    This is the section for a CZTS photoabsorber.
-    """
-
-    Cu = Quantity(
-        description='The stoichiometric coefficient for Cu',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    Zn = Quantity(
-        description='The stoichiometric coefficient for Zn',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    Sn = Quantity(
-        description='The stoichiometric coefficient for Sn',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    S = Quantity(
-        description='The stoichiometric coefficient for S',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    # Derived quantities
-    molecular_formula = Quantity(
-        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
-        type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-    def normalize(self, archive, logger):
-        super().normalize(archive, logger)
-
-        # Generate molecular formula
-        atoms = ['Cu', 'Zn', 'Se', 'S']
-        index = [self.Cu, self.Zn, self.Se, self.S]
-        index = ['none' for i in index if i in ('0', '0.0', None)]
-        index = [str(i) for i in index]
-        index = ['' for i in index if i == '1']
-        self.molecular_formula = ''.join(
-            [a + i for a, i in zip(atoms, index) if i not in ('none')]
-        )
-
-
-class PhotoabsorberGaAs(ArchiveSection):
-    """
-    This is the section for a CIGS photoabsorber.
-    """
-
-    Ga = Quantity(
-        description='The stoichiometric coefficient for Ga',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    As = Quantity(
-        description='The stoichiometric coefficient for As',
-        type=float,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    # Derived quantities
-    molecular_formula = Quantity(
-        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
-        type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-    def normalize(self, archive, logger):
-        super().normalize(archive, logger)
-
-        # Generate molecular formula
-        atoms = ['Ga', 'As']
-        index = [self.Ga, self.As]
-        index = ['none' for i in index if i in ('0', '0.0', None)]
-        index = [str(i) for i in index]
-        index = ['' for i in index if i == '1']
-        self.molecular_formula = ''.join(
-            [a + i for a, i in zip(atoms, index) if i not in ('none')]
-        )
-
-
-class PhotoabsorberOPV(ArchiveSection):
-    """
-    This is the section for a organic photoabsorber.
-    """
-
-    blend = Quantity(
-        description='The name of the OPV blend. Often in the form - "name of acceptor:"name of donor"',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-    cell_type = Quantity(
-        description='The type of opv cell',
-        type=MEnum(
-            [
-                'singel_layer',
-                'bilayer',
-                'polymer',
-                'heterojunction',
-                'bulk_heterojunction',
-                'polymer bulk heterojunction',
-                'homojunction',
-            ]
-        ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )
-
-    peak_absorption_wavelength = Quantity(
-        description='The wavelength at maximum absorption',
-        type=float,
-        unit='nm',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
-    )
-
-    molar_extinction_coefficient = Quantity(
-        description='The molar extinction coefficient',
-        type=float,
-        unit='L*mol^1*cm^-1',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'
-        ),
-    )
-
-    homo_level = Quantity(
-        description='The energy of the HOMO level',
-        type=float,
-        unit='eV',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )
-
-    lumo_level = Quantity(
-        description='The energy of the LUMO level',
-        type=float,
-        unit='eV',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )
-
-
-class PhotoabsorberDSSC(ArchiveSection):
-    """
-    This is the section for a organic photoabsorber.
-    """
-
-    peak_absorption_wavelength = Quantity(
-        description='The wavelength at maximum absorption',
-        type=float,
-        unit='nm',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
-    )
-
-    molar_extinction_coefficient = Quantity(
-        description='The molar extinction coefficient',
-        type=float,
-        unit='L*mol^1*cm^-1',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'
-        ),
-    )
-
-    homo_level = Quantity(
-        description='The energy of the HOMO level',
-        type=float,
-        unit='eV',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )
-
-    lumo_level = Quantity(
-        description='The energy of the LUMO level',
-        type=float,
-        unit='eV',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
-    )
-
-    oxidation_potential = Quantity(
-        description='The oxidation potential vs the normal hydrogen electrode',
-        type=float,
-        unit='V',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
-    )
-
-    # subsections
-    dye = SubSection(
-        section_def=LigandsAndDyes,
-        description='The components.',
-        repeats=True,
-    )
-
-
-class PhotoabsorberQD(ArchiveSection):
-    """
-    This is the section for a quantum dot photoabsorbers.
-    """
-
-    material = Quantity(
-        description='The material of the quantum dots. e.g PbS',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-    # subsections
-    # Nanostructure information
-    nanostructuration = SubSection(
-        section_def=NanostructureInformation,
-        description='The nanostructure information of the compound.',
-    )
-
-    ligands = SubSection(
-        section_def=LigandsAndDyes,
-        description='The components.',
-        repeats=True,
-    )
-
-
 ### Material and layer properties
 class Area(ArchiveSection):
     value = Quantity(
@@ -1425,7 +1059,7 @@ class LayerProperties(ArchiveSection):
 ### Deposition procedures general sections
 
 
-class DepositionSegment(ArchiveSection):
+class DepositionStep(ArchiveSection):
     """
     This is a collection point for deposition procedures
     """
@@ -1434,13 +1068,13 @@ class DepositionSegment(ArchiveSection):
 
 
 ### Synthetic procedures
-class ALDSegment(ArchiveSection):
+class ALDStep(ArchiveSection):
     """
-    ALD segments
+    ALD steps
     """
 
-    time_of_segment = Quantity(
-        description='The length of the segment.',
+    time_of_step = Quantity(
+        description='The length of the step.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
@@ -1458,28 +1092,28 @@ class ALDSegment(ArchiveSection):
     )
 
 
-class SpinCoatingSegments(ArchiveSection):
+class SpinCoatingSteps(ArchiveSection):
     """
-    A spin-coating program can be composed of several different segments.
-    This is a repeating section for describing all the spin-coating segments
+    A spin-coating program can be composed of several different steps.
+    This is a repeating section for describing all the spin-coating steps
     """
 
     duration = Quantity(
-        description='The length of the segment.',
+        description='The length of the step.',
         type=float,
         unit='s',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
     )
 
     speed_start = Quantity(
-        description='The spin speed of the start of the segment.',
+        description='The spin speed of the start of the step.',
         type=float,
         unit='rpm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='rpm'),
     )
 
     speed_end = Quantity(
-        description='The spin speed of the end of the segment.',
+        description='The spin speed of the end of the step.',
         type=float,
         unit='rpm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='rpm'),
@@ -1537,13 +1171,13 @@ class Dipping(ArchiveSection):
     )
 
 
-class TemperatureSegment(ArchiveSection):
+class TemperatureStep(ArchiveSection):
     """
-    Details for heaating segments
+    Details for heaating steps
     """
 
-    time_of_segment = Quantity(
-        description='Time of the segment.',
+    time_of_step = Quantity(
+        description='Time of the step.',
         type=float,
         unit='minute',
         a_eln=ELNAnnotation(
@@ -1552,7 +1186,7 @@ class TemperatureSegment(ArchiveSection):
     )
 
     temperature_start = Quantity(
-        description='Temperature at the start of the segment.',
+        description='Temperature at the start of the step.',
         type=float,
         unit='celsius',
         a_eln=ELNAnnotation(
@@ -1561,7 +1195,7 @@ class TemperatureSegment(ArchiveSection):
     )
 
     temperature_end = Quantity(
-        description='Temperature at the end of the segment.',
+        description='Temperature at the end of the step.',
         type=float,
         unit='celsius',
         a_eln=ELNAnnotation(
@@ -1577,13 +1211,13 @@ class TemperatureSegment(ArchiveSection):
     )
 
 
-class SputteringSegment(ArchiveSection):
+class SputteringStep(ArchiveSection):
     """
-    Details for heaating segments
+    Details for heaating steps
     """
 
-    time_of_segment = Quantity(
-        description='Time of the segment.',
+    time_of_step = Quantity(
+        description='Time of the step.',
         type=float,
         unit='minute',
         a_eln=ELNAnnotation(
@@ -1702,7 +1336,7 @@ class GasQuenchingDetails(ArchiveSection):
     )
 
 
-class PostDepositionProcedure(DepositionSegment):
+class PostDepositionProcedure(DepositionStep):
     """
     Post deposition procedure.
     """
@@ -1732,9 +1366,9 @@ class PostDepositionProcedure(DepositionSegment):
     )
 
     # Subsections
-    segments = SubSection(
-        section_def=DepositionSegment,
-        description='The segments of the deposition procedure.',
+    steps = SubSection(
+        section_def=DepositionStep,
+        description='The steps of the deposition procedure.',
         repeats=True,
     )
 
@@ -1751,7 +1385,7 @@ class PostDepositionProcedure(DepositionSegment):
     )
 
 
-class AtomicLayerDeposition(DepositionSegment):
+class AtomicLayerDeposition(DepositionStep):
     """
     Details for an ALD process.
     """
@@ -1802,9 +1436,9 @@ class AtomicLayerDeposition(DepositionSegment):
     )
 
     # Subsections
-    segments = SubSection(
-        section_def=ALDSegment,
-        description='Details about the four ALD segments.',
+    steps = SubSection(
+        section_def=ALDStep,
+        description='Details about the four ALD steps.',
         repeats=True,
     )
 
@@ -1817,7 +1451,7 @@ class AtomicLayerDeposition(DepositionSegment):
         self.method = 'AtomicLayerDeposition'
 
 
-class ChemicalBathDeposition(DepositionSegment):
+class ChemicalBathDeposition(DepositionStep):
     """
     Details for a chemical bath deposition process.
     """
@@ -1883,7 +1517,7 @@ class ChemicalBathDeposition(DepositionSegment):
         self.method = 'ChemicalBathDeposition'
 
 
-class Cleaning(DepositionSegment):
+class Cleaning(DepositionStep):
     """
     Cleaning procedures
     """
@@ -1934,7 +1568,7 @@ class Cleaning(DepositionSegment):
         self.method = 'Cleaning'
 
 
-class DipCoating(DepositionSegment):
+class DipCoating(DepositionStep):
     """
     Details for a dip coating process.
     """
@@ -2015,7 +1649,7 @@ class DipCoating(DepositionSegment):
         self.method = 'DipCoating'
 
 
-class DoctorBlading(DepositionSegment):
+class DoctorBlading(DepositionStep):
     """
     Details for a doctor blading process.
     """
@@ -2103,7 +1737,7 @@ class DoctorBlading(DepositionSegment):
         self.method = 'DoctorBlading'
 
 
-class Evaporation(DepositionSegment):
+class Evaporation(DepositionStep):
     """
     Details for a evaporation process.
     """
@@ -2183,7 +1817,65 @@ class Evaporation(DepositionSegment):
         self.method = 'Evaporation'
 
 
-class Heating(DepositionSegment):
+class GeneralDepositionProcedure(DepositionStep):
+    """
+    A general deposition procedure.
+    """
+
+    # Numerical quantities
+    duration = Quantity(
+        description='The duration of the process.',
+        type=float,
+        unit='s',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
+    )
+
+    sample_temperature = Quantity(
+        description='The temperature of the sample during the activity.',
+        type=float,
+        unit='celsius',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
+    solution_temperature = Quantity(
+        description='The temperature of the solution during the activity.',
+        type=float,
+        unit='celsius',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='celsius'
+        ),
+    )
+
+    # categorical quantities
+    equipment = Quantity(
+        description='Brand name and model of the equipment used for the process.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    # Subsections
+    solution = SubSection(
+        section_def=Solution,
+        description='Details about the solution.',
+    )
+
+    gases = SubSection(
+        section_def=GasComponent, description='The gases in the mixture', repeats=True
+    )
+
+    environmental_conditions = SubSection(
+        section_def=EnvironmentalConditionsDeposition,
+        description='Environmental conditions during the activity.',
+    )
+
+    method = Quantity(
+        type=str,
+    )
+
+
+class Heating(DepositionStep):
     """
     Details for a heating process.
     """
@@ -2210,9 +1902,9 @@ class Heating(DepositionSegment):
     )
 
     # Subsections
-    temperature_segments = SubSection(
-        section_def=TemperatureSegment,
-        description='Details about the temperature segments.',
+    temperature_steps = SubSection(
+        section_def=TemperatureStep,
+        description='Details about the temperature steps.',
         repeats=True,
     )
 
@@ -2230,7 +1922,7 @@ class Heating(DepositionSegment):
         self.method = 'Heating'
 
 
-class InkjetPrinting(DepositionSegment):
+class InkjetPrinting(DepositionStep):
     """
     Details for a inkjet printing process.
     """
@@ -2331,7 +2023,7 @@ class IonExchangeByDipping(DipCoating):
         self.method = 'IonExchangeByDipping'
 
 
-class IonExchangeByGasDiffusion(DepositionSegment):
+class IonExchangeByGasDiffusion(DepositionStep):
     """
     Details for a process where ions in a perovksite is exchanged by
     a gas diffusion process
@@ -2390,7 +2082,7 @@ class IonExchangeByGasDiffusion(DepositionSegment):
         self.method = 'IonExchangeByGasDiffusion'
 
 
-class SlotDieCoating(DepositionSegment):
+class SlotDieCoating(DepositionStep):
     """
     Details for a slot dye coatig process
     """
@@ -2478,9 +2170,9 @@ class SlotDieCoating(DepositionSegment):
         self.method = 'SlotDieCoating'
 
 
-class SpinCoating(DepositionSegment):
+class SpinCoating(DepositionStep):
     """
-    This is the section for a spin coating segment of a layer.
+    This is the section for a spin coating step of a layer.
     """
 
     # Boolean quantities
@@ -2565,9 +2257,9 @@ class SpinCoating(DepositionSegment):
     )
 
     # Subsections
-    spin_coating_segments = SubSection(
-        section_def=SpinCoatingSegments,
-        description='Description of each spin-coating segment.',
+    spin_coating_steps = SubSection(
+        section_def=SpinCoatingSteps,
+        description='Description of each spin-coating step.',
         repeats=True,
     )
 
@@ -2600,7 +2292,7 @@ class SpinCoating(DepositionSegment):
         self.method = 'SpinCoating'
 
 
-class SprayCoating(DepositionSegment):
+class SprayCoating(DepositionStep):
     """
     Details for a spray coating process
     """
@@ -2708,7 +2400,7 @@ class SprayCoating(DepositionSegment):
         self.method = 'SprayCoating'
 
 
-class Sputtering(DepositionSegment):
+class Sputtering(DepositionStep):
     """
     Details for a sputtering process
     """
@@ -2760,9 +2452,9 @@ class Sputtering(DepositionSegment):
     )
 
     # Subsections
-    segments = SubSection(
-        section_def=SputteringSegment,
-        description='Details about the sputtering segments.',
+    steps = SubSection(
+        section_def=SputteringStep,
+        description='Details about the sputtering steps.',
         repeats=True,
     )
 
@@ -2786,7 +2478,7 @@ class Sputtering(DepositionSegment):
         self.method = 'Sputtering'
 
 
-class Storage(DepositionSegment):
+class Storage(DepositionStep):
     """
     Details for a storage process
     """
@@ -2816,7 +2508,7 @@ class Storage(DepositionSegment):
         self.method = 'Storage'
 
 
-class UVOzonTreatment(DepositionSegment):
+class UVOzonTreatment(DepositionStep):
     """
     UVOzon treatment
     """
@@ -2948,10 +2640,10 @@ class DepositionProcedure(ArchiveSection):
     )
 
     ## Subsections
-    # Deposition segments
-    segments = SubSection(
-        section_def=DepositionSegment,
-        description='The segments of the deposition procedure.',
+    # Deposition steps
+    steps = SubSection(
+        section_def=DepositionStep,
+        description='The steps of the deposition procedure.',
         repeats=True,
     )
 
@@ -2964,7 +2656,7 @@ class DepositionProcedure(ArchiveSection):
 
 
 ### Layers
-class Layer(ArchiveSection):
+class Layer_old(ArchiveSection):
     """
     This is the section for a layer in the device stack.
     """
@@ -3038,45 +2730,45 @@ class Layer(ArchiveSection):
 
     ### Subsections
     ## Photoabsorbers
-    perovskite = SubSection(
-        section_def=PhotoabsorberPerovskite,
-        description='Perovskite specific information.',
-    )
+    # perovskite = SubSection(
+    #     section_def=PhotoabsorberPerovskite,
+    #     description='Perovskite specific information.',
+    # )
 
-    silicon = SubSection(
-        section_def=PhotoabsorberSilicon,
-        description='Silicon specific information.',
-    )
+    # silicon = SubSection(
+    #     section_def=PhotoabsorberSilicon,
+    #     description='Silicon specific information.',
+    # )
 
-    CIGS = SubSection(
-        section_def=PhotoabsorberCIGS,
-        description='CIGS specific information.',
-    )
+    # CIGS = SubSection(
+    #     section_def=PhotoabsorberCIGS,
+    #     description='CIGS specific information.',
+    # )
 
-    CZTS = SubSection(
-        section_def=PhotoabsorberCZTS,
-        description='CZTS specific information.',
-    )
+    # CZTS = SubSection(
+    #     section_def=PhotoabsorberCZTS,
+    #     description='CZTS specific information.',
+    # )
 
-    OPV = SubSection(
-        section_def=PhotoabsorberOPV,
-        description='OPV specific information.',
-    )
+    # OPV = SubSection(
+    #     section_def=PhotoabsorberOPV,
+    #     description='OPV specific information.',
+    # )
 
-    DSSC = SubSection(
-        section_def=PhotoabsorberDSSC,
-        description='DSSC specific information.',
-    )
+    # DSSC = SubSection(
+    #     section_def=PhotoabsorberDSSC,
+    #     description='DSSC specific information.',
+    # )
 
-    quantum_dot = SubSection(
-        section_def=PhotoabsorberQD,
-        description='Quantum dot specific information.',
-    )
+    # quantum_dot = SubSection(
+    #     section_def=PhotoabsorberQD,
+    #     description='Quantum dot specific information.',
+    # )
 
-    GaAs = SubSection(
-        section_def=PhotoabsorberGaAs,
-        description='GaAs specific information.',
-    )
+    # GaAs = SubSection(
+    #     section_def=PhotoabsorberGaAs,
+    #     description='GaAs specific information.',
+    # )
 
     ## Other subsections
     # Compounds in the layer
@@ -3123,6 +2815,573 @@ class Layer(ArchiveSection):
         super().normalize(archive, logger)
 
 
+class Layer(ArchiveSection):
+    """
+    This is the section for a layer in the device stack.
+    """
+
+    # Top level quantities
+    name = Quantity(
+        type=str,
+        shape=[],
+        description=""" A sensible name for the layer. A good default is the trade 
+        name of the material, possibly with an addition of the microstructure.
+        examples: 
+        * TiO2-mp
+        * PEDOT:PSS
+        * Spiro-MeOTAD
+        * SLG
+        * ITO
+        """,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    device_subset = Quantity(
+        type=int,
+        shape=[],
+        description="""
+            If the device not is monolithic, this describes which individual subcell the layer belongs to.  
+
+            - 0 = the layer belongs to a monolithic device 
+            - 1 = the layer belongs to the bottom subcell, 
+            - 2 = the layer belongs to the second subcell (top cell in a 2-junction device)
+            - 3 = the layer belongs to the third subcell (top cell in a 3-junction device
+            """,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    functionality = Quantity(
+        type=MEnum(
+            [
+                'air_gap',
+                'anti_reflection',
+                'back_contact',
+                'back_reflector',
+                'buffer_layer',
+                'down_conversion',
+                'edge_sealing',
+                'electrolyte',
+                'encapsulation',
+                'electron_transport_layer',
+                'front_contact',
+                'hole_transport_layer',
+                'interface_modifier',
+                'mesoporous_scaffold',
+                'middle_contact',
+                'optical_spacer',
+                'organic_dye',
+                'photoabsorber',
+                'recombination_layer',
+                'refractive_index_matching',
+                'self_assembled_monolayer',
+                'spectral_splitter',
+                'substrate',
+                'transparent_conducting_oxide',
+                'up_conversion',
+                'window_layer',
+                'other',
+            ]
+        ),
+        shape=[],
+        description='The primary functionality the layer has in the device stack.',
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+    )
+
+    ### Subsections
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
+
+    # Deposition procedure
+    deposition_procedure = SubSection(
+        section_def=DepositionProcedure,
+        description='The deposition procedure of the layer.',
+    )
+
+    # Post deposition procedure
+    post_deposition_procedure = SubSection(
+        section_def=PostDepositionProcedure,
+        description='Post deposition procedure.',
+    )
+
+    ## Properties of the layer
+    properties = SubSection(
+        section_def=LayerProperties,
+        description='Properties of the layer.',
+    )
+
+    # Sample history
+    # sample_history = SubSection(
+    #     section_def=EnvironmentalConditionsDeposition,
+    #     description="""A description of the conditions under which the sample have been stored between
+    #     the finalization of the last layer and the deposition of this layer.""",
+    # )
+
+    # Derived quantities
+    layer_index = Quantity(
+        type=int,
+        shape=[],
+        description="""The position in the device stack for the layer. Counted from the bottom. Can be populated automatically """,
+        # a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+
+### Specialised layers
+class GeneralLayer(Layer):
+    """
+    This is the section for a general layer in the device stack.
+    """
+
+    pass
+
+
+## Photoabsorbers
+class CIGSComposition(ArchiveSection):
+    """
+    This is the section for the composition of a CIGS photoabsorber.
+    """
+
+    # Numerical quantities
+    Cu = Quantity(
+        description='The stoichiometric coefficient for Cu',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    In = Quantity(
+        description='The stoichiometric coefficient for In',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    Ga = Quantity(
+        description='The stoichiometric coefficient for Ga',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    Se = Quantity(
+        description='The stoichiometric coefficient for Se',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+
+class CZTSComposition(ArchiveSection):
+    """
+    This is the section for the composition of a CIGS photoabsorber.
+    """
+
+    # Numerical quantities
+    Cu = Quantity(
+        description='The stoichiometric coefficient for Cu',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    Zn = Quantity(
+        description='The stoichiometric coefficient for Zn',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    Sn = Quantity(
+        description='The stoichiometric coefficient for Sn',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    S = Quantity(
+        description='The stoichiometric coefficient for S',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+
+class Perovskite(Layer):
+    """
+    This is the section for a perovskite photoabsorber.
+    """
+
+    lead_free = Quantity(
+        description="""True if the perovskite does not contain any lead.""",
+        type=bool,
+        shape=[],
+        a_eln=dict(component='BoolEditQuantity'),
+    )
+
+    inorganic = Quantity(
+        description="""True if the perovskite is inorganic.""",
+        type=bool,
+        shape=[],
+        a_eln=dict(component='BoolEditQuantity'),
+    )
+
+    double_perovskite = Quantity(
+        description="""True if it is a double perovskite structure. 
+        A double perovksite is strictly not a perovskite, but as if 
+        in terms of PV development often is treated as a perovskite, 
+        it is worth including it but with a flag indicating the structure.""",
+        type=bool,
+        shape=[],
+        a_eln=dict(component='BoolEditQuantity'),
+    )
+
+    has_a_2D_perovskite_capping_layer = Quantity(
+        description="""True if the perovskite has a thin capping layer of a 2D perovskite.""",
+        type=bool,
+        shape=[],
+        a_eln=dict(component='BoolEditQuantity'),
+    )
+
+    # Subsections
+    composition = SubSection(
+        section_def=PerovskiteCompositionSection,
+        description='The composition of the perovskite.',
+    )
+
+
+class Silicon(Layer):
+    """
+    This is the section for a silicon photoabsorber.
+    """
+
+    cell_type = Quantity(
+        description='The type of silicon cell.',
+        type=MEnum(
+            [
+                'Amorphous',
+                'Al-BSF',
+                'c-type',
+                'HIT',
+                'HJT',
+                'Heterojunction',
+                'Homojunction',
+                'IBC',
+                'n-type',
+                'p-type',
+                'PERC',
+                'PERL',
+                'SC/nFAB',
+                'TOPCon',
+                'other',
+            ]
+        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+    )
+
+    type_of_silicon = Quantity(
+        description='The type of silicon.',
+        type=MEnum(
+            [
+                'Amorphous',
+                'Monocrystalline',
+                'Polycrystalline',
+                'CZ',
+                'Float-zone',
+                'other',
+            ]
+        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+    )
+
+    doping_sequence = Quantity(
+        description='Description of the doping sequence.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+
+class CIGS(Layer):
+    """
+    This is the section for a CIGS photoabsorber.
+    """
+
+    # Cu = Quantity(
+    #     description='The stoichiometric coefficient for Cu',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # In = Quantity(
+    #     description='The stoichiometric coefficient for In',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # Ga = Quantity(
+    #     description='The stoichiometric coefficient for Ga',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # Se = Quantity(
+    #     description='The stoichiometric coefficient for Se',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # Derived quantities
+    molecular_formula = Quantity(
+        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
+        type=str,
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    # Subsections
+    composition = SubSection(
+        section_def=CIGSComposition,
+        description='The composition of the CIGS.',
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        # Generate molecular formula
+        atoms = []
+        coefficients = []
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
+            atoms.append('Cu')
+            coefficients.append(self.Cu)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'In'):
+            atoms.append('In')
+            coefficients.append(self.In)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Ga'):
+            atoms.append('Ga')
+            coefficients.append(self.Ga)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Se'):
+            atoms.append('Se')
+            coefficients.append(self.Se)
+
+        if coefficients == []:
+            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
+            coefficients = [str(i) for i in coefficients]
+            coefficients = ['' for i in coefficients if i == '1']
+            self.molecular_formula = ''.join(
+                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
+            )
+
+
+class CZTS(Layer):
+    """
+    This is the section for a CZTS photoabsorber.
+    """
+
+    # Cu = Quantity(
+    #     description='The stoichiometric coefficient for Cu',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # Zn = Quantity(
+    #     description='The stoichiometric coefficient for Zn',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # Sn = Quantity(
+    #     description='The stoichiometric coefficient for Sn',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # S = Quantity(
+    #     description='The stoichiometric coefficient for S',
+    #     type=float,
+    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
+
+    # Derived quantities
+    molecular_formula = Quantity(
+        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
+        type=str,
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        # Generate molecular formula
+        atoms = []
+        coefficients = []
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
+            atoms.append('Cu')
+            coefficients.append(self.Cu)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Zn'):
+            atoms.append('Zn')
+            coefficients.append(self.Zn)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Sn'):
+            atoms.append('Sn')
+            coefficients.append(self.Sn)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'S'):
+            atoms.append('S')
+            coefficients.append(self.S)
+
+        if coefficients == []:
+            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
+            coefficients = [str(i) for i in coefficients]
+            coefficients = ['' for i in coefficients if i == '1']
+            self.molecular_formula = ''.join(
+                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
+            )
+
+
+class GaAs(Layer):
+    """
+    This is the section for a CIGS photoabsorber.
+    """
+
+    # Derived quantities
+    molecular_formula = Quantity(
+        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
+        type=str,
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.molecular_formula = 'GaAs'
+
+
+class OPV(Layer):
+    """
+    This is the section for a organic photoabsorber.
+    """
+
+    blend = Quantity(
+        description='The name of the OPV blend. Often in the form - "name of acceptor:"name of donor"',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    cell_type = Quantity(
+        description='The type of opv cell',
+        type=MEnum(
+            [
+                'singel_layer',
+                'bilayer',
+                'polymer',
+                'heterojunction',
+                'bulk_heterojunction',
+                'polymer bulk heterojunction',
+                'homojunction',
+            ]
+        ),
+        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+    )
+
+    peak_absorption_wavelength = Quantity(
+        description='The wavelength at maximum absorption',
+        type=float,
+        unit='nm',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
+    )
+
+    molar_extinction_coefficient = Quantity(
+        description='The molar extinction coefficient',
+        type=float,
+        unit='L*mol^1*cm^-1',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'
+        ),
+    )
+
+    homo_level = Quantity(
+        description='The energy of the HOMO level',
+        type=float,
+        unit='eV',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
+    )
+
+    lumo_level = Quantity(
+        description='The energy of the LUMO level',
+        type=float,
+        unit='eV',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
+    )
+
+
+class DSSC(Layer):
+    """
+    This is the section for a organic photoabsorber.
+    """
+
+    peak_absorption_wavelength = Quantity(
+        description='The wavelength at maximum absorption',
+        type=float,
+        unit='nm',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
+    )
+
+    molar_extinction_coefficient = Quantity(
+        description='The molar extinction coefficient',
+        type=float,
+        unit='L*mol^1*cm^-1',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity', defaultDisplayUnit='L*mol^1*cm^-1'
+        ),
+    )
+
+    homo_level = Quantity(
+        description='The energy of the HOMO level',
+        type=float,
+        unit='eV',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
+    )
+
+    lumo_level = Quantity(
+        description='The energy of the LUMO level',
+        type=float,
+        unit='eV',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
+    )
+
+    oxidation_potential = Quantity(
+        description='The oxidation potential vs the normal hydrogen electrode',
+        type=float,
+        unit='V',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='V'),
+    )
+
+    # subsections
+    dye = SubSection(
+        section_def=LigandsAndDyes,
+        description='The components.',
+        repeats=True,
+    )
+
+
+class QuantumDotPhotoabsorber(Layer):
+    """
+    This is the section for a quantum dot photoabsorbers.
+    """
+
+    # material = Quantity(
+    #     description='The material of the quantum dots. e.g PbS',
+    #     type=str,
+    #     a_eln=ELNAnnotation(component='StringEditQuantity'),
+    # )
+
+    # subsections
+    # Nanostructure information
+    nanostructuration = SubSection(
+        section_def=NanostructureInformation,
+        description='The nanostructure information of the compound.',
+    )
+
+    ligands = SubSection(
+        section_def=LigandsAndDyes,
+        description='The components.',
+        repeats=True,
+    )
+
+
 ### Master class putting everything together
 class DeviceStack(ArchiveSection):
     """
@@ -3130,26 +3389,26 @@ class DeviceStack(ArchiveSection):
     """
 
     ## Derived qunatities
-    n_layers = Quantity(
-        description='Number of layers in the stack.',
-        type=int,
-        shape=[],
-        # a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
+    # number_of_layers = Quantity(
+    #     description='Number of layers in the stack.',
+    #     type=int,
+    #     shape=[],
+    #     # a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    # )
 
-    stack_sequence = Quantity(
-        description="""A list of the materials in the layers of the stack. <br/>  
-        If a proper device stack section is provided, the stack sequence can be generated from that one.
+    # stack_sequence = Quantity(
+    #     description="""A list of the materials in the layers of the stack. <br/>
+    #     If a proper device stack section is provided, the stack sequence can be generated from that one.
 
-        * Start with the layer in the bottom of the device (i.e. that is furthest from the sun) and work up from that.
-        * If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
-        * The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. Those details are provided elsewhere. 
-        * Use common abbreviations when possible but spell them out when there is risk for confusion. 
-            """,
-        type=str,
-        shape=[],
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
+    #     * Start with the layer in the bottom of the device (i.e. that is furthest from the sun) and work up from that.
+    #     * If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
+    #     * The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. Those details are provided elsewhere.
+    #     * Use common abbreviations when possible but spell them out when there is risk for confusion.
+    #         """,
+    #     type=str,
+    #     shape=[],
+    #     # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    # )
 
     ## Subsections
     layers = SubSection(
@@ -3162,20 +3421,20 @@ class DeviceStack(ArchiveSection):
         super().normalize(archive, logger)
 
         # Number of layers
-        self.n_layers = len(self.layers)
+        # self.number_of_layers = len(self.layers)
 
-        # Stack sequence
-        stack_sequence = []
-        for i in range(self.n_layers):
-            if hasattr(self.layers[i], 'name'):
-                if len(str(self.layers[i].name)) > 0:
-                    stack_sequence.append(self.layers[i].name)
-                else:
-                    stack_sequence.append('unknown')
-            else:
-                stack_sequence.append('unknown')
+        # # Stack sequence
+        # stack_sequence = []
+        # for i in range(self.number_of_layers):
+        #     if hasattr(self.layers[i], 'name'):
+        #         if len(str(self.layers[i].name)) > 0:
+        #             stack_sequence.append(self.layers[i].name)
+        #         else:
+        #             stack_sequence.append('unknown')
+        #     else:
+        #         stack_sequence.append('unknown')
 
-        self.stack_sequence = ' | '.join(stack_sequence)
+        # self.stack_sequence = ' | '.join(stack_sequence)
 
         # Layer index
         for i, layer in enumerate(self.layers):

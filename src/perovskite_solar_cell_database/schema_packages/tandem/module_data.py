@@ -12,26 +12,16 @@ class Module(ArchiveSection):
     """
 
     subcell_association = Quantity(
-        description=""" The subcells that are part of this module. Enumerate the cells from 1 to n, where n is the number of subcells to
-        in the module. Start counting from the bottom. For example, if the module is made of subcells 1 and 2, then the value should be 1,2.
-        If the module is made of subcells 2 and 3, then the value should be 2,3.
-        For a monolithic module, the values should be 1, .., n, where n is the number of subcells in the device.
+        description=""" The subcells that are part of this module. 0 menas that the module is monolithic.
+        If not all the subcells are in the form of a module, e.g. a perovksite module could be on top of 
+        a silicon cell in a 4-terminal configuration, enumerate the cells (from 1 to n) that are in the module. 
+        A perovksite module on a cilicon cell would be 2.
+        A perovksite tandem module on a cilidon cell in a 3 junction 4 terminal device woudl be [2, 3]  
+
             """,
-        type=MEnum(
-            [
-                '1',
-                '2',
-                '3',
-                '4',
-                '1, 2',
-                '2, 3',
-                '3, 4',
-                '1, 2, 3',
-                '2, 3, 4',
-                '1, 2, 3, 4',
-            ]
-        ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=int,
+        shape=['*'],
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     number_of_cells = Quantity(

@@ -141,6 +141,22 @@ class JVResults(ArchiveSection):
                 self.fill_factor = self.fill_factor / 100
 
 
+class JVRawData(ArchiveSection):
+    """
+    Raw data of a JV scan.
+    """
+
+    voltage = Quantity(
+        description='Voltage during the measurement.', type=float, shape=['*']
+    )
+
+    current = Quantity(
+        description='Current density during the measurement.',
+        type=float,
+        shape=['*'],
+    )
+
+
 class JVConditions(ArchiveSection):
     """
     Parameters of a JV scan.
@@ -486,7 +502,10 @@ class LightSource(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='nm'),
     )
 
-    # TODO Add functionality for reading in a spectrum file
+    # Spectrum data
+    intensity = Quantity(description='The light intensity.', type=float, shape=['*'])
+
+    wavelength = Quantity(description='the wavelength.', type=float, shape=['*'])
 
 
 class Preconditioning(ArchiveSection):
@@ -652,6 +671,16 @@ class EQEConditions(ArchiveSection):
     )
 
 
+class EQERawData(ArchiveSection):
+    """
+    Raw data of an EQE measurement.
+    """
+
+    eqe = Quantity(description='The EQE.', type=float, shape=['*'])
+
+    wavelength = Quantity(description='the wavelength.', type=float, shape=['*'])
+
+
 class StabilizedPerformanceResults(ArchiveSection):
     """
     Results of a stabilized measurement .
@@ -730,6 +759,18 @@ class StabilizedPerformanceDetails(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
+
+
+class StabilizedPerformanceRawData(ArchiveSection):
+    """
+    Raw data of an EQE measurement.
+    """
+
+    power_conversion_efficiency = Quantity(
+        description='The power conversion efficiency.', type=float, shape=['*']
+    )
+
+    time = Quantity(description='The time', type=float, shape=['*'])
 
 
 class StabilityResults(ArchiveSection):
@@ -882,6 +923,18 @@ class StabilityDetails(ArchiveSection):
         type=str,
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
+
+
+class StabilityRawData(ArchiveSection):
+    """
+    Raw data of an EQE measurement.
+    """
+
+    power_conversion_efficiency = Quantity(
+        description='The power conversion efficiency.', type=float, shape=['*']
+    )
+
+    time = Quantity(description='The time', type=float, shape=['*'])
 
 
 class LoadCycleSegments(ArchiveSection):
@@ -1104,6 +1157,16 @@ class TransmissionDetails(ArchiveSection):
     )
 
 
+class TransmissionRawData(ArchiveSection):
+    """
+    Raw data of an Transmission measurement.
+    """
+
+    transmission = Quantity(description='The transmission.', type=float, shape=['*'])
+
+    wavelength = Quantity(description='the wavelength.', type=float, shape=['*'])
+
+
 class FlexibilityResults(ArchiveSection):
     """
     Results of a flexibility measurement.
@@ -1215,8 +1278,10 @@ class JV(Measurement):
         description='Details about the certification of the measurement.',
     )
 
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
+    raw_data = SubSection(
+        section_def=JVRawData,
+        description='Raw data from the JV measurement.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1284,8 +1349,10 @@ class ExternalQuantumEfficiency(Measurement):
         description='Details about the certification of the measurement.',
     )
 
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
+    raw_data = SubSection(
+        section_def=EQERawData,
+        description='Raw data from the EQE measurement.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1363,8 +1430,10 @@ class StabilizedPerformance(Measurement):
         description='Details about the certification of the measurement.',
     )
 
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
+    raw_data = SubSection(
+        section_def=StabilizedPerformanceRawData,
+        description='Raw data from the stabilized performance measurement.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1488,8 +1557,10 @@ class Stability(Measurement):
         repeats=True,
     )
 
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
+    raw_data = SubSection(
+        section_def=StabilityRawData,
+        description='Raw data from the stability measurement.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1563,8 +1634,10 @@ class OutdoorPerformance(Measurement):
         repeats=True,
     )
 
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
+    raw_data = SubSection(
+        section_def=StabilityRawData,
+        description='Raw data from the stability measurement.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1603,8 +1676,10 @@ class Transmission(Measurement):
         description='Details about the certification of the measurement.',
     )
 
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
+    raw_data = SubSection(
+        section_def=TransmissionRawData,
+        description='Raw data from the trnsmission measurement.',
+    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1642,9 +1717,6 @@ class Flexibility(Measurement):
         section_def=CertificationDetails,
         description='Details about the certification of the measurement.',
     )
-
-    # Raw data
-    # TODO add functionality for reading in and storing raw data
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)

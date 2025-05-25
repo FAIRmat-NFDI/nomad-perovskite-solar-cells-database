@@ -64,7 +64,15 @@ class KeyPerformanceMetrics(ArchiveSection):
     )
 
     # Stability data
-    pce_1000h_isos_l1 = Quantity(
+    pce_1000h_isos_l1_start = Quantity(
+        description="""Power conversion efficiency start of the measurement under ISOS L1 conditions, 
+        i.e. AM 1.5, Maximum powerpoint (or held at constant potential close to the Vmp), 
+        room temperature, inert atmosphere.""",
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    pce_1000h_isos_l1_end = Quantity(
         description="""Power conversion efficiency after 1000 h under ISOS L1 conditions, 
         i.e. AM 1.5, Maximum powerpoint (or held at constant potential close to the Vmp), 
         room temperature, inert atmosphere.""",
@@ -72,7 +80,13 @@ class KeyPerformanceMetrics(ArchiveSection):
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
-    pce_1000h_isos_l3 = Quantity(
+    pce_1000h_isos_l3_start = Quantity(
+        description='Power conversion efficiency after the start of the measurement under ISOS L3 conditions, i.e. AM 1.5, Maximum powerpoint, 85°C and 50 % RH',
+        type=float,
+        a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    pce_1000h_isos_l3_end = Quantity(
         description='Power conversion efficiency after 1000 h under ISOS L3 conditions, i.e. AM 1.5, Maximum powerpoint, 85°C and 50 % RH',
         type=float,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),

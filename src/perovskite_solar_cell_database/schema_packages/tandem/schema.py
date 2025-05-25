@@ -79,6 +79,28 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         description='Encapsulation specific data',
     )
 
+    ## Derived qunatities
+    number_of_layers = Quantity(
+        description='Number of layers in the stack.',
+        type=int,
+        shape=[],
+        # a_eln=ELNAnnotation(component='NumberEditQuantity'),
+    )
+
+    stack_sequence = Quantity(
+        description="""A list of the materials in the layers of the stack. <br/>  
+        If a proper device stack section is provided, the stack sequence can be generated from that one.
+
+        * Start with the layer in the bottom of the device (i.e. that is furthest from the sun) and work up from that.
+        * If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
+        * The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. Those details are provided elsewhere. 
+        * Use common abbreviations when possible but spell them out when there is risk for confusion. 
+            """,
+        type=str,
+        shape=[],
+        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
         Populate the key performance metrics section
@@ -86,11 +108,26 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         super().normalize(archive, logger)
 
         ######## The device stack
-        stack_seq = getattr(getattr(self, 'device_stack', None), 'stack_sequence', None)
-        if stack_seq is not None:
-            if self.general is None:
-                self.general = General()
-            self.general.stack_sequence = stack_seq
+        if hasattr(self, 'device_stack') and hasattr(self.device_stack, 'layers'):
+            # Number of layers
+            self.number_of_layers = len(self.device_stack.layers)
+
+            # The stack sequence
+            stack_sequence = []
+            for layer in self.device_stack.layers:
+                # Check if the layer has a name
+                name = getattr(layer, 'name', None)
+                if name is not None:
+                    stack_sequence.append(name)
+                else:
+                    stack_sequence.append('-')
+
+            if stack_sequence:
+                self.stack_sequence = ' | '.join(stack_sequence)
+
+                if self.general is None:
+                    self.general = General()
+                self.general.stack_sequence = self.stack_sequence
 
         ####### Key performance metrics
         # Identify the PCE from all IV measurements
@@ -209,6 +246,13 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     'power_conversion_efficiency_1000h',
                     None,
                 )
+
+                pce_start = getattr(
+                    getattr(measurement, 'results', None),
+                    'power_conversion_efficiency_start',
+                    None,
+                )
+
                 T80 = getattr(getattr(measurement, 'results', None), 'T80', None)
 
                 if pce_1000h is not None or T80 is not None:
@@ -222,7 +266,12 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                         self.key_performance_metrics, 'pce_1000h_isos_l1', None
                     )
                     if current_best is None or pce_1000h > current_best:
-                        self.key_performance_metrics.pce_1000h_isos_l1 = pce_1000h
+                        self.key_performance_metrics.pce_1000h_isos_l1_end = pce_1000h
+
+                        if pce_start is not None:
+                            self.key_performance_metrics.pce_1000h_isos_l1_start = (
+                                pce_start
+                            )
 
                     current_best = getattr(
                         self.key_performance_metrics, 'T80_isos_l1', None
@@ -236,7 +285,12 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                         self.key_performance_metrics, 'pce_1000h_isos_l3', None
                     )
                     if current_best is None or pce_1000h > current_best:
-                        self.key_performance_metrics.pce_1000h_isos_l3 = pce_1000h
+                        self.key_performance_metrics.pce_1000h_isos_l3_end = pce_1000h
+
+                        if pce_start is not None:
+                            self.key_performance_metrics.pce_1000h_isos_l3_start = (
+                                pce_start
+                            )
 
                     current_best = getattr(
                         self.key_performance_metrics, 'T80_isos_l3', None
