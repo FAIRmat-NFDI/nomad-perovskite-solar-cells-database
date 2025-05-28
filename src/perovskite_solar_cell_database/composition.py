@@ -751,6 +751,9 @@ class PerovskiteCompositionSection(ArchiveSection):
     long_form = Quantity(
         type=str,
     )
+    formula = Quantity(
+        type=str,
+    )
     composition_estimate = Quantity(
         type=MEnum(
             [
