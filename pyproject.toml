@@ -58,8 +58,8 @@ dev = [
     "mkdocs-click",
     "mkdocs-macros-plugin>=1.0",
     "mkdocs-glightbox",
-    "pydantic>=2.0,<2.11"
-    "nomad-docs"
+    "pydantic>=2.0,<2.11",
+    "nomad-docs">=0.1.2
 ]
 
 [tool.ruff]
