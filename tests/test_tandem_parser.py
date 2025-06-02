@@ -1,5 +1,5 @@
 import os.path
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 import pytest
 from nomad.client import normalize_all, parse
@@ -31,7 +31,7 @@ def test_normalize_all(parsed_tandem_archive, caplog):
     assert reference.ID == 0
     assert reference.publication_date == datetime.fromisoformat(
         '2021-03-18T12:44:28'
-    ).replace(tzinfo=timezone.utc)
+    ).replace(tzinfo=UTC)
     assert reference.journal == 'Journal of Materials Chemistry A'
     assert reference.publication_authors[0] == 'Xin Wu'
     assert reference.name_of_person_entering_the_data == 'Adam Hultqvist'
