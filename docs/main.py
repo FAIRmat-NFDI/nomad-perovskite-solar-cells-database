@@ -1,1 +1,1 @@
-from nomad.mkdocs import define_env
+from nomad_docs import define_env
