@@ -74,7 +74,7 @@ It's nice to not miss a ruff format before pushing your commits. To set up pre-c
 Special thanks to Jinzhao Li and all contributors who have made this project possible.
 This project is supported by the FAIRmat NFDI initiative and also by by the European Union as part of the SolMates project (Project Nr. 101122288).
 
-<img src="assets/solmates_logo.png" alt="SolMates Logo" width="150"> <img src="assets/eu_funding_logo.png" alt="EU Funding Logo" width="150">
+<img src="docs/assets/solmates_logo.png" alt="SolMates Logo" width="150"> <img src="docs/assets/eu_funding_logo.png" alt="EU Funding Logo" width="150">
 
 ## Related Resources
 - [Original Paper on Nature Energy](https://www.nature.com/articles/s41560-021-00941-3)
