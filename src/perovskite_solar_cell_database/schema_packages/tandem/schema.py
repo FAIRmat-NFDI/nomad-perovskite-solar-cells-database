@@ -139,7 +139,10 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             # Go through all JV measurements
             for i, measurement in enumerate(self.measurements.jv):
                 # Check that the JV measuremtn is done under standard light conditions
-                if measurement.device_subset == 0 and measurement.light_regime == 'standard_light':
+                if (
+                    measurement.device_subset == 0
+                    and measurement.light_regime == 'standard_light'
+                ):
                     # Extract the PCE if it excist
                     results = measurement.results
                     pce_value = results.power_conversion_efficiency
@@ -182,7 +185,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     self.measurements.jv[i_best_pce].results.maximum_power_point_voltage
                 )
 
-            if self.measurements.jv[i_best_pce].results.maximum_power_point_current_density:
+            if self.measurements.jv[
+                i_best_pce
+            ].results.maximum_power_point_current_density:
                 self.key_performance_metrics.maximum_power_point_current_density = (
                     self.measurements.jv[
                         i_best_pce
@@ -198,7 +203,10 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             # Go through all stabilised  measurements
             for i, measurement in enumerate(self.measurements.stabilized_performance):
                 # Check that the measurement is done under standard light conditions
-                if measurement.device_subset == 0 and measurement.light_regime == 'standard_light':
+                if (
+                    measurement.device_subset == 0
+                    and measurement.light_regime == 'standard_light'
+                ):
                     # Extract the PCE if it excist
                     pce_value = measurement.results.power_conversion_efficiency
                     if pce_value is not None:
