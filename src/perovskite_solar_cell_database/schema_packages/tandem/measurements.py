@@ -3,7 +3,6 @@ from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.metainfo import Datetime, MEnum, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import SchemaPackage
 
-
 m_package = SchemaPackage()
 
 

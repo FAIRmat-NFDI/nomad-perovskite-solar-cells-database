@@ -14,8 +14,7 @@ from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.utils import create_cell_stack_figure
 
-from .device_stack import DeviceStack
-from .device_stack import Layer
+from .device_stack import DeviceStack, Layer
 from .encapsulation_data import EncapsulationData
 from .general import General
 from .key_performance_metrics import KeyPerformanceMetrics
@@ -110,7 +109,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 self.device_stack[i].layer_index = i + 1
 
         ####### Key performance metrics
-        # Identify the PCE from all IV measurements
+        # Identify the PCE from all IV measurements.
         pce = []
         pce_index = []
 
