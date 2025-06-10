@@ -36,8 +36,23 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
 
     atmosphere = Quantity(
         description='Atmosphere during the activity.',
-        type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'vacuum', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'air',
+                    'dry_air',
+                    'N2',
+                    'Ar',
+                    'He',
+                    'O2',
+                    'H2',
+                    'vacuum',
+                    'other',
+                ]
+            ),
+        ),
     )
 
     relative_humidity = Quantity(
@@ -162,17 +177,20 @@ class NanostructureInformation(ArchiveSection):
 
     shape = Quantity(
         description='The nanostructure of the compound',
-        type=MEnum(
-            [
-                'nanoparticle',
-                'quantum_dot',
-                'nanorod',
-                'disc',
-                'sheet',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'nanoparticle',
+                    'quantum_dot',
+                    'nanorod',
+                    'disc',
+                    'sheet',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     diameter = Quantity(
@@ -287,18 +305,21 @@ class Component(ArchiveSection):
 
     functionality = Quantity(
         description='The primary functionality of the compound in the layer',
-        type=MEnum(
-            [
-                'majority_phase',
-                'secondary_phase',
-                'additive',
-                'dopant',
-                'impurity',
-                'solvent',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'majority_phase',
+                    'secondary_phase',
+                    'additive',
+                    'dopant',
+                    'impurity',
+                    'solvent',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     aggregation_state = Quantity(
@@ -318,16 +339,19 @@ class Component(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the compound',
-        type=MEnum(
-            [
-                'commercial_supplier',
-                'made_in_house',
-                'made_by_collaborator',
-                'collected_in_nature',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'commercial_supplier',
+                    'made_in_house',
+                    'made_by_collaborator',
+                    'collected_in_nature',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     nanostructured = Quantity(
@@ -391,15 +415,18 @@ class SputteringTarget(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the compound',
-        type=MEnum(
-            [
-                'commercial_supplier',
-                'made_in_house',
-                'made_by_collaborator',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'commercial_supplier',
+                    'made_in_house',
+                    'made_by_collaborator',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     ## Subsections
@@ -464,16 +491,19 @@ class EvaporationSource(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the compound',
-        type=MEnum(
-            [
-                'commercial_supplier',
-                'made_in_house',
-                'made_by_collaborator',
-                'collected_in_nature',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'commercial_supplier',
+                    'made_in_house',
+                    'made_by_collaborator',
+                    'collected_in_nature',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     ## Subsections
@@ -519,16 +549,19 @@ class LigandsAndDyes(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the compound',
-        type=MEnum(
-            [
-                'commercial_supplier',
-                'made_in_house',
-                'made_by_collaborator',
-                'collected_in_nature',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'commercial_supplier',
+                    'made_in_house',
+                    'made_by_collaborator',
+                    'collected_in_nature',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     ## Subsections
@@ -567,23 +600,37 @@ class GasComponent(ArchiveSection):
 
     functionality = Quantity(
         description='The role of this specific substance in the gas mixture.',
-        type=MEnum(['reactant', 'product', 'carrier_gas', 'none', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'reactant',
+                    'product',
+                    'carrier_gas',
+                    'none',
+                    'other',
+                ]
+            ),
+        ),
     )
 
     origin = Quantity(
         description='The origin of the substance.',
-        type=MEnum(
-            [
-                'reaction_product',
-                'commercial_supplier',
-                'made_in_house',
-                'made_by_collaborator',
-                'collected_in_nature',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'reaction_product',
+                    'commercial_supplier',
+                    'made_in_house',
+                    'made_by_collaborator',
+                    'collected_in_nature',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     partial_pressure = Quantity(
@@ -635,16 +682,19 @@ class SolutionComponent(ArchiveSection):
 
     origin = Quantity(
         description='The origin of the substance.',
-        type=MEnum(
-            [
-                'commercial_supplier',
-                'made_in_house',
-                'made_by_collaborator',
-                'collected_in_nature',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'commercial_supplier',
+                    'made_in_house',
+                    'made_by_collaborator',
+                    'collected_in_nature',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     nanostructured = Quantity(
@@ -815,19 +865,22 @@ class BandGap(ArchiveSection):
         EQE-data, UPS-data, or it can be estimated based on literature values 
         for the recipe, or it could be inferred from the composition and what 
         we know of similar but not identical compositions.""",
-        type=MEnum(
-            [
-                'absorption',
-                'absorption_Tauc-plot',
-                'composition',
-                'eqe',
-                'literature',
-                'ups',
-                'xps',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'absorption',
+                    'absorption_Tauc-plot',
+                    'composition',
+                    'eqe',
+                    'literature',
+                    'ups',
+                    'xps',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
 
@@ -849,18 +902,21 @@ class Conductivity(ArchiveSection):
 class Crystallinity(ArchiveSection):
     value = Quantity(
         description='The crystallinity of the layer',
-        type=MEnum(
-            [
-                'amorphous',
-                'polycrystalline',
-                'single_crystal',
-                'nanoparticles',
-                'nanorods',
-                'qunatum_dots',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'amorphous',
+                    'polycrystalline',
+                    'single_crystal',
+                    'nanoparticles',
+                    'nanorods',
+                    'quantum_dots',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     average_grain_size = Quantity(
@@ -1057,8 +1113,6 @@ class LayerProperties(ArchiveSection):
 
 
 ### Deposition procedures general sections
-
-
 class DepositionStep(ArchiveSection):
     """
     This is a collection point for deposition procedures
@@ -1141,10 +1195,20 @@ class Dipping(ArchiveSection):
 
     drying_procedure = Quantity(
         description='The methode by which the liquid is removed from the sample after dipping.',
-        type=MEnum(
-            ['gas_blowing', 'self_drying', 'heating', 'tissue_paper', 'none', 'other']
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'gas_blowing',
+                    'self_drying',
+                    'heating',
+                    'tissue_paper',
+                    'none',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     sample_temperature = Quantity(
@@ -1294,8 +1358,22 @@ class GasQuenchingDetails(ArchiveSection):
 
     gas = Quantity(
         description='The gas used for the quenching.',
-        type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'air',
+                    'dry_air',
+                    'N2',
+                    'Ar',
+                    'He',
+                    'O2',
+                    'H2',
+                    'other',
+                ]
+            ),
+        ),
     )
 
     start_time = Quantity(
@@ -1425,8 +1503,11 @@ class AtomicLayerDeposition(DepositionStep):
     # Categorical qunatities
     carrier_gas = Quantity(
         description='The carrier gas.',
-        type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(suggestions=['air', 'dry_air', 'N2', 'Ar', 'other']),
+        ),
     )
 
     equipment = Quantity(
@@ -1485,10 +1566,20 @@ class ChemicalBathDeposition(DepositionStep):
     # Categorical quantities
     drying_procedure = Quantity(
         description='The method by which the liquid is removed from the sample after dipping.',
-        type=MEnum(
-            ['gas_blowing', 'self_drying', 'heating', 'tissue_paper', 'none', 'other']
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'gas_blowing',
+                    'self_drying',
+                    'heating',
+                    'tissue_paper',
+                    'none',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     equipment = Quantity(
@@ -1617,10 +1708,20 @@ class DipCoating(DepositionStep):
     # Categorical quantities
     drying_procedure = Quantity(
         description='The methode by which the liquid is removed from the sample after dipping.',
-        type=MEnum(
-            ['gas_blowing', 'self_drying', 'heating', 'tissue_paper', 'none', 'other']
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'gas_blowing',
+                    'self_drying',
+                    'heating',
+                    'tissue_paper',
+                    'none',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     equipment = Quantity(
@@ -1891,8 +1992,19 @@ class Heating(DepositionStep):
     # categorical quantities
     heating_medium = Quantity(
         description='The way by which the temperature is controlled',
-        type=MEnum(['hotplate', 'furnace', 'liquid_bath', 'gas', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'hotplate',
+                    'furnace',
+                    'liquid_bath',
+                    'gas',
+                    'other',
+                ]
+            ),
+        ),
     )
 
     equipment = Quantity(
@@ -2370,8 +2482,13 @@ class SprayCoating(DepositionStep):
     # categorical qunatities
     carrier_gas = Quantity(
         description='The carrier gas.',
-        type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']
+            ),
+        ),
     )
 
     equipment = Quantity(
@@ -2432,17 +2549,20 @@ class Sputtering(DepositionStep):
     # Categorical qunatities
     type_of_sputering = Quantity(
         description='The type of sputtering process',
-        type=MEnum(
-            [
-                'DC_sputtering',
-                'RF_sputtering',
-                'Magnetron_sputtering',
-                'Reactive_sputtering',
-                'Pulsed_DC_sputtering',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'DC_sputtering',
+                    'RF_sputtering',
+                    'Magnetron_sputtering',
+                    'Reactive_sputtering',
+                    'Pulsed_DC_sputtering',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     equipment = Quantity(
@@ -2606,14 +2726,17 @@ class DepositionProcedure(ArchiveSection):
 
     origin = Quantity(
         description='The place where the layer was deposited. i.e. was it deposited in the lab or was it bought. An example of a layer that often is bought is the ITO layer on glass substrates',
-        type=MEnum(
-            [
-                'commercial_supplier',
-                'deposited_in_house',
-                'deposited_by_collaborator',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'commercial_supplier',
+                    'deposited_in_house',
+                    'deposited_by_collaborator',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     time_stamp = Quantity(
@@ -2656,165 +2779,6 @@ class DepositionProcedure(ArchiveSection):
 
 
 ### Layers
-class Layer_old(ArchiveSection):
-    """
-    This is the section for a layer in the device stack.
-    """
-
-    # Top level quantities
-    name = Quantity(
-        type=str,
-        shape=[],
-        description=""" A sensible name for the layer. A good default is the trade 
-        name of the material, possibly with an addition of the microstructure.
-        examples: 
-        * TiO2-mp
-        * PEDOT:PSS
-        * Spiro-MeOTAD
-        * SLG
-        * ITO
-        """,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
-    device_subset = Quantity(
-        type=int,
-        shape=[],
-        description="""
-            If the device not is monolithic, this describes which individual subcell the layer belongs to.  
-
-            - 0 = the layer belongs to a monolithic device 
-            - 1 = the layer belongs to the bottom subcell, 
-            - 2 = the layer belongs to the second subcell (top cell in a 2-junction device)
-            - 3 = the layer belongs to the third subcell (top cell in a 3-junction device
-            """,
-        a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    functionality = Quantity(
-        type=MEnum(
-            [
-                'air_gap',
-                'anti_reflection',
-                'back_contact',
-                'back_reflector',
-                'buffer_layer',
-                'down_conversion',
-                'edge_sealing',
-                'electrolyte',
-                'encapsulation',
-                'electron_transport_layer',
-                'front_contact',
-                'hole_transport_layer',
-                'interface_modifier',
-                'mesoporous_scaffold',
-                'middle_contact',
-                'optical_spacer',
-                'organic_dye',
-                'photoabsorber',
-                'recombination_layer',
-                'refractive_index_matching',
-                'self_assembled_monolayer',
-                'spectral_splitter',
-                'substrate',
-                'transparent_conducting_oxide',
-                'up_conversion',
-                'window_layer',
-                'other',
-            ]
-        ),
-        shape=[],
-        description='The primary functionality the layer has in the device stack.',
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
-    )
-
-    ### Subsections
-    ## Photoabsorbers
-    # perovskite = SubSection(
-    #     section_def=PhotoabsorberPerovskite,
-    #     description='Perovskite specific information.',
-    # )
-
-    # silicon = SubSection(
-    #     section_def=PhotoabsorberSilicon,
-    #     description='Silicon specific information.',
-    # )
-
-    # CIGS = SubSection(
-    #     section_def=PhotoabsorberCIGS,
-    #     description='CIGS specific information.',
-    # )
-
-    # CZTS = SubSection(
-    #     section_def=PhotoabsorberCZTS,
-    #     description='CZTS specific information.',
-    # )
-
-    # OPV = SubSection(
-    #     section_def=PhotoabsorberOPV,
-    #     description='OPV specific information.',
-    # )
-
-    # DSSC = SubSection(
-    #     section_def=PhotoabsorberDSSC,
-    #     description='DSSC specific information.',
-    # )
-
-    # quantum_dot = SubSection(
-    #     section_def=PhotoabsorberQD,
-    #     description='Quantum dot specific information.',
-    # )
-
-    # GaAs = SubSection(
-    #     section_def=PhotoabsorberGaAs,
-    #     description='GaAs specific information.',
-    # )
-
-    ## Other subsections
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
-
-    # Deposition procedure
-    deposition_procedure = SubSection(
-        section_def=DepositionProcedure,
-        description='The deposition procedure of the layer.',
-    )
-
-    # Post deposition procedure
-    post_deposition_procedure = SubSection(
-        section_def=PostDepositionProcedure,
-        description='Post deposition procedure.',
-    )
-
-    ## Properties of the layer
-    properties = SubSection(
-        section_def=LayerProperties,
-        description='Properties of the layer.',
-    )
-
-    # Sample history
-    # sample_history = SubSection(
-    #     section_def=EnvironmentalConditionsDeposition,
-    #     description="""A description of the conditions under which the sample have been stored between
-    #     the finalization of the last layer and the deposition of this layer.""",
-    # )
-
-    # Derived quantities
-    layer_index = Quantity(
-        type=int,
-        shape=[],
-        description="""The position in the device stack for the layer. Counted from the bottom. Can be populated automatically """,
-        # a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    def normalize(self, archive, logger):
-        super().normalize(archive, logger)
-
-
 class Layer(ArchiveSection):
     """
     This is the section for a layer in the device stack.
@@ -2851,50 +2815,45 @@ class Layer(ArchiveSection):
     )
 
     functionality = Quantity(
-        type=MEnum(
-            [
-                'air_gap',
-                'anti_reflection',
-                'back_contact',
-                'back_reflector',
-                'buffer_layer',
-                'down_conversion',
-                'edge_sealing',
-                'electrolyte',
-                'encapsulation',
-                'electron_transport_layer',
-                'front_contact',
-                'hole_transport_layer',
-                'interface_modifier',
-                'mesoporous_scaffold',
-                'middle_contact',
-                'optical_spacer',
-                'organic_dye',
-                'photoabsorber',
-                'recombination_layer',
-                'refractive_index_matching',
-                'self_assembled_monolayer',
-                'spectral_splitter',
-                'substrate',
-                'transparent_conducting_oxide',
-                'up_conversion',
-                'window_layer',
-                'other',
-            ]
-        ),
+        type=str,
         shape=[],
         description='The primary functionality the layer has in the device stack.',
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'air_gap',
+                    'anti_reflection',
+                    'back_contact',
+                    'back_reflector',
+                    'buffer_layer',
+                    'down_conversion',
+                    'edge_sealing',
+                    'electrolyte',
+                    'encapsulation',
+                    'electron_transport_layer',
+                    'front_contact',
+                    'hole_transport_layer',
+                    'interface_modifier',
+                    'mesoporous_scaffold',
+                    'middle_contact',
+                    'optical_spacer',
+                    'organic_dye',
+                    'photoabsorber',
+                    'recombination_layer',
+                    'refractive_index_matching',
+                    'self_assembled_monolayer',
+                    'spectral_splitter',
+                    'substrate',
+                    'transparent_conducting_oxide',
+                    'up_conversion',
+                    'window_layer',
+                ]
+            ),
+        ),
     )
 
     ### Subsections
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
-
     # Deposition procedure
     deposition_procedure = SubSection(
         section_def=DepositionProcedure,
@@ -2913,19 +2872,11 @@ class Layer(ArchiveSection):
         description='Properties of the layer.',
     )
 
-    # Sample history
-    # sample_history = SubSection(
-    #     section_def=EnvironmentalConditionsDeposition,
-    #     description="""A description of the conditions under which the sample have been stored between
-    #     the finalization of the last layer and the deposition of this layer.""",
-    # )
-
     # Derived quantities
     layer_index = Quantity(
         type=int,
         shape=[],
         description="""The position in the device stack for the layer. Counted from the bottom. Can be populated automatically """,
-        # a_eln=ELNAnnotation(component='NumberEditQuantity'),
     )
 
     def normalize(self, archive, logger):
@@ -2938,7 +2889,13 @@ class GeneralLayer(Layer):
     This is the section for a general layer in the device stack.
     """
 
-    pass
+    ### Subsections
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
 
 
 ## Photoabsorbers
@@ -3004,7 +2961,7 @@ class CZTSComposition(ArchiveSection):
     )
 
 
-class Perovskite(Layer):
+class Photoabsorber_Perovskite(Layer):
     """
     This is the section for a perovskite photoabsorber.
     """
@@ -3046,49 +3003,61 @@ class Perovskite(Layer):
         description='The composition of the perovskite.',
     )
 
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
 
-class Silicon(Layer):
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'Perovskite'
+
+
+class Photoabsorber_Silicon(Layer):
     """
     This is the section for a silicon photoabsorber.
     """
 
     cell_type = Quantity(
         description='The type of silicon cell.',
-        type=MEnum(
-            [
-                'Amorphous',
-                'Al-BSF',
-                'c-type',
-                'HIT',
-                'HJT',
-                'Heterojunction',
-                'Homojunction',
-                'IBC',
-                'n-type',
-                'p-type',
-                'PERC',
-                'PERL',
-                'SC/nFAB',
-                'TOPCon',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Amorphous',
+                    'Al-BSF',
+                    'c-type',
+                    'HIT',
+                    'HJT',
+                    'Heterojunction',
+                    'Homojunction',
+                    'IBC',
+                    'n-type',
+                    'p-type',
+                    'PERC',
+                    'PERL',
+                    'SC/nFAB',
+                    'TOPCon',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     type_of_silicon = Quantity(
         description='The type of silicon.',
-        type=MEnum(
-            [
-                'Amorphous',
-                'Monocrystalline',
-                'Polycrystalline',
-                'CZ',
-                'Float-zone',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Amorphous',
+                    'Monocrystalline',
+                    'Polycrystalline',
+                    'CZ',
+                    'Float-zone',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     doping_sequence = Quantity(
@@ -3097,41 +3066,30 @@ class Silicon(Layer):
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
+    # Subsecteions
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
 
-class CIGS(Layer):
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'Silicon'
+
+
+class Photoabsorber_CIGS(Layer):
     """
     This is the section for a CIGS photoabsorber.
     """
-
-    # Cu = Quantity(
-    #     description='The stoichiometric coefficient for Cu',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # In = Quantity(
-    #     description='The stoichiometric coefficient for In',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # Ga = Quantity(
-    #     description='The stoichiometric coefficient for Ga',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # Se = Quantity(
-    #     description='The stoichiometric coefficient for Se',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
 
     # Derived quantities
     molecular_formula = Quantity(
         description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
         type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     # Subsections
@@ -3140,68 +3098,11 @@ class CIGS(Layer):
         description='The composition of the CIGS.',
     )
 
-    def normalize(self, archive, logger):
-        super().normalize(archive, logger)
-
-        # Generate molecular formula
-        atoms = []
-        coefficients = []
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
-            atoms.append('Cu')
-            coefficients.append(self.Cu)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'In'):
-            atoms.append('In')
-            coefficients.append(self.In)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Ga'):
-            atoms.append('Ga')
-            coefficients.append(self.Ga)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Se'):
-            atoms.append('Se')
-            coefficients.append(self.Se)
-
-        if coefficients == []:
-            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
-            coefficients = [str(i) for i in coefficients]
-            coefficients = ['' for i in coefficients if i == '1']
-            self.molecular_formula = ''.join(
-                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
-            )
-
-
-class CZTS(Layer):
-    """
-    This is the section for a CZTS photoabsorber.
-    """
-
-    # Cu = Quantity(
-    #     description='The stoichiometric coefficient for Cu',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # Zn = Quantity(
-    #     description='The stoichiometric coefficient for Zn',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # Sn = Quantity(
-    #     description='The stoichiometric coefficient for Sn',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # S = Quantity(
-    #     description='The stoichiometric coefficient for S',
-    #     type=float,
-    #     a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # Derived quantities
-    molecular_formula = Quantity(
-        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
-        type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
     )
 
     def normalize(self, archive, logger):
@@ -3212,18 +3113,18 @@ class CZTS(Layer):
         coefficients = []
         if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
             atoms.append('Cu')
-            coefficients.append(self.Cu)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Zn'):
-            atoms.append('Zn')
-            coefficients.append(self.Zn)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Sn'):
-            atoms.append('Sn')
-            coefficients.append(self.Sn)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'S'):
-            atoms.append('S')
-            coefficients.append(self.S)
+            coefficients.append(self.composition.Cu)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'In'):
+            atoms.append('In')
+            coefficients.append(self.composition.In)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Ga'):
+            atoms.append('Ga')
+            coefficients.append(self.composition.Ga)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Se'):
+            atoms.append('Se')
+            coefficients.append(self.composition.Se)
 
-        if coefficients == []:
+        if coefficients:
             coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
             coefficients = [str(i) for i in coefficients]
             coefficients = ['' for i in coefficients if i == '1']
@@ -3231,25 +3132,96 @@ class CZTS(Layer):
                 [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
             )
 
+        # Set layer name if not set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'CIGS'
 
-class GaAs(Layer):
+
+class Photoabsorber_CZTS(Layer):
     """
-    This is the section for a CIGS photoabsorber.
+    This is the section for a CZTS photoabsorber.
     """
 
     # Derived quantities
     molecular_formula = Quantity(
         description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
         type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    # Subsections
+    composition = SubSection(
+        section_def=CZTSComposition,
+        description='The composition of the CZTS.',
+    )
+
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        # Generate molecular formula
+        atoms = []
+        coefficients = []
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
+            atoms.append('Cu')
+            coefficients.append(self.composition.Cu)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Zn'):
+            atoms.append('Zn')
+            coefficients.append(self.composition.Zn)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'Sn'):
+            atoms.append('Sn')
+            coefficients.append(self.composition.Sn)
+        if hasattr(self, 'composition') and hasattr(self.composition, 'S'):
+            atoms.append('S')
+            coefficients.append(self.composition.S)
+
+        if coefficients:
+            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
+            coefficients = [str(i) for i in coefficients]
+            coefficients = ['' for i in coefficients if i == '1']
+            self.molecular_formula = ''.join(
+                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
+            )
+
+        # Set layer name if not set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'CIGS'
+
+
+class Photoabsorber_GaAs(Layer):
+    """
+    This is the section for a CIGS photoabsorber.
+    """
+
+    # Subsections
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
+
+    # Derived quantities
+    molecular_formula = Quantity(
+        description='The molecular formula. Can be derived automatically based on the stoichiometric coefficients',
+        type=str,
     )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.molecular_formula = 'GaAs'
 
+        # Set layer name if not set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'GaAs'
 
-class OPV(Layer):
+
+class Photoabsorber_OPV(Layer):
     """
     This is the section for a organic photoabsorber.
     """
@@ -3262,18 +3234,21 @@ class OPV(Layer):
 
     cell_type = Quantity(
         description='The type of opv cell',
-        type=MEnum(
-            [
-                'singel_layer',
-                'bilayer',
-                'polymer',
-                'heterojunction',
-                'bulk_heterojunction',
-                'polymer bulk heterojunction',
-                'homojunction',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'singel_layer',
+                    'bilayer',
+                    'polymer',
+                    'heterojunction',
+                    'bulk_heterojunction',
+                    'polymer bulk heterojunction',
+                    'homojunction',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     peak_absorption_wavelength = Quantity(
@@ -3306,8 +3281,23 @@ class OPV(Layer):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
     )
 
+    # Subsections
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
 
-class DSSC(Layer):
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        # Set layer name if not set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'OPV'
+
+
+class Photoabsorber_DSSC(Layer):
     """
     This is the section for a organic photoabsorber.
     """
@@ -3356,17 +3346,25 @@ class DSSC(Layer):
         repeats=True,
     )
 
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
 
-class QuantumDotPhotoabsorber(Layer):
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        # Set layer name if not set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'DSSC'
+
+
+class Photoabsorber_QuantumDot(Layer):
     """
     This is the section for a quantum dot photoabsorbers.
     """
-
-    # material = Quantity(
-    #     description='The material of the quantum dots. e.g PbS',
-    #     type=str,
-    #     a_eln=ELNAnnotation(component='StringEditQuantity'),
-    # )
 
     # subsections
     # Nanostructure information
@@ -3381,6 +3379,20 @@ class QuantumDotPhotoabsorber(Layer):
         repeats=True,
     )
 
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+        # Set layer name if not set
+        if not hasattr(self, 'name') or not self.name:
+            self.name = 'QD-absorber'
+
 
 ### Master class putting everything together
 class DeviceStack(ArchiveSection):
@@ -3388,27 +3400,7 @@ class DeviceStack(ArchiveSection):
     This is the master class for the device stack. It contains all the layers in the device stack.
     """
 
-    ## Derived qunatities
-    # number_of_layers = Quantity(
-    #     description='Number of layers in the stack.',
-    #     type=int,
-    #     shape=[],
-    #     # a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    # )
-
-    # stack_sequence = Quantity(
-    #     description="""A list of the materials in the layers of the stack. <br/>
-    #     If a proper device stack section is provided, the stack sequence can be generated from that one.
-
-    #     * Start with the layer in the bottom of the device (i.e. that is furthest from the sun) and work up from that.
-    #     * If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
-    #     * The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. Those details are provided elsewhere.
-    #     * Use common abbreviations when possible but spell them out when there is risk for confusion.
-    #         """,
-    #     type=str,
-    #     shape=[],
-    #     # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    # )
+    # No longer used, but was used as a top level section under which layers was organised
 
     ## Subsections
     layers = SubSection(
@@ -3419,22 +3411,6 @@ class DeviceStack(ArchiveSection):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-
-        # Number of layers
-        # self.number_of_layers = len(self.layers)
-
-        # # Stack sequence
-        # stack_sequence = []
-        # for i in range(self.number_of_layers):
-        #     if hasattr(self.layers[i], 'name'):
-        #         if len(str(self.layers[i].name)) > 0:
-        #             stack_sequence.append(self.layers[i].name)
-        #         else:
-        #             stack_sequence.append('unknown')
-        #     else:
-        #         stack_sequence.append('unknown')
-
-        # self.stack_sequence = ' | '.join(stack_sequence)
 
         # Layer index
         for i, layer in enumerate(self.layers):

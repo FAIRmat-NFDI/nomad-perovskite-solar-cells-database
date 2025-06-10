@@ -8,15 +8,14 @@ if TYPE_CHECKING:
 
 from itertools import cycle
 
-# import numpy as np
 from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.utils import create_cell_stack_figure
 
-# from .layer_stack import Layer
 from .device_stack import DeviceStack
+from .device_stack import Layer
 from .encapsulation_data import EncapsulationData
 from .general import General
 from .key_performance_metrics import KeyPerformanceMetrics
@@ -57,8 +56,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
     # The Device stack
     device_stack = SubSection(
-        section_def=DeviceStack,
-        description='Description of the device stack and all layers in it',
+        section_def=Layer,
+        description='The stack of layers in the device starting from the bottom.',
+        repeats=True,
     )
 
     # Measurements
@@ -79,28 +79,6 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         description='Encapsulation specific data',
     )
 
-    ## Derived qunatities
-    number_of_layers = Quantity(
-        description='Number of layers in the stack.',
-        type=int,
-        shape=[],
-        # a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    stack_sequence = Quantity(
-        description="""A list of the materials in the layers of the stack. <br/>  
-        If a proper device stack section is provided, the stack sequence can be generated from that one.
-
-        * Start with the layer in the bottom of the device (i.e. that is furthest from the sun) and work up from that.
-        * If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
-        * The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. Those details are provided elsewhere. 
-        * Use common abbreviations when possible but spell them out when there is risk for confusion. 
-            """,
-        type=str,
-        shape=[],
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
         Populate the key performance metrics section
@@ -108,13 +86,15 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         super().normalize(archive, logger)
 
         ######## The device stack
-        if hasattr(self, 'device_stack') and hasattr(self.device_stack, 'layers'):
+        if hasattr(self, 'device_stack'):
             # Number of layers
-            self.number_of_layers = len(self.device_stack.layers)
+            if self.general is None:
+                self.general = General()
+            self.general.number_of_layers = len(self.device_stack)
 
             # The stack sequence
             stack_sequence = []
-            for layer in self.device_stack.layers:
+            for layer in self.device_stack:
                 # Check if the layer has a name
                 name = getattr(layer, 'name', None)
                 if name is not None:
@@ -123,11 +103,11 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     stack_sequence.append('-')
 
             if stack_sequence:
-                self.stack_sequence = ' | '.join(stack_sequence)
+                self.general.stack_sequence = ' | '.join(stack_sequence)
 
-                if self.general is None:
-                    self.general = General()
-                self.general.stack_sequence = self.stack_sequence
+            # Layer index
+            for i, layer in enumerate(self.device_stack):
+                self.device_stack[i].layer_index = i + 1
 
         ####### Key performance metrics
         # Identify the PCE from all IV measurements
@@ -312,10 +292,8 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         opacities = []
 
         # construct the layer stack
-        if getattr(self, 'device_stack', None) and getattr(
-            self.device_stack, 'layers', None
-        ):
-            for layer in self.device_stack.layers:
+        if getattr(self, 'device_stack', None):
+            for layer in self.device_stack:
                 # Check if the layer has a name
                 name = getattr(layer, 'name', '-')
                 layer_names.append(name)
