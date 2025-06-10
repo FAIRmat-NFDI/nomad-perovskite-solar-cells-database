@@ -108,7 +108,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         super().normalize(archive, logger)
 
         ######## The device stack
-        if hasattr(self, 'device_stack') and hasattr(self.device_stack, 'layers'):
+        if self.device_stack and self.device_stack.layers:
             # Number of layers
             self.number_of_layers = len(self.device_stack.layers)
 
@@ -116,7 +116,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             stack_sequence = []
             for layer in self.device_stack.layers:
                 # Check if the layer has a name
-                name = getattr(layer, 'name', None)
+                name = layer.name
                 if name is not None:
                     stack_sequence.append(name)
                 else:
@@ -135,17 +135,14 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         pce_index = []
 
         # Check if there are JV measurements
-        if hasattr(self, 'measurements') and hasattr(self.measurements, 'jv'):
+        if self.measurements and self.measurements.jv:
             # Go through all JV measurements
             for i, measurement in enumerate(self.measurements.jv):
                 # Check that the JV measuremtn is done under standard light conditions
-                if (
-                    getattr(measurement, 'device_subset', None) == 0
-                    and getattr(measurement, 'light_regime', None) == 'standard_light'
-                ):
+                if measurement.device_subset == 0 and measurement.light_regime == 'standard_light':
                     # Extract the PCE if it excist
-                    results = getattr(measurement, 'results', None)
-                    pce_value = getattr(results, 'power_conversion_efficiency', None)
+                    results = measurement.results
+                    pce_value = results.power_conversion_efficiency
                     if pce_value is not None:
                         pce.append(pce_value)
                         pce_index.append(i)
@@ -163,39 +160,29 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             )
 
             # Add additional values from that JV scan if they excisit
-            if hasattr(
-                self.measurements.jv[i_best_pce].results,
-                'short_circuit_current_density',
-            ):
+            if self.measurements.jv[i_best_pce].results.short_circuit_current_density:
                 self.key_performance_metrics.short_circuit_current_density = (
                     self.measurements.jv[
                         i_best_pce
                     ].results.short_circuit_current_density
                 )
 
-            if hasattr(
-                self.measurements.jv[i_best_pce].results, 'open_circuit_voltage'
-            ):
+            if self.measurements.jv[i_best_pce].results.open_circuit_voltage:
                 self.key_performance_metrics.open_circuit_voltage = (
                     self.measurements.jv[i_best_pce].results.open_circuit_voltage
                 )
 
-            if hasattr(self.measurements.jv[i_best_pce].results, 'fill_factor'):
+            if self.measurements.jv[i_best_pce].results.fill_factor:
                 self.key_performance_metrics.fill_factor = self.measurements.jv[
                     i_best_pce
                 ].results.fill_factor
 
-            if hasattr(
-                self.measurements.jv[i_best_pce].results, 'maximum_power_point_voltage'
-            ):
+            if self.measurements.jv[i_best_pce].results.maximum_power_point_voltage:
                 self.key_performance_metrics.maximum_power_point_voltage = (
                     self.measurements.jv[i_best_pce].results.maximum_power_point_voltage
                 )
 
-            if hasattr(
-                self.measurements.jv[i_best_pce].results,
-                'maximum_power_point_current_density',
-            ):
+            if self.measurements.jv[i_best_pce].results.maximum_power_point_current_density:
                 self.key_performance_metrics.maximum_power_point_current_density = (
                     self.measurements.jv[
                         i_best_pce
@@ -207,19 +194,13 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         pce_index = []
 
         # Check if there are stabilised performance measurements
-        if hasattr(self, 'measurements') and hasattr(
-            self.measurements, 'stabilized_performance'
-        ):
+        if self.measurements and self.measurements.stabilized_performance:
             # Go through all stabilised  measurements
             for i, measurement in enumerate(self.measurements.stabilized_performance):
                 # Check that the measurement is done under standard light conditions
-                if (
-                    getattr(measurement, 'device_subset', None) == 0
-                    and getattr(measurement, 'light_regime', None) == 'standard_light'
-                ):
+                if measurement.device_subset == 0 and measurement.light_regime == 'standard_light':
                     # Extract the PCE if it excist
-                    results = getattr(measurement, 'results', None)
-                    pce_value = getattr(results, 'power_conversion_efficiency', None)
+                    pce_value = measurement.results.power_conversion_efficiency
                     if pce_value is not None:
                         pce.append(pce_value)
                         pce_index.append(i)
@@ -238,22 +219,12 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
         # Stability data
         # Check if stability measurements exist
-        if hasattr(self, 'measurements') and hasattr(self.measurements, 'stability'):
+        if self.measurements and self.measurements.stability:
             # Go through all JV measurements
             for i, measurement in enumerate(self.measurements.stability):
-                pce_1000h = getattr(
-                    getattr(measurement, 'results', None),
-                    'power_conversion_efficiency_1000h',
-                    None,
-                )
-
-                pce_start = getattr(
-                    getattr(measurement, 'results', None),
-                    'power_conversion_efficiency_start',
-                    None,
-                )
-
-                T80 = getattr(getattr(measurement, 'results', None), 'T80', None)
+                pce_1000h = measurement.results.power_conversion_efficiency_1000h
+                pce_start = measurement.results.power_conversion_efficiency_start
+                T80 = measurement.results.T80
 
                 if pce_1000h is not None or T80 is not None:
                     # Make sure key_performance_metrics exists
@@ -273,9 +244,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                                 pce_start
                             )
 
-                    current_best = getattr(
-                        self.key_performance_metrics, 'T80_isos_l1', None
-                    )
+                    current_best = self.key_performance_metrics.T80_isos_l1
                     if current_best is None or T80 > current_best:
                         self.key_performance_metrics.T80_isos_l1 = T80
 
@@ -312,9 +281,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         opacities = []
 
         # construct the layer stack
-        if getattr(self, 'device_stack', None) and getattr(
-            self.device_stack, 'layers', None
-        ):
+        if self.device_stack and self.device_stack.layers:
             for layer in self.device_stack.layers:
                 # Check if the layer has a name
                 name = getattr(layer, 'name', '-')
