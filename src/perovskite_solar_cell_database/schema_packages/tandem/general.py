@@ -32,17 +32,20 @@ class General(ArchiveSection):
     # Top level data
     architecture = Quantity(
         description='The general architecture of the tandem device. For 4-terminal devices and other configurations where there are two independent sub cells simply stacked on top of each other, define this as “stacked”',
-        type=MEnum(
-            [
-                'Stacked',
-                'Monolithic',
-                'Laminated',
-                'Spectral_splitter',
-                'Wide_bandgap_cell_used_as_reflector',
-                'Other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Stacked',
+                    'Monolithic',
+                    'Laminated',
+                    'Spectral_splitter',
+                    'Wide_bandgap_cell_used_as_reflector',
+                    'Other',
+                ],
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     number_of_terminals = Quantity(
@@ -59,22 +62,25 @@ class General(ArchiveSection):
 
     photoabsorbers = Quantity(
         description='List of the photoabsorbers starting from the bottom of the device stack.',
-        type=MEnum(
-            [
-                'Silicon',
-                'Perovskite',
-                'CIGS',
-                'CZTS',
-                'CIS',
-                'GaAs',
-                'OPV',
-                'OSC',
-                'DSSC',
-                'Quantum_dot',
-            ]
-        ),
+        type=str,
         shape=['*'],
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Silicon',
+                    'Perovskite',
+                    'CIGS',
+                    'CZTS',
+                    'CIS',
+                    'GaAs',
+                    'OPV',
+                    'OSC',
+                    'DSSC',
+                    'Quantum_dot',
+                ]
+            ),
+        ),
     )
 
     photoabsorbers_bandgaps = Quantity(
@@ -178,16 +184,24 @@ class General(ArchiveSection):
             Example: "silicon-perovskite", "CIGS-Perovskite", "silicon-Perovskite-perovskite", etc.
             """,
         type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     stack_sequence = Quantity(
-        description="""A single string describing the stack sequence of the cell. 
-            If a proper device stack section is provided, the stack sequence can be generated from that one. 
-            This is a concatenation of the stack sequence, which is handy for searching and filtering the data.
-                """,
+        description="""A list of the materials in the layers of the stack. <br/>  
+        If a proper device stack section is provided, the stack sequence can be generated from that one.
+
+        * Start with the layer in the bottom of the device (i.e. that is furthest from the sun) and work up from that.
+        * If two materials, e.g. A and B, are mixed in one layer, list the materials in alphabetic order and separate them with semicolons, as in (A; B)
+        * The perovskite layer is stated as “Perovskite”, regardless of composition, mixtures, dimensionality etc. Those details are provided elsewhere. 
+        * Use common abbreviations when possible but spell them out when there is risk for confusion. 
+            """,
         type=str,
-        # a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    number_of_layers = Quantity(
+        description='Number of layers in the stack.',
+        type=int,
+        shape=[],
     )
 
     # Subsections

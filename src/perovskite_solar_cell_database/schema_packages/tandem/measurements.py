@@ -3,8 +3,6 @@ from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.metainfo import Datetime, MEnum, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import SchemaPackage
 
-from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import Storage
-
 m_package = SchemaPackage()
 
 
@@ -13,11 +11,6 @@ class Measurement(ArchiveSection):
     """
     Measurement of a solar cell.
     """
-
-    # method = Quantity(
-    #     type=str,
-    #     description='Method of the measurement.',
-    # )
 
     time_stamp = Quantity(
         description='Date the measurement was performed.',
@@ -224,8 +217,23 @@ class EnvironmentalConditions(ArchiveSection):
 
     atmosphere = Quantity(
         description='Atmosphere during the activity.',
-        type=MEnum(['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'vacuum', 'other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'air',
+                    'dry_air',
+                    'N2',
+                    'Ar',
+                    'He',
+                    'O2',
+                    'H2',
+                    'vacuum',
+                    'other',
+                ]
+            ),
+        ),
     )
 
     relative_humidity = Quantity(
@@ -407,86 +415,93 @@ class LightSource(ArchiveSection):
 
     spectrum = Quantity(
         description='Spectrum of the illumination.',
-        type=MEnum(
-            [
-                'Dark',
-                'AM1.5',
-                'AM1.5G',
-                'AM0',
-                'AM1.0',
-                'UV',
-                'UVA',
-                'UVB',
-                'Monochromatic',
-                'Ambient_indoor',
-                'Ambient_outdoor',
-                'Other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Dark',
+                    'AM1.5',
+                    'AM1.5G',
+                    'AM0',
+                    'AM1.0',
+                    'UV',
+                    'UVA',
+                    'UVB',
+                    'Monochromatic',
+                    'Ambient_indoor',
+                    'Ambient_outdoor',
+                    'Other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     light_source = Quantity(
         description='Type of illumination.',
-        type=MEnum(
-            [
-                'Dark_conditions',
-                'Solar_simulator_unspecified',
-                'Metal_halide',
-                'Sulfur_plasma',
-                'LED',
-                'Withe_led',
-                'Xenon',
-                'Halogen',
-                'Laser',
-                'Incandescent',
-                'Fluorescent',
-                'Ambient_indoor',
-                'Ambient_outdoor',
-                'UV',
-                'Proton_source',
-                'Other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Dark_conditions',
+                    'Solar_simulator_unspecified',
+                    'Metal_halide',
+                    'Sulfur_plasma',
+                    'LED',
+                    'White_led',
+                    'Xenon',
+                    'Halogen',
+                    'Laser',
+                    'Incandescent',
+                    'Fluorescent',
+                    'Ambient_indoor',
+                    'Ambient_outdoor',
+                    'UV',
+                    'Proton_source',
+                    'Other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     solar_simulator_class = Quantity(
         description='Class of the solar simulator.',
-        type=MEnum(
-            [
-                'AAA',
-                'AAB',
-                'AAC',
-                'ABA',
-                'ABB',
-                'ABC',
-                'ACA',
-                'ACB',
-                'ACC',
-                'BAA',
-                'BAB',
-                'BAC',
-                'BBA',
-                'BBB',
-                'BBC',
-                'BCA',
-                'BCB',
-                'BCC',
-                'CAA',
-                'CAB',
-                'CAC',
-                'CBA',
-                'CBB',
-                'CBC',
-                'CCA',
-                'CCB',
-                'CCC',
-                'Unknown',
-                'Other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'AAA',
+                    'AAB',
+                    'AAC',
+                    'ABA',
+                    'ABB',
+                    'ABC',
+                    'ACA',
+                    'ACB',
+                    'ACC',
+                    'BAA',
+                    'BAB',
+                    'BAC',
+                    'BBA',
+                    'BBB',
+                    'BBC',
+                    'BCA',
+                    'BCB',
+                    'BCC',
+                    'CAA',
+                    'CAB',
+                    'CAC',
+                    'CBA',
+                    'CBB',
+                    'CBC',
+                    'CCA',
+                    'CCB',
+                    'CCC',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     light_source_model = Quantity(
@@ -515,16 +530,19 @@ class Preconditioning(ArchiveSection):
 
     protocol = Quantity(
         description='Protocol for the preconditioning. Light soaking, potential biasing, etc.',
-        type=MEnum(
-            [
-                'Light_soaking',
-                'Potential_biasing',
-                'Current_biasing',
-                'Temperature_biasing',
-                'Other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'Light_soaking',
+                    'Potential_biasing',
+                    'Current_biasing',
+                    'Temperature_biasing',
+                    'Other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     duration = Quantity(
@@ -732,10 +750,17 @@ class StabilizedPerformanceDetails(ArchiveSection):
 
     type_of_measurement = Quantity(
         description='Type of measurement.',
-        type=MEnum(
-            ['constant_potential', 'constant_current', 'maximum_power_point_tracking']
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'constant_potential',
+                    'constant_current',
+                    'maximum_power_point_tracking',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     potential = Quantity(
@@ -867,17 +892,20 @@ class StabilityDetails(ArchiveSection):
 
     potential_bias_regime = Quantity(
         description='The potential regime during the measurement e.g. open circuit, constant potential, constant current,  maximum powerpoint tracking, etc.',
-        type=MEnum(
-            [
-                'maximum_power_point_tracking',
-                'open_circuit',
-                'constant_potential',
-                'constant_current',
-                'constant_resistance',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'maximum_power_point_tracking',
+                    'open_circuit',
+                    'constant_potential',
+                    'constant_current',
+                    'constant_resistance',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     periodic_jv_measurements = Quantity(
@@ -953,17 +981,20 @@ class LoadCycleSegments(ArchiveSection):
 
     potential_bias_regime = Quantity(
         description='The potential regime during the measurement e.g. open circuit, constant potential, constant current,  maximum powerpoint tracking, etc.',
-        type=MEnum(
-            [
-                'maximum_power_point_tracking',
-                'open_circuit',
-                'constant_potential',
-                'constant_current',
-                'constant_resistance',
-                'other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'maximum_power_point_tracking',
+                    'open_circuit',
+                    'constant_potential',
+                    'constant_current',
+                    'constant_resistance',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     potential = Quantity(
@@ -1223,10 +1254,19 @@ class JV(Measurement):
                      Other 
                      """
         ),
-        type=MEnum(
-            ['dark', 'standard_light', 'concentrated_light', 'indoor_light', 'other']
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'dark',
+                    'standard_light',
+                    'concentrated_light',
+                    'indoor_light',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     preconditioned = Quantity(
@@ -1375,10 +1415,19 @@ class StabilizedPerformance(Measurement):
                      Other 
                      """
         ),
-        type=MEnum(
-            ['dark', 'standard_light', 'concentrated_light', 'indoor_light', 'other']
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'dark',
+                    'standard_light',
+                    'concentrated_light',
+                    'indoor_light',
+                    'other',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     preconditioned = Quantity(
@@ -1466,46 +1515,46 @@ class Stability(Measurement):
                          see https://www.nature.com/articles/s41560-019-0529-5  
                      """
         ),
-        type=MEnum(
-            [
-                'ISOS-D-1',
-                'ISOS-D-1I',
-                'ISOS-D-2',
-                'ISOS-D-2I',
-                'ISOS-D-3',
-                'ISOS-V-1',
-                'ISOS-V-1I',
-                'ISOS-V-2',
-                'ISOS-V-2I',
-                'ISOS-V-3',
-                'ISOS-L-1',
-                'ISOS-L-1I',
-                'ISOS-L-2',
-                'ISOS-L-2I',
-                'ISOS-L-3',
-                'ISOS-O-1',
-                'ISOS-O-2',
-                'ISOS-O-3',
-                'ISOS-T-1',
-                'ISOS-T-1I',
-                'ISOS-T-2',
-                'ISOS-T-2I',
-                'ISOS-T-3',
-                'ISOS-T-3I',
-                'ISOS-LC-1',
-                'ISOS-LC-1I',
-                'ISOS-LC-2',
-                'ISOS-LC-2I',
-                'ISOS-LC-3',
-                'ISOS-LC-3I',
-                'ISOS-LT-1',
-                'ISOS-LT-2',
-                'ISOS-LT-3',
-                'IEC 61215',
-                'Other',
-            ]
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'ISOS-D-1',
+                    'ISOS-D-1I',
+                    'ISOS-D-2',
+                    'ISOS-D-2I',
+                    'ISOS-D-3',
+                    'ISOS-V-1',
+                    'ISOS-V-1I',
+                    'ISOS-V-2',
+                    'ISOS-V-2I',
+                    'ISOS-V-3',
+                    'ISOS-L-1',
+                    'ISOS-L-1I',
+                    'ISOS-L-2',
+                    'ISOS-L-2I',
+                    'ISOS-L-3',
+                    'ISOS-O-1',
+                    'ISOS-O-2',
+                    'ISOS-O-3',
+                    'ISOS-T-1',
+                    'ISOS-T-1I',
+                    'ISOS-T-2',
+                    'ISOS-T-2I',
+                    'ISOS-T-3',
+                    'ISOS-LC-1',
+                    'ISOS-LC-1I',
+                    'ISOS-LC-2',
+                    'ISOS-LC-2I',
+                    'ISOS-LC-3',
+                    'ISOS-LC-3I',
+                    'ISOS-LT-1',
+                    'ISOS-LT-2',
+                    'ISOS-LT-3',
+                ]
+            ),
         ),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
     )
 
     # Subsections
@@ -1586,8 +1635,18 @@ class OutdoorPerformance(Measurement):
                          see https://www.nature.com/articles/s41560-019-0529-5  
                      """
         ),
-        type=MEnum(['ISOS-O-1', 'ISOS-O-2', 'ISOS-O-3', 'Other']),
-        a_eln=ELNAnnotation(component='EnumEditQuantity'),
+        type=str,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=[
+                    'ISOS-O-1',
+                    'ISOS-O-2',
+                    'ISOS-O-3',
+                    'Other',
+                ]
+            ),
+        ),
     )
 
     # Subsections
