@@ -14,14 +14,19 @@ from perovskite_solar_cell_database.composition import (
     PerovskiteIonComponent,
 )
 from perovskite_solar_cell_database.schema import PerovskiteSolarCell
+from perovskite_solar_cell_database.schema_sections.add import Add
+from perovskite_solar_cell_database.schema_sections.backcontact import Backcontact
 from perovskite_solar_cell_database.schema_sections.cell import Cell
 from perovskite_solar_cell_database.schema_sections.encapsulation import Encapsulation
+from perovskite_solar_cell_database.schema_sections.etl import ETL
+from perovskite_solar_cell_database.schema_sections.htl import HTL
 from perovskite_solar_cell_database.schema_sections.jv import JV
 from perovskite_solar_cell_database.schema_sections.perovskite import Perovskite
 from perovskite_solar_cell_database.schema_sections.ref import Ref
 from perovskite_solar_cell_database.schema_sections.stability import (
     Stability as OriginalStability,
 )
+from perovskite_solar_cell_database.schema_sections.substrate import Substrate
 
 if TYPE_CHECKING:
     pass
@@ -635,15 +640,66 @@ def llm_to_classic_schema(
     # Still needs to be read:
     # llm_stability.description
     
-    # Still needs to be read:
-    # llm_cell.layers
-    
+    etl = ETL()
+    htl = HTL()
+    backcontact = Backcontact()
+    substrate = Substrate()
+    add = Add()
+    llm_layer: Layer
+    for llm_layer in llm_cell.layers:
+        match llm_layer.functionality:
+            case "Absorber":
+                # llm_layer.name
+                deposition: Deposition
+                for deposition in llm_layer.deposition:
+                    pass
+                llm_layer.deposition
+                perovskite.thickness = llm_layer.thickness
+                perovskite.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+            case "Electron-transport":
+                deposition: Deposition
+                for deposition in llm_layer.deposition:
+                    pass
+                backcontact.stack_sequence = llm_layer.name
+                etl.thickness = llm_layer.thickness
+                etl.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+            case "Hole-transport":
+                deposition: Deposition
+                for deposition in llm_layer.deposition:
+                    pass
+                backcontact.stack_sequence = llm_layer.name
+                htl.thickness_list = llm_layer.thickness
+                htl.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+            case "Contact":
+                deposition: Deposition
+                for deposition in llm_layer.deposition:
+                    pass
+                backcontact.stack_sequence = llm_layer.name
+                backcontact.thickness_list = llm_layer.thickness
+                backcontact.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+            case "Substrate":
+                deposition: Deposition
+                for deposition in llm_layer.deposition:
+                    pass
+                substrate.stack_sequence = llm_layer.name
+                substrate.thickness = llm_layer.thickness
+                substrate.cleaning_procedure = llm_layer.additional_treatment
+            # case _:
+            #     llm_layer.name
+            #     llm_layer.thickness
+            #     llm_layer.additional_treatment
+
     classic_cell.ref = ref
     classic_cell.cell = cell
     classic_cell.jv = jv
     classic_cell.encapsulation = encapsulation
     classic_cell.perovskite = perovskite
     classic_cell.stability = stability
+    classic_cell.etl = etl
+    classic_cell.htl = htl
+    classic_cell.backcontact = backcontact
+    classic_cell.substrate = substrate
+    classic_cell.add = add
     return classic_cell
 
 m_package.__init_metainfo__()
