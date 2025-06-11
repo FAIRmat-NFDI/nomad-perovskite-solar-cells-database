@@ -8,7 +8,20 @@ from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import JSON, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import MEnum
 
-from perovskite_solar_cell_database.composition import PerovskiteCompositionSection
+from perovskite_solar_cell_database.composition import (
+    PerovskiteCompositionSection,
+    PerovskiteIon,
+    PerovskiteIonComponent,
+)
+from perovskite_solar_cell_database.schema import PerovskiteSolarCell
+from perovskite_solar_cell_database.schema_sections.cell import Cell
+from perovskite_solar_cell_database.schema_sections.encapsulation import Encapsulation
+from perovskite_solar_cell_database.schema_sections.jv import JV
+from perovskite_solar_cell_database.schema_sections.perovskite import Perovskite
+from perovskite_solar_cell_database.schema_sections.ref import Ref
+from perovskite_solar_cell_database.schema_sections.stability import (
+    Stability as OriginalStability,
+)
 
 if TYPE_CHECKING:
     pass
@@ -529,5 +542,108 @@ Sometimes several different PCE values are presented for the same device. It cou
             # Reorder in single pass
             self.layers = [layer_dict[name] for name in ordered_names]
 
+def llm_to_classic_schema(
+    llm_cell: LLMExtractedPerovskiteSolarCell,
+    llm_extraction_name: str="LLM Extraction",
+) -> PerovskiteSolarCell:
+    """
+    Convert an LLM extracted PerovskiteSolarCell to the classic schema format.
+    """
+    classic_cell = PerovskiteSolarCell()
+
+    ref = Ref()
+    ref.name_of_person_entering_the_data = llm_extraction_name
+    ref.DOI_number = llm_cell.DOI_number
+    # Assumes first author is lead author
+    if llm_cell.publication_authors:
+        ref.lead_author = llm_cell.publication_authors[0]
+    ref.publication_date = llm_cell.publication_date
+    ref.journal = llm_cell.journal
+    ref.free_text_comment = f'''
+    Publication title: {llm_cell.publication_title},
+    Additional notes: {llm_cell.additional_notes},
+    Additional notes from reviewer: {llm_cell.reviewer_additional_notes}
+    '''
+
+    cell = Cell()
+    cell.architecture = llm_cell.device_architecture
+    cell.area_total = llm_cell.active_area
+    cell.stack_sequence = llm_cell.layer_order.split(',').join('|')
+
+    jv = JV()
+    jv.default_PCE = llm_cell.pce
+    jv.default_Jsc = llm_cell.jsc
+    jv.default_Voc = llm_cell.voc
+    jv.default_FF = llm_cell.ff
+    # Use number of devices if reported
+    if llm_cell.number_devices:
+        jv.average_over_n_number_of_cells = llm_cell.number_devices
+    # If it's only reported that it is averaged we write 2 as per original instructions
+    elif llm_cell.averaged_quantities:
+        jv.average_over_n_number_of_cells = 2
+    
+    encapsulation = Encapsulation()
+    encapsulation.Encapsulation = llm_cell.encapsulated
+    
+    perovskite = Perovskite()
+    llm_composition = PerovskiteComposition() 
+    if llm_cell.perovskite_composition:
+        llm_composition = llm_cell.perovskite_composition
+    perovskite.composition_long_form = llm_composition.long_form
+    perovskite.composition_short_form = llm_composition.short_form
+    a_ions: list[PerovskiteIonComponent] = llm_composition.ions_a_site
+    b_ions: list[PerovskiteIonComponent] = llm_composition.ions_b_site
+    x_ions: list[PerovskiteIonComponent] = llm_composition.ions_x_site
+    perovskite.composition_a_ions = [ion.abbreviation for ion in a_ions].join(' ')
+    perovskite.composition_b_ions = [ion.abbreviation for ion in b_ions].join(' ')
+    perovskite.composition_c_ions = [ion.abbreviation for ion in x_ions].join(' ')
+    perovskite.composition_a_ions_coefficients = [ion.coefficient for ion in a_ions].join(' ')
+    perovskite.composition_b_ions_coefficients = [ion.coefficient for ion in b_ions].join(' ')
+    perovskite.composition_c_ions_coefficients = [ion.coefficient for ion in x_ions].join(' ')
+    perovskite.band_gap = llm_composition.band_gap
+    # Still needs to be read:
+    # llm_composition.impurities
+    # llm_composition.additives
+    # llm_composition.formula
+    # llm_composition.sample_type
+    # llm_composition.dimensionality
+
+    llm_light_source = LightSource()
+    if llm_cell.light_source:
+        llm_light_source = llm_cell.light_source
+    jv.light_spectra = llm_light_source.type
+    jv.light_intensity = llm_light_source.light_intensity
+    jv.light_source_type = llm_light_source.lamp
+    # Still needs to be read:
+    # llm_light_source.description
+    
+    stability = OriginalStability()
+    llm_stability = Stability()
+    if llm_cell.stability:
+        llm_stability = llm_cell.stability
+    stability.light_spectra = llm_stability.type
+    stability.light_intensity = llm_stability.light_intensity
+    stability.light_spectra = llm_stability.lamp
+    stability.time_total_exposure = llm_stability.time
+    stability.relative_humidity_average_value = llm_stability.humidity
+    stability.temperature_range = llm_stability.temperature
+    stability.PCE_T80 = llm_stability.PCE_T80
+    stability.PCE_initial_value = llm_stability.PCE_at_start
+    stability.PCE_after_1000_h = llm_stability.PCE_after_1000_hours
+    stability.PCE_end_of_experiment = llm_stability.PCE_at_end
+    stability.potential_bias_range = llm_stability.potential_bias
+    # Still needs to be read:
+    # llm_stability.description
+    
+    # Still needs to be read:
+    # llm_cell.layers
+    
+    classic_cell.ref = ref
+    classic_cell.cell = cell
+    classic_cell.jv = jv
+    classic_cell.encapsulation = encapsulation
+    classic_cell.perovskite = perovskite
+    classic_cell.stability = stability
+    return classic_cell
 
 m_package.__init_metainfo__()
