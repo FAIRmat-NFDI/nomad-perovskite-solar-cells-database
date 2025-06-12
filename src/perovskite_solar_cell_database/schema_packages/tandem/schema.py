@@ -224,7 +224,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                         self.key_performance_metrics = KeyPerformanceMetrics()
 
                 # ISOS-L1 conditions
-                if getattr(measurement, 'stability_protocol', None) == 'ISOS-L-1':
+                if measurement.stability_protocol == 'ISOS-L-1':
                     current_best = getattr(
                         self.key_performance_metrics, 'pce_1000h_isos_l1', None
                     )
@@ -241,7 +241,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                         self.key_performance_metrics.T80_isos_l1 = T80
 
                 # ISOS-L3 conditions
-                if getattr(measurement, 'stability_protocol', None) == 'ISOS-L-3':
+                if measurement.stability_protocol == 'ISOS-L-3':
                     current_best = getattr(
                         self.key_performance_metrics, 'pce_1000h_isos_l3', None
                     )
@@ -253,9 +253,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                                 pce_start
                             )
 
-                    current_best = getattr(
-                        self.key_performance_metrics, 'T80_isos_l3', None
-                    )
+                    current_best = self.key_performance_metrics.T80_isos_l3
                     if current_best is None or T80 > current_best:
                         self.key_performance_metrics.T80_isos_l3 = T80
 
@@ -279,7 +277,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 name = getattr(layer, 'name', '-')
                 layer_names.append(name)
 
-                functionality = getattr(layer, 'functionality', None)
+                functionality = layer.functionality
                 if functionality == 'substrate':
                     thicknesses.append(1.0)
                     colors.append('lightblue')
@@ -311,14 +309,10 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
         # Check if the key performance metrics section has values
         values = {
-            'efficiency': getattr(
-                self.key_performance_metrics, 'power_conversion_efficiency', None
-            ),
-            'voc': getattr(self.key_performance_metrics, 'open_circuit_voltage', None),
-            'jsc': getattr(
-                self.key_performance_metrics, 'short_circuit_current_density', None
-            ),
-            'ff': getattr(self.key_performance_metrics, 'fill_factor', None),
+            'efficiency': self.key_performance_metrics.power_conversion_efficiency,
+            'voc': self.key_performance_metrics.open_circuit_voltage,
+            'jsc': self.key_performance_metrics.short_circuit_current_density,
+            'ff': self.key_performance_metrics.fill_factor,
         }
 
         fig = create_cell_stack_figure(
