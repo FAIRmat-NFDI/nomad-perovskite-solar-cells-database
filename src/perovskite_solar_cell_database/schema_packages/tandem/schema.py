@@ -12,15 +12,20 @@ from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
+from perovskite_solar_cell_database.schema_packages.tandem.device_stack import Layer
+from perovskite_solar_cell_database.schema_packages.tandem.encapsulation_data import (
+    EncapsulationData,
+)
+from perovskite_solar_cell_database.schema_packages.tandem.general import General
+from perovskite_solar_cell_database.schema_packages.tandem.key_performance_metrics import (
+    KeyPerformanceMetrics,
+)
+from perovskite_solar_cell_database.schema_packages.tandem.measurements import (
+    PerformedMeasurements,
+)
+from perovskite_solar_cell_database.schema_packages.tandem.module_data import ModuleData
+from perovskite_solar_cell_database.schema_packages.tandem.reference import Reference
 from perovskite_solar_cell_database.utils import create_cell_stack_figure
-
-from .device_stack import DeviceStack, Layer
-from .encapsulation_data import EncapsulationData
-from .general import General
-from .key_performance_metrics import KeyPerformanceMetrics
-from .measurements import PerformedMeasurements
-from .module_data import ModuleData
-from .reference import Reference
 
 m_package = SchemaPackage()
 
