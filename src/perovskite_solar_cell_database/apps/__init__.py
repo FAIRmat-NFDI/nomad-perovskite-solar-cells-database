@@ -5,6 +5,7 @@ from perovskite_solar_cell_database.apps.perovskite_solar_cell_database_app impo
     perovskite_database_app,
 )
 from perovskite_solar_cell_database.apps.solar_cell_app import solar_cell_app
+from perovskite_solar_cell_database.apps.tandem_app import tandem_app
 
 solar_cells = AppEntryPoint(
     name='Solar Cells',
@@ -23,6 +24,14 @@ perovskite_solar_cell_database_app = AppEntryPoint(
       Search Entries of the Perovskite Solar Cell Database
     """,
     app=perovskite_database_app,
+)
+
+tandem_cells = AppEntryPoint(
+    name='The Tandem Solar Cell Database',
+    description="""
+      Search Entries of the Tandem Solar Cell Database
+    """,
+    app=tandem_app,
 )
 
 perovskite_ions = AppEntryPoint(
