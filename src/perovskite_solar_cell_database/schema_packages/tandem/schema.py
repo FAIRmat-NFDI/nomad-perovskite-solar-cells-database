@@ -225,9 +225,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
                 # ISOS-L1 conditions
                 if measurement.stability_protocol == 'ISOS-L-1':
-                    current_best = getattr(
-                        self.key_performance_metrics, 'pce_1000h_isos_l1', None
-                    )
+                    current_best = self.key_performance_metrics.pce_1000h_isos_l1_end
                     if current_best is None or pce_1000h > current_best:
                         self.key_performance_metrics.pce_1000h_isos_l1_end = pce_1000h
 
@@ -242,9 +240,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
                 # ISOS-L3 conditions
                 if measurement.stability_protocol == 'ISOS-L-3':
-                    current_best = getattr(
-                        self.key_performance_metrics, 'pce_1000h_isos_l3', None
-                    )
+                    current_best = self.key_performance_metrics.pce_1000h_isos_l3_end
                     if current_best is None or pce_1000h > current_best:
                         self.key_performance_metrics.pce_1000h_isos_l3_end = pce_1000h
 
