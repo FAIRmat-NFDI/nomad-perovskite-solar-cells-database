@@ -7,7 +7,7 @@ from nomad.datamodel.datamodel import EntryArchive
 from nomad.parsing.parser import MatchingParser
 
 from perovskite_solar_cell_database.parsers.utils import create_archive
-from perovskite_solar_cell_database.schema_packages.tandem.layer_stack import (
+from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
     BandGap,
     Layer,
 )
