@@ -128,11 +128,11 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     and measurement.light_regime == 'standard_light'
                 ):
                     # Extract the PCE if it excist
-                    results = measurement.results
-                    pce_value = results.power_conversion_efficiency
-                    if pce_value is not None:
-                        pce.append(pce_value)
-                        pce_index.append(i)
+                    if measurement.results is not None:
+                        pce_value = measurement.results.power_conversion_efficiency
+                        if pce_value is not None:
+                            pce.append(pce_value)
+                            pce_index.append(i)
 
         # Identify the JV measurement with the highest PCE
         if pce:
@@ -192,10 +192,11 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     and measurement.light_regime == 'standard_light'
                 ):
                     # Extract the PCE if it excist
-                    pce_value = measurement.results.power_conversion_efficiency
-                    if pce_value is not None:
-                        pce.append(pce_value)
-                        pce_index.append(i)
+                    if measurement.results is not None:
+                        pce_value = measurement.results.power_conversion_efficiency
+                        if pce_value is not None:
+                            pce.append(pce_value)
+                            pce_index.append(i)
 
         if pce:
             i_best_pce = pce_index[pce.index(max(pce))]
