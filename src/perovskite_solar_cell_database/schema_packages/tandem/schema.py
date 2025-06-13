@@ -127,7 +127,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     measurement.device_subset == 0
                     and measurement.light_regime == 'standard_light'
                 ):
-                    # Extract the PCE if it excist
+                    # Extract the PCE if it exists
                     if measurement.results is not None:
                         pce_value = measurement.results.power_conversion_efficiency
                         if pce_value is not None:
