@@ -2,6 +2,8 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from perovskite_solar_cell_database.schema_sections.perovskite_deposition import PerovskiteDeposition
+
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
@@ -547,6 +549,40 @@ Sometimes several different PCE values are presented for the same device. It cou
             # Reorder in single pass
             self.layers = [layer_dict[name] for name in ordered_names]
 
+
+def set_layer_properties(
+    layer: ETL | HTL | Backcontact | Substrate | Perovskite,
+    llm_layer: Layer,
+):
+    """
+    Set the properties of the classic layer based on the LLM extracted layer.
+    """
+    if isinstance(layer, Perovskite):
+        pass
+    else:
+        layer.stack_sequence = llm_layer.name
+        if llm_layer.deposition:
+            layer.deposition_procedure = ' >> '.join(
+                deposition.method for deposition in llm_layer.deposition
+            )
+    if isinstance(layer, HTL):
+        layer.thickness_list = llm_layer.thickness
+    else:
+        layer.thickness = llm_layer.thickness
+    if isinstance(layer, Substrate):
+        layer.cleaning_procedure = llm_layer.additional_treatment
+    else:
+        layer.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+    if isinstance(layer, ETL | HTL | Backcontact):
+        if llm_layer.deposition:
+            layer.deposition_synthesis_atmosphere = ' >> '.join(
+                deposition.atmosphere for deposition in llm_layer.deposition
+            )
+            layer.deposition_substrate_temperature = ' >> '.join(
+                deposition.temperature for deposition in llm_layer.deposition
+            )
+    
+
 def llm_to_classic_schema(
     llm_cell: LLMExtractedPerovskiteSolarCell,
     llm_extraction_name: str="LLM Extraction",
@@ -645,49 +681,49 @@ def llm_to_classic_schema(
     backcontact = Backcontact()
     substrate = Substrate()
     add = Add()
+    perovskite_deposition = PerovskiteDeposition()
     llm_layer: Layer
     for llm_layer in llm_cell.layers:
+        # Still needs to be read:
+        # llm_cell.layers[:].name
+        # llm_cell.layers[:].additional_treatment
+        # llm_cell.layers[:].deposition[:].step_name
+        # llm_cell.layers[:].deposition[:].duration
+        # llm_cell.layers[:].deposition[:].additional_parameters
+        # llm_cell.layers[:].deposition[:].solution.volume
+        # llm_cell.layers[:].deposition[:].solution.temperature
+        # llm_cell.layers[:].deposition[:].solution.solutes[:].name
+        # llm_cell.layers[:].deposition[:].solution.solutes[:].concentration
+        # llm_cell.layers[:].deposition[:].solution.solutes[:].concentration_unit
+        # llm_cell.layers[:].deposition[:].solution.solvents[:].name
+        # llm_cell.layers[:].deposition[:].solution.solvents[:].concentration
+        # llm_cell.layers[:].deposition[:].solution.solvents[:].concentration_unit
         match llm_layer.functionality:
             case "Absorber":
-                # llm_layer.name
-                deposition: Deposition
-                for deposition in llm_layer.deposition:
-                    pass
-                llm_layer.deposition
-                perovskite.thickness = llm_layer.thickness
-                perovskite.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+                if llm_layer.deposition:
+                    perovskite_deposition.procedure = ' >> '.join(
+                        deposition.method for deposition in llm_layer.deposition
+                    )
+                    perovskite_deposition.number_of_deposition_steps = len(
+                        llm_layer.deposition
+                    )
+                    perovskite_deposition.synthesis_atmosphere = ' >> '.join(
+                        deposition.atmosphere for deposition in llm_layer.deposition
+                    )
+                    perovskite_deposition.substrate_temperature = ' >> '.join(
+                        deposition.temperature for deposition in llm_layer.deposition
+                    )
+                set_layer_properties(perovskite, llm_layer)
             case "Electron-transport":
-                deposition: Deposition
-                for deposition in llm_layer.deposition:
-                    pass
-                backcontact.stack_sequence = llm_layer.name
-                etl.thickness = llm_layer.thickness
-                etl.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+                set_layer_properties(etl, llm_layer)
             case "Hole-transport":
-                deposition: Deposition
-                for deposition in llm_layer.deposition:
-                    pass
-                backcontact.stack_sequence = llm_layer.name
-                htl.thickness_list = llm_layer.thickness
-                htl.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+                set_layer_properties(htl, llm_layer)
             case "Contact":
-                deposition: Deposition
-                for deposition in llm_layer.deposition:
-                    pass
-                backcontact.stack_sequence = llm_layer.name
-                backcontact.thickness_list = llm_layer.thickness
-                backcontact.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+                set_layer_properties(backcontact, llm_layer)
             case "Substrate":
-                deposition: Deposition
-                for deposition in llm_layer.deposition:
-                    pass
-                substrate.stack_sequence = llm_layer.name
-                substrate.thickness = llm_layer.thickness
-                substrate.cleaning_procedure = llm_layer.additional_treatment
-            # case _:
-            #     llm_layer.name
-            #     llm_layer.thickness
-            #     llm_layer.additional_treatment
+                set_layer_properties(substrate, llm_layer)
+            case _:
+                pass
 
     classic_cell.ref = ref
     classic_cell.cell = cell
