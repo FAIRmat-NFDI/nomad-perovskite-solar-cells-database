@@ -558,7 +558,9 @@ Sometimes several different PCE values are presented for the same device. It cou
         mainfile_list = archive.metadata.mainfile.split('.')
         mainfile_list[-3] += '_classic'
         mainfile = '.'.join(mainfile_list)
-        with archive.m_context.update_entry(mainfile, write=True, process=True) as entry:
+        with archive.m_context.update_entry(
+            mainfile, write=True, process=True
+        ) as entry:
             entry['data'] = llm_to_classic_schema(self).m_to_dict(with_root_def=True)
             entry['results'] = dict(material={})
         self.classic_entry = get_reference(
@@ -567,10 +569,11 @@ Sometimes several different PCE values are presented for the same device. It cou
 
 
 def get_reference(upload_id: str, mainfile: str) -> str:
-        from nomad.utils import hash
+    from nomad.utils import hash
 
-        entry_id = hash(upload_id, mainfile)
-        return f'../uploads/{upload_id}/archive/{entry_id}'
+    entry_id = hash(upload_id, mainfile)
+    return f'../uploads/{upload_id}/archive/{entry_id}'
+
 
 def quantity_to_str(quantity):
     if isinstance(quantity, ureg.Quantity):
@@ -600,20 +603,23 @@ def set_layer_properties(
     if isinstance(layer, Substrate):
         layer.cleaning_procedure = llm_layer.additional_treatment
     else:
-        layer.surface_treatment_before_next_deposition_step = llm_layer.additional_treatment
+        layer.surface_treatment_before_next_deposition_step = (
+            llm_layer.additional_treatment
+        )
     if isinstance(layer, ETL | HTL | Backcontact):
         if llm_layer.deposition:
             layer.deposition_synthesis_atmosphere = ' >> '.join(
                 deposition.atmosphere for deposition in llm_layer.deposition
             )
             layer.deposition_substrate_temperature = ' >> '.join(
-                quantity_to_str(deposition.temperature) for deposition in llm_layer.deposition
+                quantity_to_str(deposition.temperature)
+                for deposition in llm_layer.deposition
             )
-    
+
 
 def llm_to_classic_schema(
     llm_cell: LLMExtractedPerovskiteSolarCell,
-    llm_extraction_name: str="LLM Extraction",
+    llm_extraction_name: str = 'LLM Extraction',
 ) -> PerovskiteSolarCell:
     """
     Convert an LLM extracted PerovskiteSolarCell to the classic schema format.
@@ -628,18 +634,18 @@ def llm_to_classic_schema(
         ref.lead_author = llm_cell.publication_authors[0]
     ref.publication_date = llm_cell.publication_date
     ref.journal = llm_cell.journal
-    ref.free_text_comment = f'''
+    ref.free_text_comment = f"""
     Publication title: {llm_cell.publication_title},
     Additional notes: {llm_cell.additional_notes},
     Additional notes from reviewer: {llm_cell.reviewer_additional_notes}
-    '''
+    """
 
     cell = Cell()
     cell.architecture = llm_cell.device_architecture
     cell.area_total = llm_cell.active_area
     # cell.stack_sequence = ' | '.join(llm_cell.layer_order.split(','))
     cell.stack_sequence = ' | '.join(
-        "Perovskite" if layer.functionality == "Absorber" else layer.name
+        'Perovskite' if layer.functionality == 'Absorber' else layer.name
         for layer in llm_cell.layers
     )
 
@@ -654,12 +660,12 @@ def llm_to_classic_schema(
     # If it's only reported that it is averaged we write 2 as per original instructions
     elif llm_cell.averaged_quantities:
         jv.average_over_n_number_of_cells = 2
-    
+
     encapsulation = Encapsulation()
     encapsulation.Encapsulation = llm_cell.encapsulated
-    
+
     perovskite = Perovskite()
-    llm_composition = PerovskiteComposition() 
+    llm_composition = PerovskiteComposition()
     if llm_cell.perovskite_composition:
         llm_composition = llm_cell.perovskite_composition
     perovskite.composition_long_form = llm_composition.long_form
@@ -670,9 +676,15 @@ def llm_to_classic_schema(
     perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
     perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
     perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
-    perovskite.composition_a_ions_coefficients = '; '.join(ion.coefficient for ion in a_ions)
-    perovskite.composition_b_ions_coefficients = '; '.join(ion.coefficient for ion in b_ions)
-    perovskite.composition_c_ions_coefficients = '; '.join(ion.coefficient for ion in x_ions)
+    perovskite.composition_a_ions_coefficients = '; '.join(
+        ion.coefficient for ion in a_ions
+    )
+    perovskite.composition_b_ions_coefficients = '; '.join(
+        ion.coefficient for ion in b_ions
+    )
+    perovskite.composition_c_ions_coefficients = '; '.join(
+        ion.coefficient for ion in x_ions
+    )
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:
     # llm_composition.impurities
@@ -689,7 +701,7 @@ def llm_to_classic_schema(
     jv.light_source_type = llm_light_source.lamp
     # Still needs to be read:
     # llm_light_source.description
-    
+
     stability = OriginalStability()
     llm_stability = Stability()
     if llm_cell.stability:
@@ -707,7 +719,7 @@ def llm_to_classic_schema(
     stability.potential_bias_range = llm_stability.potential_bias
     # Still needs to be read:
     # llm_stability.description
-    
+
     etl = ETL()
     htl = HTL()
     backcontact = Backcontact()
@@ -730,7 +742,7 @@ def llm_to_classic_schema(
         # llm_cell.layers[:].deposition[:].solution.solvents[:].concentration
         # llm_cell.layers[:].deposition[:].solution.solvents[:].concentration_unit
         match llm_layer.functionality:
-            case "Absorber":
+            case 'Absorber':
                 if llm_layer.deposition:
                     perovskite_deposition.procedure = ' >> '.join(
                         deposition.method for deposition in llm_layer.deposition
@@ -742,16 +754,17 @@ def llm_to_classic_schema(
                         deposition.atmosphere for deposition in llm_layer.deposition
                     )
                     perovskite_deposition.substrate_temperature = ' >> '.join(
-                        quantity_to_str(deposition.temperature) for deposition in llm_layer.deposition
+                        quantity_to_str(deposition.temperature)
+                        for deposition in llm_layer.deposition
                     )
                 set_layer_properties(perovskite, llm_layer)
-            case "Electron-transport":
+            case 'Electron-transport':
                 set_layer_properties(etl, llm_layer)
-            case "Hole-transport":
+            case 'Hole-transport':
                 set_layer_properties(htl, llm_layer)
-            case "Contact":
+            case 'Contact':
                 set_layer_properties(backcontact, llm_layer)
-            case "Substrate":
+            case 'Substrate':
                 set_layer_properties(substrate, llm_layer)
             case _:
                 pass
@@ -768,5 +781,6 @@ def llm_to_classic_schema(
     classic_cell.substrate = substrate
     classic_cell.add = add
     return classic_cell
+
 
 m_package.__init_metainfo__()
