@@ -15,6 +15,6 @@ def test_conversion():
     classic = llm_to_classic_schema(entry_archive.data)
 
     assert (
-        classic.stack_sequence
-        == 'FTO | c-TiO2 | m-TiO2 | Cs0.05FA0.81MA0.14PbI2.55Br0.45 | DTB(3%DEG) | Au'
+        classic.cell.stack_sequence
+        == 'FTO | c-TiO2 | m-TiO2 | Perovskite | DTB(3%DEG) | Au'
     )
