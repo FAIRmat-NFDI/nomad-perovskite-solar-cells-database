@@ -2,17 +2,15 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from perovskite_solar_cell_database.schema_sections.perovskite_deposition import PerovskiteDeposition
-
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import JSON, Quantity, Section, SubSection
 from nomad.metainfo.metainfo import MEnum
+from nomad.units import ureg
 
 from perovskite_solar_cell_database.composition import (
     PerovskiteCompositionSection,
-    PerovskiteIon,
     PerovskiteIonComponent,
 )
 from perovskite_solar_cell_database.schema import PerovskiteSolarCell
@@ -24,6 +22,9 @@ from perovskite_solar_cell_database.schema_sections.etl import ETL
 from perovskite_solar_cell_database.schema_sections.htl import HTL
 from perovskite_solar_cell_database.schema_sections.jv import JV
 from perovskite_solar_cell_database.schema_sections.perovskite import Perovskite
+from perovskite_solar_cell_database.schema_sections.perovskite_deposition import (
+    PerovskiteDeposition,
+)
 from perovskite_solar_cell_database.schema_sections.ref import Ref
 from perovskite_solar_cell_database.schema_sections.stability import (
     Stability as OriginalStability,
@@ -31,7 +32,7 @@ from perovskite_solar_cell_database.schema_sections.stability import (
 from perovskite_solar_cell_database.schema_sections.substrate import Substrate
 
 if TYPE_CHECKING:
-    pass
+    from nomad.datamodel.datamodel import EntryArchive
 
 from nomad.datamodel.data import Schema
 from nomad.metainfo import SchemaPackage
@@ -535,8 +536,13 @@ Sometimes several different PCE values are presented for the same device. It cou
         a_eln=ELNAnnotation(label='Layer Order', component='StringEditQuantity'),
     )
 
+    classic_entry = Quantity(
+        type=PerovskiteSolarCell,
+        description='This is the classic schema entry that is generated from this LLM extracted entry. It is generated when the entry is normalized and saved and does not need to be filled.',
+    )
+
     # normalizer that reorderes the layers according to the layer_order
-    def normalize(self, archive, logger):
+    def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
         if self.layer_order:
             layer_dict = {layer.name: layer for layer in self.layers}
@@ -548,6 +554,28 @@ Sometimes several different PCE values are presented for the same device. It cou
 
             # Reorder in single pass
             self.layers = [layer_dict[name] for name in ordered_names]
+        # Generate the classic schema entry
+        mainfile_list = archive.metadata.mainfile.split('.')
+        mainfile_list[-3] += '_classic'
+        mainfile = '.'.join(mainfile_list)
+        with archive.m_context.update_entry(mainfile, write=True, process=True) as entry:
+            entry['data'] = llm_to_classic_schema(self).m_to_dict(with_root_def=True)
+            entry['results'] = dict(material={})
+        self.classic_entry = get_reference(
+            upload_id=archive.metadata.upload_id, mainfile=mainfile
+        )
+
+
+def get_reference(upload_id: str, mainfile: str) -> str:
+        from nomad.utils import hash
+
+        entry_id = hash(upload_id, mainfile)
+        return f'../uploads/{upload_id}/archive/{entry_id}'
+
+def quantity_to_str(quantity):
+    if isinstance(quantity, ureg.Quantity):
+        return str(quantity.magnitude)
+    return 'nan'
 
 
 def set_layer_properties(
@@ -566,9 +594,9 @@ def set_layer_properties(
                 deposition.method for deposition in llm_layer.deposition
             )
     if isinstance(layer, HTL):
-        layer.thickness_list = llm_layer.thickness
+        layer.thickness_list = quantity_to_str(llm_layer.thickness)
     else:
-        layer.thickness = llm_layer.thickness
+        layer.thickness = quantity_to_str(llm_layer.thickness)
     if isinstance(layer, Substrate):
         layer.cleaning_procedure = llm_layer.additional_treatment
     else:
@@ -579,7 +607,7 @@ def set_layer_properties(
                 deposition.atmosphere for deposition in llm_layer.deposition
             )
             layer.deposition_substrate_temperature = ' >> '.join(
-                deposition.temperature for deposition in llm_layer.deposition
+                quantity_to_str(deposition.temperature) for deposition in llm_layer.deposition
             )
     
 
@@ -609,7 +637,11 @@ def llm_to_classic_schema(
     cell = Cell()
     cell.architecture = llm_cell.device_architecture
     cell.area_total = llm_cell.active_area
-    cell.stack_sequence = llm_cell.layer_order.split(',').join('|')
+    # cell.stack_sequence = ' | '.join(llm_cell.layer_order.split(','))
+    cell.stack_sequence = ' | '.join(
+        "Perovskite" if layer.functionality == "Absorber" else layer.name
+        for layer in llm_cell.layers
+    )
 
     jv = JV()
     jv.default_PCE = llm_cell.pce
@@ -635,12 +667,12 @@ def llm_to_classic_schema(
     a_ions: list[PerovskiteIonComponent] = llm_composition.ions_a_site
     b_ions: list[PerovskiteIonComponent] = llm_composition.ions_b_site
     x_ions: list[PerovskiteIonComponent] = llm_composition.ions_x_site
-    perovskite.composition_a_ions = [ion.abbreviation for ion in a_ions].join(' ')
-    perovskite.composition_b_ions = [ion.abbreviation for ion in b_ions].join(' ')
-    perovskite.composition_c_ions = [ion.abbreviation for ion in x_ions].join(' ')
-    perovskite.composition_a_ions_coefficients = [ion.coefficient for ion in a_ions].join(' ')
-    perovskite.composition_b_ions_coefficients = [ion.coefficient for ion in b_ions].join(' ')
-    perovskite.composition_c_ions_coefficients = [ion.coefficient for ion in x_ions].join(' ')
+    perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
+    perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
+    perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
+    perovskite.composition_a_ions_coefficients = '; '.join(ion.coefficient for ion in a_ions)
+    perovskite.composition_b_ions_coefficients = '; '.join(ion.coefficient for ion in b_ions)
+    perovskite.composition_c_ions_coefficients = '; '.join(ion.coefficient for ion in x_ions)
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:
     # llm_composition.impurities
@@ -685,7 +717,6 @@ def llm_to_classic_schema(
     llm_layer: Layer
     for llm_layer in llm_cell.layers:
         # Still needs to be read:
-        # llm_cell.layers[:].name
         # llm_cell.layers[:].additional_treatment
         # llm_cell.layers[:].deposition[:].step_name
         # llm_cell.layers[:].deposition[:].duration
@@ -711,7 +742,7 @@ def llm_to_classic_schema(
                         deposition.atmosphere for deposition in llm_layer.deposition
                     )
                     perovskite_deposition.substrate_temperature = ' >> '.join(
-                        deposition.temperature for deposition in llm_layer.deposition
+                        quantity_to_str(deposition.temperature) for deposition in llm_layer.deposition
                     )
                 set_layer_properties(perovskite, llm_layer)
             case "Electron-transport":
