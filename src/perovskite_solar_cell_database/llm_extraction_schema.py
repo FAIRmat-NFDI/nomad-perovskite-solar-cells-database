@@ -615,6 +615,7 @@ class LlmPerovskitePaperExtractor(Schema):
 
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
+        extracted_cells = []
         try:
             if not self.open_ai_token:
                 logger.warn('OpenAI token is required for LLM extraction')
@@ -634,10 +635,15 @@ class LlmPerovskitePaperExtractor(Schema):
             )
         finally:
             self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
+        cell_references = []
         for idx, cell in enumerate(extracted_cells):
             name = f'{self.doi_to_name()}-cell-{idx + 1}'
             with archive.m_context.update_entry(name, write=True, process=True) as entry:
-                entry['data'] = cell
+                entry['data'] = cell 
+            cell_references.append(get_reference(
+                upload_id=archive.metadata.upload_id, mainfile=name
+            ))
+        self.extracted_solar_cells = cell_references
 
 
 def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str) -> list[dict]:
