@@ -600,8 +600,10 @@ class LlmPerovskitePaperExtractor(Schema):
         Deletes the PDF file from the upload.
         """
         if self.pdf:
-            os.remove(self.m_context.raw_path(self.pdf))
-
+            try:
+                os.remove(self.m_context.raw_path(self.pdf))
+            except FileNotFoundError:
+                pass  # File already deleted or does not exist
     def doi_to_name(self) -> str:
         """
         Converts the DOI to a name suitable for the entry.
@@ -654,7 +656,7 @@ def extract_doi(doi: str) -> str:
     and replaces the forward slash ("/") between the prefix and suffix with a double hyphen ("--").
     Returns None if no valid DOI is found.
     """
-    match = re.search(r'10\.\d{4,9}/\S+', doi, re.IGNORECASE)
+    match = re.search(r'10\.\d{4,9}/[-._;()/:\w\[\]]+', doi, re.IGNORECASE)
     if match:
         return match.group(0).replace('/', '--', 1)
     return None
