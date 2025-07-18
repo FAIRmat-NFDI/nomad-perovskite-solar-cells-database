@@ -1,8 +1,11 @@
+import os
+import re
 from typing import (
     TYPE_CHECKING,
 )
 
 from nomad.datamodel.data import ArchiveSection
+from nomad.datamodel.metainfo.annotations import ELNComponentEnum
 from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import JSON, Quantity, Section, SubSection
@@ -566,6 +569,95 @@ Sometimes several different PCE values are presented for the same device. It cou
         self.classic_entry = get_reference(
             upload_id=archive.metadata.upload_id, mainfile=mainfile
         )
+
+
+class LlmPerovskitePaperExtractor(Schema):
+    pdf = Quantity(
+        type=str,
+        a_eln=ELNAnnotation(component=ELNComponentEnum.FileEditQuantity),
+    )
+    doi = Quantity(
+        type=str,
+        description='DOI of the paper',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.URLEditQuantity),
+    )
+    open_ai_token = Quantity(
+        type=str,
+        description='OpenAI API token for LLM extraction',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            props=dict(type='password')
+        ),
+    )
+    extracted_solar_cells = Quantity(
+        type=LLMExtractedPerovskiteSolarCell,
+        shape=['*'],
+        description='List of extracted perovskite solar cells from the paper',
+    )
+
+    def delete_pdf(self):
+        """
+        Deletes the PDF file from the upload.
+        """
+        if self.pdf:
+            os.remove(self.m_context.raw_path(self.pdf))
+
+    def doi_to_name(self) -> str:
+        """
+        Converts the DOI to a name suitable for the entry.
+        """
+        if not self.doi:
+            return 'unnamed'
+        return extract_doi(self.doi) or 'unnamed'
+        
+
+    def normalize(self, archive: 'EntryArchive', logger):
+        super().normalize(archive, logger)
+        try:
+            if not self.open_ai_token:
+                logger.warn('OpenAI token is required for LLM extraction')
+                return
+            _open_ai_token = self.open_ai_token
+            self.open_ai_token = None  # Hide token in the archive
+            if not self.doi:
+                logger.warn('DOI is required for LLM extraction')
+                return
+            if not self.pdf:
+                logger.warn('PDF file is required for LLM extraction')
+                return
+            extracted_cells = pdf_to_solar_cells(
+                pdf=archive.m_context.raw_path(self.pdf),
+                doi=self.doi,
+                open_ai_token=_open_ai_token,
+            )
+        finally:
+            self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
+        for idx, cell in enumerate(extracted_cells):
+            name = f'{self.doi_to_name()}-cell-{idx + 1}'
+            with archive.m_context.update_entry(name, write=True, process=True) as entry:
+                entry['data'] = cell
+
+
+def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str) -> list[dict]:
+    """
+    Extract perovskite solar cells from a PDF using an LLM.
+    This function is a placeholder and should be implemented with actual extraction logic.
+    """
+    # Placeholder for actual extraction logic
+    # This should return a list of LLMExtractedPerovskiteSolarCell instances as dicts
+    return []  # Replace with actual extraction logic (e.g., using OpenAI API)
+
+
+def extract_doi(doi: str) -> str:
+    """
+    Extracts the DOI prefix and suffix (10.xxxx/xxxx) from a DOI string,
+    and replaces the forward slash ("/") between the prefix and suffix with a double hyphen ("--").
+    Returns None if no valid DOI is found.
+    """
+    match = re.search(r'10\.\d{4,9}/\S+', doi, re.IGNORECASE)
+    if match:
+        return match.group(0).replace('/', '--', 1)
+    return None
 
 
 def get_reference(upload_id: str, mainfile: str) -> str:
