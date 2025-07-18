@@ -638,13 +638,14 @@ class LlmPerovskitePaperExtractor(Schema):
             self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
         cell_references = []
         for idx, cell in enumerate(extracted_cells):
-            name = f'{self.doi_to_name()}-cell-{idx + 1}'
+            name = f'{self.doi_to_name()}-cell-{idx + 1}.archive.json'
             with archive.m_context.update_entry(name, write=True, process=True) as entry:
                 entry['data'] = cell 
             cell_references.append(get_reference(
                 upload_id=archive.metadata.upload_id, mainfile=name
             ))
-        self.extracted_solar_cells = cell_references
+        if cell_references:
+            self.extracted_solar_cells = cell_references
 
 
 def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str) -> list[dict]:
@@ -654,7 +655,10 @@ def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str) -> list[dict]:
     """
     # Placeholder for actual extraction logic
     # This should return a list of LLMExtractedPerovskiteSolarCell instances as dicts
-    return []  # Replace with actual extraction logic (e.g., using OpenAI API)
+    return [{
+        "m_def": "perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell",
+        "DOI_number": doi,
+    }]  # Replace with actual extraction logic (e.g., using OpenAI API)
 
 
 def extract_doi(doi: str) -> str:
