@@ -601,7 +601,7 @@ class LlmPerovskitePaperExtractor(Schema):
         """
         if self.pdf:
             try:
-                os.remove(self.m_context.raw_path(self.pdf))
+                os.remove(self.m_context.raw_path() + self.pdf)
             except FileNotFoundError:
                 pass  # File already deleted or does not exist
     def doi_to_name(self) -> str:
@@ -629,7 +629,7 @@ class LlmPerovskitePaperExtractor(Schema):
                 logger.warn('PDF file is required for LLM extraction')
                 return
             extracted_cells = pdf_to_solar_cells(
-                pdf=archive.m_context.raw_path(self.pdf),
+                pdf=archive.m_context.raw_path() + self.pdf,
                 doi=self.doi,
                 open_ai_token=_open_ai_token,
             )
