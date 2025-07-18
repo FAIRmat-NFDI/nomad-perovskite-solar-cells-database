@@ -622,7 +622,7 @@ class LlmPerovskitePaperExtractor(Schema):
             if not self.doi:
                 logger.warn('DOI is required for LLM extraction')
                 return
-            if not self.pdf:
+            if not isinstance(self.pdf, str) or not self.pdf.endswith('.pdf'):
                 logger.warn('PDF file is required for LLM extraction')
                 return
             extracted_cells = pdf_to_solar_cells(
