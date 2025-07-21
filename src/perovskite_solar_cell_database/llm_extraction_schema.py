@@ -4,7 +4,7 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from nomad.datamodel.data import ArchiveSection
+from nomad.datamodel.data import ArchiveSection, UseCaseElnCategory
 from nomad.datamodel.metainfo.annotations import ELNComponentEnum
 from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
@@ -572,6 +572,10 @@ Sometimes several different PCE values are presented for the same device. It cou
 
 
 class LlmPerovskitePaperExtractor(Schema):
+    m_def = Section(
+        label='LLM Perovskite Paper Extractor',
+        categories=[UseCaseElnCategory],
+    )
     pdf = Quantity(
         type=str,
         a_eln=ELNAnnotation(component=ELNComponentEnum.FileEditQuantity),
@@ -781,15 +785,18 @@ def llm_to_classic_schema(
     perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
     perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
     perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
-    perovskite.composition_a_ions_coefficients = '; '.join(
-        ion.coefficient for ion in a_ions
-    )
-    perovskite.composition_b_ions_coefficients = '; '.join(
-        ion.coefficient for ion in b_ions
-    )
-    perovskite.composition_c_ions_coefficients = '; '.join(
-        ion.coefficient for ion in x_ions
-    )
+    if a_ions:
+        perovskite.composition_a_ions_coefficients = '; '.join(
+            ion.coefficient for ion in a_ions
+        )
+    if b_ions:
+        perovskite.composition_b_ions_coefficients = '; '.join(
+            ion.coefficient for ion in b_ions
+        )
+    if x_ions:
+        perovskite.composition_c_ions_coefficients = '; '.join(
+            ion.coefficient for ion in x_ions
+        )
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:
     # llm_composition.impurities
