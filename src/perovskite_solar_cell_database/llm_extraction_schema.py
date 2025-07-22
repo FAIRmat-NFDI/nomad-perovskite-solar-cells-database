@@ -37,6 +37,7 @@ from perovskite_solar_cell_database.schema_sections.substrate import Substrate
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
 
+import perovscribe
 from nomad.datamodel.data import Schema
 from nomad.metainfo import SchemaPackage
 
@@ -589,8 +590,7 @@ class LlmPerovskitePaperExtractor(Schema):
         type=str,
         description='OpenAI API token for LLM extraction',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            props=dict(type='password')
+            component=ELNComponentEnum.StringEditQuantity, props=dict(type='password')
         ),
     )
     extracted_solar_cells = Quantity(
@@ -609,7 +609,7 @@ class LlmPerovskitePaperExtractor(Schema):
                 self.pdf = None  # Clear the reference to the deleted file
             except FileNotFoundError:
                 pass  # File already deleted or does not exist
-    
+
     def doi_to_name(self) -> str:
         """
         Converts the DOI to a name suitable for the entry.
@@ -643,11 +643,13 @@ class LlmPerovskitePaperExtractor(Schema):
         cell_references = []
         for idx, cell in enumerate(extracted_cells):
             name = f'{self.doi_to_name()}-cell-{idx + 1}.archive.json'
-            with archive.m_context.update_entry(name, write=True, process=True) as entry:
-                entry['data'] = cell 
-            cell_references.append(get_reference(
-                upload_id=archive.metadata.upload_id, mainfile=name
-            ))
+            with archive.m_context.update_entry(
+                name, write=True, process=True
+            ) as entry:
+                entry['data'] = cell
+            cell_references.append(
+                get_reference(upload_id=archive.metadata.upload_id, mainfile=name)
+            )
         if cell_references:
             self.extracted_solar_cells = cell_references
 
@@ -657,12 +659,9 @@ def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str) -> list[dict]:
     Extract perovskite solar cells from a PDF using an LLM.
     This function is a placeholder and should be implemented with actual extraction logic.
     """
-    # Placeholder for actual extraction logic
-    # This should return a list of LLMExtractedPerovskiteSolarCell instances as dicts
-    return [{
-        "m_def": "perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell",
-        "DOI_number": doi,
-    }]  # Replace with actual extraction logic (e.g., using OpenAI API)
+    return perovscribe.pipeline.ExtractionPipeline(
+        'gpt-4o', 'pymupdf', 'NONE', '', False
+    ).extract_from_pdf_nomad(pdf, doi, open_ai_token)
 
 
 def extract_doi(doi: str) -> str:
