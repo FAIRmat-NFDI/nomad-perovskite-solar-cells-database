@@ -1,10 +1,29 @@
 import numpy as np
 from nomad.datamodel.data import ArchiveSection
 from nomad.metainfo import Datetime, Quantity, Section
-from nomad.metainfo.metainfo import MEnum, SchemaPackage
+from nomad.metainfo.metainfo import MEnum, SchemaPackage, SubSection
 
 m_package = SchemaPackage()
 
+
+class Author(ArchiveSection):
+    name = Quantity(
+        type=str,
+        description='The full name of the author, typically a combination of first and last name.',
+    )
+    first_name = Quantity(
+        type=str,
+        description='The first name of the author.',
+    )
+    last_name = Quantity(
+        type=str,
+        description='The last name of the author.',
+    )
+
+    def normalize(self, archive, logger):
+        if not self.name and self.first_name and self.last_name:
+            self.name = f'{self.first_name} {self.last_name}'
+        super().normalize(archive, logger)
 
 class Ref(ArchiveSection):
     """Information about the source of the data. It describes who curated the data,
@@ -85,6 +104,11 @@ Unpublished
         a_eln=dict(component='EnumEditQuantity', props=dict(suggestions=[])),
     )
 
+    authors = SubSection(
+        section_def=Author,
+        repeats=True,
+    )
+
     publication_date = Quantity(
         type=Datetime,
         shape=[],
@@ -142,6 +166,13 @@ Unpublished
                     temp_dict['message']['created']['date-time']
                 )
                 self.lead_author = given_name + ' ' + familiy_name
+                self.authors = [
+                    Author(
+                        first_name=author['given'],
+                        last_name=author['family'], 
+                        name=author['given'] + ' ' + author['family']
+                    ) for author in temp_dict['message']['author']
+                ]
             if not archive.metadata:
                 archive.metadata = EntryMetadata()
             if not archive.metadata.references:

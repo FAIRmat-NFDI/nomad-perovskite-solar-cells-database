@@ -96,18 +96,18 @@ perovskite_database_app = App(
                 size=MenuSizeEnum.XXL,
                 items=[
                     MenuItemTerms(
+                        search_quantity=f'data.ref.authors.name#{schema}',
+                        show_input=True,
+                        width=6,
+                        options=10,
+                        title='Publication Authors',
+                    ),
+                    MenuItemTerms(
                         search_quantity=f'data.ref.journal#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
                         title='Journal',
-                    ),
-                    MenuItemTerms(
-                        search_quantity=f'data.ref.DOI_number#{schema}',
-                        show_input=True,
-                        width=6,
-                        options=10,
-                        title='DOI',
                     ),
                     MenuItemHistogram(
                         x=Axis(
@@ -118,6 +118,15 @@ perovskite_database_app = App(
                     MenuItemTerms(
                         search_quantity=f'data.ref.extraction_method#{schema}',
                         title='Solar Cell Data Extraction Method',
+                        show_input=False,
+                        width=6,
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.ref.DOI_number#{schema}',
+                        show_input=True,
+                        width=6,
+                        options=5,
+                        title='DOI',
                     ),
                 ],
             ),

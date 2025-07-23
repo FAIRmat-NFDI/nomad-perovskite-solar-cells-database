@@ -669,6 +669,7 @@ class LlmPerovskitePaperExtractor(Schema):
                 pdf=os.path.join(archive.m_context.raw_path(), self.pdf),
                 doi=self.doi,
                 open_ai_token=_open_ai_token,
+                logger=logger,
             )
         finally:
             self.delete_pdf()  # Delete the PDF after extraction for copyright reasons

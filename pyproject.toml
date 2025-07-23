@@ -62,7 +62,7 @@ dev = [
     "nomad-docs>=0.1.3"
 ]
 extraction = [
-    "perovscribe @ git+ssh://git@github.com/lamalab-org/perovskite-extraction.git#egg=fixes",
+    "perovscribe @ git+ssh://git@github.com/lamalab-org/perovskite-extraction.git@cacedb25c66a075f4af02c6b481dacaabbbda4fb",
 ]
 
 [tool.ruff]
