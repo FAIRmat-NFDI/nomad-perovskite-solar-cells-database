@@ -1,6 +1,9 @@
 import numpy as np
 from nomad.datamodel.data import ArchiveSection
 from nomad.metainfo import Datetime, Quantity, Section
+from nomad.metainfo.metainfo import MEnum, SchemaPackage
+
+m_package = SchemaPackage()
 
 
 class Ref(ArchiveSection):
@@ -114,6 +117,11 @@ Unpublished
                     """,
     )
 
+    extraction_method = Quantity(
+        type=MEnum('Author', 'Perovskite Database Project', 'LLM', 'LLM Reviewed by Human'),
+        description='How the solar cell data was extracted from the publication.',
+    )
+
     def normalize(self, archive, logger):
         import dateutil.parser
         import requests
@@ -150,3 +158,6 @@ Unpublished
             for i, ref in enumerate(archive.metadata.references):
                 if ref.startswith('10.'):
                     archive.metadata.references[i] = 'https://doi.org/' + ref
+
+
+m_package.__init_metainfo__()

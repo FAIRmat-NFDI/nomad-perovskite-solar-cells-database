@@ -37,7 +37,6 @@ from perovskite_solar_cell_database.schema_sections.substrate import Substrate
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
 
-import perovscribe
 from nomad.datamodel.data import Schema
 from nomad.metainfo import SchemaPackage
 
@@ -420,6 +419,26 @@ Use established terminology: "SAM" for self-organized molecular layers, "surface
     )
 
 
+class ExtractionMetadata(SectionRevision):
+    git_commit = Quantity(
+        type=str,
+        description='Link to git commit of the extraction code',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.URLEditQuantity),
+    )
+
+    model = Quantity(
+        type=str,
+        description='Model used for extraction',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+    )
+
+    model_version = Quantity(
+        type=str,
+        description='Version of the model used for extraction',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+    )
+
+
 # PerovskiteSolarCell class
 class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Schema):
     m_def = Section(label='LLM Extracted Perovskite Solar Cell')
@@ -545,6 +564,10 @@ Sometimes several different PCE values are presented for the same device. It cou
         description='This is the classic schema entry that is generated from this LLM extracted entry. It is generated when the entry is normalized and saved and does not need to be filled.',
     )
 
+    extraction_metadata = SubSection(
+        section_def=ExtractionMetadata,
+    )
+
     # normalizer that reorderes the layers according to the layer_order
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
@@ -562,10 +585,19 @@ Sometimes several different PCE values are presented for the same device. It cou
         mainfile_list = archive.metadata.mainfile.split('.')
         mainfile_list[-3] += '_classic'
         mainfile = '.'.join(mainfile_list)
+        if (
+            isinstance(self.extraction_metadata, ExtractionMetadata)
+            and self.extraction_metadata.model
+        ):
+            llm_extraction_name = f'LLM Extraction by {self.extraction_metadata.model}'
+        else:
+            llm_extraction_name = 'LLM Extraction'
         with archive.m_context.update_entry(
             mainfile, write=True, process=True
         ) as entry:
-            entry['data'] = llm_to_classic_schema(self).m_to_dict(with_root_def=True)
+            entry['data'] = llm_to_classic_schema(
+                self, llm_extraction_name=llm_extraction_name
+            ).m_to_dict(with_root_def=True)
             entry['results'] = dict(material={})
         self.classic_entry = get_reference(
             upload_id=archive.metadata.upload_id, mainfile=mainfile
@@ -646,7 +678,7 @@ class LlmPerovskitePaperExtractor(Schema):
             with archive.m_context.update_entry(
                 name, write=True, process=True
             ) as entry:
-                entry['data'] = cell
+                entry['data'] = cell['data']
             cell_references.append(
                 get_reference(upload_id=archive.metadata.upload_id, mainfile=name)
             )
@@ -654,14 +686,21 @@ class LlmPerovskitePaperExtractor(Schema):
             self.extracted_solar_cells = cell_references
 
 
-def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str) -> list[dict]:
+def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str, logger) -> list[dict]:
     """
     Extract perovskite solar cells from a PDF using an LLM.
-    This function is a placeholder and should be implemented with actual extraction logic.
     """
-    return perovscribe.pipeline.ExtractionPipeline(
-        'gpt-4o', 'pymupdf', 'NONE', '', False
-    ).extract_from_pdf_nomad(pdf, doi, open_ai_token)
+    try:
+        from perovscribe.pipeline import ExtractionPipeline
+
+        return ExtractionPipeline(
+            'gpt-4o', 'pymupdf', 'NONE', '', False
+        ).extract_from_pdf_nomad(pdf, doi, open_ai_token)
+    except ImportError:
+        logger.error(
+            'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.'
+        )
+        return []
 
 
 def extract_doi(doi: str) -> str:
@@ -735,6 +774,7 @@ def llm_to_classic_schema(
     classic_cell = PerovskiteSolarCell()
 
     ref = Ref()
+    ref.extraction_method = 'LLM'
     ref.name_of_person_entering_the_data = llm_extraction_name
     ref.DOI_number = llm_cell.DOI_number
     # Assumes first author is lead author
