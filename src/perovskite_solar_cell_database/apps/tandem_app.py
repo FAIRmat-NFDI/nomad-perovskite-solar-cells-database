@@ -138,57 +138,7 @@ tandem_app = App(
             ),
         ],
     ),
-    # dashboard={
-    #     'widgets': [
-    #         {
-    #             'type': 'periodictable',
-    #             'scale': 'linear',
-    #             'search_quantity': 'results.material.elements',
-    #             'layout': {
-    #                 'xxl': {
-    #                     'minH': 8,
-    #                     'minW': 12,
-    #                     'h': 9,
-    #                     'w': 13,
-    #                     'y': 0,
-    #                     'x': 0,
-    #                 },
-    #                 'xl': {
-    #                     'minH': 8,
-    #                     'minW': 12,
-    #                     'h': 9,
-    #                     'w': 12,
-    #                     'y': 0,
-    #                     'x': 0,
-    #                 },
-    #                 'lg': {
-    #                     'minH': 8,
-    #                     'minW': 12,
-    #                     'h': 8,
-    #                     'w': 12,
-    #                     'y': 0,
-    #                     'x': 0,
-    #                 },
-    #                 'md': {
-    #                     'minH': 8,
-    #                     'minW': 12,
-    #                     'h': 8,
-    #                     'w': 12,
-    #                     'y': 0,
-    #                     'x': 0,
-    #                 },
-    #                 'sm': {
-    #                     'minH': 8,
-    #                     'minW': 12,
-    #                     'h': 8,
-    #                     'w': 12,
-    #                     'y': 0,
-    #                     'x': 0,
-    #                 },
-    #             },
-    #         },
-    #     ],
-    # },
+    
     dashboard=Dashboard.model_validate(widgets),
     filters_locked={'entry_type': 'PerovskiteTandemSolarCell'},
 )
