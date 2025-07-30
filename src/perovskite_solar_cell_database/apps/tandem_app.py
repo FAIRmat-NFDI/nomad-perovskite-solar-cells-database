@@ -138,7 +138,6 @@ tandem_app = App(
             ),
         ],
     ),
-    
     dashboard=Dashboard.model_validate(widgets),
     filters_locked={'entry_type': 'PerovskiteTandemSolarCell'},
 )
