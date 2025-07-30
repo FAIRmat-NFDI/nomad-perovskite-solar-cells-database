@@ -115,6 +115,7 @@ ignore = [
     "PLR0912", # Too many branches
     "PLR0915", # Too many statements
     "UP008",  # Use `super()` instead of `super(__class__, self)`
+    "PLC0415", # allow import not at the top of the file
 ]
 
 fixable = ["ALL"]
