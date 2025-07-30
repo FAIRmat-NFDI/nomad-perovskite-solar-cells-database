@@ -25,7 +25,7 @@ try:
     with yaml_path.open('r') as additional_file:
         widgets = yaml.safe_load(additional_file)
 except Exception as e:
-    raise RuntimeError(f'Failed to load widgets from YAML file: {e}')
+    raise RuntimeError(f'Failed to load widgets from YAML file: {e}') from e
 
 
 schema = 'perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell'
@@ -105,11 +105,37 @@ tandem_app = App(
         title='Menu',
         items=[
             Menu(
-                title='Elements',
+                title='Publication',
+                size=MenuSizeEnum.XXL,
+                items=[
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.journal#{schema}',
+                        show_input=True,
+                        width=6,
+                        options=10,
+                        title='Journal',
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.DOI_number#{schema}',
+                        show_input=True,
+                        width=6,
+                        options=10,
+                        title='DOI',
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.reference.publication_date#{schema}',
+                            title='Publication Date',
+                        )
+                    ),
+                ],
+            ),
+            Menu(
+                title='Material',
                 size=MenuSizeEnum.XXL,
                 items=[
                     MenuItemPeriodicTable(
-                        search_quantity='results.material.elements',
+                        quantity='results.material.elements',
                     ),
                     MenuItemTerms(
                         search_quantity='results.material.chemical_formula_hill',
@@ -122,17 +148,26 @@ tandem_app = App(
                         options=0,
                     ),
                     MenuItemTerms(
-                        search_quantity='results.material.chemical_formula_reduced',
+                        search_quantity='results.material.structural_type',
                         width=6,
-                        options=0,
-                    ),
-                    MenuItemTerms(
-                        search_quantity='results.material.chemical_formula_anonymous',
-                        width=6,
-                        options=0,
+                        options=2,
+                        scale=ScaleEnum.LOG,
                     ),
                     MenuItemHistogram(
-                        x='results.material.n_elements',
+                        x=Axis(
+                            search_quantity='results.properties.electronic.band_gap.value',
+                            scale='linear',
+                            unit='eV',
+                            title='Band gap',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Band gap',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
+                        autorange=True,
                     ),
                 ],
             ),
