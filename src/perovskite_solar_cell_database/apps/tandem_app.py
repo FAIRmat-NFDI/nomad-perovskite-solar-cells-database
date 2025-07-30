@@ -1,3 +1,5 @@
+from importlib.resources import files
+
 import yaml
 from nomad.config.models.ui import (
     App,
@@ -15,7 +17,18 @@ from nomad.config.models.ui import (
     SearchQuantities,
 )
 
-schema = '*#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell'
+# Access the YAML file packaged in the module
+try:
+    yaml_path = files('perovskite_solar_cell_database.apps').joinpath(
+        'tandem_dashboard.yaml'
+    )
+    with yaml_path.open('r') as additional_file:
+        widgets = yaml.safe_load(additional_file)
+except Exception as e:
+    raise RuntimeError(f'Failed to load widgets from YAML file: {e}')
+
+
+schema = 'perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell'
 
 tandem_app = App(
     label='The Tandem Solar Cell Database',
@@ -66,8 +79,20 @@ tandem_app = App(
         Column(
             search_quantity='results.material.chemical_formula_hill', title='Formula'
         ),
+        Column(
+            search_quantity='data.measurements.jv[*].illumination.intensity',
+            format={'decimals': 3, 'mode': 'standard'},
+            label='Illum. intensity',
+            # unit='W/m**2',
+        ),
         Column(search_quantity='results.material.structural_type'),
+        Column(search_quantity='results.eln.lab_ids'),
+        Column(search_quantity='results.eln.sections'),
+        Column(search_quantity='results.eln.methods'),
+        Column(search_quantity='results.eln.tags'),
+        Column(search_quantity='results.eln.instruments'),
         Column(search_quantity='entry_name', title='Name'),
+        Column(search_quantity='entry_type'),
         Column(search_quantity='upload_create_time', title='Upload time'),
         Column(search_quantity='entry_create_time', title='Entry creation time'),
         Column(search_quantity='authors'),
@@ -113,56 +138,57 @@ tandem_app = App(
             ),
         ],
     ),
-    dashboard={
-        'widgets': [
-            {
-                'type': 'periodictable',
-                'scale': 'linear',
-                'search_quantity': 'results.material.elements',
-                'layout': {
-                    'xxl': {
-                        'minH': 8,
-                        'minW': 12,
-                        'h': 9,
-                        'w': 13,
-                        'y': 0,
-                        'x': 0,
-                    },
-                    'xl': {
-                        'minH': 8,
-                        'minW': 12,
-                        'h': 9,
-                        'w': 12,
-                        'y': 0,
-                        'x': 0,
-                    },
-                    'lg': {
-                        'minH': 8,
-                        'minW': 12,
-                        'h': 8,
-                        'w': 12,
-                        'y': 0,
-                        'x': 0,
-                    },
-                    'md': {
-                        'minH': 8,
-                        'minW': 12,
-                        'h': 8,
-                        'w': 12,
-                        'y': 0,
-                        'x': 0,
-                    },
-                    'sm': {
-                        'minH': 8,
-                        'minW': 12,
-                        'h': 8,
-                        'w': 12,
-                        'y': 0,
-                        'x': 0,
-                    },
-                },
-            },
-        ],
-    },
+    # dashboard={
+    #     'widgets': [
+    #         {
+    #             'type': 'periodictable',
+    #             'scale': 'linear',
+    #             'search_quantity': 'results.material.elements',
+    #             'layout': {
+    #                 'xxl': {
+    #                     'minH': 8,
+    #                     'minW': 12,
+    #                     'h': 9,
+    #                     'w': 13,
+    #                     'y': 0,
+    #                     'x': 0,
+    #                 },
+    #                 'xl': {
+    #                     'minH': 8,
+    #                     'minW': 12,
+    #                     'h': 9,
+    #                     'w': 12,
+    #                     'y': 0,
+    #                     'x': 0,
+    #                 },
+    #                 'lg': {
+    #                     'minH': 8,
+    #                     'minW': 12,
+    #                     'h': 8,
+    #                     'w': 12,
+    #                     'y': 0,
+    #                     'x': 0,
+    #                 },
+    #                 'md': {
+    #                     'minH': 8,
+    #                     'minW': 12,
+    #                     'h': 8,
+    #                     'w': 12,
+    #                     'y': 0,
+    #                     'x': 0,
+    #                 },
+    #                 'sm': {
+    #                     'minH': 8,
+    #                     'minW': 12,
+    #                     'h': 8,
+    #                     'w': 12,
+    #                     'y': 0,
+    #                     'x': 0,
+    #                 },
+    #             },
+    #         },
+    #     ],
+    # },
+    dashboard=Dashboard.model_validate(widgets),
     filters_locked={'entry_type': 'PerovskiteTandemSolarCell'},
 )
