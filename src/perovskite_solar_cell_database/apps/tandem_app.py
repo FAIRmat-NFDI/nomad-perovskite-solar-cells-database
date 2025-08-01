@@ -10,6 +10,7 @@ from nomad.config.models.ui import (
     Menu,
     MenuItemDefinitions,
     MenuItemHistogram,
+    MenuItemOption,
     MenuItemPeriodicTable,
     MenuItemTerms,
     MenuSizeEnum,
@@ -49,29 +50,29 @@ tandem_app = App(
             title='Descriptive formula',
         ),
         Column(
-            search_quantity='data.key_performance_metrics.power_conversion_efficiency_stabilized',
+            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency_stabilized#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
         ),
         Column(
-            search_quantity='data.key_performance_metrics.power_conversion_efficiency',
+            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
         ),
         Column(
-            search_quantity='data.key_performance_metrics.short_circuit_current_density',
+            search_quantity=f'data.key_performance_metrics.short_circuit_current_density#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
-            # unit='A/m**2',
+            unit='A/m**2',
         ),
         Column(
-            search_quantity='data.key_performance_metrics.open_circuit_voltage',
+            search_quantity=f'data.key_performance_metrics.open_circuit_voltage#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
-            # unit='V',
+            unit='V',
         ),
         Column(
-            search_quantity='data.key_performance_metrics.fill_factor',
+            search_quantity=f'data.key_performance_metrics.fill_factor#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
         ),
@@ -80,10 +81,10 @@ tandem_app = App(
             search_quantity='results.material.chemical_formula_hill', title='Formula'
         ),
         Column(
-            search_quantity='data.measurements.jv[*].illumination.intensity',
+            search_quantity=f'data.measurements.jv[*].illumination.intensity#{schema}',
             format={'decimals': 3, 'mode': 'standard'},
             label='Illum. intensity',
-            # unit='W/m**2',
+            unit='W/m**2',
         ),
         Column(search_quantity='results.material.structural_type'),
         Column(search_quantity='results.eln.lab_ids'),
@@ -168,6 +169,206 @@ tandem_app = App(
                         show_input=True,
                         nbins=30,
                         autorange=True,
+                    ),
+                ],
+            ),
+            Menu(
+                title='Measurements',
+                size=MenuSizeEnum.LG,
+                items=[
+                    MenuItemTerms(
+                        title='Types of Measurements',
+                        search_quantity='sections',
+                        options={
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.JV': MenuItemOption(
+                                label='JV',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.ExternalQuantumEfficiency': MenuItemOption(
+                                label='External Quantum Efficiency',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.StabilizedPerformance': MenuItemOption(
+                                label='Stabilized Performance',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.Stability': MenuItemOption(
+                                label='Stability',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.Transmission': MenuItemOption(
+                                label='Transmission',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.Flexibility': MenuItemOption(
+                                label='Flexibility',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.measurements.OutdoorPerformance': MenuItemOption(
+                                label='OutdoorPerformance',
+                            ),
+                        },
+                        show_input=False,
+                    ),
+                ],
+            ),
+            Menu(
+                title='Solar Cell Performance',
+                size=MenuSizeEnum.LG,
+                items=[
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency#{schema}',
+                            title='Efficiency (%)',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='Efficiency (%)',
+                        # width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.open_circuit_voltage#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='Voc',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='Voc',
+                        # width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.short_circuit_current_density#{schema}',
+                            title='Jsc',
+                            unit='mA/cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='Jsc',
+                        # width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.fill_factor#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='Fill factor',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='Fill factor',
+                        # width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                ],
+            ),
+            Menu(
+                title='Stability',
+                size=MenuSizeEnum.XXL,
+                items=[
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency_stabilized#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='Efficiency Stabilized (%)',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='Efficiency Stabilized (%)',
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.pce_1000h_isos_l1_start#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='PCE at the start / ISOS L1 (%)',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='PCE at the start / ISOS L1 (%)',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.pce_1000h_isos_l1_end#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='PCE after 1000h / ISOS L1 (%)',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='PCE after 1000h / ISOS L1 (%)',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.pce_1000h_isos_l3_start#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='PCE at the start / ISOS L3 (%)',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='PCE at the start / ISOS L3 (%)',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.pce_1000h_isos_l3_end#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='PCE after 1000h / ISOS L3 (%)',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='PCE after 1000h / ISOS L3 (%)',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.t80_isos_l1#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='PCE T80 / ISOS L1',
+                            unit='hour',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='PCE T80 / ISOS L1',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.key_performance_metrics.t80_isos_l3#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='PCE T80 / ISOS L3',
+                            unit='hour',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LINEAR,
+                        ),
+                        title='PCE T80 / ISOS L3',
+                        width=6,
+                        show_input=True,
+                        nbins=30,
                     ),
                 ],
             ),
