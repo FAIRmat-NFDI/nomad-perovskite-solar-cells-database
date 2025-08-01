@@ -173,12 +173,110 @@ tandem_app = App(
                 ],
             ),
             Menu(
+                title='Device Architecture',
+                size=MenuSizeEnum.LG,
+                items=[
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.cell_area#{schema}',
+                            scale=ScaleEnum.LOG,
+                            title='Total cell area',
+                            unit='cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Total cell area',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.active_area#{schema}',
+                            scale=ScaleEnum.LOG,
+                            title='Active cell area',
+                            unit='cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Active cell area',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.general.architecture#{schema}',
+                        options=5,
+                    ),
+                ],
+            ),
+            Menu(
+                title='Device Layers',
+                size=MenuSizeEnum.LG,
+                items=[
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.number_of_layers#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='Number of layers',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Number of layers',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.device_stack.name#{schema}',
+                        title='Device stack layers',
+                        options=10,
+                    ),
+                    MenuItemTerms(
+                        title='Types of photoabsorber',
+                        search_quantity='section_defs.definition_qualified_name',
+                        options={
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_Perovskite': MenuItemOption(
+                                label='Perovskite',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_Silicon': MenuItemOption(
+                                label='Silicon',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_CIGS': MenuItemOption(
+                                label='CIGS',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_CZTS': MenuItemOption(
+                                label='CZTS',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_GaAs': MenuItemOption(
+                                label='GaAs',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_OPV': MenuItemOption(
+                                label='OPV',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_DSSC': MenuItemOption(
+                                label='DSSC',
+                            ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_QuantumDot': MenuItemOption(
+                                label='Quantum Dot',
+                            ),
+                        },
+                        show_input=False,
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.device_stack.functionality#{schema}',
+                        title='Layer functionality',
+                        options=10,
+                    ),
+                ],
+            ),
+            Menu(
                 title='Measurements',
                 size=MenuSizeEnum.LG,
                 items=[
                     MenuItemTerms(
-                        title='Types of Measurements',
-                        search_quantity='sections',
+                        title='Types of measurements',
+                        search_quantity='section_defs.definition_qualified_name',
                         options={
                             'perovskite_solar_cell_database.schema_packages.tandem.measurements.JV': MenuItemOption(
                                 label='JV',
@@ -199,7 +297,7 @@ tandem_app = App(
                                 label='Flexibility',
                             ),
                             'perovskite_solar_cell_database.schema_packages.tandem.measurements.OutdoorPerformance': MenuItemOption(
-                                label='OutdoorPerformance',
+                                label='Outdoor Performance',
                             ),
                         },
                         show_input=False,
