@@ -274,22 +274,22 @@ tandem_app = App(
             #     title='Fabrication',
             #     size=MenuSizeEnum.SM,
             #     items=[
-                    # MenuItemTerms(
-                    #     search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
-                    #     options=10,
-                    # ),
-                    # MenuItemTerms(
-                    #     search_quantity=f'data.device_stack.deposition_procedure.steps.solution.components.name#{schema}',
-                    #     options=10,
-                    # ),
-                    # MenuItemTerms(
-                    #     search_quantity=f'data.*.doping_sequence#{schema}',
-                    #     options=10,
-                    # ),
-                    # MenuItemTerms(
-                    #     search_quantity=f'data.device_stack.composition.long_form#{schema}',
-                    #     options=10,
-                    # ),
+            # MenuItemTerms(
+            #     search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
+            #     options=10,
+            # ),
+            # MenuItemTerms(
+            #     search_quantity=f'data.device_stack.deposition_procedure.steps.solution.components.name#{schema}',
+            #     options=10,
+            # ),
+            # MenuItemTerms(
+            #     search_quantity=f'data.*.doping_sequence#{schema}',
+            #     options=10,
+            # ),
+            # MenuItemTerms(
+            #     search_quantity=f'data.device_stack.composition.long_form#{schema}',
+            #     options=10,
+            # ),
             #     ],
             # ),
             Menu(
