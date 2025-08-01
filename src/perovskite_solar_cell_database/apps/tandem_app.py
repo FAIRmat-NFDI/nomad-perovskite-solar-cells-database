@@ -211,7 +211,7 @@ tandem_app = App(
                 ],
             ),
             Menu(
-                title='Device Layers',
+                title='Stack Layers',
                 size=MenuSizeEnum.LG,
                 items=[
                     MenuItemHistogram(
@@ -270,6 +270,28 @@ tandem_app = App(
                     ),
                 ],
             ),
+            # Menu(
+            #     title='Fabrication',
+            #     size=MenuSizeEnum.SM,
+            #     items=[
+                    # MenuItemTerms(
+                    #     search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
+                    #     options=10,
+                    # ),
+                    # MenuItemTerms(
+                    #     search_quantity=f'data.device_stack.deposition_procedure.steps.solution.components.name#{schema}',
+                    #     options=10,
+                    # ),
+                    # MenuItemTerms(
+                    #     search_quantity=f'data.*.doping_sequence#{schema}',
+                    #     options=10,
+                    # ),
+                    # MenuItemTerms(
+                    #     search_quantity=f'data.device_stack.composition.long_form#{schema}',
+                    #     options=10,
+                    # ),
+            #     ],
+            # ),
             Menu(
                 title='Measurements',
                 size=MenuSizeEnum.LG,
@@ -442,13 +464,13 @@ tandem_app = App(
                         x=Axis(
                             search_quantity=f'data.key_performance_metrics.t80_isos_l1#{schema}',
                             scale=ScaleEnum.LINEAR,
-                            title='PCE T80 / ISOS L1',
+                            title='T80 / ISOS L1',
                             unit='hour',
                         ),
                         y=AxisScale(
                             scale=ScaleEnum.LINEAR,
                         ),
-                        title='PCE T80 / ISOS L1',
+                        title='T80 / ISOS L1',
                         width=6,
                         show_input=True,
                         nbins=30,
@@ -457,13 +479,13 @@ tandem_app = App(
                         x=Axis(
                             search_quantity=f'data.key_performance_metrics.t80_isos_l3#{schema}',
                             scale=ScaleEnum.LINEAR,
-                            title='PCE T80 / ISOS L3',
+                            title='T80 / ISOS L3',
                             unit='hour',
                         ),
                         y=AxisScale(
                             scale=ScaleEnum.LINEAR,
                         ),
-                        title='PCE T80 / ISOS L3',
+                        title='T80 / ISOS L3',
                         width=6,
                         show_input=True,
                         nbins=30,
