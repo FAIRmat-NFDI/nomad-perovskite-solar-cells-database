@@ -215,7 +215,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         if self.measurements and self.measurements.stability:
             # Go through all JV measurements
             for i, measurement in enumerate(self.measurements.stability):
-                pce_1000h = measurement.results.power_conversion_efficiency_1000h
+                pce_1000h = measurement.results.power_conversion_efficiency_end
                 pce_start = measurement.results.power_conversion_efficiency_start
                 T80 = measurement.results.T80
 
@@ -235,9 +235,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                                 pce_start
                             )
 
-                    current_best = self.key_performance_metrics.T80_isos_l1
+                    current_best = self.key_performance_metrics.t80_isos_l1
                     if current_best is None or T80 > current_best:
-                        self.key_performance_metrics.T80_isos_l1 = T80
+                        self.key_performance_metrics.t80_isos_l1 = T80
 
                 # ISOS-L3 conditions
                 if measurement.stability_protocol == 'ISOS-L-3':
@@ -250,9 +250,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                                 pce_start
                             )
 
-                    current_best = self.key_performance_metrics.T80_isos_l3
+                    current_best = self.key_performance_metrics.t80_isos_l3
                     if current_best is None or T80 > current_best:
-                        self.key_performance_metrics.T80_isos_l3 = T80
+                        self.key_performance_metrics.t80_isos_l3 = T80
 
         ####### Figure of the device stack
         #  Plot the layer stack of the device and add it to the figures.
