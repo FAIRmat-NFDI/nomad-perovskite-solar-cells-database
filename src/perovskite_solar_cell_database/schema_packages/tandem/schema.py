@@ -39,7 +39,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
     m_def = Section(
         label='Perovskite Tandem Solar Cell',
-        a_eln=dict(lane_width='400px'),
+        a_eln=dict(lane_width='600px'),
         categories=[UseCaseElnCategory],
     )
 
@@ -282,7 +282,6 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 elif functionality == 'photoabsorber':
                     thicknesses.append(0.8)
                     opacities.append(1)
-                    colors.append('firebrick')
                     if name == 'Perovskite':
                         colors.append('red')
                     elif name == 'CIGS':
