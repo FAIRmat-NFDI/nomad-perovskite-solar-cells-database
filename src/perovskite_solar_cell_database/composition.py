@@ -841,10 +841,10 @@ class PerovskiteCompositionSection(ArchiveSection):
             self.short_form += ion.abbreviation
             if ion.coefficient is None:
                 continue
-            if ion.coefficient == '1':
+            coefficient_str = re.sub(r'(\.\d*?)0+$', r'\1', ion.coefficient)
+            coefficient_str = re.sub(r'\.$', '', coefficient_str)
+            if coefficient_str == '1':
                 coefficient_str = ''
-            else:
-                coefficient_str = ion.coefficient
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
                 continue
