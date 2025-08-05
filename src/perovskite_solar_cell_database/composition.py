@@ -849,7 +849,10 @@ class PerovskiteCompositionSection(ArchiveSection):
             if not isinstance(ion.molecular_formula, str):
                 continue
             cleaned_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', ion.molecular_formula)
-            formula_str += f'({cleaned_formula}){coefficient_str}'
+            if re.match(r'^(?=[^A-Z]*[A-Z][^A-Z]*$)[^0-9]*$', cleaned_formula):
+                formula_str += f'{cleaned_formula}{coefficient_str}'
+            else:
+                formula_str += f'({cleaned_formula}){coefficient_str}'
         try:
             formula = Formula(formula_str)
             formula.populate(archive.results.material, overwrite=True)
