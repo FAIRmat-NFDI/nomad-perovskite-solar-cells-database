@@ -83,6 +83,82 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         description='Encapsulation specific data',
     )
 
+    def make_plotly_figure(self):
+        ####### Figure of the device stack
+        #  Plot the layer stack of the device and add it to the figures.
+
+        # A few different shades of gray for intermediate layers
+        gray_shades = ['#D3D3D3', '#BEBEBE', '#A9A9A9', '#909090']
+        gray_cycle = cycle(gray_shades)
+
+        # Initialize thicknesses and colors
+        thicknesses = []
+        colors = []
+        layer_names = []
+        opacities = []
+
+        # construct the layer stack
+        if self.device_stack:
+            for layer in self.device_stack:
+                # Check if the layer has a name
+                name = getattr(layer, 'name', '-')
+                layer_names.append(name)
+
+                functionality = layer.functionality
+                if functionality == 'substrate':
+                    thicknesses.append(1.0)
+                    colors.append('lightblue')
+                    opacities.append(1)
+                elif functionality == 'photoabsorber':
+                    thicknesses.append(0.8)
+                    opacities.append(1)
+                    if name in ['Perovskite', 'perovskite']:
+                        colors.append('red')
+                    elif name in ['CIGS', 'cigs']:
+                        colors.append('orange')
+                    elif name in ['Silicon', 'silicon']:
+                        colors.append('darkblue')
+                    elif name in ['OPV', 'opv']:
+                        colors.append('darkgreen')
+                    elif name in ['GaAs', 'gaas']:
+                        colors.append('lightgreen')
+                    else:
+                        colors.append('firebrick')
+                elif functionality == 'air_gap':
+                    thicknesses.append(0.5)
+                    colors.append('white')
+                    opacities.append(0.05)
+                elif functionality == 'optical_spacer':
+                    thicknesses.append(0.5)
+                    colors.append('white')
+                    opacities.append(0.05)
+                else:
+                    thicknesses.append(0.1)
+                    colors.append(next(gray_cycle))
+                    opacities.append(1)
+
+        # Check if the key performance metrics section has values
+        values = {
+            'efficiency': self.key_performance_metrics.power_conversion_efficiency,
+            'voc': self.key_performance_metrics.open_circuit_voltage,
+            'jsc': self.key_performance_metrics.short_circuit_current_density,
+            'ff': self.key_performance_metrics.fill_factor,
+        }
+
+        fig = create_cell_stack_figure(
+            layers=layer_names,
+            thicknesses=thicknesses,
+            colors=colors,
+            opacities=opacities,
+            **values,
+            x_min=0,
+            x_max=5,
+            y_min=0,
+            y_max=5,
+        )
+
+        return fig
+
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
         Populate the key performance metrics section
@@ -254,74 +330,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     if current_best is None or T80 > current_best:
                         self.key_performance_metrics.t80_isos_l3 = T80
 
-        ####### Figure of the device stack
-        #  Plot the layer stack of the device and add it to the figures.
-
-        # A few different shades of gray for intermediate layers
-        gray_shades = ['#D3D3D3', '#BEBEBE', '#A9A9A9', '#909090']
-        gray_cycle = cycle(gray_shades)
-
-        # Initialize thicknesses and colors
-        thicknesses = []
-        colors = []
-        layer_names = []
-        opacities = []
-
-        # construct the layer stack
-        if self.device_stack:
-            for layer in self.device_stack:
-                # Check if the layer has a name
-                name = getattr(layer, 'name', '-')
-                layer_names.append(name)
-
-                functionality = layer.functionality
-                if functionality == 'substrate':
-                    thicknesses.append(1.0)
-                    colors.append('lightblue')
-                    opacities.append(1)
-                elif functionality == 'photoabsorber':
-                    thicknesses.append(0.8)
-                    opacities.append(1)
-                    if name == 'Perovskite':
-                        colors.append('red')
-                    elif name == 'CIGS':
-                        colors.append('orange')
-                    elif name == 'Silicon':
-                        colors.append('orangered')
-                    else:
-                        colors.append('firebrick')
-                elif functionality == 'air_gap':
-                    thicknesses.append(0.5)
-                    colors.append('white')
-                    opacities.append(0.05)
-                elif functionality == 'optical_spacer':
-                    thicknesses.append(0.5)
-                    colors.append('white')
-                    opacities.append(0.05)
-                else:
-                    thicknesses.append(0.1)
-                    colors.append(next(gray_cycle))
-                    opacities.append(1)
-
-        # Check if the key performance metrics section has values
-        values = {
-            'efficiency': self.key_performance_metrics.power_conversion_efficiency,
-            'voc': self.key_performance_metrics.open_circuit_voltage,
-            'jsc': self.key_performance_metrics.short_circuit_current_density,
-            'ff': self.key_performance_metrics.fill_factor,
-        }
-
-        fig = create_cell_stack_figure(
-            layers=layer_names,
-            thicknesses=thicknesses,
-            colors=colors,
-            opacities=opacities,
-            **values,
-            x_min=0,
-            x_max=10,
-            y_min=0,
-            y_max=10,
-        )
+        fig = self.make_plotly_figure()
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
 
