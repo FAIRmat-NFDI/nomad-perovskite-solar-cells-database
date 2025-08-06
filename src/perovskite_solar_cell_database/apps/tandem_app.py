@@ -208,6 +208,32 @@ tandem_app = App(
                         search_quantity=f'data.general.architecture#{schema}',
                         options=5,
                     ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.number_of_terminals#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='Number of terminals',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Number of terminals',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.number_of_junctions#{schema}',
+                            scale=ScaleEnum.LINEAR,
+                            title='Number of junctions',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Number of junctions',
+                        show_input=False,
+                        nbins=30,
+                    ),
                 ],
             ),
             Menu(
