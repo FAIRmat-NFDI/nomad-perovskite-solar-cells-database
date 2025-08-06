@@ -40,7 +40,7 @@
         "device_stack": [
             {
                 "layer_index": 1,
-                "functionality": "back_contact",
+                "functionality": "back contact",
                 "device_subset": 0,
                 "name": "Ag",
                 "properties": {
@@ -51,11 +51,11 @@
                 "components": [
                     {
                         "name": "Ag",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "Evaporation",
@@ -67,7 +67,7 @@
             },
             {
                 "layer_index": 2,
-                "functionality": "hole_transport_layer",
+                "functionality": "hole transport layer",
                 "device_subset": 0,
                 "name": "MoO3",
                 "properties": {
@@ -78,11 +78,11 @@
                 "components": [
                     {
                         "name": "MoO3",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "Evaporation",
@@ -110,21 +110,21 @@
                 "components": [
                     {
                         "name": "PM6",
-                        "functionality": "majority_phase",
+                        "functionality": "majority phase",
                         "amount": {
                             "mol_fraction": 0.45
                         }
                     },
                     {
                         "name": "Y6",
-                        "functionality": "majority_phase",
+                        "functionality": "majority phase",
                         "amount": {
                             "mol_fraction": 0.55
                         }
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "SpinCoating",
@@ -133,12 +133,12 @@
                     ]
                 },
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_OPV",
-                "cell_type": "bulk_heterojunction",
+                "cell_type": "bulk heterojunction",
                 "blend": "PM6:Y6"
             },
             {
                 "layer_index": 4,
-                "functionality": "electron_transport_layer",
+                "functionality": "electron transport layer",
                 "device_subset": 0,
                 "name": "ZnO",
                 "properties": {
@@ -149,11 +149,11 @@
                 "components": [
                     {
                         "name": "ZnO",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "SpinCoating",
@@ -165,7 +165,7 @@
             },
             {
                 "layer_index": 5,
-                "functionality": "recombination_layer",
+                "functionality": "recombination layer",
                 "device_subset": 0,
                 "name": "Ag",
                 "properties": {
@@ -176,11 +176,11 @@
                 "components": [
                     {
                         "name": "Ag",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "Evaporation",
@@ -192,7 +192,7 @@
             },
             {
                 "layer_index": 6,
-                "functionality": "hole_transport_layer",
+                "functionality": "hole transport layer",
                 "device_subset": 0,
                 "name": "MoO3",
                 "properties": {
@@ -203,11 +203,11 @@
                 "components": [
                     {
                         "name": "MoO3",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "Evaporation",
@@ -219,7 +219,7 @@
             },
             {
                 "layer_index": 7,
-                "functionality": "hole_transport_layer",
+                "functionality": "hole transport layer",
                 "device_subset": 0,
                 "name": "PBDB-T",
                 "properties": {
@@ -230,11 +230,11 @@
                 "components": [
                     {
                         "name": "PBDB-T",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "SpinCoating",
@@ -259,11 +259,11 @@
                     "band_gap": {
                         "value": 1.79,
                         "graded": false,
-                        "determined_by": "absorption_Tauc-plot"
+                        "determined_by": "absorption Tauc-plot"
                     }
                 },
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "SpinCoating",
@@ -343,7 +343,7 @@
             },
             {
                 "layer_index": 9,
-                "functionality": "electron_transport_layer",
+                "functionality": "electron transport layer",
                 "device_subset": 0,
                 "name": "SnO2",
                 "properties": {
@@ -354,11 +354,11 @@
                 "components": [
                     {
                         "name": "SnO2",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "deposition_procedure": {
-                    "substrate_layer": "on_upper_layer",
+                    "substrate_layer": "on upper layer",
                     "steps": [
                         {
                             "method": "SpinCoating",
@@ -370,13 +370,13 @@
             },
             {
                 "layer_index": 10,
-                "functionality": "front_contact",
+                "functionality": "front contact",
                 "device_subset": 0,
                 "name": "ITO",
                 "components": [
                     {
                         "name": "ITO",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.device_stack.GeneralLayer"
@@ -389,7 +389,7 @@
                 "components": [
                     {
                         "name": "SLG",
-                        "functionality": "majority_phase"
+                        "functionality": "majority phase"
                     }
                 ],
                 "m_def": "perovskite_solar_cell_database.schema_packages.tandem.device_stack.GeneralLayer"
@@ -409,10 +409,10 @@
                     },
                     "light_source": {
                         "spectrum": "AM1.5",
-                        "light_source": "Solar_simulator_unspecified",
+                        "light_source": "Solar simulator unspecified",
                         "light_source_model": "Enlitech SS-F5"
                     },
-                    "light_regime": "standard_light",
+                    "light_regime": "standard light",
                     "results": {
                         "short_circuit_current_density": 12.67,
                         "open_circuit_voltage": 1.89,
@@ -431,10 +431,10 @@
                     },
                     "light_source": {
                         "spectrum": "AM1.5",
-                        "light_source": "Solar_simulator_unspecified",
+                        "light_source": "Solar simulator unspecified",
                         "light_source_model": "Enlitech SS-F5"
                     },
-                    "light_regime": "standard_light",
+                    "light_regime": "standard light",
                     "results": {
                         "short_circuit_current_density": 15.46,
                         "open_circuit_voltage": 1.15,
@@ -450,10 +450,10 @@
                     },
                     "light_source": {
                         "spectrum": "AM1.5",
-                        "light_source": "Solar_simulator_unspecified",
+                        "light_source": "Solar simulator unspecified",
                         "light_source_model": "Enlitech SS-F5"
                     },
-                    "light_regime": "standard_light",
+                    "light_regime": "standard light",
                     "results": {
                         "short_circuit_current_density": 24.75,
                         "open_circuit_voltage": 0.83,

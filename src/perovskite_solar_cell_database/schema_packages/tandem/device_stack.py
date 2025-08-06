@@ -42,7 +42,7 @@ class EnvironmentalConditionsDeposition(ArchiveSection):
             props=dict(
                 suggestions=[
                     'air',
-                    'dry_air',
+                    'dry air',
                     'N2',
                     'Ar',
                     'He',
@@ -183,7 +183,7 @@ class NanostructureInformation(ArchiveSection):
             props=dict(
                 suggestions=[
                     'nanoparticle',
-                    'quantum_dot',
+                    'quantum dot',
                     'nanorod',
                     'disc',
                     'sheet',
@@ -310,8 +310,8 @@ class Component(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'majority_phase',
-                    'secondary_phase',
+                    'majority phase',
+                    'secondary phase',
                     'additive',
                     'dopant',
                     'impurity',
@@ -344,10 +344,10 @@ class Component(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'commercial_supplier',
-                    'made_in_house',
-                    'made_by_collaborator',
-                    'collected_in_nature',
+                    'commercial supplier',
+                    'made in house',
+                    'made by collaborator',
+                    'collected in nature',
                     'other',
                 ]
             ),
@@ -420,9 +420,9 @@ class SputteringTarget(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'commercial_supplier',
-                    'made_in_house',
-                    'made_by_collaborator',
+                    'commercial supplier',
+                    'made in house',
+                    'made by collaborator',
                     'other',
                 ]
             ),
@@ -496,10 +496,10 @@ class EvaporationSource(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'commercial_supplier',
-                    'made_in_house',
-                    'made_by_collaborator',
-                    'collected_in_nature',
+                    'commercial supplier',
+                    'made in house',
+                    'made by collaborator',
+                    'collected in nature',
                     'other',
                 ]
             ),
@@ -554,10 +554,10 @@ class LigandsAndDyes(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'commercial_supplier',
-                    'made_in_house',
-                    'made_by_collaborator',
-                    'collected_in_nature',
+                    'commercial supplier',
+                    'made in house',
+                    'made by collaborator',
+                    'collected in nature',
                     'other',
                 ]
             ),
@@ -607,7 +607,7 @@ class GasComponent(ArchiveSection):
                 suggestions=[
                     'reactant',
                     'product',
-                    'carrier_gas',
+                    'carrier gas',
                     'none',
                     'other',
                 ]
@@ -622,11 +622,11 @@ class GasComponent(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'reaction_product',
-                    'commercial_supplier',
-                    'made_in_house',
-                    'made_by_collaborator',
-                    'collected_in_nature',
+                    'reaction product',
+                    'commercial supplier',
+                    'made in house',
+                    'made by collaborator',
+                    'collected in nature',
                     'other',
                 ]
             ),
@@ -687,10 +687,10 @@ class SolutionComponent(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'commercial_supplier',
-                    'made_in_house',
-                    'made_by_collaborator',
-                    'collected_in_nature',
+                    'commercial supplier',
+                    'made in house',
+                    'made by collaborator',
+                    'collected in nature',
                     'other',
                 ]
             ),
@@ -871,7 +871,7 @@ class BandGap(ArchiveSection):
             props=dict(
                 suggestions=[
                     'absorption',
-                    'absorption_Tauc-plot',
+                    'absorption Tauc-plot',
                     'composition',
                     'eqe',
                     'literature',
@@ -909,10 +909,10 @@ class Crystallinity(ArchiveSection):
                 suggestions=[
                     'amorphous',
                     'polycrystalline',
-                    'single_crystal',
+                    'single crystal',
                     'nanoparticles',
                     'nanorods',
-                    'quantum_dots',
+                    'quantum dots',
                     'other',
                 ]
             ),
@@ -1215,10 +1215,10 @@ class Dipping(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'gas_blowing',
-                    'self_drying',
+                    'gas blowing',
+                    'self drying',
                     'heating',
-                    'tissue_paper',
+                    'tissue paper',
                     'none',
                     'other',
                 ]
@@ -1379,7 +1379,7 @@ class GasQuenchingDetails(ArchiveSection):
             props=dict(
                 suggestions=[
                     'air',
-                    'dry_air',
+                    'dry air',
                     'N2',
                     'Ar',
                     'He',
@@ -1506,7 +1506,7 @@ class AtomicLayerDeposition(DepositionStep):
         type=str,
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
-            props=dict(suggestions=['air', 'dry_air', 'N2', 'Ar', 'other']),
+            props=dict(suggestions=['air', 'dry air', 'N2', 'Ar', 'other']),
         ),
     )
 
@@ -1561,10 +1561,10 @@ class ChemicalBathDeposition(DepositionStep):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'gas_blowing',
-                    'self_drying',
+                    'gas blowing',
+                    'self drying',
                     'heating',
-                    'tissue_paper',
+                    'tissue paper',
                     'none',
                     'other',
                 ]
@@ -1674,10 +1674,10 @@ class DipCoating(DepositionStep):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'gas_blowing',
-                    'self_drying',
+                    'gas blowing',
+                    'self drying',
                     'heating',
-                    'tissue_paper',
+                    'tissue paper',
                     'none',
                     'other',
                 ]
@@ -1888,7 +1888,7 @@ class Heating(DepositionStep):
                 suggestions=[
                     'hotplate',
                     'furnace',
-                    'liquid_bath',
+                    'liquid bath',
                     'gas',
                     'other',
                 ]
@@ -2285,7 +2285,7 @@ class SprayCoating(DepositionStep):
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
             props=dict(
-                suggestions=['air', 'dry_air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']
+                suggestions=['air', 'dry air', 'N2', 'Ar', 'He', 'O2', 'H2', 'other']
             ),
         ),
     )
@@ -2337,11 +2337,11 @@ class Sputtering(DepositionStep):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'DC_sputtering',
-                    'RF_sputtering',
-                    'Magnetron_sputtering',
-                    'Reactive_sputtering',
-                    'Pulsed_DC_sputtering',
+                    'DC sputtering',
+                    'RF sputtering',
+                    'Magnetron sputtering',
+                    'Reactive sputtering',
+                    'Pulsed DC sputtering',
                     'other',
                 ]
             ),
@@ -2456,10 +2456,10 @@ class DepositionProcedure(ArchiveSection):
         """,
         type=MEnum(
             [
-                'is_substrate',
-                'on_lower_layer',
-                'on_upper_layer',
-                'laminate_layers',
+                'is substrate',
+                'on lower layer',
+                'on upper layer',
+                'laminate layers',
                 'not-deposited',
             ]
         ),
@@ -2473,9 +2473,9 @@ class DepositionProcedure(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'commercial_supplier',
-                    'deposited_in_house',
-                    'deposited_by_collaborator',
+                    'commercial supplier',
+                    'deposited in house',
+                    'deposited by collaborator',
                 ]
             ),
         ),
@@ -2564,32 +2564,32 @@ class Layer(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'air_gap',
-                    'anti_reflection',
-                    'back_contact',
-                    'back_reflector',
-                    'buffer_layer',
-                    'down_conversion',
-                    'edge_sealing',
+                    'air gap',
+                    'anti reflection',
+                    'back contact',
+                    'back reflector',
+                    'buffer layer',
+                    'down conversion',
+                    'edge sealing',
                     'electrolyte',
                     'encapsulation',
-                    'electron_transport_layer',
-                    'front_contact',
-                    'hole_transport_layer',
-                    'interface_modifier',
-                    'mesoporous_scaffold',
-                    'middle_contact',
-                    'optical_spacer',
-                    'organic_dye',
+                    'electron transport layer',
+                    'front contact',
+                    'hole transport layer',
+                    'interface modifier',
+                    'mesoporous scaffold',
+                    'middle contact',
+                    'optical spacer',
+                    'organic dye',
                     'photoabsorber',
-                    'recombination_layer',
-                    'refractive_index_matching',
-                    'self_assembled_monolayer',
-                    'spectral_splitter',
+                    'recombination layer',
+                    'refractive index matching',
+                    'self assembled monolayer',
+                    'spectral splitter',
                     'substrate',
-                    'transparent_conducting_oxide',
-                    'up_conversion',
-                    'window_layer',
+                    'transparent conducting oxide',
+                    'up conversion',
+                    'window layer',
                 ]
             ),
         ),
@@ -2981,11 +2981,11 @@ class Photoabsorber_OPV(Layer):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'singel_layer',
+                    'singel layer',
                     'bilayer',
                     'polymer',
                     'heterojunction',
-                    'bulk_heterojunction',
+                    'bulk heterojunction',
                     'polymer bulk heterojunction',
                     'homojunction',
                 ]

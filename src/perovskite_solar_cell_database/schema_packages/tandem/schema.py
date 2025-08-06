@@ -124,11 +124,11 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                         colors.append('lightgreen')
                     else:
                         colors.append('firebrick')
-                elif functionality == 'air_gap':
+                elif functionality == 'air gap':
                     thicknesses.append(0.5)
                     colors.append('white')
                     opacities.append(0.05)
-                elif functionality == 'optical_spacer':
+                elif functionality == 'optical spacer':
                     thicknesses.append(0.5)
                     colors.append('white')
                     opacities.append(0.05)
@@ -201,7 +201,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 # Check that the JV measuremtn is done under standard light conditions
                 if (
                     measurement.device_subset == 0
-                    and measurement.light_regime == 'standard_light'
+                    and measurement.light_regime == 'standard light'
                 ):
                     # Extract the PCE if it exists
                     if measurement.results is not None:
@@ -265,7 +265,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 # Check that the measurement is done under standard light conditions
                 if (
                     measurement.device_subset == 0
-                    and measurement.light_regime == 'standard_light'
+                    and measurement.light_regime == 'standard light'
                 ):
                     # Extract the PCE if it excist
                     if measurement.results is not None:
