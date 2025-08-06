@@ -1510,7 +1510,6 @@ class AtomicLayerDeposition(DepositionStep):
         ),
     )
 
-
     # Subsections
     steps = SubSection(
         section_def=ALDStep,
@@ -1573,7 +1572,6 @@ class ChemicalBathDeposition(DepositionStep):
         ),
     )
 
-
     # Subsection
     solution = SubSection(
         section_def=Solution,
@@ -1584,7 +1582,6 @@ class ChemicalBathDeposition(DepositionStep):
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
     )
-
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1688,7 +1685,6 @@ class DipCoating(DepositionStep):
         ),
     )
 
-
     # Subsection
     solution = SubSection(
         section_def=Solution,
@@ -1699,7 +1695,6 @@ class DipCoating(DepositionStep):
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
     )
-
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1760,7 +1755,6 @@ class DoctorBlading(DepositionStep):
             component='NumberEditQuantity', defaultDisplayUnit='celsius'
         ),
     )
-
 
     # Subsections
     ink = SubSection(
