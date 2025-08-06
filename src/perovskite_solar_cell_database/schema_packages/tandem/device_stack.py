@@ -1118,7 +1118,22 @@ class DepositionStep(ArchiveSection):
     This is a collection point for deposition procedures
     """
 
-    pass
+    duration = Quantity(
+        description='The total time of the procedure.',
+        type=float,
+        unit='s',
+        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
+    )
+
+    equipment = Quantity(
+        description='Brand name and model of the equipment used for the process.',
+        type=str,
+        a_eln=ELNAnnotation(component='StringEditQuantity'),
+    )
+
+    method = Quantity(
+        type=str,
+    )
 
 
 ### Synthetic procedures
@@ -1194,7 +1209,7 @@ class Dipping(ArchiveSection):
     )
 
     drying_procedure = Quantity(
-        description='The methode by which the liquid is removed from the sample after dipping.',
+        description='The method by which the liquid is removed from the sample after dipping.',
         type=str,
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
@@ -1426,15 +1441,6 @@ class PostDepositionProcedure(DepositionStep):
         a_eln=ELNAnnotation(component='DateTimeEditQuantity'),
     )
 
-    duration = Quantity(
-        type=float,
-        description='The time if hte operation from start to finish.',
-        unit='minute',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='minute'
-        ),
-    )
-
     time_from_last_step = Quantity(
         description="""The time from the finalization of the last layer 
         and the start of the deposition of this.""",
@@ -1469,12 +1475,6 @@ class AtomicLayerDeposition(DepositionStep):
     """
 
     # Numerical qunatities
-    duration = Quantity(
-        description='The total time of the procedure.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
@@ -1510,21 +1510,12 @@ class AtomicLayerDeposition(DepositionStep):
         ),
     )
 
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
 
     # Subsections
     steps = SubSection(
         section_def=ALDStep,
         description='Details about the four ALD steps.',
         repeats=True,
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -1582,11 +1573,6 @@ class ChemicalBathDeposition(DepositionStep):
         ),
     )
 
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
 
     # Subsection
     solution = SubSection(
@@ -1599,9 +1585,6 @@ class ChemicalBathDeposition(DepositionStep):
         description='Environmental conditions during the activity.',
     )
 
-    method = Quantity(
-        type=str,
-    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1613,22 +1596,7 @@ class Cleaning(DepositionStep):
     Cleaning procedures
     """
 
-    # Numerical quantities
-    duration = Quantity(
-        description='The time of the evaporation.',
-        type=float,
-        unit='minute',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='minute'
-        ),
-    )
-
     # Categorical quantities
-    equipment = Quantity(
-        description='Brand name and model of the spin-coater.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
 
     free_text_comment = Quantity(
         type=str,
@@ -1648,10 +1616,6 @@ class Cleaning(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -1707,7 +1671,7 @@ class DipCoating(DepositionStep):
 
     # Categorical quantities
     drying_procedure = Quantity(
-        description='The methode by which the liquid is removed from the sample after dipping.',
+        description='The method by which the liquid is removed from the sample after dipping.',
         type=str,
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
@@ -1724,11 +1688,6 @@ class DipCoating(DepositionStep):
         ),
     )
 
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
 
     # Subsection
     solution = SubSection(
@@ -1741,9 +1700,6 @@ class DipCoating(DepositionStep):
         description='Environmental conditions during the activity.',
     )
 
-    method = Quantity(
-        type=str,
-    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -1756,12 +1712,6 @@ class DoctorBlading(DepositionStep):
     """
 
     # Numerical quantities
-    duration = Quantity(
-        description='The time of the doctor blading.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     blade_speed = Quantity(
         description='The speed of the blade.',
@@ -1811,12 +1761,6 @@ class DoctorBlading(DepositionStep):
         ),
     )
 
-    # categorical quantities
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
 
     # Subsections
     ink = SubSection(
@@ -1827,10 +1771,6 @@ class DoctorBlading(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -1848,15 +1788,6 @@ class Evaporation(DepositionStep):
         description='The number of sources used for the evaporation.',
         type=int,
         a_eln=ELNAnnotation(component='NumberEditQuantity'),
-    )
-
-    duration = Quantity(
-        description='The time of the evaporation.',
-        type=float,
-        unit='minute',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='minute'
-        ),
     )
 
     substrate_temperature = Quantity(
@@ -1889,13 +1820,6 @@ class Evaporation(DepositionStep):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='Pa'),
     )
 
-    # Categorical qunatities
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     sources = SubSection(
         section_def=EvaporationSource,
@@ -1909,10 +1833,6 @@ class Evaporation(DepositionStep):
         Mostly relevant if the evaporation not is done in a vaccuum chamber""",
     )
 
-    method = Quantity(
-        type=str,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.method = 'Evaporation'
@@ -1924,12 +1844,6 @@ class GeneralDepositionProcedure(DepositionStep):
     """
 
     # Numerical quantities
-    duration = Quantity(
-        description='The duration of the process.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     sample_temperature = Quantity(
         description='The temperature of the sample during the activity.',
@@ -1949,13 +1863,6 @@ class GeneralDepositionProcedure(DepositionStep):
         ),
     )
 
-    # categorical quantities
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     solution = SubSection(
         section_def=Solution,
@@ -1971,23 +1878,11 @@ class GeneralDepositionProcedure(DepositionStep):
         description='Environmental conditions during the activity.',
     )
 
-    method = Quantity(
-        type=str,
-    )
-
 
 class Heating(DepositionStep):
     """
     Details for a heating process.
     """
-
-    # Numerical quantities
-    duration = Quantity(
-        description='The duration of the process.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     # categorical quantities
     heating_medium = Quantity(
@@ -2007,12 +1902,6 @@ class Heating(DepositionStep):
         ),
     )
 
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     temperature_steps = SubSection(
         section_def=TemperatureStep,
@@ -2023,10 +1912,6 @@ class Heating(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -2040,13 +1925,6 @@ class InkjetPrinting(DepositionStep):
     """
 
     # Numerical qunatities
-    duration = Quantity(
-        description='The total time of the procedure.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
-
     drop_volume = Quantity(
         description='Drop volume.',
         type=float,
@@ -2093,13 +1971,6 @@ class InkjetPrinting(DepositionStep):
         ),
     )
 
-    # categorical qunatities
-    equipment = Quantity(
-        description='Brand name and model of the spin-coater.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     ink = SubSection(
         section_def=Solution,
@@ -2109,10 +1980,6 @@ class InkjetPrinting(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -2125,10 +1992,6 @@ class IonExchangeByDipping(DipCoating):
     Details for a process where ions in a perovksite is exchanged by
     dipping it in a solution
     """
-
-    method = Quantity(
-        type=str,
-    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
@@ -2143,12 +2006,6 @@ class IonExchangeByGasDiffusion(DepositionStep):
     """
 
     # Numerical quantities
-    duration = Quantity(
-        description='The total time of the procedure.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
@@ -2168,13 +2025,6 @@ class IonExchangeByGasDiffusion(DepositionStep):
         ),
     )
 
-    # Categorical qunatities
-    equipment = Quantity(
-        description='Brand name and model of the spin-coater.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     gases = SubSection(
         section_def=GasComponent, description='The gases in the mixture', repeats=True
@@ -2183,10 +2033,6 @@ class IonExchangeByGasDiffusion(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -2200,12 +2046,6 @@ class SlotDieCoating(DepositionStep):
     """
 
     # Numerical qunatities
-    duration = Quantity(
-        description='The time of the doctor blading.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     blade_speed = Quantity(
         description='The speed of the blade.',
@@ -2255,13 +2095,6 @@ class SlotDieCoating(DepositionStep):
         ),
     )
 
-    # Categorical qunatities
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsectinos
     ink = SubSection(
         section_def=Solution,
@@ -2271,10 +2104,6 @@ class SlotDieCoating(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -2332,13 +2161,6 @@ class SpinCoating(DepositionStep):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='ml'),
     )
 
-    duration = Quantity(
-        description='The total time of all the spin-coating procedure.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
-
     dispense_start_time = Quantity(
         description="""Time of the start of the dispensing in seconds after the start of the spin-coating program.
         For static spin-coating where the solution is added before the spinning starts, this is 0.""",
@@ -2359,13 +2181,6 @@ class SpinCoating(DepositionStep):
         type=float,
         unit='mm',
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='mm'),
-    )
-
-    # Categorical quantities
-    equipment = Quantity(
-        description='Brand name and model of the spin-coater.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
     # Subsections
@@ -2395,10 +2210,6 @@ class SpinCoating(DepositionStep):
         description='Details about the gas quenching treatment.',
     )
 
-    method = Quantity(
-        type=str,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.method = 'SpinCoating'
@@ -2410,12 +2221,6 @@ class SprayCoating(DepositionStep):
     """
 
     # Numerical qunatities
-    duration = Quantity(
-        description='The time of the doctor blading.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     nozzle_speed = Quantity(
         description='The speed of the nozzle.',
@@ -2491,12 +2296,6 @@ class SprayCoating(DepositionStep):
         ),
     )
 
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsectinos
     solution = SubSection(
         section_def=Solution,
@@ -2506,10 +2305,6 @@ class SprayCoating(DepositionStep):
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -2523,12 +2318,6 @@ class Sputtering(DepositionStep):
     """
 
     # Numerical qunatities
-    duration = Quantity(
-        description='The total time of the process.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
@@ -2565,12 +2354,6 @@ class Sputtering(DepositionStep):
         ),
     )
 
-    equipment = Quantity(
-        description='Brand name and model of the equipment used for the process.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     steps = SubSection(
         section_def=SputteringStep,
@@ -2589,10 +2372,6 @@ class Sputtering(DepositionStep):
         repeats=True,
     )
 
-    method = Quantity(
-        type=str,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
         self.method = 'Sputtering'
@@ -2603,24 +2382,10 @@ class Storage(DepositionStep):
     Details for a storage process
     """
 
-    # Numerical quantities
-    duration = Quantity(
-        description='The total time of the procedure.',
-        type=float,
-        unit='minute',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity', defaultDisplayUnit='minute'
-        ),
-    )
-
     # Subsections
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):
@@ -2644,12 +2409,6 @@ class UVOzonTreatment(DepositionStep):
     )
 
     # Numerical quantities
-    duration = Quantity(
-        description='The total time of the procedure.',
-        type=float,
-        unit='s',
-        a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='s'),
-    )
 
     substrate_temperature = Quantity(
         description='The temperature of the substrate during the activity.',
@@ -2674,21 +2433,10 @@ class UVOzonTreatment(DepositionStep):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='W/m^2'),
     )
 
-    # Categorical qunatities
-    equipment = Quantity(
-        description='Brand name and model of the spin-coater.',
-        type=str,
-        a_eln=ELNAnnotation(component='StringEditQuantity'),
-    )
-
     # Subsections
     environmental_conditions = SubSection(
         section_def=EnvironmentalConditionsDeposition,
         description='Environmental conditions during the activity.',
-    )
-
-    method = Quantity(
-        type=str,
     )
 
     def normalize(self, archive, logger):

@@ -36,7 +36,7 @@ tandem_app = App(
     path='tandem-solar-cells-database',
     category='Solar cells',
     description='Search Entries of the Tandem Solar Cell Database',
-    readme='Under construction; currently a placeholder for the Tandem Solar Cell Database',
+    readme='Search Entries of the Tandem Solar Cell Database',
     search_quantities=SearchQuantities(include=[f'*#{schema}']),
     columns=[
         Column(
@@ -296,14 +296,16 @@ tandem_app = App(
                     ),
                 ],
             ),
-            # Menu(
-            #     title='Fabrication',
-            #     size=MenuSizeEnum.SM,
-            #     items=[
-            # MenuItemTerms(
-            #     search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
-            #     options=10,
-            # ),
+            Menu(
+                title='Fabrication',
+                size=MenuSizeEnum.SM,
+                items=[
+                    MenuItemTerms(
+                        search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
+                        options=10,
+                    ),
+                ],
+            ),
             # MenuItemTerms(
             #     search_quantity=f'data.device_stack.deposition_procedure.steps.solution.components.name#{schema}',
             #     options=10,
