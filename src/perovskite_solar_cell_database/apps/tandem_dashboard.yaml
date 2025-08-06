@@ -10,7 +10,7 @@ widgets:
       title: ""
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap
+      title: Perovskite Bandgap
     title: ""
     layout:
       xxl:
@@ -59,7 +59,7 @@ widgets:
       title: Efficiency (%)
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap
+      title: Perovskite Bandgap
     title: ""
     layout:
       xxl:
@@ -109,7 +109,7 @@ widgets:
       unit: mA / cm^2
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap
+      title: Perovskite Bandgap
     title: ""
     layout:
       xxl:
@@ -159,7 +159,7 @@ widgets:
       title: ""
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap
+      title: Perovskite Bandgap
     title: ""
     layout:
       xxl:
