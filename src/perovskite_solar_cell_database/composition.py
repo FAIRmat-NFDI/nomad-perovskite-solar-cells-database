@@ -841,15 +841,18 @@ class PerovskiteCompositionSection(ArchiveSection):
             self.short_form += ion.abbreviation
             if ion.coefficient is None:
                 continue
-            if ion.coefficient == '1':
+            coefficient_str = re.sub(r'(\.\d*?)0+$', r'\1', ion.coefficient)
+            coefficient_str = re.sub(r'\.$', '', coefficient_str)
+            if coefficient_str == '1':
                 coefficient_str = ''
-            else:
-                coefficient_str = ion.coefficient
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
                 continue
             cleaned_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', ion.molecular_formula)
-            formula_str += f'({cleaned_formula}){coefficient_str}'
+            if re.match(r'^(?=[^A-Z]*[A-Z][^A-Z]*$)[^0-9]*$', cleaned_formula):
+                formula_str += f'{cleaned_formula}{coefficient_str}'
+            else:
+                formula_str += f'({cleaned_formula}){coefficient_str}'
         try:
             formula = Formula(formula_str)
             formula.populate(archive.results.material, overwrite=True)
