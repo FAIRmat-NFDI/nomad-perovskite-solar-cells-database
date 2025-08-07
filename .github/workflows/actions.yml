@@ -14,7 +14,7 @@ jobs:
         python-version: 3.12
     - name: Install dependencies
       run: |
-        uv sync --no-install-package perovscribe --all-extras
+        uv pip install .[dev]
     - name: Test with pytest
       run: |
         uv run --with coverage coverage run -m pytest -sv
