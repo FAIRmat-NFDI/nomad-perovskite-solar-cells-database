@@ -394,7 +394,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             if system.label == 'Perovskite Layer':
                 formula = Formula(system.chemical_formula_reduced)
                 formula.populate(archive.results.material, overwrite=True)
-                archive.results.material.chemical_formula_descriptive = system.chemical_formula_descriptive
+                archive.results.material.chemical_formula_descriptive = (
+                    system.chemical_formula_descriptive
+                )
                 archive.results.material.dimensionality = system.dimensionality
                 archive.results.material.structural_type = system.structural_type
                 break
