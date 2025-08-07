@@ -309,6 +309,9 @@
             }
         ],
         "DOI_number": "https://www.doi.org/10.1002/adfm.201904856",
-        "m_def": "perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell"
+        "m_def": "perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell",
+        "extraction_metadata": {
+            "model": "GPT-4.1"
+        }
     }
 }

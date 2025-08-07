@@ -1,8 +1,11 @@
+import os
+import re
 from typing import (
     TYPE_CHECKING,
 )
 
-from nomad.datamodel.data import ArchiveSection
+from nomad.datamodel.data import ArchiveSection, UseCaseElnCategory
+from nomad.datamodel.metainfo.annotations import ELNComponentEnum
 from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import JSON, Quantity, Section, SubSection
@@ -416,6 +419,26 @@ Use established terminology: "SAM" for self-organized molecular layers, "surface
     )
 
 
+class ExtractionMetadata(SectionRevision):
+    git_commit = Quantity(
+        type=str,
+        description='Link to git commit of the extraction code',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.URLEditQuantity),
+    )
+
+    model = Quantity(
+        type=str,
+        description='Model used for extraction',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+    )
+
+    model_version = Quantity(
+        type=str,
+        description='Version of the model used for extraction',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+    )
+
+
 # PerovskiteSolarCell class
 class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Schema):
     m_def = Section(label='LLM Extracted Perovskite Solar Cell')
@@ -541,6 +564,10 @@ Sometimes several different PCE values are presented for the same device. It cou
         description='This is the classic schema entry that is generated from this LLM extracted entry. It is generated when the entry is normalized and saved and does not need to be filled.',
     )
 
+    extraction_metadata = SubSection(
+        section_def=ExtractionMetadata,
+    )
+
     # normalizer that reorderes the layers according to the layer_order
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
@@ -558,14 +585,135 @@ Sometimes several different PCE values are presented for the same device. It cou
         mainfile_list = archive.metadata.mainfile.split('.')
         mainfile_list[-3] += '_classic'
         mainfile = '.'.join(mainfile_list)
+        if (
+            isinstance(self.extraction_metadata, ExtractionMetadata)
+            and self.extraction_metadata.model
+        ):
+            llm_extraction_name = f'LLM Extraction by {self.extraction_metadata.model}'
+        else:
+            llm_extraction_name = 'LLM Extraction'
         with archive.m_context.update_entry(
             mainfile, write=True, process=True
         ) as entry:
-            entry['data'] = llm_to_classic_schema(self).m_to_dict(with_root_def=True)
+            entry['data'] = llm_to_classic_schema(
+                self, llm_extraction_name=llm_extraction_name
+            ).m_to_dict(with_root_def=True)
             entry['results'] = dict(material={})
         self.classic_entry = get_reference(
             upload_id=archive.metadata.upload_id, mainfile=mainfile
         )
+
+
+class LlmPerovskitePaperExtractor(Schema):
+    m_def = Section(
+        label='LLM Perovskite Paper Extractor',
+        categories=[UseCaseElnCategory],
+    )
+    pdf = Quantity(
+        type=str,
+        a_eln=ELNAnnotation(component=ELNComponentEnum.FileEditQuantity),
+    )
+    doi = Quantity(
+        type=str,
+        description='DOI of the paper',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.URLEditQuantity),
+    )
+    open_ai_token = Quantity(
+        type=str,
+        description='OpenAI API token for LLM extraction',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity, props=dict(type='password')
+        ),
+    )
+    extracted_solar_cells = Quantity(
+        type=LLMExtractedPerovskiteSolarCell,
+        shape=['*'],
+        description='List of extracted perovskite solar cells from the paper',
+    )
+
+    def delete_pdf(self):
+        """
+        Deletes the PDF file from the upload.
+        """
+        if self.pdf:
+            try:
+                os.remove(os.path.join(self.m_context.raw_path(), self.pdf))
+                self.pdf = None  # Clear the reference to the deleted file
+            except FileNotFoundError:
+                pass  # File already deleted or does not exist
+
+    def doi_to_name(self) -> str:
+        """
+        Converts the DOI to a name suitable for the entry.
+        """
+        if not self.doi:
+            return 'unnamed'
+        return extract_doi(self.doi) or 'unnamed'
+
+    def normalize(self, archive: 'EntryArchive', logger):
+        super().normalize(archive, logger)
+        extracted_cells = []
+        try:
+            if not self.open_ai_token:
+                logger.warn('OpenAI token is required for LLM extraction')
+                return
+            _open_ai_token = self.open_ai_token
+            self.open_ai_token = None  # Hide token in the archive
+            if not self.doi:
+                logger.warn('DOI is required for LLM extraction')
+                return
+            if not isinstance(self.pdf, str) or not self.pdf.endswith('.pdf'):
+                logger.warn('PDF file is required for LLM extraction')
+                return
+            extracted_cells = pdf_to_solar_cells(
+                pdf=os.path.join(archive.m_context.raw_path(), self.pdf),
+                doi=self.doi,
+                open_ai_token=_open_ai_token,
+                logger=logger,
+            )
+        finally:
+            self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
+        cell_references = []
+        for idx, cell in enumerate(extracted_cells):
+            name = f'{self.doi_to_name()}-cell-{idx + 1}.archive.json'
+            with archive.m_context.update_entry(
+                name, write=True, process=True
+            ) as entry:
+                entry['data'] = cell['data']
+            cell_references.append(
+                get_reference(upload_id=archive.metadata.upload_id, mainfile=name)
+            )
+        if cell_references:
+            self.extracted_solar_cells = cell_references
+
+
+def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str, logger) -> list[dict]:
+    """
+    Extract perovskite solar cells from a PDF using an LLM.
+    """
+    try:
+        from perovscribe.pipeline import ExtractionPipeline
+
+        return ExtractionPipeline(
+            'gpt-4o', 'pymupdf', 'NONE', '', False
+        ).extract_from_pdf_nomad(pdf, doi, open_ai_token)
+    except ImportError:
+        logger.error(
+            'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.'
+        )
+        return []
+
+
+def extract_doi(doi: str) -> str:
+    """
+    Extracts the DOI prefix and suffix (10.xxxx/xxxx) from a DOI string,
+    and replaces the forward slash ("/") between the prefix and suffix with a double hyphen ("--").
+    Returns None if no valid DOI is found.
+    """
+    match = re.search(r'10\.\d{4,9}/[-._;()/:\w\[\]]+', doi, re.IGNORECASE)
+    if match:
+        return match.group(0).replace('/', '--', 1)
+    return None
 
 
 def get_reference(upload_id: str, mainfile: str) -> str:
@@ -627,6 +775,7 @@ def llm_to_classic_schema(
     classic_cell = PerovskiteSolarCell()
 
     ref = Ref()
+    ref.extraction_method = 'LLM'
     ref.name_of_person_entering_the_data = llm_extraction_name
     ref.DOI_number = llm_cell.DOI_number
     # Assumes first author is lead author
@@ -653,7 +802,10 @@ def llm_to_classic_schema(
     jv.default_PCE = llm_cell.pce
     jv.default_Jsc = llm_cell.jsc
     jv.default_Voc = llm_cell.voc
-    jv.default_FF = llm_cell.ff
+    ff = llm_cell.ff
+    if ff > 1:
+        ff /= 100  # Convert percentage to fraction if needed
+    jv.default_FF = ff
     # Use number of devices if reported
     if llm_cell.number_devices:
         jv.average_over_n_number_of_cells = llm_cell.number_devices
@@ -670,28 +822,46 @@ def llm_to_classic_schema(
         llm_composition = llm_cell.perovskite_composition
     perovskite.composition_long_form = llm_composition.long_form
     perovskite.composition_short_form = llm_composition.short_form
-    a_ions: list[PerovskiteIonComponent] = llm_composition.ions_a_site
-    b_ions: list[PerovskiteIonComponent] = llm_composition.ions_b_site
-    x_ions: list[PerovskiteIonComponent] = llm_composition.ions_x_site
+    a_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_a_site, key=lambda ion: ion.abbreviation)
+    b_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_b_site, key=lambda ion: ion.abbreviation)
+    x_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_x_site, key=lambda ion: ion.abbreviation)
     perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
     perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
     perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
-    perovskite.composition_a_ions_coefficients = '; '.join(
-        ion.coefficient for ion in a_ions
-    )
-    perovskite.composition_b_ions_coefficients = '; '.join(
-        ion.coefficient for ion in b_ions
-    )
-    perovskite.composition_c_ions_coefficients = '; '.join(
-        ion.coefficient for ion in x_ions
-    )
+    if a_ions:
+        perovskite.composition_a_ions_coefficients = '; '.join(
+            ion.coefficient for ion in a_ions
+        )
+    if b_ions:
+        perovskite.composition_b_ions_coefficients = '; '.join(
+            ion.coefficient for ion in b_ions
+        )
+    if x_ions:
+        perovskite.composition_c_ions_coefficients = '; '.join(
+            ion.coefficient for ion in x_ions
+        )
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:
     # llm_composition.impurities
     # llm_composition.additives
     # llm_composition.formula
     # llm_composition.sample_type
-    # llm_composition.dimensionality
+    perovskite.dimension_list_of_layers = llm_composition.dimensionality
+    match llm_composition.dimensionality:
+        case '0D':
+            perovskite.dimension_0D = True
+        case '1D':
+            pass
+        case '2D':
+            perovskite.dimension_2D = True
+        case '2D/3D':
+            perovskite.dimension_2D3D_mixture = True
+        case '3D':
+            perovskite.dimension_3D = True
+        case 'Other':
+            pass
+        case _:
+            pass
 
     llm_light_source = LightSource()
     if llm_cell.light_source:
