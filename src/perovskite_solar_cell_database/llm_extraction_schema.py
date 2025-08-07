@@ -802,7 +802,10 @@ def llm_to_classic_schema(
     jv.default_PCE = llm_cell.pce
     jv.default_Jsc = llm_cell.jsc
     jv.default_Voc = llm_cell.voc
-    jv.default_FF = llm_cell.ff
+    ff = llm_cell.ff
+    if ff > 1:
+        ff /= 100  # Convert percentage to fraction if needed
+    jv.default_FF = ff
     # Use number of devices if reported
     if llm_cell.number_devices:
         jv.average_over_n_number_of_cells = llm_cell.number_devices
@@ -819,9 +822,9 @@ def llm_to_classic_schema(
         llm_composition = llm_cell.perovskite_composition
     perovskite.composition_long_form = llm_composition.long_form
     perovskite.composition_short_form = llm_composition.short_form
-    a_ions: list[PerovskiteIonComponent] = llm_composition.ions_a_site
-    b_ions: list[PerovskiteIonComponent] = llm_composition.ions_b_site
-    x_ions: list[PerovskiteIonComponent] = llm_composition.ions_x_site
+    a_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_a_site, key=lambda ion: ion.abbreviation)
+    b_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_b_site, key=lambda ion: ion.abbreviation)
+    x_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_x_site, key=lambda ion: ion.abbreviation)
     perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
     perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
     perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
@@ -843,7 +846,22 @@ def llm_to_classic_schema(
     # llm_composition.additives
     # llm_composition.formula
     # llm_composition.sample_type
-    # llm_composition.dimensionality
+    perovskite.dimension_list_of_layers = llm_composition.dimensionality
+    match llm_composition.dimensionality:
+        case '0D':
+            perovskite.dimension_0D = True
+        case '1D':
+            pass
+        case '2D':
+            perovskite.dimension_2D = True
+        case '2D/3D':
+            perovskite.dimension_2D3D_mixture = True
+        case '3D':
+            perovskite.dimension_3D = True
+        case 'Other':
+            pass
+        case _:
+            pass
 
     llm_light_source = LightSource()
     if llm_cell.light_source:
