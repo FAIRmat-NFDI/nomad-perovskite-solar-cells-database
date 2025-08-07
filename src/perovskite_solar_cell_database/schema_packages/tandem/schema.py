@@ -31,7 +31,14 @@ from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
     Layer,
+    Photoabsorber_CIGS,
+    Photoabsorber_CZTS,
+    Photoabsorber_DSSC,
+    Photoabsorber_GaAs,
+    Photoabsorber_OPV,
     Photoabsorber_Perovskite,
+    Photoabsorber_QuantumDot,
+    Photoabsorber_Silicon,
 )
 from perovskite_solar_cell_database.schema_packages.tandem.encapsulation_data import (
     EncapsulationData,
@@ -384,6 +391,72 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     child_system = ion.to_topology_system()
                     add_system(child_system, topology, system)
                     add_system_info(child_system, topology)
+
+            elif isinstance(layer, Photoabsorber_Silicon):
+                system = System(
+                    label='Silicon Layer',
+                    description='A silicon layer in the tandem solar cell.',
+                )
+                formula = Formula('Si')
+                formula.populate(system, overwrite=True)
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_CIGS):
+                system = System(
+                    label='CIGS Layer',
+                    description='CIGS layer in the tandem solar cell.',
+                )
+                formula = Formula(layer.molecular_formula)
+                formula.populate(system, overwrite=True)
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_CZTS):
+                system = System(
+                    label='CZTS Layer',
+                    description='CZTS layer in the tandem solar cell.',
+                )
+                formula = Formula(layer.molecular_formula)
+                formula.populate(system, overwrite=True)
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_GaAs):
+                system = System(
+                    label='GaAs Layer',
+                    description='GaAs layer in the tandem solar cell.',
+                )
+                formula = Formula(layer.molecular_formula)
+                formula.populate(system, overwrite=True)
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_OPV):
+                system = System(
+                    label='OPV Layer',
+                    description='OPV layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_DSSC):
+                system = System(
+                    label='DSSC Layer',
+                    description='DSSC layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_QuantumDot):
+                system = System(
+                    label='QD Layer',
+                    description='QD layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
 
         if not archive.results:
             archive.results = Results()

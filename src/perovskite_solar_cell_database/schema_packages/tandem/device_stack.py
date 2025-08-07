@@ -1,3 +1,4 @@
+import re
 from ase.data import chemical_symbols
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import (
@@ -2867,11 +2868,24 @@ class Photoabsorber_CIGS(Layer):
             coefficients.append(self.composition.Se)
 
         if coefficients:
-            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
-            coefficients = [str(i) for i in coefficients]
-            coefficients = ['' for i in coefficients if i == '1']
+            coefficients = [f'{i:.2f}' for i in coefficients]
+            coefficients_formatted = []
+            for coef in coefficients:
+                if re.fullmatch(r'^0(?:\.0*)?$', coef):
+                    coefficients_formatted.append('none')
+                elif re.fullmatch(r'^1(?:\.0*)?$', coef):
+                    coefficients_formatted.append('')
+                else:
+                    coefficients_formatted.append(
+                        re.sub(r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef))
+                    )
+
             self.molecular_formula = ''.join(
-                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
+                [
+                    a + i
+                    for a, i in zip(atoms, coefficients_formatted)
+                    if i not in ['none']
+                ]
             )
 
         # Set layer name if not set
@@ -2923,16 +2937,29 @@ class Photoabsorber_CZTS(Layer):
             coefficients.append(self.composition.S)
 
         if coefficients:
-            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
-            coefficients = [str(i) for i in coefficients]
-            coefficients = ['' for i in coefficients if i == '1']
+            coefficients = [f'{i:.2f}' for i in coefficients]
+            coefficients_formatted = []
+            for coef in coefficients:
+                if re.fullmatch(r'^0(?:\.0*)?$', coef):
+                    coefficients_formatted.append('none')
+                elif re.fullmatch(r'^1(?:\.0*)?$', coef):
+                    coefficients_formatted.append('')
+                else:
+                    coefficients_formatted.append(
+                        re.sub(r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef))
+                    )
+
             self.molecular_formula = ''.join(
-                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
+                [
+                    a + i
+                    for a, i in zip(atoms, coefficients_formatted)
+                    if i not in ['none']
+                ]
             )
 
         # Set layer name if not set
         if not hasattr(self, 'name') or not self.name:
-            self.name = 'CIGS'
+            self.name = 'CZTS'
 
 
 class Photoabsorber_GaAs(Layer):
