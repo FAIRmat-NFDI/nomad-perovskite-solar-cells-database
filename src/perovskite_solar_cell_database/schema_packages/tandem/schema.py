@@ -2,7 +2,16 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from nomad.datamodel.results import Material, Relation, Results, System
+from nomad.datamodel.metainfo.common import ProvenanceTracker
+from nomad.datamodel.results import (
+    BandGap,
+    ElectronicProperties,
+    Material,
+    Properties,
+    Relation,
+    Results,
+    System,
+)
 from nomad.normalizing.topology import add_system, add_system_info
 
 from perovskite_solar_cell_database.composition import PerovskiteIonComponent
@@ -376,8 +385,30 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             archive.results = Results()
         if not archive.results.material:
             archive.results.material = Material()
+        if not archive.results.properties:
+            archive.results.properties = Properties()
         for system in topology.values():
             archive.results.material.m_add_sub_section(Material.topology, system)
+
+        band_gaps=[]
+        for layer in self.device_stack:
+            if layer.functionality == 'photoabsorber':
+                try:
+                    band_gap_value = layer.properties.band_gap.value
+                    band_gaps.append(
+                        BandGap(
+                            value=band_gap_value,
+                            provenance=ProvenanceTracker(label=f'layer index {layer.layer_index} - {layer.name}'),
+                            label=layer.name,
+                        )
+                    )
+                except Exception as e:
+                    logger.warn(f'No band gap value found for layer {layer.layer_index}', exc_info=e)
+
+        if band_gaps:
+            archive.results.properties.electronic = ElectronicProperties(
+                band_gap=band_gaps
+            )
 
 
 class RawFileTandemJson(Schema):
