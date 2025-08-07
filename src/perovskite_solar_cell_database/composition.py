@@ -942,14 +942,16 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
             self.elemental_composition = elemental_composition_from_formula(
                 Formula(archive.results.material.chemical_formula_iupac)
             )
-            
+
         if self.dimensionality in ['0D', '1D', '2D', '3D']:
-            archive.results.properties.dimensionality = self.dimensionality  # TODO Check if this actually exists in the results
+            archive.results.properties.dimensionality = (
+                self.dimensionality
+            )  # TODO Check if this actually exists in the results
             if self.dimensionality == '3D':
                 archive.results.material.structural_type = 'bulk'
             elif self.dimensionality != '0D':
                 archive.results.material.structural_type = self.dimensionality
-        
+
         if self.band_gap is not None:
             archive.results.properties.electronic = ElectronicProperties(
                 band_gap=[
