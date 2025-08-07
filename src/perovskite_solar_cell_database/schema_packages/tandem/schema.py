@@ -408,8 +408,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     label='CIGS Layer',
                     description='CIGS layer in the tandem solar cell.',
                 )
-                formula = Formula(layer.molecular_formula)
-                formula.populate(system, overwrite=True)
+                if layer.molecular_formula:
+                    formula = Formula(layer.molecular_formula)
+                    formula.populate(system, overwrite=True)
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -419,8 +420,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     label='CZTS Layer',
                     description='CZTS layer in the tandem solar cell.',
                 )
-                formula = Formula(layer.molecular_formula)
-                formula.populate(system, overwrite=True)
+                if layer.molecular_formula:
+                    formula = Formula(layer.molecular_formula)
+                    formula.populate(system, overwrite=True)
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -430,8 +432,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     label='GaAs Layer',
                     description='GaAs layer in the tandem solar cell.',
                 )
-                formula = Formula(layer.molecular_formula)
-                formula.populate(system, overwrite=True)
+                if layer.molecular_formula:
+                    formula = Formula(layer.molecular_formula)
+                    formula.populate(system, overwrite=True)
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -465,8 +468,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         # temporary fix for now, fills material info from the first perovskite
         for system in topology.values():
             if system.label == 'Perovskite Layer':
-                formula = Formula(system.chemical_formula_reduced)
-                formula.populate(archive.results.material, overwrite=True)
+                if system.chemical_formula_reduced:
+                    formula = Formula(system.chemical_formula_reduced)
+                    formula.populate(archive.results.material, overwrite=True)
                 archive.results.material.chemical_formula_descriptive = (
                     system.chemical_formula_descriptive
                 )

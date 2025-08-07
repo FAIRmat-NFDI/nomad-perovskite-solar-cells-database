@@ -819,8 +819,10 @@ class PerovskiteCompositionSection(ArchiveSection):
             label='Perovskite Composition',
             description='A system describing the chemistry and components of the perovskite.',
         )
-        formula = Formula(self.get_formula_str())
-        formula.populate(system, overwrite=True)
+        formula_str = self.get_formula_str()
+        if formula_str:
+            formula = Formula(formula_str)
+            formula.populate(system, overwrite=True)
 
         if self.dimensionality == '3D':
             system.structural_type = 'bulk'

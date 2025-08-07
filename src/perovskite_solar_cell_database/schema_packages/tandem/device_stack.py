@@ -2854,19 +2854,20 @@ class Photoabsorber_CIGS(Layer):
 
         # Generate molecular formula
         formula_str = ''
-        for key in self.composition.__dict__.keys():
-            if re.fullmatch(r'^[A-Z][a-z]?$', key):
-                coef = getattr(self.composition, key)
-                coef_str = f'{coef:.2f}'
-                if coef_str == '0.00':
-                    pass
-                elif coef_str == '1.00':
-                    formula_str += key
-                else:
-                    coef_str = re.sub(
-                        r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef_str)
-                    )
-                    formula_str += f'{key}{coef_str}'
+        if self.composition:
+            for key in self.composition.__dict__.keys():
+                if re.fullmatch(r'^[A-Z][a-z]?$', key):
+                    coef = getattr(self.composition, key)
+                    coef_str = f'{coef:.2f}'
+                    if coef_str == '0.00':
+                        pass
+                    elif coef_str == '1.00':
+                        formula_str += key
+                    else:
+                        coef_str = re.sub(
+                            r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef_str)
+                        )
+                        formula_str += f'{key}{coef_str}'
         self.molecular_formula = formula_str
 
         # Set layer name if not set
@@ -2903,19 +2904,20 @@ class Photoabsorber_CZTS(Layer):
 
         # Generate molecular formula
         formula_str = ''
-        for key in self.composition.__dict__.keys():
-            if re.fullmatch(r'^[A-Z][a-z]?$', key):
-                coef = getattr(self.composition, key)
-                coef_str = f'{coef:.2f}'
-                if coef_str == '0.00':
-                    pass
-                elif coef_str == '1.00':
-                    formula_str += key
-                else:
-                    coef_str = re.sub(
-                        r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef_str)
-                    )
-                    formula_str += f'{key}{coef_str}'
+        if self.composition:
+            for key in self.composition.__dict__.keys():
+                if re.fullmatch(r'^[A-Z][a-z]?$', key):
+                    coef = getattr(self.composition, key)
+                    coef_str = f'{coef:.2f}'
+                    if coef_str == '0.00':
+                        pass
+                    elif coef_str == '1.00':
+                        formula_str += key
+                    else:
+                        coef_str = re.sub(
+                            r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef_str)
+                        )
+                        formula_str += f'{key}{coef_str}'
         self.molecular_formula = formula_str
 
         # Set layer name if not set

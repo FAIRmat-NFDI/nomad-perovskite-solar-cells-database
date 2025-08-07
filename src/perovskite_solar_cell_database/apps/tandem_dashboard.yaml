@@ -10,7 +10,7 @@ widgets:
       title: ""
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Perovskite Bandgap
+      title: Bandgap - Bottom Photoabsorber
     title: ""
     layout:
       xxl:
@@ -59,7 +59,7 @@ widgets:
       title: Efficiency (%)
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Perovskite Bandgap
+      title: Bandgap - Bottom Photoabsorber
     title: ""
     layout:
       xxl:
@@ -109,7 +109,7 @@ widgets:
       unit: mA / cm^2
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Perovskite Bandgap
+      title: Bandgap - Bottom Photoabsorber
     title: ""
     layout:
       xxl:
@@ -159,7 +159,7 @@ widgets:
       title: ""
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Perovskite Bandgap
+      title: Bandgap - Bottom Photoabsorber
     title: ""
     layout:
       xxl:
@@ -197,3 +197,55 @@ widgets:
         w: 6
         y: 4
         x: 6
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+        title: Efficiency (%)
+    y:
+      search_quantity: results.properties.electronic.band_gap[1].value
+      unit: ""
+      title: Bandgap - Top Photoabsorber
+      scale: linear
+    x:
+      search_quantity: results.properties.electronic.band_gap[0].value
+      title: Bandgap - Bottom Photoabsorber
+      scale: linear
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 8
+        w: 9
+        y: 6
+        x: 0
+      xl:
+        minH: 3
+        minW: 3
+        h: 8
+        w: 9
+        y: 6
+        x: 0
+      lg:
+        minH: 3
+        minW: 3
+        h: 8
+        w: 9
+        y: 6
+        x: 0
+      md:
+        minH: 3
+        minW: 3
+        h: 8
+        w: 9
+        y: 5
+        x: 0
+      sm:
+        minH: 3
+        minW: 3
+        h: 8
+        w: 9
+        y: 4
+        x: 0
