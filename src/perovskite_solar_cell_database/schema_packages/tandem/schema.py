@@ -2,6 +2,11 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from perovskite_solar_cell_database.composition import PerovskiteIonComponent
+
+from nomad.datamodel.results import Material, Relation, Results, System
+from nomad.normalizing.topology import add_system, add_system_info
+
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
     from structlog.stdlib import BoundLogger
@@ -12,7 +17,7 @@ from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
-from perovskite_solar_cell_database.schema_packages.tandem.device_stack import Layer
+from perovskite_solar_cell_database.schema_packages.tandem.device_stack import Layer, Photoabsorber_Perovskite
 from perovskite_solar_cell_database.schema_packages.tandem.encapsulation_data import (
     EncapsulationData,
 )
@@ -325,6 +330,38 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         )
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
+
+        topology = {}
+        tandem_system = System(
+            label='Tandem Solar Cell',
+            description='A system describing the tandem solar cell.',
+            system_relation=Relation(type='root'),
+        )
+        add_system(tandem_system, topology)
+        add_system_info(tandem_system, topology)
+
+        # TODO: Go through the device stack and add the absorber layers to the topology
+        for layer in self.device_stack:
+            if isinstance(layer, Photoabsorber_Perovskite) and layer.composition is not None:
+                system = layer.composition.to_topology_system()
+                system.label = 'Perovskite Layer'
+                system.description = 'A perovskite layer in the tandem solar cell.'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+                ions: list[PerovskiteIonComponent] = (
+                    layer.composition.ions_a_site + layer.composition.ions_b_site + layer.composition.ions_x_site
+                )
+                for ion in ions:
+                    child_system = ion.to_topology_system()
+                    add_system(child_system, topology, system)
+                    add_system_info(child_system, topology)
+
+        if not archive.results:
+            archive.results = Results()
+        if not archive.results.material:
+            archive.results.material = Material()      
+        for system in topology.values():
+            archive.results.material.m_add_sub_section(Material.topology, system)
 
 
 class RawFileTandemJson(Schema):

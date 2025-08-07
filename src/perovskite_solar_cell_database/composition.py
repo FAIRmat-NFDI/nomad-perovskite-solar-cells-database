@@ -936,6 +936,7 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
             formula.populate(archive.results.material, overwrite=True)
         except Exception as e:
             logger.warn('Could not analyse chemical formula.', exc_info=e)
+        archive.results.material.chemical_formula_descriptive = self.long_form
 
         if archive.results.material.chemical_formula_iupac is not None:
             self.elemental_composition = elemental_composition_from_formula(
@@ -943,11 +944,21 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
             )
             
         if self.dimensionality in ['0D', '1D', '2D', '3D']:
-            archive.results.properties.dimensionality = self.dimensionality
+            archive.results.properties.dimensionality = self.dimensionality  # TODO Check if this actually exists in the results
             if self.dimensionality == '3D':
                 archive.results.material.structural_type = 'bulk'
             elif self.dimensionality != '0D':
                 archive.results.material.structural_type = self.dimensionality
+        
+        if self.band_gap is not None:
+            archive.results.properties.electronic = ElectronicProperties(
+                band_gap=[
+                    BandGap(
+                        value=self.band_gap,
+                        provenance=ProvenanceTracker(label='perovskite_composition'),
+                    )
+                ]
+            )
 
         topology = {}
         parent_system = self.to_topology_system()
@@ -962,18 +973,6 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
 
         for system in topology.values():
             archive.results.material.m_add_sub_section(Material.topology, system)
-
-        if self.band_gap is not None:
-            archive.results.properties.electronic = ElectronicProperties(
-                band_gap=[
-                    BandGap(
-                        value=self.band_gap,
-                        provenance=ProvenanceTracker(label='perovskite_composition'),
-                    )
-                ]
-            )
-
-        
 
 
 m_package.__init_metainfo__()
