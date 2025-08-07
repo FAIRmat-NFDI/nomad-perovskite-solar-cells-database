@@ -23,7 +23,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        uv run --with coveralls coveralls --service=github
+        uv run --no-sync --with coveralls coveralls --service=github
 
   ruff-linting:
     runs-on: ubuntu-latest
