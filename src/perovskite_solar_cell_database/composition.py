@@ -828,6 +828,7 @@ class PerovskiteCompositionSection(ArchiveSection):
             system.structural_type = self.dimensionality
 
         system.chemical_formula_descriptive = self.long_form
+        return system
 
     def get_formula_str(self) -> str:
         """
