@@ -2,6 +2,9 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from nomad.atomutils import (
+    Formula,
+)
 from nomad.datamodel.metainfo.common import ProvenanceTracker
 from nomad.datamodel.results import (
     BandGap,
@@ -369,6 +372,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 system = layer.composition.to_topology_system()
                 system.label = 'Perovskite Layer'
                 system.description = 'A perovskite layer in the tandem solar cell.'
+                system.dimensionality = layer.composition.dimensionality
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
                 ions: list[PerovskiteIonComponent] = (
@@ -385,6 +389,15 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             archive.results = Results()
         if not archive.results.material:
             archive.results.material = Material()
+        # temporary fix for now, fills material info from the first perovskite
+        for system in topology.values():
+            if system.label == 'Perovskite Layer':
+                formula = Formula(system.chemical_formula_reduced)
+                formula.populate(archive.results.material, overwrite=True)
+                archive.results.material.chemical_formula_descriptive = system.chemical_formula_descriptive
+                archive.results.material.dimensionality = system.dimensionality
+                archive.results.material.structural_type = system.structural_type
+                break
         if not archive.results.properties:
             archive.results.properties = Properties()
         for system in topology.values():
