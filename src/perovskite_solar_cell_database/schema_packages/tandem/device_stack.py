@@ -1,4 +1,5 @@
 import re
+
 from ase.data import chemical_symbols
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import (
