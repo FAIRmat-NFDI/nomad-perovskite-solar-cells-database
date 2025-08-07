@@ -1,0 +1,199 @@
+widgets:
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+    y:
+      search_quantity: data.key_performance_metrics.open_circuit_voltage#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      title: ""
+    x:
+      search_quantity: results.properties.electronic.band_gap[0].value
+      title: Perovskite Bandgap
+    title: ""
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 9
+        y: 0
+        x: 27
+      xl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 7
+        y: 0
+        x: 21
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 6
+        y: 0
+        x: 6
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 9
+        y: 0
+        x: 9
+      sm:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 6
+        y: 0
+        x: 6
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+    y:
+      search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      title: Efficiency (%)
+    x:
+      search_quantity: results.properties.electronic.band_gap[0].value
+      title: Perovskite Bandgap
+    title: ""
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 9
+        y: 0
+        x: 18
+      xl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 7
+        y: 0
+        x: 14
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 6
+        y: 0
+        x: 0
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 9
+        y: 0
+        x: 0
+      sm:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 6
+        y: 0
+        x: 0
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+    y:
+      search_quantity: data.key_performance_metrics.short_circuit_current_density#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      title: ""
+      unit: mA / cm^2
+    x:
+      search_quantity: results.properties.electronic.band_gap[0].value
+      title: Perovskite Bandgap
+    title: ""
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 9
+        y: 0
+        x: 9
+      xl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 7
+        y: 0
+        x: 7
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 6
+        y: 0
+        x: 12
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 9
+        y: 5
+        x: 0
+      sm:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 6
+        y: 4
+        x: 0
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+        title: " "
+    y:
+      search_quantity: data.key_performance_metrics.fill_factor#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      title: ""
+    x:
+      search_quantity: results.properties.electronic.band_gap[0].value
+      title: Perovskite Bandgap
+    title: ""
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 9
+        y: 0
+        x: 0
+      xl:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 7
+        y: 0
+        x: 0
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 6
+        y: 0
+        x: 18
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 9
+        y: 5
+        x: 9
+      sm:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 6
+        y: 4
+        x: 6

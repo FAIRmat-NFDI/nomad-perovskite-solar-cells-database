@@ -223,7 +223,7 @@ class EnvironmentalConditions(ArchiveSection):
             props=dict(
                 suggestions=[
                     'air',
-                    'dry_air',
+                    'dry air',
                     'N2',
                     'Ar',
                     'He',
@@ -429,8 +429,8 @@ class LightSource(ArchiveSection):
                     'UVA',
                     'UVB',
                     'Monochromatic',
-                    'Ambient_indoor',
-                    'Ambient_outdoor',
+                    'Ambient indoor',
+                    'Ambient outdoor',
                     'Other',
                 ]
             ),
@@ -444,21 +444,21 @@ class LightSource(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'Dark_conditions',
-                    'Solar_simulator_unspecified',
-                    'Metal_halide',
-                    'Sulfur_plasma',
+                    'Dark conditions',
+                    'Solar simulator unspecified',
+                    'Metal halide',
+                    'Sulfur plasma',
                     'LED',
-                    'White_led',
+                    'White led',
                     'Xenon',
                     'Halogen',
                     'Laser',
                     'Incandescent',
                     'Fluorescent',
-                    'Ambient_indoor',
-                    'Ambient_outdoor',
+                    'Ambient indoor',
+                    'Ambient outdoor',
                     'UV',
-                    'Proton_source',
+                    'Proton source',
                     'Other',
                 ]
             ),
@@ -535,10 +535,10 @@ class Preconditioning(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'Light_soaking',
-                    'Potential_biasing',
-                    'Current_biasing',
-                    'Temperature_biasing',
+                    'Light soaking',
+                    'Potential biasing',
+                    'Current biasing',
+                    'Temperature biasing',
                     'Other',
                 ]
             ),
@@ -755,9 +755,9 @@ class StabilizedPerformanceDetails(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'constant_potential',
-                    'constant_current',
-                    'maximum_power_point_tracking',
+                    'constant potential',
+                    'constant current',
+                    'maximum power point tracking',
                 ]
             ),
         ),
@@ -897,11 +897,11 @@ class StabilityDetails(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'maximum_power_point_tracking',
-                    'open_circuit',
-                    'constant_potential',
-                    'constant_current',
-                    'constant_resistance',
+                    'maximum power point tracking',
+                    'open circuit',
+                    'constant potential',
+                    'constant current',
+                    'constant resistance',
                     'other',
                 ]
             ),
@@ -986,11 +986,11 @@ class LoadCycleSegments(ArchiveSection):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'maximum_power_point_tracking',
-                    'open_circuit',
-                    'constant_potential',
-                    'constant_current',
-                    'constant_resistance',
+                    'maximum power point tracking',
+                    'open circuit',
+                    'constant potential',
+                    'constant current',
+                    'constant resistance',
                     'other',
                 ]
             ),
@@ -1260,9 +1260,9 @@ class JV(Measurement):
             props=dict(
                 suggestions=[
                     'dark',
-                    'standard_light',
-                    'concentrated_light',
-                    'indoor_light',
+                    'standard light',
+                    'concentrated light',
+                    'indoor light',
                     'other',
                 ]
             ),
@@ -1421,9 +1421,9 @@ class StabilizedPerformance(Measurement):
             props=dict(
                 suggestions=[
                     'dark',
-                    'standard_light',
-                    'concentrated_light',
-                    'indoor_light',
+                    'standard light',
+                    'concentrated light',
+                    'indoor light',
                     'other',
                 ]
             ),
@@ -1486,7 +1486,7 @@ class StabilizedPerformance(Measurement):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'Stabilized_performance'
+        self.method = 'Stabilized Performance'
 
 
 class Stability(Measurement):
@@ -1700,7 +1700,7 @@ class OutdoorPerformance(Measurement):
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
-        self.method = 'OutdoorPerformance'
+        self.method = 'Outdoor Performance'
 
 
 class Transmission(Measurement):
