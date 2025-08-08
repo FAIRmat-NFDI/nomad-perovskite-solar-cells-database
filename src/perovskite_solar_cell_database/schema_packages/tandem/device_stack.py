@@ -1,3 +1,5 @@
+import re
+
 from ase.data import chemical_symbols
 from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import (
@@ -2748,7 +2750,7 @@ class Photoabsorber_Perovskite(Layer):
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'Perovskite'
 
 
@@ -2819,7 +2821,7 @@ class Photoabsorber_Silicon(Layer):
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'Silicon'
 
 
@@ -2851,31 +2853,25 @@ class Photoabsorber_CIGS(Layer):
         super().normalize(archive, logger)
 
         # Generate molecular formula
-        atoms = []
-        coefficients = []
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
-            atoms.append('Cu')
-            coefficients.append(self.composition.Cu)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'In'):
-            atoms.append('In')
-            coefficients.append(self.composition.In)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Ga'):
-            atoms.append('Ga')
-            coefficients.append(self.composition.Ga)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Se'):
-            atoms.append('Se')
-            coefficients.append(self.composition.Se)
-
-        if coefficients:
-            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
-            coefficients = [str(i) for i in coefficients]
-            coefficients = ['' for i in coefficients if i == '1']
-            self.molecular_formula = ''.join(
-                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
-            )
+        formula_str = ''
+        if self.composition:
+            for key in self.composition.__dict__.keys():
+                if re.fullmatch(r'^[A-Z][a-z]?$', key):
+                    coef = getattr(self.composition, key)
+                    coef_str = f'{coef:.2f}'
+                    if coef_str == '0.00':
+                        pass
+                    elif coef_str == '1.00':
+                        formula_str += key
+                    else:
+                        coef_str = re.sub(
+                            r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef_str)
+                        )
+                        formula_str += f'{key}{coef_str}'
+        self.molecular_formula = formula_str
 
         # Set layer name if not set
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'CIGS'
 
 
@@ -2907,32 +2903,26 @@ class Photoabsorber_CZTS(Layer):
         super().normalize(archive, logger)
 
         # Generate molecular formula
-        atoms = []
-        coefficients = []
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Cu'):
-            atoms.append('Cu')
-            coefficients.append(self.composition.Cu)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Zn'):
-            atoms.append('Zn')
-            coefficients.append(self.composition.Zn)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'Sn'):
-            atoms.append('Sn')
-            coefficients.append(self.composition.Sn)
-        if hasattr(self, 'composition') and hasattr(self.composition, 'S'):
-            atoms.append('S')
-            coefficients.append(self.composition.S)
-
-        if coefficients:
-            coefficients = ['none' for i in coefficients if i in ('0', '0.0', None)]
-            coefficients = [str(i) for i in coefficients]
-            coefficients = ['' for i in coefficients if i == '1']
-            self.molecular_formula = ''.join(
-                [a + i for a, i in zip(atoms, coefficients) if i not in ('none')]
-            )
+        formula_str = ''
+        if self.composition:
+            for key in self.composition.__dict__.keys():
+                if re.fullmatch(r'^[A-Z][a-z]?$', key):
+                    coef = getattr(self.composition, key)
+                    coef_str = f'{coef:.2f}'
+                    if coef_str == '0.00':
+                        pass
+                    elif coef_str == '1.00':
+                        formula_str += key
+                    else:
+                        coef_str = re.sub(
+                            r'(\.\d*?[1-9])0+$', r'\1', re.sub(r'\.0+$', '', coef_str)
+                        )
+                        formula_str += f'{key}{coef_str}'
+        self.molecular_formula = formula_str
 
         # Set layer name if not set
-        if not hasattr(self, 'name') or not self.name:
-            self.name = 'CIGS'
+        if not self.name:
+            self.name = 'CZTS'
 
 
 class Photoabsorber_GaAs(Layer):
@@ -2959,7 +2949,7 @@ class Photoabsorber_GaAs(Layer):
         self.molecular_formula = 'GaAs'
 
         # Set layer name if not set
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'GaAs'
 
 
@@ -3035,7 +3025,7 @@ class Photoabsorber_OPV(Layer):
         super().normalize(archive, logger)
 
         # Set layer name if not set
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'OPV'
 
 
@@ -3099,7 +3089,7 @@ class Photoabsorber_DSSC(Layer):
         super().normalize(archive, logger)
 
         # Set layer name if not set
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'DSSC'
 
 
@@ -3132,7 +3122,7 @@ class Photoabsorber_QuantumDot(Layer):
         super().normalize(archive, logger)
 
         # Set layer name if not set
-        if not hasattr(self, 'name') or not self.name:
+        if not self.name:
             self.name = 'QD-absorber'
 
 

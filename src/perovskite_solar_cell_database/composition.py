@@ -814,6 +814,58 @@ class PerovskiteCompositionSection(ArchiveSection):
         repeats=True,
     )
 
+    def to_topology_system(self, logger: 'BoundLogger') -> System:
+        system = System(
+            label='Perovskite Composition',
+            description='A system describing the chemistry and components of the perovskite.',
+        )
+        formula_str = self.get_formula_str()
+        if formula_str:
+            formula = Formula(formula_str)
+            formula.populate(system, overwrite=True)
+        else:
+            logger.warn('Could not find chemical formula for Perovskite.')
+
+        if self.dimensionality == '3D':
+            system.structural_type = 'bulk'
+        elif self.dimensionality in ['1D', '2D']:
+            system.structural_type = self.dimensionality
+
+        system.chemical_formula_descriptive = self.long_form
+        return system
+
+    def get_formula_str(self) -> str:
+        """
+        Get the formula string for the perovskite composition.
+
+        Returns:
+            str: The formula string.
+        """
+        ions: list[PerovskiteIonComponent] = (
+            self.ions_a_site + self.ions_b_site + self.ions_x_site
+        )
+        self.short_form = ''
+        self.long_form = ''
+        formula_str = ''
+        for ion in ions:
+            if ion.abbreviation is None:
+                break
+            self.short_form += ion.abbreviation
+            if ion.coefficient is None:
+                break
+            # Remove trailing zeros from the coefficient
+            coefficient_str = re.sub(r'(\.\d*?)0+$', r'\1', ion.coefficient)
+            # Remove trailing dot if it is the last character
+            coefficient_str = re.sub(r'\.$', '', coefficient_str)
+            if ion.coefficient == '1':
+                coefficient_str = ''
+            self.long_form += f'{ion.abbreviation}{coefficient_str}'
+            if not isinstance(ion.molecular_formula, str):
+                break
+            cleaned_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', ion.molecular_formula)
+            formula_str += f'({cleaned_formula}){coefficient_str}'
+        return formula_str
+
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `PerovskiteCompositionSection` class.
@@ -823,89 +875,8 @@ class PerovskiteCompositionSection(ArchiveSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        if not archive.results:
-            archive.results = Results()
-        if not archive.results.material:
-            archive.results.material = Material()
-        if not archive.results.properties:
-            archive.results.properties = Properties()
-        ions: list[PerovskiteIonComponent] = (
-            self.ions_a_site + self.ions_b_site + self.ions_x_site
-        )
-        self.short_form = ''
-        self.long_form = ''
-        formula_str = ''
-        for ion in ions:
-            if ion.abbreviation is None:
-                continue
-            self.short_form += ion.abbreviation
-            if ion.coefficient is None:
-                continue
-            coefficient_str = re.sub(r'(\.\d*?)0+$', r'\1', ion.coefficient)
-            coefficient_str = re.sub(r'\.$', '', coefficient_str)
-            if coefficient_str == '1':
-                coefficient_str = ''
-            self.long_form += f'{ion.abbreviation}{coefficient_str}'
-            if not isinstance(ion.molecular_formula, str):
-                continue
-            cleaned_formula = re.sub(r'(?<=[A-Za-z])\d*[+-]', '', ion.molecular_formula)
-            if re.match(r'^(?=[^A-Z]*[A-Z][^A-Z]*$)[^0-9]*$', cleaned_formula):
-                formula_str += f'{cleaned_formula}{coefficient_str}'
-            else:
-                formula_str += f'({cleaned_formula}){coefficient_str}'
-        try:
-            formula = Formula(formula_str)
-            formula.populate(archive.results.material, overwrite=True)
-        except Exception as e:
-            logger.warn('Could not analyse chemical formula.', exc_info=e)
-
-        if self.dimensionality in ['0D', '1D', '2D', '3D']:
-            archive.results.properties.dimensionality = self.dimensionality
-            if self.dimensionality == '3D':
-                archive.results.material.structural_type = 'bulk'
-            elif self.dimensionality != '0D':
-                archive.results.material.structural_type = self.dimensionality
-
         super().normalize(archive, logger)
-
-        topology = {}
-        parent_system = System(
-            label='Perovskite Composition',
-            description='A system describing the chemistry and components of the perovskite.',
-            system_relation=Relation(type='root'),
-            chemical_formula_descriptive=self.long_form,
-        )
-
-        parent_system.structural_type = archive.results.material.structural_type
-        parent_system.chemical_formula_hill = (
-            archive.results.material.chemical_formula_hill
-        )
-        parent_system.elements = archive.results.material.elements
-        parent_system.chemical_formula_iupac = (
-            archive.results.material.chemical_formula_iupac
-        )
-
-        add_system(parent_system, topology)
-        add_system_info(parent_system, topology)
-
-        for ion in ions:
-            child_system = ion.to_topology_system()
-            add_system(child_system, topology, parent_system)
-            add_system_info(child_system, topology)
-
-        material = archive.m_setdefault('results.material')
-        for system in topology.values():
-            material.m_add_sub_section(Material.topology, system)
-
-        if self.band_gap is not None:
-            archive.results.properties.electronic = ElectronicProperties(
-                band_gap=[
-                    BandGap(
-                        value=self.band_gap,
-                        provenance=ProvenanceTracker(label='perovskite_composition'),
-                    )
-                ]
-            )
+        self.get_formula_str()
 
 
 class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, EntryData):
@@ -953,13 +924,61 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
             logger (BoundLogger): A structlog logger.
         """
         super().normalize(archive, logger)
-        self.components = self.ions_a_site + self.ions_b_site + self.ions_x_site
-        results: Results = archive.results
-        material: Material = results.material
-        if material.chemical_formula_iupac is not None:
+        if not archive.results:
+            archive.results = Results()
+        if not archive.results.material:
+            archive.results.material = Material()
+        if not archive.results.properties:
+            archive.results.properties = Properties()
+
+        self.components: list[PerovskiteIonComponent] = (
+            self.ions_a_site + self.ions_b_site + self.ions_x_site
+        )
+
+        try:
+            formula = Formula(self.get_formula_str())
+            formula.populate(archive.results.material, overwrite=True)
+        except Exception as e:
+            logger.warn('Could not analyse chemical formula.', exc_info=e)
+        archive.results.material.chemical_formula_descriptive = self.long_form
+
+        if archive.results.material.chemical_formula_iupac is not None:
             self.elemental_composition = elemental_composition_from_formula(
-                Formula(material.chemical_formula_iupac)
+                Formula(archive.results.material.chemical_formula_iupac)
             )
+
+        if self.dimensionality in ['0D', '1D', '2D', '3D']:
+            archive.results.properties.dimensionality = (
+                self.dimensionality
+            )  # TODO Check if this actually exists in the results
+            if self.dimensionality == '3D':
+                archive.results.material.structural_type = 'bulk'
+            elif self.dimensionality != '0D':
+                archive.results.material.structural_type = self.dimensionality
+
+        if self.band_gap is not None:
+            archive.results.properties.electronic = ElectronicProperties(
+                band_gap=[
+                    BandGap(
+                        value=self.band_gap,
+                        provenance=ProvenanceTracker(label='perovskite_composition'),
+                    )
+                ]
+            )
+
+        topology = {}
+        parent_system = self.to_topology_system(logger=logger)
+        parent_system.system_relation = Relation(type='root')
+        add_system(parent_system, topology)
+        add_system_info(parent_system, topology)
+
+        for ion in self.components:
+            child_system = ion.to_topology_system(logger=logger)
+            add_system(child_system, topology, parent_system)
+            add_system_info(child_system, topology)
+
+        for system in topology.values():
+            archive.results.material.m_add_sub_section(Material.topology, system)
 
 
 m_package.__init_metainfo__()

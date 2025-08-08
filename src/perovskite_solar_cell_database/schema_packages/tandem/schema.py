@@ -2,6 +2,23 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from nomad.atomutils import (
+    Formula,
+)
+from nomad.datamodel.metainfo.common import ProvenanceTracker
+from nomad.datamodel.results import (
+    BandGap,
+    ElectronicProperties,
+    Material,
+    Properties,
+    Relation,
+    Results,
+    System,
+)
+from nomad.normalizing.topology import add_system, add_system_info
+
+from perovskite_solar_cell_database.composition import PerovskiteIonComponent
+
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
     from structlog.stdlib import BoundLogger
@@ -12,7 +29,17 @@ from nomad.datamodel.data import Schema, UseCaseElnCategory
 from nomad.datamodel.metainfo.plot import PlotlyFigure, PlotSection
 from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
-from perovskite_solar_cell_database.schema_packages.tandem.device_stack import Layer
+from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
+    Layer,
+    Photoabsorber_CIGS,
+    Photoabsorber_CZTS,
+    Photoabsorber_DSSC,
+    Photoabsorber_GaAs,
+    Photoabsorber_OPV,
+    Photoabsorber_Perovskite,
+    Photoabsorber_QuantumDot,
+    Photoabsorber_Silicon,
+)
 from perovskite_solar_cell_database.schema_packages.tandem.encapsulation_data import (
     EncapsulationData,
 )
@@ -333,6 +360,168 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         fig = self.make_plotly_figure()
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
+
+        topology = {}
+        tandem_system = System(
+            label='Tandem Solar Cell',
+            description='A system describing the tandem solar cell.',
+            system_relation=Relation(type='root'),
+        )
+        add_system(tandem_system, topology)
+        add_system_info(tandem_system, topology)
+
+        # TODO: Go through the device stack and add the absorber layers to the topology
+        for layer in self.device_stack:
+            if (
+                isinstance(layer, Photoabsorber_Perovskite)
+                and layer.composition is not None
+            ):
+                system = layer.composition.to_topology_system(logger=logger)
+                system.label = 'Perovskite Layer'
+                system.description = 'A perovskite layer in the tandem solar cell.'
+                system.dimensionality = layer.composition.dimensionality
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+                ions: list[PerovskiteIonComponent] = (
+                    layer.composition.ions_a_site
+                    + layer.composition.ions_b_site
+                    + layer.composition.ions_x_site
+                )
+                for ion in ions:
+                    child_system = ion.to_topology_system()
+                    add_system(child_system, topology, system)
+                    add_system_info(child_system, topology)
+
+            elif isinstance(layer, Photoabsorber_Silicon):
+                system = System(
+                    label='Silicon Layer',
+                    description='A silicon layer in the tandem solar cell.',
+                )
+                formula = Formula('Si')
+                formula.populate(system, overwrite=True)
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_CIGS):
+                system = System(
+                    label='CIGS Layer',
+                    description='CIGS layer in the tandem solar cell.',
+                )
+                if layer.molecular_formula:
+                    formula = Formula(layer.molecular_formula)
+                    formula.populate(system, overwrite=True)
+                else:
+                    logger.warn(
+                        f'Could not find chemical formula for CIGS layer {layer.layer_index}.'
+                    )
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_CZTS):
+                system = System(
+                    label='CZTS Layer',
+                    description='CZTS layer in the tandem solar cell.',
+                )
+                if layer.molecular_formula:
+                    formula = Formula(layer.molecular_formula)
+                    formula.populate(system, overwrite=True)
+                else:
+                    logger.warn(
+                        f'Could not find chemical formula for CZTS layer {layer.layer_index}.'
+                    )
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_GaAs):
+                system = System(
+                    label='GaAs Layer',
+                    description='GaAs layer in the tandem solar cell.',
+                )
+                if layer.molecular_formula:
+                    formula = Formula(layer.molecular_formula)
+                    formula.populate(system, overwrite=True)
+                else:
+                    logger.warn(
+                        f'Could not find chemical formula for GaAs layer {layer.layer_index}.'
+                    )
+                system.dimensionality = '3D'
+                system.structural_type = 'bulk'
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_OPV):
+                system = System(
+                    label='OPV Layer',
+                    description='OPV layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_DSSC):
+                system = System(
+                    label='DSSC Layer',
+                    description='DSSC layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, Photoabsorber_QuantumDot):
+                system = System(
+                    label='QD Layer',
+                    description='QD layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+
+        if not archive.results:
+            archive.results = Results()
+        if not archive.results.material:
+            archive.results.material = Material()
+        # temporary fix for now, fills material info from the first perovskite
+        for system in topology.values():
+            if system.label == 'Perovskite Layer':
+                if system.chemical_formula_reduced:
+                    formula = Formula(system.chemical_formula_reduced)
+                    formula.populate(archive.results.material, overwrite=True)
+                else:
+                    logger.warn(
+                        'Could not find chemical formula to populate results.material.'
+                    )
+                archive.results.material.chemical_formula_descriptive = (
+                    system.chemical_formula_descriptive
+                )
+                archive.results.material.dimensionality = system.dimensionality
+                archive.results.material.structural_type = system.structural_type
+                break
+        if not archive.results.properties:
+            archive.results.properties = Properties()
+        for system in topology.values():
+            archive.results.material.m_add_sub_section(Material.topology, system)
+
+        band_gaps = []
+        for layer in self.device_stack:
+            if layer.functionality == 'photoabsorber':
+                try:
+                    band_gap_value = layer.properties.band_gap.value
+                    band_gaps.append(
+                        BandGap(
+                            value=band_gap_value,
+                            provenance=ProvenanceTracker(
+                                label=f'layer index {layer.layer_index} - {layer.name}'
+                            ),
+                            label=layer.name,
+                        )
+                    )
+                except Exception as e:
+                    logger.warn(
+                        f'No band gap value found for layer {layer.layer_index}',
+                        exc_info=e,
+                    )
+
+        if band_gaps:
+            archive.results.properties.electronic = ElectronicProperties(
+                band_gap=band_gaps
+            )
 
 
 class RawFileTandemJson(Schema):
