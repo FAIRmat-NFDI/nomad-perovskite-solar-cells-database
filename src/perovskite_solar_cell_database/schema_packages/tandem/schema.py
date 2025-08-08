@@ -412,7 +412,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     formula = Formula(layer.molecular_formula)
                     formula.populate(system, overwrite=True)
                 else:
-                    logger.warn(f'Could not find chemical formula for CIGS layer {layer.layer_index}.')
+                    logger.warn(
+                        f'Could not find chemical formula for CIGS layer {layer.layer_index}.'
+                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -426,7 +428,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     formula = Formula(layer.molecular_formula)
                     formula.populate(system, overwrite=True)
                 else:
-                    logger.warn(f'Could not find chemical formula for CZTS layer {layer.layer_index}.')
+                    logger.warn(
+                        f'Could not find chemical formula for CZTS layer {layer.layer_index}.'
+                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -440,7 +444,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     formula = Formula(layer.molecular_formula)
                     formula.populate(system, overwrite=True)
                 else:
-                    logger.warn(f'Could not find chemical formula for GaAs layer {layer.layer_index}.')
+                    logger.warn(
+                        f'Could not find chemical formula for GaAs layer {layer.layer_index}.'
+                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -478,7 +484,9 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     formula = Formula(system.chemical_formula_reduced)
                     formula.populate(archive.results.material, overwrite=True)
                 else:
-                    logger.warn('Could not find chemical formula to populate results.material.')
+                    logger.warn(
+                        'Could not find chemical formula to populate results.material.'
+                    )
                 archive.results.material.chemical_formula_descriptive = (
                     system.chemical_formula_descriptive
                 )
