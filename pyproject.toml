@@ -61,9 +61,10 @@ dev = [
     "pydantic>=2.0,<2.11",
     "nomad-docs>=0.1.3"
 ]
-extraction = [
-    "perovscribe @ git+ssh://git@github.com/lamalab-org/perovskite-extraction.git@cacedb25c66a075f4af02c6b481dacaabbbda4fb",
-]
+# Excluded until perovscribe is made public
+# extraction = [
+#     "perovscribe @ git+ssh://git@github.com/lamalab-org/perovskite-extraction.git@cacedb25c66a075f4af02c6b481dacaabbbda4fb",
+# ]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
@@ -159,4 +160,5 @@ perovskite_tandem_json_parser = "perovskite_solar_cell_database.parsers:tandem_j
 solar_cell_app = "perovskite_solar_cell_database.apps:solar_cells"
 tandem_app = "perovskite_solar_cell_database.apps:tandem_cells"
 llm_extraction_schema = "perovskite_solar_cell_database:llm_extraction_schema"
+# llm_extractor_schema = "perovskite_solar_cell_database.schema_packages.llm_extractor"
 llm_extracted_solar_cells = "perovskite_solar_cell_database.apps:llm_extracted_solar_cells"
