@@ -14,10 +14,10 @@ jobs:
         python-version: 3.12
     - name: Install dependencies
       run: |
-        uv pip install .[dev]
+        uv sync --all-extras
     - name: Test with pytest
       run: |
-        uv run --no-sync --with coverage coverage run -m pytest -sv
+        uv run --with coverage coverage run -m pytest -sv
     - name: Submit to coveralls
       continue-on-error: true
       env:
