@@ -1,0 +1,317 @@
+{
+    "data": {
+        "layer_order": "FTO,c-TiO2,m-TiO2,Cs0.05FA0.81MA0.14PbI2.55Br0.45,DTB(3%DEG),Au",
+        "perovskite_composition": {
+            "formula": "Cs0.05FA0.81MA0.14PbI2.55Br0.45",
+            "sample_type": "Polycrystalline film",
+            "dimensionality": "3D",
+            "ions_a_site": [
+                {
+                    "abbreviation": "Cs",
+                    "common_name": "Cesium",
+                    "molecular_formula": "Cs+",
+                    "coefficient": "0.05"
+                },
+                {
+                    "abbreviation": "FA",
+                    "common_name": "Formamidinium",
+                    "molecular_formula": "CH6N+",
+                    "coefficient": "0.81"
+                },
+                {
+                    "abbreviation": "MA",
+                    "common_name": "Methylammonium",
+                    "molecular_formula": "CH5N+",
+                    "coefficient": "0.14"
+                }
+            ],
+            "ions_b_site": [
+                {
+                    "abbreviation": "Pb",
+                    "common_name": "Lead",
+                    "molecular_formula": "Pb2+",
+                    "coefficient": "1"
+                }
+            ],
+            "ions_x_site": [
+                {
+                    "abbreviation": "I",
+                    "common_name": "Iodide",
+                    "molecular_formula": "I-",
+                    "coefficient": "2.55"
+                },
+                {
+                    "abbreviation": "Br",
+                    "common_name": "Bromide",
+                    "molecular_formula": "Br-",
+                    "coefficient": "0.45"
+                }
+            ],
+            "band_gap": 1.6
+        },
+        "device_architecture": "nip",
+        "pce": 20.19,
+        "jsc": 23.64,
+        "voc": 1.14,
+        "ff": 75.08,
+        "number_devices": 15,
+        "averaged_quantities": true,
+        "active_area": 0.1,
+        "light_source": {
+            "type": "AM 1.5G",
+            "light_intensity": 100.0
+        },
+        "encapsulated": false,
+        "additional_notes": "Champion device with certified PCE of 20.10%",
+        "layers": [
+            {
+                "name": "FTO",
+                "thickness": null,
+                "functionality": "Substrate",
+                "deposition": null,
+                "additional_treatment": null
+            },
+            {
+                "name": "c-TiO2",
+                "thickness": null,
+                "functionality": "Electron-transport",
+                "deposition": [
+                    {
+                        "step_name": null,
+                        "method": "Spin-coating",
+                        "atmosphere": "Ambient air",
+                        "temperature": null,
+                        "duration": null,
+                        "antisolvent": null,
+                        "solution": {
+                            "compounds": null,
+                            "solutes": [
+                                {
+                                    "name": "titanium diisopropoxide bis(acetylacetonate)",
+                                    "concentration": 0.15000000000000002,
+                                    "concentration_unit": "mol/L"
+                                }
+                            ],
+                            "volume": null,
+                            "temperature": null,
+                            "solvents": [
+                                {
+                                    "name": "1-butanol",
+                                    "volume_fraction": null
+                                }
+                            ]
+                        },
+                        "additional_parameters": {
+                            "spin_speed": "2000 rpm",
+                            "spin_time": "60 s"
+                        }
+                    },
+                    {
+                        "step_name": null,
+                        "method": "Thermal-annealing",
+                        "atmosphere": "Ambient air",
+                        "temperature": 125.0,
+                        "duration": 300.0,
+                        "antisolvent": null,
+                        "solution": null,
+                        "additional_parameters": null
+                    },
+                    {
+                        "step_name": null,
+                        "method": "Thermal-annealing",
+                        "atmosphere": "Ambient air",
+                        "temperature": 450.0,
+                        "duration": 1800.0,
+                        "antisolvent": null,
+                        "solution": null,
+                        "additional_parameters": null
+                    }
+                ],
+                "additional_treatment": null
+            },
+            {
+                "name": "m-TiO2",
+                "thickness": null,
+                "functionality": "Electron-transport",
+                "deposition": [
+                    {
+                        "step_name": null,
+                        "method": "Spin-coating",
+                        "atmosphere": "Ambient air",
+                        "temperature": null,
+                        "duration": null,
+                        "antisolvent": null,
+                        "solution": {
+                            "compounds": null,
+                            "solutes": [
+                                {
+                                    "name": "TiO2 paste",
+                                    "concentration": 14.3,
+                                    "concentration_unit": "wt%"
+                                }
+                            ],
+                            "volume": null,
+                            "temperature": null,
+                            "solvents": [
+                                {
+                                    "name": "ethanol",
+                                    "volume_fraction": null
+                                }
+                            ]
+                        },
+                        "additional_parameters": {
+                            "spin_speed": "4000 rpm",
+                            "spin_time": "20 s"
+                        }
+                    },
+                    {
+                        "step_name": null,
+                        "method": "Thermal-annealing",
+                        "atmosphere": "Ambient air",
+                        "temperature": 500.0,
+                        "duration": 1800.0,
+                        "antisolvent": null,
+                        "solution": null,
+                        "additional_parameters": null
+                    }
+                ],
+                "additional_treatment": null
+            },
+            {
+                "name": "Cs0.05FA0.81MA0.14PbI2.55Br0.45",
+                "thickness": null,
+                "functionality": "Absorber",
+                "deposition": [
+                    {
+                        "step_name": null,
+                        "method": "Spin-coating",
+                        "atmosphere": "Ambient air",
+                        "temperature": null,
+                        "duration": null,
+                        "antisolvent": "Chlorobenzene",
+                        "solution": {
+                            "compounds": null,
+                            "solutes": [
+                                {
+                                    "name": "FAI",
+                                    "concentration": 172.0,
+                                    "concentration_unit": "mg/mL"
+                                },
+                                {
+                                    "name": "PbI2",
+                                    "concentration": 507.0,
+                                    "concentration_unit": "mg/mL"
+                                },
+                                {
+                                    "name": "MABr",
+                                    "concentration": 22.4,
+                                    "concentration_unit": "mg/mL"
+                                },
+                                {
+                                    "name": "PbBr2",
+                                    "concentration": 73.4,
+                                    "concentration_unit": "mg/mL"
+                                },
+                                {
+                                    "name": "CsI",
+                                    "concentration": 1.5000000000000004,
+                                    "concentration_unit": "mol/L"
+                                }
+                            ],
+                            "volume": null,
+                            "temperature": null,
+                            "solvents": [
+                                {
+                                    "name": "DMF",
+                                    "volume_fraction": 0.9
+                                },
+                                {
+                                    "name": "DMSO",
+                                    "volume_fraction": 0.1
+                                }
+                            ]
+                        },
+                        "additional_parameters": {
+                            "two_step_spin_coating": "1000 rpm for 10 s, then 4000 rpm for 35 s"
+                        }
+                    },
+                    {
+                        "step_name": null,
+                        "method": "Thermal-annealing",
+                        "atmosphere": "Ambient air",
+                        "temperature": 100.0,
+                        "duration": 7200.0,
+                        "antisolvent": null,
+                        "solution": null,
+                        "additional_parameters": null
+                    }
+                ],
+                "additional_treatment": null
+            },
+            {
+                "name": "DTB(3%DEG)",
+                "thickness": null,
+                "functionality": "Hole-transport",
+                "deposition": [
+                    {
+                        "step_name": null,
+                        "method": "Spin-coating",
+                        "atmosphere": "Ambient air",
+                        "temperature": null,
+                        "duration": null,
+                        "antisolvent": null,
+                        "solution": {
+                            "compounds": null,
+                            "solutes": [
+                                {
+                                    "name": "DTB(3%DEG)",
+                                    "concentration": 30.0,
+                                    "concentration_unit": "mg/mL"
+                                }
+                            ],
+                            "volume": null,
+                            "temperature": 60.0,
+                            "solvents": [
+                                {
+                                    "name": "chlorobenzene",
+                                    "volume_fraction": null
+                                }
+                            ]
+                        },
+                        "additional_parameters": {
+                            "spin_speed": "4000 rpm",
+                            "spin_time": "30 s"
+                        }
+                    }
+                ],
+                "additional_treatment": null
+            },
+            {
+                "name": "Au",
+                "thickness": 100.0,
+                "functionality": "Contact",
+                "deposition": [
+                    {
+                        "step_name": null,
+                        "method": "Evaporation",
+                        "atmosphere": "Vacuum",
+                        "temperature": null,
+                        "duration": null,
+                        "antisolvent": null,
+                        "solution": null,
+                        "additional_parameters": {
+                            "vacuum_pressure": "4 \u00d7 10^-5 Torr",
+                            "deposition_rate": "0.05 nm/s"
+                        }
+                    }
+                ],
+                "additional_treatment": null
+            }
+        ],
+        "DOI_number": "https://www.doi.org/10.1002/adfm.201904856",
+        "m_def": "perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell",
+        "extraction_metadata": {
+            "model": "GPT-4.1"
+        }
+    }
+}
