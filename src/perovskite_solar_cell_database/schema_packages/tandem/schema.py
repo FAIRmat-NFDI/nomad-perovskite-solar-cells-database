@@ -1,3 +1,4 @@
+import re
 from typing import (
     TYPE_CHECKING,
 )
@@ -9,6 +10,7 @@ from nomad.datamodel.metainfo.common import ProvenanceTracker
 from nomad.datamodel.results import (
     BandGap,
     ElectronicProperties,
+    ElementalComposition,
     Material,
     Properties,
     Relation,
@@ -370,7 +372,6 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         add_system(tandem_system, topology)
         add_system_info(tandem_system, topology)
 
-        # TODO: Go through the device stack and add the absorber layers to the topology
         for layer in self.device_stack:
             if (
                 isinstance(layer, Photoabsorber_Perovskite)
@@ -477,26 +478,74 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             archive.results = Results()
         if not archive.results.material:
             archive.results.material = Material()
-        # temporary fix for now, fills material info from the first perovskite
+
+        # populating the root level of topology
+        elements_already_added = []
+        descriptive_formula_str = ''
+        dimensionality_so_far = '0D'
         for system in topology.values():
-            if system.label == 'Perovskite Layer':
-                if system.chemical_formula_reduced:
-                    formula = Formula(system.chemical_formula_reduced)
-                    formula.populate(archive.results.material, overwrite=True)
+            if (
+                system.parent_system
+                and system.parent_system == 'results/material/topology/0'
+            ):
+                if system.dimensionality:
+                    if system.dimensionality == '3D':
+                        dimensionality_so_far = '3D'
+                    elif (
+                        system.dimensionality == '2D'
+                        and dimensionality_so_far not in ['3D', '2D']
+                    ):
+                        dimensionality_so_far = '2D'
+                    elif (
+                        system.dimensionality == '1D'
+                        and dimensionality_so_far not in ['3D', '2D', '1D']
+                    ):
+                        dimensionality_so_far = '1D'
+
+                for element in system.elemental_composition:
+                    if element.element not in elements_already_added:
+                        tandem_system.elemental_composition.append(
+                            ElementalComposition(
+                                element=element.element,
+                                mass=element.mass,
+                            )
+                        )  # pyright: ignore[reportOptionalCall]
+                        elements_already_added.append(element.element)
+
+                if descriptive_formula_str != '':
+                    descriptive_formula_str += ' | '
+                if system.chemical_formula_descriptive:
+                    descriptive_formula_str += system.chemical_formula_descriptive
                 else:
-                    logger.warn(
-                        'Could not find chemical formula to populate results.material.'
+                    descriptive_formula_str += re.sub(
+                        r' Layer(?!.* Layer)', '', system.label
                     )
-                archive.results.material.chemical_formula_descriptive = (
-                    system.chemical_formula_descriptive
-                )
-                archive.results.material.dimensionality = system.dimensionality
-                archive.results.material.structural_type = system.structural_type
-                break
-        if not archive.results.properties:
-            archive.results.properties = Properties()
+        tandem_system.chemical_formula_descriptive = descriptive_formula_str
+        tandem_system.elements = sorted(elements_already_added)
+        tandem_system.dimensionality = dimensionality_so_far
+        if tandem_system.dimensionality == '3D':
+            tandem_system.structural_type = 'bulk'
+        elif tandem_system.dimensionality in ['1D', '2D']:
+            tandem_system.structural_type = self.dimensionality
+        else:
+            tandem_system.structural_type = 'not processed'
+
+        # populating archive.materials from the root level of topology
+        archive.results.material.chemical_formula_descriptive = (
+            tandem_system.chemical_formula_descriptive
+        )
+        archive.results.material.elemental_composition = (
+            tandem_system.elemental_composition
+        )
+        archive.results.material.elements = tandem_system.elements
+        archive.results.material.dimensionality = tandem_system.dimensionality
+        archive.results.material.structural_type = tandem_system.structural_type
+
         for system in topology.values():
             archive.results.material.m_add_sub_section(Material.topology, system)
+
+        if not archive.results.properties:
+            archive.results.properties = Properties()
 
         band_gaps = []
         for layer in self.device_stack:
