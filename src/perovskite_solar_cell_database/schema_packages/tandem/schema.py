@@ -376,7 +376,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 isinstance(layer, Photoabsorber_Perovskite)
                 and layer.composition is not None
             ):
-                system = layer.composition.to_topology_system()
+                system = layer.composition.to_topology_system(logger=logger)
                 system.label = 'Perovskite Layer'
                 system.description = 'A perovskite layer in the tandem solar cell.'
                 system.dimensionality = layer.composition.dimensionality
@@ -411,6 +411,8 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 if layer.molecular_formula:
                     formula = Formula(layer.molecular_formula)
                     formula.populate(system, overwrite=True)
+                else:
+                    logger.warn(f'Could not find chemical formula for CIGS layer {layer.layer_index}.')
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -423,6 +425,8 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 if layer.molecular_formula:
                     formula = Formula(layer.molecular_formula)
                     formula.populate(system, overwrite=True)
+                else:
+                    logger.warn(f'Could not find chemical formula for CZTS layer {layer.layer_index}.')
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -435,6 +439,8 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 if layer.molecular_formula:
                     formula = Formula(layer.molecular_formula)
                     formula.populate(system, overwrite=True)
+                else:
+                    logger.warn(f'Could not find chemical formula for GaAs layer {layer.layer_index}.')
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -471,6 +477,8 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 if system.chemical_formula_reduced:
                     formula = Formula(system.chemical_formula_reduced)
                     formula.populate(archive.results.material, overwrite=True)
+                else:
+                    logger.warn('Could not find chemical formula to populate results.material.')
                 archive.results.material.chemical_formula_descriptive = (
                     system.chemical_formula_descriptive
                 )

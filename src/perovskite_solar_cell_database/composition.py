@@ -814,7 +814,7 @@ class PerovskiteCompositionSection(ArchiveSection):
         repeats=True,
     )
 
-    def to_topology_system(self) -> System:
+    def to_topology_system(self, logger: 'BoundLogger') -> System:
         system = System(
             label='Perovskite Composition',
             description='A system describing the chemistry and components of the perovskite.',
@@ -823,6 +823,8 @@ class PerovskiteCompositionSection(ArchiveSection):
         if formula_str:
             formula = Formula(formula_str)
             formula.populate(system, overwrite=True)
+        else:
+            logger.warn('Could not find chemical formula for Perovskite.')
 
         if self.dimensionality == '3D':
             system.structural_type = 'bulk'
@@ -965,13 +967,13 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
             )
 
         topology = {}
-        parent_system = self.to_topology_system()
+        parent_system = self.to_topology_system(logger=logger)
         parent_system.system_relation = Relation(type='root')
         add_system(parent_system, topology)
         add_system_info(parent_system, topology)
 
         for ion in self.components:
-            child_system = ion.to_topology_system()
+            child_system = ion.to_topology_system(logger=logger)
             add_system(child_system, topology, parent_system)
             add_system_info(child_system, topology)
 
