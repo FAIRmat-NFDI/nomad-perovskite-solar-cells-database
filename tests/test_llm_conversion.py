@@ -26,5 +26,5 @@ def test_conversion(tmp_path):
 
     assert (
         classic.cell.stack_sequence
-        == "FTO | c-TiO2 | m-TiO2 | Perovskite | DTB(3%DEG) | Au"
+        == 'FTO | c-TiO2 | m-TiO2 | Perovskite | DTB(3%DEG) | Au'
     )
