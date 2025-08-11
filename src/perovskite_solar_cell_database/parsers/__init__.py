@@ -12,7 +12,7 @@ class TandemXLSParserEntryPoint(ParserEntryPoint):
             TandemXLSParser,
         )
 
-        return TandemXLSParser(**self.dict())
+        return TandemXLSParser(**self.model_dump())
 
 
 tandem_xls_parser = TandemXLSParserEntryPoint(
@@ -40,7 +40,7 @@ class TandemJSONParserEntryPoint(ParserEntryPoint):
             TandemJSONParser,
         )
 
-        return TandemJSONParser(**self.dict())
+        return TandemJSONParser(**self.model_dump())
 
 
 tandem_json_parser = TandemJSONParserEntryPoint(
@@ -54,7 +54,7 @@ class IonParserEntryPoint(ParserEntryPoint):
     def load(self):
         from perovskite_solar_cell_database.parsers.ion_parser import IonParser
 
-        return IonParser(**self.dict())
+        return IonParser(**self.model_dump())
 
 
 ion_parser = IonParserEntryPoint(
