@@ -87,9 +87,7 @@ perovskite_database_app = App(
         Column(quantity='comment'),
         Column(quantity='datasets'),
         Column(quantity='published', label='Access'),
-        Column(
-            quantity=f'data.ref.extraction_method#{schema}', label='Extraction method'
-        ),
+        Column(quantity=f'data.ref.extraction_method#{schema}', label='Extraction method'),
     ],
     menu=Menu(
         items=[
