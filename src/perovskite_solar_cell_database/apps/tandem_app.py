@@ -78,7 +78,8 @@ tandem_app = App(
         ),
         Column(search_quantity='references', selected=True),
         Column(
-            search_quantity='results.material.chemical_formula_hill', title='Formula'
+            search_quantity="results.material.topology[?parent_system=='results/material/topology/0'].chemical_formula_hill",
+            title='Formula - photoabsorbers',
         ),
         Column(
             search_quantity=f'data.measurements.jv[*].illumination.intensity#{schema}',
@@ -96,7 +97,7 @@ tandem_app = App(
         Column(search_quantity='entry_type'),
         Column(search_quantity='upload_create_time', title='Upload time'),
         Column(search_quantity='entry_create_time', title='Entry creation time'),
-        Column(search_quantity='authors'),
+        Column(search_quantity='authors', title='Upload authors'),
         Column(search_quantity='comment'),
         Column(search_quantity='datasets'),
         Column(search_quantity='published', title='Access'),
@@ -306,20 +307,6 @@ tandem_app = App(
                     ),
                 ],
             ),
-            # MenuItemTerms(
-            #     search_quantity=f'data.device_stack.deposition_procedure.steps.solution.components.name#{schema}',
-            #     options=10,
-            # ),
-            # MenuItemTerms(
-            #     search_quantity=f'data.*.doping_sequence#{schema}',
-            #     options=10,
-            # ),
-            # MenuItemTerms(
-            #     search_quantity=f'data.device_stack.composition.long_form#{schema}',
-            #     options=10,
-            # ),
-            #     ],
-            # ),
             Menu(
                 title='Measurements',
                 size=MenuSizeEnum.LG,
@@ -367,7 +354,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Efficiency (%)',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -381,7 +367,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Voc',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -395,7 +380,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Jsc',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -409,7 +393,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Fill factor',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
