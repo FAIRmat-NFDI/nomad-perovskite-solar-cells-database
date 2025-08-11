@@ -708,9 +708,15 @@ def llm_to_classic_schema(
         llm_composition = llm_cell.perovskite_composition
     perovskite.composition_long_form = llm_composition.long_form
     perovskite.composition_short_form = llm_composition.short_form
-    a_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_a_site, key=lambda ion: ion.abbreviation)
-    b_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_b_site, key=lambda ion: ion.abbreviation)
-    x_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_x_site, key=lambda ion: ion.abbreviation)
+    a_ions: list[PerovskiteIonComponent] = sorted(
+        llm_composition.ions_a_site, key=lambda ion: ion.abbreviation
+    )
+    b_ions: list[PerovskiteIonComponent] = sorted(
+        llm_composition.ions_b_site, key=lambda ion: ion.abbreviation
+    )
+    x_ions: list[PerovskiteIonComponent] = sorted(
+        llm_composition.ions_x_site, key=lambda ion: ion.abbreviation
+    )
     perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
     perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
     perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
