@@ -305,6 +305,11 @@ tandem_app = App(
                         search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
                         options=10,
                     ),
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.sample_id#{schema}',
+                        title='Sample ID',
+                        options=0,
+                    ),
                 ],
             ),
             Menu(
@@ -498,6 +503,34 @@ tandem_app = App(
                         ),
                         title='T80 / ISOS L3',
                         width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                ],
+            ),
+            Menu(
+                title='NOMAD Upload Information',
+                size=MenuSizeEnum.MD,
+                items=[
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.name_of_person_entering_the_data#{schema}',
+                        title='Data entered by',
+                        options=0,
+                    ),
+                    MenuItemTerms(
+                        search_quantity='authors.name',
+                        title='Upload author',
+                        options=0,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity='upload_create_time',
+                            title='Upload Creation Time',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LOG,
+                        ),
+                        title='Upload Creation Time',
                         show_input=True,
                         nbins=30,
                     ),
