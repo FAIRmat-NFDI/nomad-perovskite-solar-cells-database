@@ -41,6 +41,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
     Photoabsorber_Perovskite,
     Photoabsorber_QuantumDot,
     Photoabsorber_Silicon,
+    PhotoabsorberOther,
 )
 from perovskite_solar_cell_database.schema_packages.tandem.encapsulation_data import (
     EncapsulationData,
@@ -203,13 +204,18 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
             # The stack sequence
             stack_sequence = []
-            for layer in self.device_stack:
+            for i, layer in enumerate(self.device_stack):
                 # Check if the layer has a name
                 name = layer.name
                 if name is not None:
                     stack_sequence.append(name)
                 else:
                     stack_sequence.append('-')
+
+                # Change layer class to PhotoabsorberOther if needed
+                if layer.functionality == 'photoabsorber' and type(layer) is Layer:
+                    m_dict = layer.m_to_dict()
+                    self.device_stack[i] = PhotoabsorberOther(**m_dict)
 
             if stack_sequence:
                 self.general.stack_sequence = ' | '.join(stack_sequence)
@@ -363,6 +369,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
 
+        # creating topology - root level
         topology = {}
         tandem_system = System(
             label='Tandem Solar Cell',
@@ -372,6 +379,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         add_system(tandem_system, topology)
         add_system_info(tandem_system, topology)
 
+        # adding nested topology systems
         for layer in self.device_stack:
             if (
                 isinstance(layer, Photoabsorber_Perovskite)
@@ -470,6 +478,13 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 system = System(
                     label='QD Layer',
                     description='QD layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
+            elif isinstance(layer, PhotoabsorberOther):
+                system = System(
+                    label='Other Photoabsorber Layer',
+                    description='Other photoabsorber layer in the tandem solar cell.',
                 )
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)

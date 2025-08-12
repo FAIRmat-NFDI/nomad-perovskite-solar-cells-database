@@ -287,6 +287,9 @@ tandem_app = App(
                             'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_QuantumDot': MenuItemOption(
                                 label='Quantum Dot',
                             ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.PhotoabsorberOther': MenuItemOption(
+                                label='Other',
+                            ),
                         },
                         show_input=False,
                     ),
