@@ -8,7 +8,6 @@ from nomad.config.models.ui import (
     Column,
     Dashboard,
     Menu,
-    MenuItemDefinitions,
     MenuItemHistogram,
     MenuItemOption,
     MenuItemPeriodicTable,
@@ -140,20 +139,11 @@ tandem_app = App(
                         quantity='results.material.elements',
                     ),
                     MenuItemTerms(
-                        search_quantity='results.material.chemical_formula_hill',
-                        width=6,
-                        options=0,
-                    ),
-                    MenuItemTerms(
-                        search_quantity='results.material.chemical_formula_iupac',
-                        width=6,
-                        options=0,
-                    ),
-                    MenuItemTerms(
                         search_quantity='results.material.structural_type',
                         width=6,
                         options=2,
                         scale=ScaleEnum.LOG,
+                        show_input=False,
                     ),
                     MenuItemHistogram(
                         x=Axis(
