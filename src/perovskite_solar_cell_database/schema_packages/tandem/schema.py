@@ -33,6 +33,7 @@ from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
     Layer,
+    Photoabsorber,
     Photoabsorber_CIGS,
     Photoabsorber_CZTS,
     Photoabsorber_DSSC,
@@ -188,6 +189,29 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         )
 
         return fig
+
+    def create_system_from_layer(
+        self,
+        layer: Photoabsorber,
+        logger: 'BoundLogger',
+        layer_name: str,
+        layer_formula='',
+    ) -> System:
+        system = System(
+            label=f'{layer_name} Layer',
+            description=f'{layer_name} layer in the tandem solar cell.',
+        )
+        if layer_formula != '':
+            formula = Formula(layer_formula)
+            formula.populate(system, overwrite=True)
+        elif hasattr(layer, 'molecular_formula') and layer.molecular_formula:
+            formula = Formula(layer.molecular_formula)
+            formula.populate(system, overwrite=True)
+        else:
+            logger.warn(
+                f'Could not find chemical formula for {layer_name} layer {layer.layer_index}.'
+            )
+        return system
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
@@ -402,60 +426,33 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     add_system_info(child_system, topology)
 
             elif isinstance(layer, Photoabsorber_Silicon):
-                system = System(
-                    label='Silicon Layer',
-                    description='A silicon layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='Silicon', layer_formula='Si'
                 )
-                formula = Formula('Si')
-                formula.populate(system, overwrite=True)
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
             elif isinstance(layer, Photoabsorber_CIGS):
-                system = System(
-                    label='CIGS Layer',
-                    description='CIGS layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='CIGS'
                 )
-                if layer.molecular_formula:
-                    formula = Formula(layer.molecular_formula)
-                    formula.populate(system, overwrite=True)
-                else:
-                    logger.warn(
-                        f'Could not find chemical formula for CIGS layer {layer.layer_index}.'
-                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
             elif isinstance(layer, Photoabsorber_CZTS):
-                system = System(
-                    label='CZTS Layer',
-                    description='CZTS layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='CZTS'
                 )
-                if layer.molecular_formula:
-                    formula = Formula(layer.molecular_formula)
-                    formula.populate(system, overwrite=True)
-                else:
-                    logger.warn(
-                        f'Could not find chemical formula for CZTS layer {layer.layer_index}.'
-                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
             elif isinstance(layer, Photoabsorber_GaAs):
-                system = System(
-                    label='GaAs Layer',
-                    description='GaAs layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='GaAs'
                 )
-                if layer.molecular_formula:
-                    formula = Formula(layer.molecular_formula)
-                    formula.populate(system, overwrite=True)
-                else:
-                    logger.warn(
-                        f'Could not find chemical formula for GaAs layer {layer.layer_index}.'
-                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
