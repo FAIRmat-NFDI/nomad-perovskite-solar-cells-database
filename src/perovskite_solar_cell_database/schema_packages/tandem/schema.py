@@ -494,25 +494,14 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         # populating the root level of topology
         elements_already_added = []
         descriptive_formula_str = ''
-        dimensionality_so_far = '0D'
+        dimensionality_so_far = ''
         for system in topology.values():
             if (
                 system.parent_system
                 and system.parent_system == 'results/material/topology/0'
             ):
-                if system.dimensionality:
-                    if system.dimensionality == '3D':
-                        dimensionality_so_far = '3D'
-                    elif (
-                        system.dimensionality == '2D'
-                        and dimensionality_so_far not in ['3D', '2D']
-                    ):
-                        dimensionality_so_far = '2D'
-                    elif (
-                        system.dimensionality == '1D'
-                        and dimensionality_so_far not in ['3D', '2D', '1D']
-                    ):
-                        dimensionality_so_far = '1D'
+                if system.dimensionality and system.dimensionality > dimensionality_so_far:
+                    dimensionality_so_far = system.dimensionality
 
                 for element in system.elemental_composition:
                     if element.element not in elements_already_added:
@@ -534,7 +523,8 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     )
         tandem_system.chemical_formula_descriptive = descriptive_formula_str
         tandem_system.elements = sorted(elements_already_added)
-        tandem_system.dimensionality = dimensionality_so_far
+        if dimensionality_so_far:
+            tandem_system.dimensionality = dimensionality_so_far
         if tandem_system.dimensionality == '3D':
             tandem_system.structural_type = 'bulk'
         elif tandem_system.dimensionality in ['1D', '2D']:
