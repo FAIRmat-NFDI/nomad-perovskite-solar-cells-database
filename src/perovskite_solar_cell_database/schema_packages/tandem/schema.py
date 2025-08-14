@@ -12,9 +12,11 @@ from nomad.datamodel.results import (
     ElectronicProperties,
     ElementalComposition,
     Material,
+    OptoelectronicProperties,
     Properties,
     Relation,
     Results,
+    SolarCell,
     System,
 )
 from nomad.normalizing.topology import add_system, add_system_info
@@ -494,15 +496,11 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         # populating the root level of topology
         elements_already_added = []
         descriptive_formula_str = ''
-        dimensionality_so_far = ''
         for system in topology.values():
             if (
                 system.parent_system
                 and system.parent_system == 'results/material/topology/0'
             ):
-                if system.dimensionality and system.dimensionality > dimensionality_so_far:
-                    dimensionality_so_far = system.dimensionality
-
                 for element in system.elemental_composition:
                     if element.element not in elements_already_added:
                         tandem_system.elemental_composition.append(
@@ -523,14 +521,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     )
         tandem_system.chemical_formula_descriptive = descriptive_formula_str
         tandem_system.elements = sorted(elements_already_added)
-        if dimensionality_so_far:
-            tandem_system.dimensionality = dimensionality_so_far
-        if tandem_system.dimensionality == '3D':
-            tandem_system.structural_type = 'bulk'
-        elif tandem_system.dimensionality in ['1D', '2D']:
-            tandem_system.structural_type = self.dimensionality
-        else:
-            tandem_system.structural_type = 'not processed'
+        tandem_system.structural_type = 'not processed'
 
         # populating archive.materials from the root level of topology
         archive.results.material.chemical_formula_descriptive = (
@@ -540,8 +531,6 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             tandem_system.elemental_composition
         )
         archive.results.material.elements = tandem_system.elements
-        archive.results.material.dimensionality = tandem_system.dimensionality
-        archive.results.material.structural_type = tandem_system.structural_type
 
         for system in topology.values():
             archive.results.material.m_add_sub_section(Material.topology, system)
@@ -573,6 +562,95 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
             archive.results.properties.electronic = ElectronicProperties(
                 band_gap=band_gaps
             )
+
+        if not archive.results.properties.optoelectronic:
+            archive.results.properties.optoelectronic = OptoelectronicProperties()
+        # if not archive.results.properties.optoelectronic.solar_cell:
+        #     archive.results.properties.optoelectronic.solar_cell = SolarCell()
+        # if not archive.results.properties.optoelectronic.solar_cell.device_stack:
+        #     archive.results.properties.optoelectronic.solar_cell.device_stack = []
+        # if not archive.results.properties.optoelectronic.solar_cell.absorber:
+        #     archive.results.properties.optoelectronic.solar_cell.absorber = []
+        # if not archive.results.properties.optoelectronic.solar_cell.electron_transport_layer:
+        #     archive.results.properties.optoelectronic.solar_cell.electron_transport_layer = []
+        # if not archive.results.properties.optoelectronic.solar_cell.hole_transport_layer:
+        #     archive.results.properties.optoelectronic.solar_cell.hole_transport_layer = []
+        # if not archive.results.properties.optoelectronic.solar_cell.back_contact:
+        #     archive.results.properties.optoelectronic.solar_cell.back_contact = []
+        # if not archive.results.properties.optoelectronic.solar_cell.substrate:
+        #     archive.results.properties.optoelectronic.solar_cell.substrate = []
+        result_device_stack = []
+        result_absorber = []
+        result_electron_transport_layer = []
+        result_hole_transport_layer = []
+        result_back_contact = []
+        result_substrate = []
+
+        for layer in self.device_stack:
+            result_device_stack.append(layer.name)
+            if layer.functionality == 'photoabsorber':
+                result_absorber.append(layer.name)
+            if layer.functionality == 'electron transport layer':
+                result_electron_transport_layer.append(layer.name)
+            if layer.functionality == 'hole transport layer':
+                result_hole_transport_layer.append(layer.name)
+            if layer.functionality == 'back contact':
+                result_back_contact.append(layer.name)
+            if layer.functionality == 'substrate':
+                result_substrate.append(layer.name)
+
+        result_solar_cell = SolarCell(
+            efficiency=self.key_performance_metrics.power_conversion_efficiency,
+            fill_factor=self.key_performance_metrics.fill_factor,
+            open_circuit_voltage=self.key_performance_metrics.open_circuit_voltage,
+            short_circuit_current_density=self.key_performance_metrics.short_circuit_current_density,
+            device_area=self.general.active_area,
+            device_stack=result_device_stack,
+            absorber=result_absorber,
+            electron_transport_layer=result_electron_transport_layer,
+            hole_transport_layer=result_hole_transport_layer,
+            back_contact=result_back_contact,
+            substrate=result_substrate,
+        )
+
+        archive.results.properties.optoelectronic.solar_cell = result_solar_cell
+        # archive.results.properties.optoelectronic.solar_cell.efficiency = (
+        #     self.key_performance_metrics.power_conversion_efficiency
+        # )
+        # archive.results.properties.optoelectronic.solar_cell.fill_factor = (
+        #     self.key_performance_metrics.fill_factor
+        # )
+        # archive.results.properties.optoelectronic.solar_cell.open_circuit_voltage = (
+        #     self.key_performance_metrics.open_circuit_voltage
+        # )
+        # archive.results.properties.optoelectronic.solar_cell.short_circuit_current_density = self.key_performance_metrics.short_circuit_current_density
+        # archive.results.properties.optoelectronic.solar_cell.device_area = (
+        #     self.general.active_area
+        # )
+        # for layer in self.device_stack:
+        #     archive.results.properties.optoelectronic.solar_cell.device_stack.append(
+        #         layer.name
+        #     )
+        #     if layer.functionality == 'photoabsorber':
+        #         archive.results.properties.optoelectronic.solar_cell.absorber.append(
+        #             layer.name
+        #         )
+        #     if layer.functionality == 'electron transport layer':
+        #         archive.results.properties.optoelectronic.solar_cell.electron_transport_layer.append(
+        #             layer.name
+        #         )
+        #     if layer.functionality == 'hole transport layer':
+        #         archive.results.properties.optoelectronic.solar_cell.hole_transport_layer.append(
+        #             layer.name
+        #         )
+        #     if layer.functionality == 'back contact':
+        #         archive.results.properties.optoelectronic.solar_cell.back_contact.append(
+        #             layer.name
+        #         )
+        #     if layer.functionality == 'substrate':
+        #         archive.results.properties.optoelectronic.solar_cell.substrate.append(
+        #             layer.name
+        #         )
 
 
 class RawFileTandemJson(Schema):

@@ -41,7 +41,6 @@ tandem_app = App(
         Column(
             title='File Name',
             search_quantity='mainfile',
-            selected=True,
         ),
         Column(
             search_quantity='results.material.chemical_formula_descriptive',
@@ -49,14 +48,10 @@ tandem_app = App(
             title='Descriptive formula',
         ),
         Column(
-            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency_stabilized#{schema}',
-            selected=True,
-            format={'decimals': 3, 'mode': 'standard'},
-        ),
-        Column(
             search_quantity=f'data.key_performance_metrics.power_conversion_efficiency#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
+            label='Power conversion efficiency (%)',
         ),
         Column(
             search_quantity=f'data.key_performance_metrics.short_circuit_current_density#{schema}',
@@ -74,6 +69,12 @@ tandem_app = App(
             search_quantity=f'data.key_performance_metrics.fill_factor#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
+        ),
+        Column(
+            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency_stabilized#{schema}',
+            selected=True,
+            format={'decimals': 3, 'mode': 'standard'},
+            label='Power conversion efficiency stabilized (%)',
         ),
         Column(search_quantity='references', selected=True),
         Column(
@@ -110,24 +111,30 @@ tandem_app = App(
                 size=MenuSizeEnum.XXL,
                 items=[
                     MenuItemTerms(
+                        search_quantity=f'data.reference.authors.name#{schema}',
+                        show_input=True,
+                        width=6,
+                        options=10,
+                        title='Publication Authors',
+                    ),
+                    MenuItemTerms(
                         search_quantity=f'data.reference.journal#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
                         title='Journal',
                     ),
-                    MenuItemTerms(
-                        search_quantity=f'data.reference.DOI_number#{schema}',
-                        show_input=True,
-                        width=6,
-                        options=10,
-                        title='DOI',
-                    ),
                     MenuItemHistogram(
                         x=Axis(
                             search_quantity=f'data.reference.publication_date#{schema}',
                             title='Publication Date',
                         )
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.DOI_number#{schema}',
+                        show_input=True,
+                        options=10,
+                        title='DOI',
                     ),
                 ],
             ),
@@ -137,13 +144,6 @@ tandem_app = App(
                 items=[
                     MenuItemPeriodicTable(
                         quantity='results.material.elements',
-                    ),
-                    MenuItemTerms(
-                        search_quantity='results.material.structural_type',
-                        width=6,
-                        options=2,
-                        scale=ScaleEnum.LOG,
-                        show_input=False,
                     ),
                     MenuItemHistogram(
                         x=Axis(
@@ -156,7 +156,6 @@ tandem_app = App(
                             scale=ScaleEnum.POW4,
                         ),
                         title='Band gap',
-                        width=6,
                         show_input=True,
                         nbins=30,
                         autorange=True,
@@ -167,34 +166,6 @@ tandem_app = App(
                 title='Device Architecture',
                 size=MenuSizeEnum.LG,
                 items=[
-                    MenuItemHistogram(
-                        x=Axis(
-                            search_quantity=f'data.general.cell_area#{schema}',
-                            scale=ScaleEnum.LOG,
-                            title='Total cell area',
-                            unit='cm**2',
-                        ),
-                        y=AxisScale(
-                            scale=ScaleEnum.POW4,
-                        ),
-                        title='Total cell area',
-                        show_input=False,
-                        nbins=30,
-                    ),
-                    MenuItemHistogram(
-                        x=Axis(
-                            search_quantity=f'data.general.active_area#{schema}',
-                            scale=ScaleEnum.LOG,
-                            title='Active cell area',
-                            unit='cm**2',
-                        ),
-                        y=AxisScale(
-                            scale=ScaleEnum.POW4,
-                        ),
-                        title='Active cell area',
-                        show_input=False,
-                        nbins=30,
-                    ),
                     MenuItemTerms(
                         search_quantity=f'data.general.architecture#{schema}',
                         options=5,
@@ -222,6 +193,34 @@ tandem_app = App(
                             scale=ScaleEnum.POW4,
                         ),
                         title='Number of junctions',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.cell_area#{schema}',
+                            scale=ScaleEnum.LOG,
+                            title='Total cell area',
+                            unit='cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Total cell area',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.active_area#{schema}',
+                            scale=ScaleEnum.LOG,
+                            title='Active cell area',
+                            unit='cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Active cell area',
                         show_input=False,
                         nbins=30,
                     ),
