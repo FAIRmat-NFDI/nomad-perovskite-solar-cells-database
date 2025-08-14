@@ -1,14 +1,22 @@
 import numpy as np
+from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     Filter,
     SectionProperties,
 )
 from nomad.datamodel.metainfo.basesections import PublicationReference
-from nomad.metainfo import Quantity, Section
+from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.metainfo import SchemaPackage
 
 m_package = SchemaPackage()
+
+
+class Author(ArchiveSection):
+    name = Quantity(
+        type=str,
+        description='The full name of the author.',
+    )
 
 
 class Reference(PublicationReference):
@@ -82,9 +90,17 @@ class Reference(PublicationReference):
         description="""ID in the NOMAD database""",
     )
 
+    # temporary fix for searchability of authors; should be not needed after basesections v2
+    authors = SubSection(
+        section_def=Author,
+        repeats=True,
+    )
+
     def normalize(self, archive, logger):
         """Normalize the reference section."""
         super().normalize(archive, logger)
+        if self.publication_authors:
+            self.authors = [Author(name=author) for author in self.publication_authors]
 
 
 m_package.__init_metainfo__()

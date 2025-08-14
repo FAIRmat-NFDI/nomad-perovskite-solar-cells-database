@@ -4,84 +4,96 @@ widgets:
     size: 1000
     markers:
       color:
-        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+        search_quantity: data.device_stack[?functionality=='photoabsorber'].name#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+          | [0]
+        scale: linear
+        unit: ""
+        title: " Bottom photoabsorber"
     y:
-      search_quantity: data.key_performance_metrics.open_circuit_voltage#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
-      title: ""
-    x:
-      search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap - Bottom Photoabsorber
-    title: ""
-    layout:
-      xxl:
-        minH: 3
-        minW: 3
-        h: 6
-        w: 9
-        y: 0
-        x: 27
-      xl:
-        minH: 3
-        minW: 3
-        h: 6
-        w: 7
-        y: 0
-        x: 21
-      lg:
-        minH: 3
-        minW: 3
-        h: 6
-        w: 6
-        y: 0
-        x: 6
-      md:
-        minH: 3
-        minW: 3
-        h: 5
-        w: 9
-        y: 0
-        x: 9
-      sm:
-        minH: 3
-        minW: 3
-        h: 4
-        w: 6
-        y: 0
-        x: 6
-  - type: scatter_plot
-    autorange: true
-    size: 1000
-    markers:
-      color:
-        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
-    y:
-      search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
       title: Efficiency (%)
+      search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
     x:
+      title: Bandgap - Bottom photoabsorber
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap - Bottom Photoabsorber
-    title: ""
+      scale: linear
+      unit: ""
+    title: " Color: bottom photoabsorber"
     layout:
       xxl:
         minH: 3
         minW: 3
-        h: 6
-        w: 9
+        h: 7
+        w: 12
         y: 0
-        x: 18
+        x: 24
       xl:
         minH: 3
         minW: 3
-        h: 6
-        w: 7
+        h: 7
+        w: 10
         y: 0
-        x: 14
+        x: 20
       lg:
         minH: 3
         minW: 3
         h: 6
-        w: 6
+        w: 8
         y: 0
+        x: 16
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 9
+        y: 5
+        x: 9
+      sm:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 6
+        y: 5
+        x: 6
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        search_quantity: data.device_stack[?functionality=='photoabsorber'].name#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+          | [0]
+        scale: linear
+        title: " Bottom photoabsorber"
+    y:
+      title: Stabilized efficiency (%)
+      search_quantity: data.key_performance_metrics.power_conversion_efficiency_stabilized#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
+    x:
+      title: Efficiency (%)
+      search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
+    title: " Color: bottom photoabsorber"
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 12
+        y: 7
+        x: 0
+      xl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 10
+        y: 7
+        x: 0
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 8
+        y: 6
         x: 0
       md:
         minH: 3
@@ -89,50 +101,109 @@ widgets:
         h: 5
         w: 9
         y: 0
-        x: 0
+        x: 9
       sm:
         minH: 3
         minW: 3
-        h: 4
+        h: 5
         w: 6
         y: 0
-        x: 0
+        x: 6
   - type: scatter_plot
     autorange: true
     size: 1000
     markers:
       color:
-        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+        search_quantity: data.device_stack[?functionality=='photoabsorber'].name#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+          | [0]
+        scale: linear
+        title: " Bottom photoabsorber"
     y:
-      search_quantity: data.key_performance_metrics.short_circuit_current_density#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
       title: ""
-      unit: mA / cm^2
+      unit: ""
+      search_quantity: data.key_performance_metrics.fill_factor#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
     x:
-      search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap - Bottom Photoabsorber
-    title: ""
+      title: Bandgap - Top photoabsorber
+      search_quantity: results.properties.electronic.band_gap[1].value
+      scale: linear
+    title: " Color: bottom photoabsorber"
     layout:
       xxl:
         minH: 3
         minW: 3
-        h: 6
-        w: 9
-        y: 0
-        x: 9
+        h: 7
+        w: 12
+        y: 7
+        x: 24
       xl:
         minH: 3
         minW: 3
-        h: 6
-        w: 7
-        y: 0
-        x: 7
+        h: 7
+        w: 10
+        y: 7
+        x: 20
       lg:
         minH: 3
         minW: 3
         h: 6
+        w: 8
+        y: 6
+        x: 16
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 9
+        y: 10
+        x: 9
+      sm:
+        minH: 3
+        minW: 3
+        h: 5
         w: 6
+        y: 10
+        x: 6
+  - type: scatter_plot
+    autorange: true
+    size: 1000
+    markers:
+      color:
+        title: " Bottom photoabsorber"
+        search_quantity: data.device_stack[?functionality=='photoabsorber'].name#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+          | [0]
+        scale: linear
+    y:
+      title: Efficiency (%)
+      search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
+    x:
+      title: Bandgap - Top photoabsorber
+      search_quantity: results.properties.electronic.band_gap[1].value
+      scale: linear
+    title: " Color: bottom photoabsorber"
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 12
         y: 0
         x: 12
+      xl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 10
+        y: 0
+        x: 10
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 8
+        y: 0
+        x: 8
       md:
         minH: 3
         minW: 3
@@ -143,109 +214,113 @@ widgets:
       sm:
         minH: 3
         minW: 3
-        h: 4
+        h: 5
         w: 6
-        y: 4
+        y: 5
         x: 0
   - type: scatter_plot
     autorange: true
     size: 1000
     markers:
       color:
-        search_quantity: data.general.architecture#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
-        title: " "
+        title: " Bottom photoabsorber"
+        search_quantity: data.device_stack[?functionality=='photoabsorber'].name#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+          | [0]
+        scale: linear
     y:
-      search_quantity: data.key_performance_metrics.fill_factor#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
       title: ""
+      search_quantity: data.key_performance_metrics.short_circuit_current_density#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
+      unit: mA / cm**2
     x:
-      search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap - Bottom Photoabsorber
-    title: ""
+      title: ""
+      unit: ""
+      search_quantity: data.key_performance_metrics.open_circuit_voltage#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
+      scale: linear
+    title: " Color: bottom photoabsorber"
     layout:
       xxl:
         minH: 3
         minW: 3
-        h: 6
-        w: 9
-        y: 0
-        x: 0
+        h: 7
+        w: 12
+        y: 7
+        x: 12
       xl:
         minH: 3
         minW: 3
-        h: 6
-        w: 7
-        y: 0
-        x: 0
+        h: 7
+        w: 10
+        y: 7
+        x: 10
       lg:
         minH: 3
         minW: 3
         h: 6
-        w: 6
-        y: 0
-        x: 18
+        w: 8
+        y: 6
+        x: 8
       md:
         minH: 3
         minW: 3
         h: 5
         w: 9
-        y: 5
-        x: 9
+        y: 10
+        x: 0
       sm:
         minH: 3
         minW: 3
-        h: 4
+        h: 5
         w: 6
-        y: 4
-        x: 6
+        y: 10
+        x: 0
   - type: scatter_plot
     autorange: true
     size: 1000
     markers:
       color:
         search_quantity: data.key_performance_metrics.power_conversion_efficiency#perovskite_solar_cell_database.schema_packages.tandem.schema.PerovskiteTandemSolarCell
-        title: Efficiency (%)
+        title: " Efficiency (%)"
     y:
       search_quantity: results.properties.electronic.band_gap[1].value
-      unit: ""
       title: Bandgap - Top Photoabsorber
-      scale: linear
     x:
       search_quantity: results.properties.electronic.band_gap[0].value
-      title: Bandgap - Bottom Photoabsorber
-      scale: linear
+      title: Bandgap - Bottom photoabsorber
+    title: " Color: bottom photoabsorber"
     layout:
       xxl:
         minH: 3
         minW: 3
-        h: 8
-        w: 9
-        y: 6
+        h: 7
+        w: 12
+        y: 0
         x: 0
       xl:
         minH: 3
         minW: 3
-        h: 8
-        w: 9
-        y: 6
+        h: 7
+        w: 10
+        y: 0
         x: 0
       lg:
         minH: 3
         minW: 3
-        h: 8
-        w: 9
-        y: 6
+        h: 6
+        w: 8
+        y: 0
         x: 0
       md:
         minH: 3
         minW: 3
-        h: 8
+        h: 5
         w: 9
-        y: 5
+        y: 0
         x: 0
       sm:
         minH: 3
         minW: 3
-        h: 8
-        w: 9
-        y: 4
+        h: 5
+        w: 6
+        y: 0
         x: 0

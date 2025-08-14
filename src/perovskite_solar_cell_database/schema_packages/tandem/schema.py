@@ -1,3 +1,4 @@
+import re
 from typing import (
     TYPE_CHECKING,
 )
@@ -9,10 +10,13 @@ from nomad.datamodel.metainfo.common import ProvenanceTracker
 from nomad.datamodel.results import (
     BandGap,
     ElectronicProperties,
+    ElementalComposition,
     Material,
+    OptoelectronicProperties,
     Properties,
     Relation,
     Results,
+    SolarCell,
     System,
 )
 from nomad.normalizing.topology import add_system, add_system_info
@@ -31,6 +35,7 @@ from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
 
 from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
     Layer,
+    Photoabsorber,
     Photoabsorber_CIGS,
     Photoabsorber_CZTS,
     Photoabsorber_DSSC,
@@ -39,6 +44,7 @@ from perovskite_solar_cell_database.schema_packages.tandem.device_stack import (
     Photoabsorber_Perovskite,
     Photoabsorber_QuantumDot,
     Photoabsorber_Silicon,
+    PhotoabsorberOther,
 )
 from perovskite_solar_cell_database.schema_packages.tandem.encapsulation_data import (
     EncapsulationData,
@@ -186,6 +192,29 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
         return fig
 
+    def create_system_from_layer(
+        self,
+        layer: Photoabsorber,
+        logger: 'BoundLogger',
+        layer_name: str,
+        layer_formula='',
+    ) -> System:
+        system = System(
+            label=f'{layer_name} Layer',
+            description=f'{layer_name} layer in the tandem solar cell.',
+        )
+        if layer_formula != '':
+            formula = Formula(layer_formula)
+            formula.populate(system, overwrite=True)
+        elif hasattr(layer, 'molecular_formula') and layer.molecular_formula:
+            formula = Formula(layer.molecular_formula)
+            formula.populate(system, overwrite=True)
+        else:
+            logger.warn(
+                f'Could not find chemical formula for {layer_name} layer {layer.layer_index}.'
+            )
+        return system
+
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
         Populate the key performance metrics section
@@ -201,13 +230,18 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
             # The stack sequence
             stack_sequence = []
-            for layer in self.device_stack:
+            for i, layer in enumerate(self.device_stack):
                 # Check if the layer has a name
                 name = layer.name
                 if name is not None:
                     stack_sequence.append(name)
                 else:
                     stack_sequence.append('-')
+
+                # Change layer class to PhotoabsorberOther if needed
+                if layer.functionality == 'photoabsorber' and type(layer) is Layer:
+                    m_dict = layer.m_to_dict()
+                    self.device_stack[i] = PhotoabsorberOther(**m_dict)
 
             if stack_sequence:
                 self.general.stack_sequence = ' | '.join(stack_sequence)
@@ -361,6 +395,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
 
         self.figures = [PlotlyFigure(figure=fig.to_plotly_json())]
 
+        # creating topology - root level
         topology = {}
         tandem_system = System(
             label='Tandem Solar Cell',
@@ -370,7 +405,7 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
         add_system(tandem_system, topology)
         add_system_info(tandem_system, topology)
 
-        # TODO: Go through the device stack and add the absorber layers to the topology
+        # adding nested topology systems
         for layer in self.device_stack:
             if (
                 isinstance(layer, Photoabsorber_Perovskite)
@@ -393,60 +428,33 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                     add_system_info(child_system, topology)
 
             elif isinstance(layer, Photoabsorber_Silicon):
-                system = System(
-                    label='Silicon Layer',
-                    description='A silicon layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='Silicon', layer_formula='Si'
                 )
-                formula = Formula('Si')
-                formula.populate(system, overwrite=True)
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
             elif isinstance(layer, Photoabsorber_CIGS):
-                system = System(
-                    label='CIGS Layer',
-                    description='CIGS layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='CIGS'
                 )
-                if layer.molecular_formula:
-                    formula = Formula(layer.molecular_formula)
-                    formula.populate(system, overwrite=True)
-                else:
-                    logger.warn(
-                        f'Could not find chemical formula for CIGS layer {layer.layer_index}.'
-                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
             elif isinstance(layer, Photoabsorber_CZTS):
-                system = System(
-                    label='CZTS Layer',
-                    description='CZTS layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='CZTS'
                 )
-                if layer.molecular_formula:
-                    formula = Formula(layer.molecular_formula)
-                    formula.populate(system, overwrite=True)
-                else:
-                    logger.warn(
-                        f'Could not find chemical formula for CZTS layer {layer.layer_index}.'
-                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
             elif isinstance(layer, Photoabsorber_GaAs):
-                system = System(
-                    label='GaAs Layer',
-                    description='GaAs layer in the tandem solar cell.',
+                system = self.create_system_from_layer(
+                    layer=layer, logger=logger, layer_name='GaAs'
                 )
-                if layer.molecular_formula:
-                    formula = Formula(layer.molecular_formula)
-                    formula.populate(system, overwrite=True)
-                else:
-                    logger.warn(
-                        f'Could not find chemical formula for GaAs layer {layer.layer_index}.'
-                    )
                 system.dimensionality = '3D'
                 system.structural_type = 'bulk'
                 add_system(system, topology, parent=tandem_system)
@@ -472,31 +480,63 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                 )
                 add_system(system, topology, parent=tandem_system)
                 add_system_info(system, topology)
+            elif isinstance(layer, PhotoabsorberOther):
+                system = System(
+                    label='Other Photoabsorber Layer',
+                    description='Other photoabsorber layer in the tandem solar cell.',
+                )
+                add_system(system, topology, parent=tandem_system)
+                add_system_info(system, topology)
 
         if not archive.results:
             archive.results = Results()
         if not archive.results.material:
             archive.results.material = Material()
-        # temporary fix for now, fills material info from the first perovskite
+
+        # populating the root level of topology
+        elements_already_added = []
+        descriptive_formula_str = ''
         for system in topology.values():
-            if system.label == 'Perovskite Layer':
-                if system.chemical_formula_reduced:
-                    formula = Formula(system.chemical_formula_reduced)
-                    formula.populate(archive.results.material, overwrite=True)
+            if (
+                system.parent_system
+                and system.parent_system == 'results/material/topology/0'
+            ):
+                for element in system.elemental_composition:
+                    if element.element not in elements_already_added:
+                        tandem_system.elemental_composition.append(
+                            ElementalComposition(
+                                element=element.element,
+                                mass=element.mass,
+                            )
+                        )  # pyright: ignore[reportOptionalCall]
+                        elements_already_added.append(element.element)
+
+                if descriptive_formula_str != '':
+                    descriptive_formula_str += ' | '
+                if system.chemical_formula_descriptive:
+                    descriptive_formula_str += system.chemical_formula_descriptive
                 else:
-                    logger.warn(
-                        'Could not find chemical formula to populate results.material.'
+                    descriptive_formula_str += re.sub(
+                        r' Layer(?!.* Layer)', '', system.label
                     )
-                archive.results.material.chemical_formula_descriptive = (
-                    system.chemical_formula_descriptive
-                )
-                archive.results.material.dimensionality = system.dimensionality
-                archive.results.material.structural_type = system.structural_type
-                break
-        if not archive.results.properties:
-            archive.results.properties = Properties()
+        tandem_system.chemical_formula_descriptive = descriptive_formula_str
+        tandem_system.elements = sorted(elements_already_added)
+        tandem_system.structural_type = 'not processed'
+
+        # populating archive.materials from the root level of topology
+        archive.results.material.chemical_formula_descriptive = (
+            tandem_system.chemical_formula_descriptive
+        )
+        archive.results.material.elemental_composition = (
+            tandem_system.elemental_composition
+        )
+        archive.results.material.elements = tandem_system.elements
+
         for system in topology.values():
             archive.results.material.m_add_sub_section(Material.topology, system)
+
+        if not archive.results.properties:
+            archive.results.properties = Properties()
 
         band_gaps = []
         for layer in self.device_stack:
@@ -518,10 +558,50 @@ class PerovskiteTandemSolarCell(Schema, PlotSection):
                         exc_info=e,
                     )
 
+        # populate electronic properties
         if band_gaps:
             archive.results.properties.electronic = ElectronicProperties(
                 band_gap=band_gaps
             )
+
+        # populate optoelectronic properties
+        if not archive.results.properties.optoelectronic:
+            archive.results.properties.optoelectronic = OptoelectronicProperties()
+        result_device_stack = []
+        result_absorber = []
+        result_electron_transport_layer = []
+        result_hole_transport_layer = []
+        result_back_contact = []
+        result_substrate = []
+
+        for layer in self.device_stack:
+            result_device_stack.append(layer.name)
+            if layer.functionality == 'photoabsorber':
+                result_absorber.append(layer.name)
+            if layer.functionality == 'electron transport layer':
+                result_electron_transport_layer.append(layer.name)
+            if layer.functionality == 'hole transport layer':
+                result_hole_transport_layer.append(layer.name)
+            if layer.functionality == 'back contact':
+                result_back_contact.append(layer.name)
+            if layer.functionality == 'substrate':
+                result_substrate.append(layer.name)
+
+        result_solar_cell = SolarCell(
+            efficiency=self.key_performance_metrics.power_conversion_efficiency,
+            fill_factor=self.key_performance_metrics.fill_factor,
+            open_circuit_voltage=self.key_performance_metrics.open_circuit_voltage,
+            short_circuit_current_density=self.key_performance_metrics.short_circuit_current_density,
+            device_area=self.general.active_area,
+            device_stack=result_device_stack,
+            absorber=result_absorber,
+            electron_transport_layer=result_electron_transport_layer,
+            hole_transport_layer=result_hole_transport_layer,
+            back_contact=result_back_contact,
+            substrate=result_substrate,
+        )
+
+        archive.results.properties.optoelectronic.solar_cell = result_solar_cell
 
 
 class RawFileTandemJson(Schema):

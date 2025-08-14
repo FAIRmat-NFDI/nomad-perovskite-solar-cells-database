@@ -2642,6 +2642,22 @@ class GeneralLayer(Layer):
     )
 
 
+class Photoabsorber(Layer):
+    """
+    This is the section for a photoabsorber layer in the device stack.
+    """
+
+    # Compounds in the layer
+    components = SubSection(
+        section_def=Component,
+        description='The components in the layer.',
+        repeats=True,
+    )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+
+
 ## Photoabsorbers
 class CIGSComposition(ArchiveSection):
     """
@@ -2705,7 +2721,7 @@ class CZTSComposition(ArchiveSection):
     )
 
 
-class Photoabsorber_Perovskite(Layer):
+class Photoabsorber_Perovskite(Photoabsorber):
     """
     This is the section for a perovskite photoabsorber.
     """
@@ -2754,7 +2770,7 @@ class Photoabsorber_Perovskite(Layer):
             self.name = 'Perovskite'
 
 
-class Photoabsorber_Silicon(Layer):
+class Photoabsorber_Silicon(Photoabsorber):
     """
     This is the section for a silicon photoabsorber.
     """
@@ -2810,14 +2826,6 @@ class Photoabsorber_Silicon(Layer):
         a_eln=ELNAnnotation(component='StringEditQuantity'),
     )
 
-    # Subsecteions
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
@@ -2825,7 +2833,7 @@ class Photoabsorber_Silicon(Layer):
             self.name = 'Silicon'
 
 
-class Photoabsorber_CIGS(Layer):
+class Photoabsorber_CIGS(Photoabsorber):
     """
     This is the section for a CIGS photoabsorber.
     """
@@ -2840,13 +2848,6 @@ class Photoabsorber_CIGS(Layer):
     composition = SubSection(
         section_def=CIGSComposition,
         description='The composition of the CIGS.',
-    )
-
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
     )
 
     def normalize(self, archive, logger):
@@ -2875,7 +2876,7 @@ class Photoabsorber_CIGS(Layer):
             self.name = 'CIGS'
 
 
-class Photoabsorber_CZTS(Layer):
+class Photoabsorber_CZTS(Photoabsorber):
     """
     This is the section for a CZTS photoabsorber.
     """
@@ -2890,13 +2891,6 @@ class Photoabsorber_CZTS(Layer):
     composition = SubSection(
         section_def=CZTSComposition,
         description='The composition of the CZTS.',
-    )
-
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
     )
 
     def normalize(self, archive, logger):
@@ -2925,18 +2919,10 @@ class Photoabsorber_CZTS(Layer):
             self.name = 'CZTS'
 
 
-class Photoabsorber_GaAs(Layer):
+class Photoabsorber_GaAs(Photoabsorber):
     """
     This is the section for a CIGS photoabsorber.
     """
-
-    # Subsections
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
 
     # Derived quantities
     molecular_formula = Quantity(
@@ -2953,7 +2939,7 @@ class Photoabsorber_GaAs(Layer):
             self.name = 'GaAs'
 
 
-class Photoabsorber_OPV(Layer):
+class Photoabsorber_OPV(Photoabsorber):
     """
     This is the section for a organic photoabsorber.
     """
@@ -2971,7 +2957,7 @@ class Photoabsorber_OPV(Layer):
             component='EnumEditQuantity',
             props=dict(
                 suggestions=[
-                    'singel layer',
+                    'single layer',
                     'bilayer',
                     'polymer',
                     'heterojunction',
@@ -3013,14 +2999,6 @@ class Photoabsorber_OPV(Layer):
         a_eln=ELNAnnotation(component='NumberEditQuantity', defaultDisplayUnit='eV'),
     )
 
-    # Subsections
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
@@ -3029,7 +3007,7 @@ class Photoabsorber_OPV(Layer):
             self.name = 'OPV'
 
 
-class Photoabsorber_DSSC(Layer):
+class Photoabsorber_DSSC(Photoabsorber):
     """
     This is the section for a organic photoabsorber.
     """
@@ -3078,13 +3056,6 @@ class Photoabsorber_DSSC(Layer):
         repeats=True,
     )
 
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
@@ -3093,7 +3064,7 @@ class Photoabsorber_DSSC(Layer):
             self.name = 'DSSC'
 
 
-class Photoabsorber_QuantumDot(Layer):
+class Photoabsorber_QuantumDot(Photoabsorber):
     """
     This is the section for a quantum dot photoabsorbers.
     """
@@ -3111,13 +3082,6 @@ class Photoabsorber_QuantumDot(Layer):
         repeats=True,
     )
 
-    # Compounds in the layer
-    components = SubSection(
-        section_def=Component,
-        description='The components in the layer.',
-        repeats=True,
-    )
-
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
@@ -3126,27 +3090,17 @@ class Photoabsorber_QuantumDot(Layer):
             self.name = 'QD-absorber'
 
 
-### Master class putting everything together
-class DeviceStack(ArchiveSection):
+class PhotoabsorberOther(Photoabsorber):
     """
-    This is the master class for the device stack. It contains all the layers in the device stack.
+    This is the section for a photoabsorber layer not described by a dedicated class.
     """
-
-    # No longer used, but was used as a top level section under which layers was organised
-
-    ## Subsections
-    layers = SubSection(
-        section_def=Layer,
-        description='The stack of layers in the device starting from the bottom.',
-        repeats=True,
-    )
 
     def normalize(self, archive, logger):
         super().normalize(archive, logger)
 
-        # Layer index
-        for i, layer in enumerate(self.layers):
-            self.layers[i].layer_index = i + 1
+        # Set layer name if not set
+        if not self.name:
+            self.name = 'Other Photoabsorber'
 
 
 m_package.__init_metainfo__()

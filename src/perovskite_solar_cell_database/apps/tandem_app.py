@@ -8,7 +8,6 @@ from nomad.config.models.ui import (
     Column,
     Dashboard,
     Menu,
-    MenuItemDefinitions,
     MenuItemHistogram,
     MenuItemOption,
     MenuItemPeriodicTable,
@@ -42,7 +41,6 @@ tandem_app = App(
         Column(
             title='File Name',
             search_quantity='mainfile',
-            selected=True,
         ),
         Column(
             search_quantity='results.material.chemical_formula_descriptive',
@@ -50,14 +48,10 @@ tandem_app = App(
             title='Descriptive formula',
         ),
         Column(
-            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency_stabilized#{schema}',
-            selected=True,
-            format={'decimals': 3, 'mode': 'standard'},
-        ),
-        Column(
             search_quantity=f'data.key_performance_metrics.power_conversion_efficiency#{schema}',
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
+            label='Power conversion efficiency (%)',
         ),
         Column(
             search_quantity=f'data.key_performance_metrics.short_circuit_current_density#{schema}',
@@ -76,9 +70,16 @@ tandem_app = App(
             selected=True,
             format={'decimals': 3, 'mode': 'standard'},
         ),
+        Column(
+            search_quantity=f'data.key_performance_metrics.power_conversion_efficiency_stabilized#{schema}',
+            selected=True,
+            format={'decimals': 3, 'mode': 'standard'},
+            label='Power conversion efficiency stabilized (%)',
+        ),
         Column(search_quantity='references', selected=True),
         Column(
-            search_quantity='results.material.chemical_formula_hill', title='Formula'
+            search_quantity="results.material.topology[?parent_system=='results/material/topology/0'].chemical_formula_hill",
+            title='Formula - photoabsorbers',
         ),
         Column(
             search_quantity=f'data.measurements.jv[*].illumination.intensity#{schema}',
@@ -96,7 +97,7 @@ tandem_app = App(
         Column(search_quantity='entry_type'),
         Column(search_quantity='upload_create_time', title='Upload time'),
         Column(search_quantity='entry_create_time', title='Entry creation time'),
-        Column(search_quantity='authors'),
+        Column(search_quantity='authors', title='Upload authors'),
         Column(search_quantity='comment'),
         Column(search_quantity='datasets'),
         Column(search_quantity='published', title='Access'),
@@ -110,24 +111,30 @@ tandem_app = App(
                 size=MenuSizeEnum.XXL,
                 items=[
                     MenuItemTerms(
+                        search_quantity=f'data.reference.authors.name#{schema}',
+                        show_input=True,
+                        width=6,
+                        options=10,
+                        title='Publication Authors',
+                    ),
+                    MenuItemTerms(
                         search_quantity=f'data.reference.journal#{schema}',
                         show_input=True,
                         width=6,
                         options=10,
                         title='Journal',
                     ),
-                    MenuItemTerms(
-                        search_quantity=f'data.reference.DOI_number#{schema}',
-                        show_input=True,
-                        width=6,
-                        options=10,
-                        title='DOI',
-                    ),
                     MenuItemHistogram(
                         x=Axis(
                             search_quantity=f'data.reference.publication_date#{schema}',
                             title='Publication Date',
                         )
+                    ),
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.DOI_number#{schema}',
+                        show_input=True,
+                        options=10,
+                        title='DOI',
                     ),
                 ],
             ),
@@ -137,22 +144,6 @@ tandem_app = App(
                 items=[
                     MenuItemPeriodicTable(
                         quantity='results.material.elements',
-                    ),
-                    MenuItemTerms(
-                        search_quantity='results.material.chemical_formula_hill',
-                        width=6,
-                        options=0,
-                    ),
-                    MenuItemTerms(
-                        search_quantity='results.material.chemical_formula_iupac',
-                        width=6,
-                        options=0,
-                    ),
-                    MenuItemTerms(
-                        search_quantity='results.material.structural_type',
-                        width=6,
-                        options=2,
-                        scale=ScaleEnum.LOG,
                     ),
                     MenuItemHistogram(
                         x=Axis(
@@ -165,7 +156,6 @@ tandem_app = App(
                             scale=ScaleEnum.POW4,
                         ),
                         title='Band gap',
-                        width=6,
                         show_input=True,
                         nbins=30,
                         autorange=True,
@@ -176,34 +166,6 @@ tandem_app = App(
                 title='Device Architecture',
                 size=MenuSizeEnum.LG,
                 items=[
-                    MenuItemHistogram(
-                        x=Axis(
-                            search_quantity=f'data.general.cell_area#{schema}',
-                            scale=ScaleEnum.LOG,
-                            title='Total cell area',
-                            unit='cm**2',
-                        ),
-                        y=AxisScale(
-                            scale=ScaleEnum.POW4,
-                        ),
-                        title='Total cell area',
-                        show_input=False,
-                        nbins=30,
-                    ),
-                    MenuItemHistogram(
-                        x=Axis(
-                            search_quantity=f'data.general.active_area#{schema}',
-                            scale=ScaleEnum.LOG,
-                            title='Active cell area',
-                            unit='cm**2',
-                        ),
-                        y=AxisScale(
-                            scale=ScaleEnum.POW4,
-                        ),
-                        title='Active cell area',
-                        show_input=False,
-                        nbins=30,
-                    ),
                     MenuItemTerms(
                         search_quantity=f'data.general.architecture#{schema}',
                         options=5,
@@ -231,6 +193,34 @@ tandem_app = App(
                             scale=ScaleEnum.POW4,
                         ),
                         title='Number of junctions',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.cell_area#{schema}',
+                            scale=ScaleEnum.LOG,
+                            title='Total cell area',
+                            unit='cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Total cell area',
+                        show_input=False,
+                        nbins=30,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity=f'data.general.active_area#{schema}',
+                            scale=ScaleEnum.LOG,
+                            title='Active cell area',
+                            unit='cm**2',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.POW4,
+                        ),
+                        title='Active cell area',
                         show_input=False,
                         nbins=30,
                     ),
@@ -286,6 +276,9 @@ tandem_app = App(
                             'perovskite_solar_cell_database.schema_packages.tandem.device_stack.Photoabsorber_QuantumDot': MenuItemOption(
                                 label='Quantum Dot',
                             ),
+                            'perovskite_solar_cell_database.schema_packages.tandem.device_stack.PhotoabsorberOther': MenuItemOption(
+                                label='Other',
+                            ),
                         },
                         show_input=False,
                     ),
@@ -304,22 +297,13 @@ tandem_app = App(
                         search_quantity=f'data.device_stack.deposition_procedure.steps.method#{schema}',
                         options=10,
                     ),
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.sample_id#{schema}',
+                        title='Sample ID',
+                        options=0,
+                    ),
                 ],
             ),
-            # MenuItemTerms(
-            #     search_quantity=f'data.device_stack.deposition_procedure.steps.solution.components.name#{schema}',
-            #     options=10,
-            # ),
-            # MenuItemTerms(
-            #     search_quantity=f'data.*.doping_sequence#{schema}',
-            #     options=10,
-            # ),
-            # MenuItemTerms(
-            #     search_quantity=f'data.device_stack.composition.long_form#{schema}',
-            #     options=10,
-            # ),
-            #     ],
-            # ),
             Menu(
                 title='Measurements',
                 size=MenuSizeEnum.LG,
@@ -367,7 +351,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Efficiency (%)',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -381,7 +364,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Voc',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -395,7 +377,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Jsc',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -409,7 +390,6 @@ tandem_app = App(
                             scale=ScaleEnum.LINEAR,
                         ),
                         title='Fill factor',
-                        # width=6,
                         show_input=True,
                         nbins=30,
                     ),
@@ -515,6 +495,34 @@ tandem_app = App(
                         ),
                         title='T80 / ISOS L3',
                         width=6,
+                        show_input=True,
+                        nbins=30,
+                    ),
+                ],
+            ),
+            Menu(
+                title='NOMAD Upload Information',
+                size=MenuSizeEnum.MD,
+                items=[
+                    MenuItemTerms(
+                        search_quantity=f'data.reference.name_of_person_entering_the_data#{schema}',
+                        title='Data entered by',
+                        options=0,
+                    ),
+                    MenuItemTerms(
+                        search_quantity='authors.name',
+                        title='Upload author',
+                        options=0,
+                    ),
+                    MenuItemHistogram(
+                        x=Axis(
+                            search_quantity='upload_create_time',
+                            title='Upload Creation Time',
+                        ),
+                        y=AxisScale(
+                            scale=ScaleEnum.LOG,
+                        ),
+                        title='Upload Creation Time',
                         show_input=True,
                         nbins=30,
                     ),
