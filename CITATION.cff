@@ -48,6 +48,10 @@ abstract: >-
   cells database in NOMAD and related data sources. Additionally, it has data models 
   and schemas for defining ions and halide hybrid-perovskite compositions. The data can 
   be accessed via the NOMAD API and explored in multiple NOMAD search apps.
+
+  The work is funded by the Deutsche Forschungsgemeinschaft 
+  (DFG, German Research Foundation) - 460197019 (FAIRmat)
+  (https://gepris.dfg.de/gepris/projekt/460197019?language=en).
 license: Apache-2.0
 funding: 
   - name: Deutsche Forschungsgemeinschaft
