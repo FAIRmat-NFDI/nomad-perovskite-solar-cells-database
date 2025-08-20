@@ -1,0 +1,50 @@
+cff-version: 1.2.0
+title: NOMAD Perovskite Solar Cells Database
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Hampus
+    family-names: Näsström
+    orcid: 'https://orcid.org/0000-0002-3264-1692'
+  - given-names: José A.
+    family-names: Márquez
+    orcid: 'https://orcid.org/0000-0002-8173-2566'
+  - given-names: Lev
+    family-names: Ginzburg
+    orcid: 'https://orcid.org/0000-0001-8929-1040'
+  - given-names: Yaru
+    family-names: Wang
+  - given-names: Sherjeel
+    family-names: Shabih
+    orcid: 'https://orcid.org/0009-0008-6635-4465'
+  - given-names: Fabian
+    family-names: Schöppach
+    orcid: 'https://orcid.org/0009-0002-5764-773X'
+  - given-names: Haoyu
+    family-names: Yang
+  - given-names: Jesper
+    family-names: Jacobsson
+    orcid: 'https://orcid.org/0000-0002-4317-2879'
+  - given-names: Lauri
+    family-names: Himanen
+    orcid: 'https://orcid.org/0000-0002-3130-8193'
+  - given-names: Kevin Maik
+    family-names: Jablonka
+    orcid: 'https://orcid.org/0000-0003-4894-4660'
+  - given-names: Ádám
+    family-names: Fekete
+    orcid: 'https://orcid.org/0000-0002-6263-897X'
+# doi: TBD
+repository-code: 'https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database'
+url: 'https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database/'
+abstract: >-
+  `perovskite-solar-cell-database` is a plugin for the NOMAD software 
+  (https://zenodo.org/doi/10.5281/zenodo.8366162) adding data schemas and parsers for 
+  perovskite solar cell data.
+  The project aims to provide a FAIR and open-access interface for the perovskite solar 
+  cells database in NOMAD and related data sources. Additionally, it has data models 
+  and schemas for defining ions and halide hybrid-perovskite compositions. The data can 
+  be accessed via the NOMAD API and explored in multiple NOMAD search apps.
+license: Apache-2.0
