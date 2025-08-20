@@ -37,7 +37,7 @@ authors:
   - given-names: Ádám
     family-names: Fekete
     orcid: 'https://orcid.org/0000-0002-6263-897X'
-# doi: TBD
+doi: 10.5281/zenodo.16910883
 repository-code: 'https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database'
 url: 'https://fairmat-nfdi.github.io/nomad-perovskite-solar-cells-database/'
 abstract: >-
