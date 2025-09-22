@@ -1,0 +1,17 @@
+data:
+  m_def: perovskite_solar_cell_database.composition.PerovskiteComposition
+  composition_estimate: Estimated from precursor solutions
+  sample_type: Polycrystalline film
+  dimensionality: 3D
+  band_gap: 1.9
+  ions_a_site:
+  - abbreviation: MA
+    coefficient: 1
+  ions_b_site:
+  - abbreviation: Pb
+    coefficient: 1
+  ions_x_site:
+  - abbreviation: I
+    coefficient: 1.5
+  - abbreviation: Br
+    coefficient: 1.5

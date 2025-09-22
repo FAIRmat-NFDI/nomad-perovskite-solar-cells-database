@@ -844,8 +844,17 @@ class PerovskiteCompositionSection(ArchiveSection):
         Returns:
             str: The formula string.
         """
+        a_ions_sorted = sorted(
+            self.ions_a_site, key=lambda ion: ion.abbreviation or ''
+        )
+        b_ions_sorted = sorted(
+            self.ions_b_site, key=lambda ion: ion.abbreviation or ''
+        )
+        x_ions_sorted = sorted(
+            self.ions_x_site, key=lambda ion: ion.abbreviation or ''
+        )
         ions: list[PerovskiteIonComponent] = (
-            self.ions_a_site + self.ions_b_site + self.ions_x_site
+            a_ions_sorted + b_ions_sorted + x_ions_sorted
         )
         self.short_form = ''
         self.long_form = ''
@@ -976,7 +985,7 @@ class PerovskiteComposition(PerovskiteCompositionSection, CompositeSystem, Entry
         add_system_info(parent_system, topology)
 
         for ion in self.components:
-            child_system = ion.to_topology_system(logger=logger)
+            child_system = ion.to_topology_system()
             add_system(child_system, topology, parent_system)
             add_system_info(child_system, topology)
 
