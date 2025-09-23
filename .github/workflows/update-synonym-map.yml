@@ -3,13 +3,11 @@ name: Update Synonym Map
 on:
   pull_request:
     paths:
-      - 'packages/nomad-perovskite-solar-cells-database/synonyms/generate_synonym_map.py'
-      - 'packages/nomad-perovskite-solar-cells-database/synonyms/**'
+      - 'synonyms/generate_synonym_map.py'
   push:
     branches: [main]
     paths:
-      - 'packages/nomad-perovskite-solar-cells-database/synonyms/generate_synonym_map.py'
-      - 'packages/nomad-perovskite-solar-cells-database/synonyms/**'
+      - 'synonyms/generate_synonym_map.py'
 
 jobs:
   generate-and-commit:
