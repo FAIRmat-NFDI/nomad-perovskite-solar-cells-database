@@ -1,16 +1,18 @@
 import os
 import shutil
 
-from perovskite_solar_cell_database.schema_sections.cell import Cell
-from perovskite_solar_cell_database.schema_sections.etl import ETL
-from perovskite_solar_cell_database.schema_sections.htl import HTL
-from perovskite_solar_cell_database.schema_sections.perovskite_deposition import PerovskiteDeposition
 import pytest
 from nomad.client import normalize_all, parse
 
 from perovskite_solar_cell_database.llm_extraction_schema import (
     LLMExtractedPerovskiteSolarCell,
     llm_to_classic_schema,
+)
+from perovskite_solar_cell_database.schema_sections.cell import Cell
+from perovskite_solar_cell_database.schema_sections.etl import ETL
+from perovskite_solar_cell_database.schema_sections.htl import HTL
+from perovskite_solar_cell_database.schema_sections.perovskite_deposition import (
+    PerovskiteDeposition,
 )
 
 
@@ -36,21 +38,21 @@ def test_conversion(tmp_path):
     assert isinstance(cell, Cell)
     assert (
         cell.stack_sequence
-        == 'FTO | TiO2-c | TiO2-mp | Perovskite | DTB(3%DEG) | Au'
+        == 'FTO|TiO2-c|TiO2-mp|Perovskite|DTB(3%DEG)|Au'
     )
 
     etl = classic.etl
     assert isinstance(etl, ETL)
-    assert etl.stack_sequence == 'c-TiO2 | m-TiO2'
-    assert etl.deposition_procedure == 'Spin coating | Spin coating'
-    assert etl.deposition_synthesis_atmosphere == 'Ambient air | Ambient air'
-    assert etl.deposition_solvents == '1-butanol | ethanol'
-    assert etl.deposition_reaction_solutions_compounds == 'titanium diisopropoxide bis(acetylacetonate) | TiO2 paste'
-    assert etl.deposition_reaction_solutions_concentrations == '0.15 mol/L | 14.3 wt%'
-    assert etl.deposition_thermal_annealing_temperature == '125 >> 450 | 500'
-    assert etl.deposition_thermal_annealing_time == '300 >> 1800 | 1800'
-    assert etl.deposition_thermal_annealing_atmosphere == 'Ambient air | Ambient air'
-    
+    assert etl.stack_sequence == 'c-TiO2|m-TiO2'
+    assert etl.deposition_procedure == 'Spin-coating|Spin-coating'
+    assert etl.deposition_synthesis_atmosphere == 'Ambient air|Ambient air'
+    assert etl.deposition_solvents == '1-butanol|ethanol'
+    assert etl.deposition_reaction_solutions_compounds == 'titanium diisopropoxide bis(acetylacetonate)|TiO2 paste'
+    assert etl.deposition_reaction_solutions_concentrations == '0.15 mol/L|14.3 wt%'
+    assert etl.deposition_thermal_annealing_temperature == '125>>450|500'
+    assert etl.deposition_thermal_annealing_time == '300>>1800|1800'
+    assert etl.deposition_thermal_annealing_atmosphere == 'Ambient air|Ambient air'
+
     htl = classic.htl
     assert isinstance(htl, HTL)
     assert htl.deposition_reaction_solutions_temperature == '60'

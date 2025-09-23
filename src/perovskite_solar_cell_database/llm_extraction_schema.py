@@ -644,18 +644,39 @@ def set_layer_properties(
     """
     Set the properties of the classic layer based on the LLM extracted layer.
     """
+    depositions: list[ProcessingStep] = llm_layer.deposition
+    thermal_annealing_steps: list[ProcessingStep] = [
+        step for step in depositions if step.method == 'Thermal-annealing'
+    ]
+    depositions = [step for step in depositions if step.method != 'Thermal-annealing']
     if isinstance(layer, Perovskite):
         pass
     else:
-        layer.stack_sequence = llm_layer.name
-        if llm_layer.deposition:
-            layer.deposition_procedure = ' >> '.join(
-                deposition.method for deposition in llm_layer.deposition
-            )
-    if isinstance(layer, HTL):
-        layer.thickness_list = quantity_to_str(llm_layer.thickness)
+        if layer.stack_sequence:
+            layer.stack_sequence += '|'
+        else:
+            layer.stack_sequence = ''
+        layer.stack_sequence += llm_layer.name
+
+        if layer.deposition_procedure:
+            layer.deposition_procedure += '|'
+        else:
+            layer.deposition_procedure = ''
+        layer.deposition_procedure += '>>'.join(
+            deposition.method for deposition in depositions
+        )
+    if isinstance(layer, HTL | Backcontact):
+        if layer.thickness_list:
+            layer.thickness_list += '|'
+        else:
+            layer.thickness_list = ''
+        layer.thickness_list += quantity_to_str(llm_layer.thickness)
     else:
-        layer.thickness = quantity_to_str(llm_layer.thickness)
+        if layer.thickness:
+            layer.thickness += '|'
+        else:
+            layer.thickness = ''
+        layer.thickness += quantity_to_str(llm_layer.thickness)
     if isinstance(layer, Substrate):
         layer.cleaning_procedure = llm_layer.additional_treatment
     else:
@@ -663,14 +684,21 @@ def set_layer_properties(
             llm_layer.additional_treatment
         )
     if isinstance(layer, ETL | HTL | Backcontact):
-        if llm_layer.deposition:
-            layer.deposition_synthesis_atmosphere = ' >> '.join(
-                deposition.atmosphere for deposition in llm_layer.deposition
-            )
-            layer.deposition_substrate_temperature = ' >> '.join(
-                quantity_to_str(deposition.temperature)
-                for deposition in llm_layer.deposition
-            )
+        if layer.deposition_synthesis_atmosphere:
+            layer.deposition_synthesis_atmosphere += '|'
+        else:
+            layer.deposition_synthesis_atmosphere = ''
+        layer.deposition_synthesis_atmosphere += '>>'.join(
+            deposition.atmosphere for deposition in depositions
+        )
+        if layer.deposition_substrate_temperature:
+            layer.deposition_substrate_temperature += '|'
+        else:
+            layer.deposition_substrate_temperature = ''
+        layer.deposition_substrate_temperature += '>>'.join(
+            quantity_to_str(deposition.temperature)
+            for deposition in depositions
+        )
 
 
 def llm_to_classic_schema(
@@ -701,7 +729,7 @@ def llm_to_classic_schema(
     cell.architecture = llm_cell.device_architecture
     cell.area_total = llm_cell.active_area
     # cell.stack_sequence = ' | '.join(llm_cell.layer_order.split(','))
-    cell.stack_sequence = ' | '.join(
+    cell.stack_sequence = '|'.join(
         'Perovskite' if layer.functionality == 'Absorber' else layer.name
         for layer in llm_cell.layers
     )
@@ -828,16 +856,16 @@ def llm_to_classic_schema(
         match llm_layer.functionality:
             case 'Absorber':
                 if llm_layer.deposition:
-                    perovskite_deposition.procedure = ' >> '.join(
+                    perovskite_deposition.procedure = '>>'.join(
                         deposition.method for deposition in llm_layer.deposition
                     )
                     perovskite_deposition.number_of_deposition_steps = len(
                         llm_layer.deposition
                     )
-                    perovskite_deposition.synthesis_atmosphere = ' >> '.join(
+                    perovskite_deposition.synthesis_atmosphere = '>>'.join(
                         deposition.atmosphere for deposition in llm_layer.deposition
                     )
-                    perovskite_deposition.substrate_temperature = ' >> '.join(
+                    perovskite_deposition.substrate_temperature = '>>'.join(
                         quantity_to_str(deposition.temperature)
                         for deposition in llm_layer.deposition
                     )
