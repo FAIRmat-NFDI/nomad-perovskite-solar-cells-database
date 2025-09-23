@@ -206,7 +206,14 @@ SYNONYMS = {
         'spiro-SMeTAD',
         'Spiro',
     ],
-    'NiOx': ['NiOx', 'NiO', 'NiOX'],
+    'NiOx': [
+        'NiOx',
+        'NiO',
+        'NiOX',
+        'NIO',
+        'nio',
+        'Nickel oxide'
+    ],
     'PTAA': ['PTAA'],
     'PEDOT:PSS': ['PEDOT:PSS', 'PEDOT', 'PEDOT/PSS', 'PEDOT-PSS'],
     'MeO-2PACz': ['MeO-2PACz', 'MeO-2PACZ', 'MeO-2PACz SAM', 'Meo-2PACz'],
