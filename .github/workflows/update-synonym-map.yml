@@ -26,13 +26,13 @@ jobs:
 
       - name: Run synonym map generator
         run: |
-          python packages/nomad-perovskite-solar-cells-database/synonyms/generate_synonym_map.py
+          python synonyms/generate_synonym_map.py
 
       - name: Commit and push changes if any
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add packages/nomad-perovskite-solar-cells-database/src/perovskite_solar_cell_database/synonym_map.json
+          git add src/perovskite_solar_cell_database/synonym_map.json
           if ! git diff --cached --quiet; then
             git commit -m "chore: update synonym_map.json [auto-sync]"
             git push
