@@ -34,6 +34,6 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add src/perovskite_solar_cell_database/synonym_map.json
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update synonym_map.json [auto-sync]"
+            git commit -m "chore: update synonym_map.json"
             git push
           fi
