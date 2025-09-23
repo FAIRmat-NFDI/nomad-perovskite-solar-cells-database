@@ -75,6 +75,190 @@ SYNONYMS = {
     'Inkjet printing': ['Inkjet printing'],
     'Hydrothermal': ['Hydrothermal'],
     'TiCl4 treatment': ['TiCl4 treatment'],
+    'Air brush spray': [
+        'Air brush spray',
+        'Air-brush spray',
+        'Airbrush spray',
+        'air brush-spray',
+    ],
+    'Blow-drying': [
+        'Blow drying',
+        'Blow-drying',
+    ],
+    'Brush painting': [
+        'Brush painting',
+        'Brush-painting',
+    ],
+    'Closed space sublimation': [
+        'Closed space sublimation',
+        'Close space sublimation',
+        'Closed-space sublimation',
+    ],
+    'Condensation': [
+        'Condensation',
+    ],
+    'Crystallization': [
+        'Crystallization',
+        'Crystallisation',
+    ],
+    'CVD': [
+        'CVD',
+        'Chemical vapor deposition',
+        'Chemical Vapor Deposition',
+        'Chemical vapour deposition',
+    ],
+    'Diffusion': [
+        'Diffusion',
+    ],
+    'Diffusion-gas reaction': [
+        'Diffusion gas reaction',
+        'Diffusion-gas reaction',
+    ],
+    'Dipp-coating': [
+        'Dipp-coating',
+        'Dip-coating',
+        'Dip coating',
+    ],
+    'Dripping': [
+        'Dripping',
+    ],
+    'Electrodeposition': [
+        'Electrodeposition',
+        'Electro-deposition',
+    ],
+    'Electrospinning': [
+        'Electrospinning',
+        'Electro-spinning',
+    ],
+    'Electrospraying': [
+        'Electrospraying',
+        'Electro-spraying',
+    ],
+    'Evaporation': [
+        'Evaporation',
+    ],
+    'Flash evaporation': [
+        'Flash evaporation',
+        'Flash-evaporation',
+    ],
+    'Gas-assisted fast crystallisation': [
+        'Gas-assisted fast crystallisation',
+        'Gas-assisted fast crystallization',
+        'Gas assisted fast crystallisation',
+    ],
+    'Gas reaction': [
+        'Gas reaction',
+        'Gas-reaction',
+    ],
+    'GC-LCG': [
+        'GC-LCG',
+        'GC LCG',
+    ],
+    'Hot-casting': [
+        'Hot-casting',
+        'Hot casting',
+    ],
+    'Hot-pressed': [
+        'Hot-pressed',
+        'Hot pressed',
+        'Hot pressing',
+    ],
+    'Inverse temperature crystallization': [
+        'Inverse temperature crystallization',
+        'Inverse temperature crystallisation',
+        'ITC',
+    ],
+    'Ion exchange': [
+        'Ion exchange',
+        'Ion-exchange',
+    ],
+    'Lamination': [
+        'Lamination',
+    ],
+    'Ligand exchange': [
+        'Ligand exchange',
+        'Ligand-exchange',
+    ],
+    'Printing': [
+        'Printing',
+    ],
+    'Pulsed laser deposition': [
+        'Pulsed laser deposition',
+        'PLD',
+    ],
+    'PVD': [
+        'PVD',
+        'Physical vapor deposition',
+        'Physical vapour deposition',
+    ],
+    'Recrystallization': [
+        'Recrystallization',
+        'Recrystallisation',
+    ],
+    'Rinsing': [
+        'Rinsing',
+    ],
+    'Roller-coating': [
+        'Roller-coating',
+        'Roller coating',
+    ],
+    'Sandwiching': [
+        'Sandwiching',
+    ],
+    'Single crystal growth': [
+        'Single crystal growth',
+        'Single-crystal growth',
+    ],
+    'Single-source thermal evaporation': [
+        'Single-source thermal evaporation',
+        'Single source thermal evaporation',
+    ],
+    'Soft-cover deposition': [
+        'Soft-cover deposition',
+        'Soft cover deposition',
+    ],
+    'Solvent annealing': [
+        'Solvent annealing',
+        'Solvent-annealing',
+    ],
+    'Solvent evaporation crystallization': [
+        'Solvent evaporation crystallization',
+        'Solvent-evaporation crystallization',
+        'Solvent evaporation crystallisation',
+    ],
+    'Space-confined single crystal formation': [
+        'Space-confined single crystal formation',
+        'Space confined single crystal formation',
+    ],
+    'Space-limited inverse temperature crystallization': [
+        'Space-limited inverse temperature crystallization',
+        'Space limited inverse temperature crystallization',
+        'Space-limited ITC',
+    ],
+    'Substrate vibration assisted dropcasting': [
+        'Substrate vibration assisted dropcasting',
+        'Substrate-vibration-assisted dropcasting',
+        'Substrate vibration-assisted drop casting',
+    ],
+    'Sulfurization': [
+        'Sulfurization',
+        'Sulphurization',
+    ],
+    'Ultrasonic spray': [
+        'Ultrasonic spray',
+        'Ultrasonic-spray',
+    ],
+    'Vacuum flash evaporation': [
+        'Vacuum flash evaporation',
+        'Vacuum-flash evaporation',
+    ],
+    'Vapour annealing': [
+        'Vapour annealing',
+        'Vapor annealing',
+    ],
+    'Washing': [
+        'Washing',
+    ],
     # Substrate synonyms
     'RF sputtering': ['RF sputtering'],
     'FTO': [
@@ -189,6 +373,7 @@ SYNONYMS = {
     ],
     'TiO2-bl': ['TiO2-bl', 'bl-TiO2', 'b-TiO2'],
     # HTL synonyms
+    # === Organic HTLs ===
     'Spiro-OMeTAD': [
         'Spiro-OMeTAD',
         'spiro-OMeTAD',
@@ -206,6 +391,9 @@ SYNONYMS = {
         'spiro-SMeTAD',
         'Spiro',
     ],
+    'PTAA': ['PTAA'],
+    'P3HT': ['P3HT'],
+    # === Oxide HTLs ===
     'NiOx': [
         'NiOx',
         'NiO',
@@ -214,17 +402,111 @@ SYNONYMS = {
         'nio',
         'Nickel oxide'
     ],
-    'PTAA': ['PTAA'],
-    'PEDOT:PSS': ['PEDOT:PSS', 'PEDOT', 'PEDOT/PSS', 'PEDOT-PSS'],
-    'MeO-2PACz': ['MeO-2PACz', 'MeO-2PACZ', 'MeO-2PACz SAM', 'Meo-2PACz'],
-    '2PACz': ['2PACz', '2PACZ'],
-    'P3HT': ['P3HT'],
-    'Me-4PACz': ['Me-4PACz', '4PACz', 'Me-4PACZ'],
+    # === Polymer / inorganic ===
+    'PEDOT:PSS': [
+        'PEDOT:PSS',
+        'PEDOT',
+        'PEDOT/PSS',
+        'PEDOT-PSS'
+    ],
     'CuSCN': ['CuSCN'],
     'Cu2O': ['Cu2O'],
     'CuI': ['CuI'],
-    'SAM': ['SAM'],
-    'MeO-4PACz': ['MeO-4PACz'],
+    # === SAM families (PACz) ===
+    '2PACz': [
+        '2PACz',
+        '2PACZ',
+        '2Pacz',
+        '2pacz',
+        '2-PACz',
+        '2-PACZ',
+        '2-Pacz',
+        '2-pacz',
+        '2 PACz',
+        '2 PACZ'
+    ],
+    'Me-2PACz': [
+        'Me-2PACz',
+        'Me 2PACz',
+        'Me2PACz',
+        'ME-2PACZ',
+        'ME2PACZ',
+        'me-2pacz',
+        'Me-2Pacz',
+        'Me-2PACZ',
+        'Me2Pacz',
+        'Me-2 Pacz'
+    ],
+    'MeO-2PACz': [
+        'MeO-2PACz',
+        'MeO 2PACz',
+        'MeO2PACz',
+        'MEO-2PACZ',
+        'MEO2PACZ',
+        'Meo-2PACz',
+        'Meo2PACz',
+        'MeO-2Pacz',
+        'MeO-2PACZ',
+        'Meo-2Pacz',
+        'MeO-2PACz SAM'
+    ],
+    '4PACz': [
+        '4PACz',
+        '4PACZ',
+        '4Pacz',
+        '4pacz',
+        '4-PACz',
+        '4-PACZ',
+        '4-Pacz',
+        '4-pacz',
+        '4 PACz',
+        '4- PACZ'
+    ],
+    'Me-4PACz': [
+        'Me-4PACz',
+        'Me 4PACz',
+        'Me4PACz',
+        'ME-4PACZ',
+        'ME4PACZ',
+        'Me-4Pacz',
+        'me-4pacz',
+        'Me-4PACZ',
+        '4PACz-Me',
+        'Me-4 Pacz',
+        'SAM_Me_4PACz'
+    ],
+    'MeO-4PACz': [
+        'MeO-4PACz',
+        'MeO 4PACz',
+        'MeO4PACz',
+        'MEO-4PACZ',
+        'MEO4PACZ',
+        'MeO-4Pacz',
+        'Meo-4PACz',
+        'Meo4PACz',
+        'MeO-4PACZ'
+    ],
+    'Ph-4PACz': [
+        'Ph-4PACz',
+        'Ph 4PACz',
+        'Ph4PACz',
+        'PH-4PACZ',
+        'PH4PACZ',
+        'ph-4pacz',
+        'Ph-4Pacz',
+        'Ph-4PACZ',
+        'ph- PACZ',
+        'Ph-4pacz'
+    ],
+    'MePhpPACz': [
+        'MePhpPACz',
+        'MEPHPPACZ',
+        'MePhpPacz',
+        'mephpPACZ'
+    ],
+    '4PADCB': ['4PADCB'],
+    # === Generic SAM (unspecified) ===
+    'SAM': ['SAM']
 }
 
 def main():
