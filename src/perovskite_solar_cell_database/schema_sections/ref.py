@@ -25,6 +25,7 @@ class Author(ArchiveSection):
             self.name = f'{self.first_name} {self.last_name}'
         super().normalize(archive, logger)
 
+
 class Ref(ArchiveSection):
     """Information about the source of the data. It describes who curated the data,
     the journal in which the data was published,
@@ -142,7 +143,9 @@ Unpublished
     )
 
     extraction_method = Quantity(
-        type=MEnum('Author', 'Perovskite Database Project', 'LLM', 'LLM Reviewed by Human'),
+        type=MEnum(
+            'Author', 'Perovskite Database Project', 'LLM', 'LLM Reviewed by Human'
+        ),
         description='How the solar cell data was extracted from the publication.',
     )
 
@@ -169,9 +172,10 @@ Unpublished
                 self.authors = [
                     Author(
                         first_name=author['given'],
-                        last_name=author['family'], 
-                        name=author['given'] + ' ' + author['family']
-                    ) for author in temp_dict['message']['author']
+                        last_name=author['family'],
+                        name=author['given'] + ' ' + author['family'],
+                    )
+                    for author in temp_dict['message']['author']
                 ]
             if not archive.metadata:
                 archive.metadata = EntryMetadata()

@@ -147,6 +147,9 @@ package-dir = { "" = "src" }
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"perovskite_solar_cell_database" = ["synonym_map.json"]
+
 [tool.setuptools_scm]
 
 [project.entry-points.'nomad.plugin']
