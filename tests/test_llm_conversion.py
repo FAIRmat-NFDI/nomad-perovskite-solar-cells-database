@@ -51,7 +51,7 @@ def test_conversion(tmp_path):
     assert etl.deposition_reaction_solutions_concentrations == '0.15 mol/L|14.3 wt%'
     assert etl.deposition_thermal_annealing_temperature == '125>>450|500'
     assert etl.deposition_thermal_annealing_time == '300>>1800|1800'
-    assert etl.deposition_thermal_annealing_atmosphere == 'Ambient air|Ambient air'
+    assert etl.deposition_thermal_annealing_atmosphere == 'Ambient air>>Ambient air|Ambient air'
 
     htl = classic.htl
     assert isinstance(htl, HTL)
@@ -59,7 +59,7 @@ def test_conversion(tmp_path):
     
     perovskite_deposition = classic.perovskite_deposition
     assert isinstance(perovskite_deposition, PerovskiteDeposition)
-    assert perovskite_deposition.procedure == 'Spin coating'
+    assert perovskite_deposition.procedure == 'Spin-coating'
     assert perovskite_deposition.synthesis_atmosphere == 'Ambient air'
     assert perovskite_deposition.quenching_induced_crystallisation
     assert perovskite_deposition.quenching_media == 'Chlorobenzene'
