@@ -43,7 +43,7 @@ def test_conversion(tmp_path):
 
     etl = classic.etl
     assert isinstance(etl, ETL)
-    assert etl.stack_sequence == 'c-TiO2|m-TiO2'
+    assert etl.stack_sequence == 'TiO2-c|TiO2-mp'
     assert etl.deposition_procedure == 'Spin-coating|Spin-coating'
     assert etl.deposition_synthesis_atmosphere == 'Ambient air|Ambient air'
     assert etl.deposition_solvents == '1-butanol|ethanol'
