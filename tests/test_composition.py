@@ -14,25 +14,33 @@ from perovskite_solar_cell_database.composition import (
 
 @pytest.mark.usefixtures('tmp_path')
 def test_composition(tmp_path):
-    a_ion_file = os.path.join(os.path.dirname(__file__), 'data', 'MA_perovskite_ion.archive.json')
+    a_ion_file = os.path.join(
+        os.path.dirname(__file__), 'data', 'MA_perovskite_ion.archive.json'
+    )
     tmp_file = tmp_path / 'a_ion.archive.json'
     shutil.copy(a_ion_file, tmp_file)
     a_ion_archive = parse(tmp_file)[0]
     normalize_all(a_ion_archive)
 
-    b_ion_file = os.path.join(os.path.dirname(__file__), 'data', 'Pb_perovskite_ion.archive.json')
+    b_ion_file = os.path.join(
+        os.path.dirname(__file__), 'data', 'Pb_perovskite_ion.archive.json'
+    )
     tmp_file = tmp_path / 'b_ion.archive.json'
     shutil.copy(b_ion_file, tmp_file)
     b_ion_archive = parse(tmp_file)[0]
     normalize_all(b_ion_archive)
 
-    x_ion_file_1 = os.path.join(os.path.dirname(__file__), 'data', 'I_perovskite_ion.archive.json')
+    x_ion_file_1 = os.path.join(
+        os.path.dirname(__file__), 'data', 'I_perovskite_ion.archive.json'
+    )
     tmp_file = tmp_path / 'x_ion.archive.json'
     shutil.copy(x_ion_file_1, tmp_file)
     x_ion_1_archive = parse(tmp_file)[0]
     normalize_all(x_ion_1_archive)
 
-    x_ion_file_2 = os.path.join(os.path.dirname(__file__), 'data', 'Br_perovskite_ion.archive.json')
+    x_ion_file_2 = os.path.join(
+        os.path.dirname(__file__), 'data', 'Br_perovskite_ion.archive.json'
+    )
     tmp_file = tmp_path / 'x_ion_2.archive.json'
     shutil.copy(x_ion_file_2, tmp_file)
     x_ion_2_archive = parse(tmp_file)[0]
@@ -46,8 +54,10 @@ def test_composition(tmp_path):
     assert isinstance(x_ion_1, PerovskiteXIon)
     x_ion_2 = x_ion_2_archive.data
     assert isinstance(x_ion_2, PerovskiteXIon)
-    
-    composition_file = os.path.join(os.path.dirname(__file__), 'data', 'composition.archive.yaml')
+
+    composition_file = os.path.join(
+        os.path.dirname(__file__), 'data', 'composition.archive.yaml'
+    )
     tmp_file = tmp_path / 'composition.archive.yaml'
     shutil.copy(composition_file, tmp_file)
     composition_archive = parse(tmp_file)[0]

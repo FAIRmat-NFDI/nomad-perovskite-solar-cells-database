@@ -340,6 +340,12 @@ class ProcessingStep(SectionRevision):
         section_def=ReactionSolution, a_eln=ELNAnnotation(label='Solution')
     )
 
+    antisolvent = Quantity(
+        type=str,
+        description='Any antisolvent(s) used in the processing step. Separate multiple antisolvents with a semicolon (;).',
+        a_eln=ELNAnnotation(label='Antisolvent', component='StringEditQuantity'),
+    )
+
     additional_parameters = Quantity(
         type=JSON,
         description='Any additional parameters specific to this processing step',
@@ -633,44 +639,192 @@ def get_reference(upload_id: str, mainfile: str) -> str:
 
 def quantity_to_str(quantity):
     if isinstance(quantity, ureg.Quantity):
-        return str(quantity.magnitude)
+        return format(quantity.magnitude, '.10g')
+    elif isinstance(quantity, int | float):
+        return format(quantity, '.10g')
     return 'nan'
 
 
+def add_to_pipe_separated_list(existing: str | None, addition: str | None) -> str:
+    if not addition:
+        return existing or 'Unknown'
+    if existing:
+        return existing + '|' + addition
+    else:
+        return addition or 'Unknown'
+
+
 def set_layer_properties(
-    layer: ETL | HTL | Backcontact | Substrate | Perovskite,
+    layer: ETL | HTL | Backcontact | Substrate | Perovskite | PerovskiteDeposition,
     llm_layer: Layer,
 ):
     """
     Set the properties of the classic layer based on the LLM extracted layer.
     """
-    if isinstance(layer, Perovskite):
-        pass
-    else:
-        layer.stack_sequence = llm_layer.name
-        if llm_layer.deposition:
-            layer.deposition_procedure = ' >> '.join(
-                deposition.method for deposition in llm_layer.deposition
-            )
-    if isinstance(layer, HTL):
-        layer.thickness_list = quantity_to_str(llm_layer.thickness)
-    else:
-        layer.thickness = quantity_to_str(llm_layer.thickness)
+    depositions: list[ProcessingStep] = llm_layer.deposition
+    thermal_annealing_steps = [
+        step for step in depositions if step.method == 'Thermal-annealing'
+    ]
+    depositions = [step for step in depositions if step.method != 'Thermal-annealing']
+    if isinstance(layer, PerovskiteDeposition):
+        layer.procedure = '>>'.join(deposition.method for deposition in depositions)
+        layer.number_of_deposition_steps = len(depositions)
+    elif not isinstance(layer, Perovskite):
+        layer.stack_sequence = add_to_pipe_separated_list(
+            layer.stack_sequence, llm_layer.name
+        )
+        layer.deposition_procedure = add_to_pipe_separated_list(
+            layer.deposition_procedure,
+            '>>'.join(deposition.method for deposition in depositions),
+        )
+    if isinstance(layer, HTL | Backcontact):
+        layer.thickness_list = add_to_pipe_separated_list(
+            layer.thickness_list, quantity_to_str(llm_layer.thickness)
+        )
+    elif not isinstance(layer, PerovskiteDeposition):
+        layer.thickness = add_to_pipe_separated_list(
+            layer.thickness, quantity_to_str(llm_layer.thickness)
+        )
     if isinstance(layer, Substrate):
         layer.cleaning_procedure = llm_layer.additional_treatment
-    else:
+    elif not isinstance(layer, PerovskiteDeposition):
         layer.surface_treatment_before_next_deposition_step = (
-            llm_layer.additional_treatment
+            add_to_pipe_separated_list(
+                layer.surface_treatment_before_next_deposition_step,
+                llm_layer.additional_treatment,
+            )
         )
+    if isinstance(layer, Perovskite | Substrate):
+        return
+    atmospheres = []
+    temperatures = []
+    quenched = False
+    antisolvents = []
+    solvents = []
+    solvent_fractions = []
+    solutes = []
+    solute_concentrations = []
+    solution_temperatures = []
+    volumes = []
+    annealing_temperatures = []
+    annealing_durations = []
+    annealing_atmospheres = []
+    for deposition in depositions:
+        atmospheres.append(
+            deposition.atmosphere if deposition.atmosphere else 'Unknown'
+        )
+        temperatures.append(
+            quantity_to_str(deposition.temperature)
+            if deposition.temperature is not None
+            else 'nan'
+        )
+        if deposition.antisolvent:
+            antisolvents.append(deposition.antisolvent)
+            quenched = True
+        if isinstance(deposition.solution, ReactionSolution):
+            solution_temperatures.append(
+                quantity_to_str(deposition.solution.temperature)
+                if deposition.solution.temperature is not None
+                else 'nan'
+            )
+            volumes.append(
+                quantity_to_str(deposition.solution.volume)
+                if deposition.solution.volume is not None
+                else 'nan'
+            )
+            if deposition.solution.solvents:
+                step_solvents = []
+                step_solvent_fractions = []
+                solvent: Solvent
+                for solvent in deposition.solution.solvents:
+                    step_solvents.append(solvent.name)
+                    step_solvent_fractions.append(
+                        quantity_to_str(solvent.volume_fraction)
+                        if solvent.volume_fraction is not None
+                        else 'nan'
+                    )
+                solvents.append(';'.join(step_solvents))
+                solvent_fractions.append(';'.join(step_solvent_fractions))
+            else:
+                solvents.append('Unknown')
+                solvent_fractions.append('nan')
+            if deposition.solution.solutes:
+                step_solutes = []
+                step_solute_concentrations = []
+                solute: Solute
+                for solute in deposition.solution.solutes:
+                    step_solutes.append(solute.name)
+                    step_solute_concentrations.append(
+                        f'{quantity_to_str(solute.concentration)} {solute.concentration_unit}'
+                    )
+                solutes.append(';'.join(step_solutes))
+                solute_concentrations.append(';'.join(step_solute_concentrations))
+            else:
+                solutes.append('Unknown')
+                solute_concentrations.append('nan')
+    if thermal_annealing_steps:
+        for step in thermal_annealing_steps:
+            annealing_temperatures.append(
+                quantity_to_str(step.temperature)
+                if step.temperature is not None
+                else 'nan'
+            )
+            annealing_durations.append(
+                quantity_to_str(step.duration) if step.duration is not None else 'nan'
+            )
+            annealing_atmospheres.append(
+                step.atmosphere if step.atmosphere else 'Unknown'
+            )
     if isinstance(layer, ETL | HTL | Backcontact):
-        if llm_layer.deposition:
-            layer.deposition_synthesis_atmosphere = ' >> '.join(
-                deposition.atmosphere for deposition in llm_layer.deposition
-            )
-            layer.deposition_substrate_temperature = ' >> '.join(
-                quantity_to_str(deposition.temperature)
-                for deposition in llm_layer.deposition
-            )
+        layer.deposition_synthesis_atmosphere = add_to_pipe_separated_list(
+            layer.deposition_synthesis_atmosphere, '>>'.join(atmospheres)
+        )
+        layer.deposition_substrate_temperature = add_to_pipe_separated_list(
+            layer.deposition_substrate_temperature, '>>'.join(temperatures)
+        )
+        layer.deposition_solvents = add_to_pipe_separated_list(
+            layer.deposition_solvents, '>>'.join(solvents)
+        )
+        layer.deposition_reaction_solutions_compounds = add_to_pipe_separated_list(
+            layer.deposition_reaction_solutions_compounds, '>>'.join(solutes)
+        )
+        layer.deposition_reaction_solutions_concentrations = add_to_pipe_separated_list(
+            layer.deposition_reaction_solutions_concentrations,
+            '>>'.join(solute_concentrations),
+        )
+        layer.deposition_reaction_solutions_temperature = add_to_pipe_separated_list(
+            layer.deposition_reaction_solutions_temperature,
+            '>>'.join(solution_temperatures),
+        )
+        layer.deposition_thermal_annealing_temperature = add_to_pipe_separated_list(
+            layer.deposition_thermal_annealing_temperature,
+            '>>'.join(annealing_temperatures),
+        )
+        layer.deposition_thermal_annealing_time = add_to_pipe_separated_list(
+            layer.deposition_thermal_annealing_time, '>>'.join(annealing_durations)
+        )
+        layer.deposition_thermal_annealing_atmosphere = add_to_pipe_separated_list(
+            layer.deposition_thermal_annealing_atmosphere,
+            '>>'.join(annealing_atmospheres),
+        )
+        layer.deposition_reaction_solutions_volumes = add_to_pipe_separated_list(
+            layer.deposition_reaction_solutions_volumes, '>>'.join(volumes)
+        )
+    elif isinstance(layer, PerovskiteDeposition):
+        layer.synthesis_atmosphere = '>>'.join(atmospheres)
+        layer.substrate_temperature = '>>'.join(temperatures)
+        layer.reaction_solutions_compounds = '>>'.join(solutes)
+        layer.reaction_solutions_concentrations = '>>'.join(solute_concentrations)
+        layer.reaction_solutions_temperature = '>>'.join(solution_temperatures)
+        layer.solvents = '>>'.join(solvents)
+        layer.solvents_mixing_ratios = '>>'.join(solvent_fractions)
+        layer.quenching_induced_crystallisation = quenched
+        layer.quenching_media = '>>'.join(antisolvents)
+        layer.reaction_solutions_volumes = '>>'.join(volumes)
+        if thermal_annealing_steps:
+            layer.thermal_annealing_temperature = '>>'.join(annealing_temperatures)
+            layer.thermal_annealing_time = '>>'.join(annealing_durations)
+            layer.thermal_annealing_atmosphere = '>>'.join(annealing_atmospheres)
 
 
 def llm_to_classic_schema(
@@ -701,7 +855,7 @@ def llm_to_classic_schema(
     cell.architecture = llm_cell.device_architecture
     cell.area_total = llm_cell.active_area
     # cell.stack_sequence = ' | '.join(llm_cell.layer_order.split(','))
-    cell.stack_sequence = ' | '.join(
+    cell.stack_sequence = '|'.join(
         'Perovskite' if layer.functionality == 'Absorber' else layer.name
         for layer in llm_cell.layers
     )
@@ -815,33 +969,11 @@ def llm_to_classic_schema(
         # Still needs to be read:
         # llm_cell.layers[:].additional_treatment
         # llm_cell.layers[:].deposition[:].step_name
-        # llm_cell.layers[:].deposition[:].duration
         # llm_cell.layers[:].deposition[:].additional_parameters
-        # llm_cell.layers[:].deposition[:].solution.volume
-        # llm_cell.layers[:].deposition[:].solution.temperature
-        # llm_cell.layers[:].deposition[:].solution.solutes[:].name
-        # llm_cell.layers[:].deposition[:].solution.solutes[:].concentration
-        # llm_cell.layers[:].deposition[:].solution.solutes[:].concentration_unit
-        # llm_cell.layers[:].deposition[:].solution.solvents[:].name
-        # llm_cell.layers[:].deposition[:].solution.solvents[:].concentration
-        # llm_cell.layers[:].deposition[:].solution.solvents[:].concentration_unit
         match llm_layer.functionality:
             case 'Absorber':
-                if llm_layer.deposition:
-                    perovskite_deposition.procedure = ' >> '.join(
-                        deposition.method for deposition in llm_layer.deposition
-                    )
-                    perovskite_deposition.number_of_deposition_steps = len(
-                        llm_layer.deposition
-                    )
-                    perovskite_deposition.synthesis_atmosphere = ' >> '.join(
-                        deposition.atmosphere for deposition in llm_layer.deposition
-                    )
-                    perovskite_deposition.substrate_temperature = ' >> '.join(
-                        quantity_to_str(deposition.temperature)
-                        for deposition in llm_layer.deposition
-                    )
                 set_layer_properties(perovskite, llm_layer)
+                set_layer_properties(perovskite_deposition, llm_layer)
             case 'Electron-transport':
                 set_layer_properties(etl, llm_layer)
             case 'Hole-transport':
@@ -858,6 +990,7 @@ def llm_to_classic_schema(
     classic_cell.jv = jv
     classic_cell.encapsulation = encapsulation
     classic_cell.perovskite = perovskite
+    classic_cell.perovskite_deposition = perovskite_deposition
     classic_cell.stability = stability
     classic_cell.etl = etl
     classic_cell.htl = htl
