@@ -1,13 +1,15 @@
+import json
+from importlib.resources import files
 from typing import (
     TYPE_CHECKING,
 )
 
-from nomad.datamodel.data import ArchiveSection, UseCaseElnCategory
+from nomad.datamodel.data import ArchiveSection, Schema
 from nomad.datamodel.metainfo.annotations import ELNComponentEnum
 from nomad.datamodel.metainfo.basesections import PublicationReference
 from nomad.datamodel.metainfo.eln import ELNAnnotation
-from nomad.metainfo import JSON, Quantity, Section, SubSection
-from nomad.metainfo.metainfo import MEnum
+from nomad.metainfo import JSON, Quantity, SchemaPackage, Section, SubSection
+from nomad.metainfo.metainfo import MEnum, Reference
 from nomad.units import ureg
 
 from perovskite_solar_cell_database.composition import (
@@ -35,10 +37,16 @@ from perovskite_solar_cell_database.schema_sections.substrate import Substrate
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
 
-from nomad.datamodel.data import Schema
-from nomad.metainfo import SchemaPackage
 
 m_package = SchemaPackage()
+
+
+with (
+    files('perovskite_solar_cell_database')
+    .joinpath('synonym_map.json')
+    .open('r', encoding='utf-8') as f
+):
+    SYNONYM_MAP: dict[str, str] = json.load(f)
 
 
 class SectionRevision(ArchiveSection):
@@ -338,6 +346,10 @@ class ProcessingStep(SectionRevision):
         a_eln=ELNAnnotation(label='Additional Parameters'),
     )
 
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.method = SYNONYM_MAP.get(self.method, self.method)
+
 
 # Deposition class
 class Deposition(SectionRevision):
@@ -415,6 +427,10 @@ Use established terminology: "SAM" for self-organized molecular layers, "surface
             label='Additional Treatment', component='StringEditQuantity'
         ),
     )
+
+    def normalize(self, archive, logger):
+        super().normalize(archive, logger)
+        self.name = SYNONYM_MAP.get(self.name, self.name)
 
 
 class ExtractionMetadata(SectionRevision):
@@ -558,7 +574,7 @@ Sometimes several different PCE values are presented for the same device. It cou
     )
 
     classic_entry = Quantity(
-        type=PerovskiteSolarCell,
+        type=Reference(PerovskiteSolarCell.m_def),
         description='This is the classic schema entry that is generated from this LLM extracted entry. It is generated when the entry is normalized and saved and does not need to be filled.',
     )
 
@@ -570,8 +586,14 @@ Sometimes several different PCE values are presented for the same device. It cou
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
         if self.layer_order:
-            layer_dict = {layer.name: layer for layer in self.layers}
-            ordered_names = [name.strip() for name in self.layer_order.split(',')]
+            layer_dict = {
+                SYNONYM_MAP.get(layer.name, layer.name): layer for layer in self.layers
+            }
+            ordered_names = [
+                SYNONYM_MAP.get(name.strip(), name.strip())
+                for name in self.layer_order.split(',')
+            ]
+            self.layer_order = ','.join(ordered_names)
 
             if set(ordered_names) != set(layer_dict.keys()):
                 logger.warn('The names in layer_order does not match available layers')
@@ -606,7 +628,7 @@ def get_reference(upload_id: str, mainfile: str) -> str:
     from nomad.utils import hash
 
     entry_id = hash(upload_id, mainfile)
-    return f'../uploads/{upload_id}/archive/{entry_id}'
+    return f'../uploads/{upload_id}/archive/{entry_id}#data'
 
 
 def quantity_to_str(quantity):
@@ -708,9 +730,15 @@ def llm_to_classic_schema(
         llm_composition = llm_cell.perovskite_composition
     perovskite.composition_long_form = llm_composition.long_form
     perovskite.composition_short_form = llm_composition.short_form
-    a_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_a_site, key=lambda ion: ion.abbreviation)
-    b_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_b_site, key=lambda ion: ion.abbreviation)
-    x_ions: list[PerovskiteIonComponent] = sorted(llm_composition.ions_x_site, key=lambda ion: ion.abbreviation)
+    a_ions: list[PerovskiteIonComponent] = sorted(
+        llm_composition.ions_a_site, key=lambda ion: ion.abbreviation
+    )
+    b_ions: list[PerovskiteIonComponent] = sorted(
+        llm_composition.ions_b_site, key=lambda ion: ion.abbreviation
+    )
+    x_ions: list[PerovskiteIonComponent] = sorted(
+        llm_composition.ions_x_site, key=lambda ion: ion.abbreviation
+    )
     perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
     perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
     perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)

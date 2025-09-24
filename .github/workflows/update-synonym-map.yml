@@ -1,0 +1,39 @@
+name: Update Synonym Map
+
+on:
+  pull_request:
+    paths:
+      - 'synonyms/generate_synonym_map.py'
+  push:
+    branches: [main]
+    paths:
+      - 'synonyms/generate_synonym_map.py'
+
+jobs:
+  generate-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run synonym map generator
+        run: |
+          python synonyms/generate_synonym_map.py
+
+      - name: Commit and push changes if any
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/perovskite_solar_cell_database/synonym_map.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update synonym_map.json"
+            git push
+          fi
