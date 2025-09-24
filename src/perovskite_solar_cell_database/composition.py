@@ -844,15 +844,9 @@ class PerovskiteCompositionSection(ArchiveSection):
         Returns:
             str: The formula string.
         """
-        a_ions_sorted = sorted(
-            self.ions_a_site, key=lambda ion: ion.abbreviation or ''
-        )
-        b_ions_sorted = sorted(
-            self.ions_b_site, key=lambda ion: ion.abbreviation or ''
-        )
-        x_ions_sorted = sorted(
-            self.ions_x_site, key=lambda ion: ion.abbreviation or ''
-        )
+        a_ions_sorted = sorted(self.ions_a_site, key=lambda ion: ion.abbreviation or '')
+        b_ions_sorted = sorted(self.ions_b_site, key=lambda ion: ion.abbreviation or '')
+        x_ions_sorted = sorted(self.ions_x_site, key=lambda ion: ion.abbreviation or '')
         ions: list[PerovskiteIonComponent] = (
             a_ions_sorted + b_ions_sorted + x_ions_sorted
         )

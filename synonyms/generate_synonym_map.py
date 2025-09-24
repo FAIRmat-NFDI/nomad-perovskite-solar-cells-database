@@ -394,21 +394,9 @@ SYNONYMS = {
     'PTAA': ['PTAA'],
     'P3HT': ['P3HT'],
     # === Oxide HTLs ===
-    'NiOx': [
-        'NiOx',
-        'NiO',
-        'NiOX',
-        'NIO',
-        'nio',
-        'Nickel oxide'
-    ],
+    'NiOx': ['NiOx', 'NiO', 'NiOX', 'NIO', 'nio', 'Nickel oxide'],
     # === Polymer / inorganic ===
-    'PEDOT:PSS': [
-        'PEDOT:PSS',
-        'PEDOT',
-        'PEDOT/PSS',
-        'PEDOT-PSS'
-    ],
+    'PEDOT:PSS': ['PEDOT:PSS', 'PEDOT', 'PEDOT/PSS', 'PEDOT-PSS'],
     'CuSCN': ['CuSCN'],
     'Cu2O': ['Cu2O'],
     'CuI': ['CuI'],
@@ -423,7 +411,7 @@ SYNONYMS = {
         '2-Pacz',
         '2-pacz',
         '2 PACz',
-        '2 PACZ'
+        '2 PACZ',
     ],
     'Me-2PACz': [
         'Me-2PACz',
@@ -435,7 +423,7 @@ SYNONYMS = {
         'Me-2Pacz',
         'Me-2PACZ',
         'Me2Pacz',
-        'Me-2 Pacz'
+        'Me-2 Pacz',
     ],
     'MeO-2PACz': [
         'MeO-2PACz',
@@ -448,7 +436,7 @@ SYNONYMS = {
         'MeO-2Pacz',
         'MeO-2PACZ',
         'Meo-2Pacz',
-        'MeO-2PACz SAM'
+        'MeO-2PACz SAM',
     ],
     '4PACz': [
         '4PACz',
@@ -460,7 +448,7 @@ SYNONYMS = {
         '4-Pacz',
         '4-pacz',
         '4 PACz',
-        '4- PACZ'
+        '4- PACZ',
     ],
     'Me-4PACz': [
         'Me-4PACz',
@@ -473,7 +461,7 @@ SYNONYMS = {
         'Me-4PACZ',
         '4PACz-Me',
         'Me-4 Pacz',
-        'SAM_Me_4PACz'
+        'SAM_Me_4PACz',
     ],
     'MeO-4PACz': [
         'MeO-4PACz',
@@ -484,7 +472,7 @@ SYNONYMS = {
         'MeO-4Pacz',
         'Meo-4PACz',
         'Meo4PACz',
-        'MeO-4PACZ'
+        'MeO-4PACZ',
     ],
     'Ph-4PACz': [
         'Ph-4PACz',
@@ -496,18 +484,14 @@ SYNONYMS = {
         'Ph-4Pacz',
         'Ph-4PACZ',
         'ph- PACZ',
-        'Ph-4pacz'
+        'Ph-4pacz',
     ],
-    'MePhpPACz': [
-        'MePhpPACz',
-        'MEPHPPACZ',
-        'MePhpPacz',
-        'mephpPACZ'
-    ],
+    'MePhpPACz': ['MePhpPACz', 'MEPHPPACZ', 'MePhpPacz', 'mephpPACZ'],
     '4PADCB': ['4PADCB'],
     # === Generic SAM (unspecified) ===
-    'SAM': ['SAM']
+    'SAM': ['SAM'],
 }
+
 
 def main():
     synonym_map = {}
@@ -518,11 +502,16 @@ def main():
             synonym_map[synonym] = standard_name
     with open(
         os.path.join(
-            os.path.dirname(__file__), 
-            '..', 'src', 'perovskite_solar_cell_database', 'synonym_map.json',
-        ), 'w',
+            os.path.dirname(__file__),
+            '..',
+            'src',
+            'perovskite_solar_cell_database',
+            'synonym_map.json',
+        ),
+        'w',
     ) as f:
         json.dump(synonym_map, f, indent=2)
+
 
 if __name__ == '__main__':
     main()
