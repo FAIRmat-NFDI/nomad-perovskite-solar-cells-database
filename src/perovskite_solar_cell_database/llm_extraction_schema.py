@@ -649,7 +649,7 @@ def add_to_pipe_separated_list(existing: str | None, addition: str | None) -> st
     if not addition:
         return existing or 'Unknown'
     if existing:
-        return existing + '|' + addition
+        return existing + ' | ' + addition
     else:
         return addition or 'Unknown'
 
@@ -667,7 +667,7 @@ def set_layer_properties(
     ]
     depositions = [step for step in depositions if step.method != 'Thermal-annealing']
     if isinstance(layer, PerovskiteDeposition):
-        layer.procedure = '>>'.join(deposition.method for deposition in depositions)
+        layer.procedure = ' >> '.join(deposition.method for deposition in depositions)
         layer.number_of_deposition_steps = len(depositions)
     elif not isinstance(layer, Perovskite):
         layer.stack_sequence = add_to_pipe_separated_list(
@@ -675,7 +675,7 @@ def set_layer_properties(
         )
         layer.deposition_procedure = add_to_pipe_separated_list(
             layer.deposition_procedure,
-            '>>'.join(deposition.method for deposition in depositions),
+            ' >> '.join(deposition.method for deposition in depositions),
         )
     if isinstance(layer, HTL | Backcontact):
         layer.thickness_list = add_to_pipe_separated_list(
@@ -743,8 +743,8 @@ def set_layer_properties(
                         if solvent.volume_fraction is not None
                         else 'nan'
                     )
-                solvents.append(';'.join(step_solvents))
-                solvent_fractions.append(';'.join(step_solvent_fractions))
+                solvents.append('; '.join(step_solvents))
+                solvent_fractions.append('; '.join(step_solvent_fractions))
             else:
                 solvents.append('Unknown')
                 solvent_fractions.append('nan')
@@ -757,8 +757,8 @@ def set_layer_properties(
                     step_solute_concentrations.append(
                         f'{quantity_to_str(solute.concentration)} {solute.concentration_unit}'
                     )
-                solutes.append(';'.join(step_solutes))
-                solute_concentrations.append(';'.join(step_solute_concentrations))
+                solutes.append('; '.join(step_solutes))
+                solute_concentrations.append('; '.join(step_solute_concentrations))
             else:
                 solutes.append('Unknown')
                 solute_concentrations.append('nan')
@@ -777,54 +777,54 @@ def set_layer_properties(
             )
     if isinstance(layer, ETL | HTL | Backcontact):
         layer.deposition_synthesis_atmosphere = add_to_pipe_separated_list(
-            layer.deposition_synthesis_atmosphere, '>>'.join(atmospheres)
+            layer.deposition_synthesis_atmosphere, ' >> '.join(atmospheres)
         )
         layer.deposition_substrate_temperature = add_to_pipe_separated_list(
-            layer.deposition_substrate_temperature, '>>'.join(temperatures)
+            layer.deposition_substrate_temperature, ' >> '.join(temperatures)
         )
         layer.deposition_solvents = add_to_pipe_separated_list(
-            layer.deposition_solvents, '>>'.join(solvents)
+            layer.deposition_solvents, ' >> '.join(solvents)
         )
         layer.deposition_reaction_solutions_compounds = add_to_pipe_separated_list(
-            layer.deposition_reaction_solutions_compounds, '>>'.join(solutes)
+            layer.deposition_reaction_solutions_compounds, ' >> '.join(solutes)
         )
         layer.deposition_reaction_solutions_concentrations = add_to_pipe_separated_list(
             layer.deposition_reaction_solutions_concentrations,
-            '>>'.join(solute_concentrations),
+            ' >> '.join(solute_concentrations),
         )
         layer.deposition_reaction_solutions_temperature = add_to_pipe_separated_list(
             layer.deposition_reaction_solutions_temperature,
-            '>>'.join(solution_temperatures),
+            ' >> '.join(solution_temperatures),
         )
         layer.deposition_thermal_annealing_temperature = add_to_pipe_separated_list(
             layer.deposition_thermal_annealing_temperature,
-            '>>'.join(annealing_temperatures),
+            ' >> '.join(annealing_temperatures),
         )
         layer.deposition_thermal_annealing_time = add_to_pipe_separated_list(
-            layer.deposition_thermal_annealing_time, '>>'.join(annealing_durations)
+            layer.deposition_thermal_annealing_time, ' >> '.join(annealing_durations)
         )
         layer.deposition_thermal_annealing_atmosphere = add_to_pipe_separated_list(
             layer.deposition_thermal_annealing_atmosphere,
-            '>>'.join(annealing_atmospheres),
+            ' >> '.join(annealing_atmospheres),
         )
         layer.deposition_reaction_solutions_volumes = add_to_pipe_separated_list(
-            layer.deposition_reaction_solutions_volumes, '>>'.join(volumes)
+            layer.deposition_reaction_solutions_volumes, ' >> '.join(volumes)
         )
     elif isinstance(layer, PerovskiteDeposition):
-        layer.synthesis_atmosphere = '>>'.join(atmospheres)
-        layer.substrate_temperature = '>>'.join(temperatures)
-        layer.reaction_solutions_compounds = '>>'.join(solutes)
-        layer.reaction_solutions_concentrations = '>>'.join(solute_concentrations)
-        layer.reaction_solutions_temperature = '>>'.join(solution_temperatures)
-        layer.solvents = '>>'.join(solvents)
-        layer.solvents_mixing_ratios = '>>'.join(solvent_fractions)
+        layer.synthesis_atmosphere = ' >> '.join(atmospheres)
+        layer.substrate_temperature = ' >> '.join(temperatures)
+        layer.reaction_solutions_compounds = ' >> '.join(solutes)
+        layer.reaction_solutions_concentrations = ' >> '.join(solute_concentrations)
+        layer.reaction_solutions_temperature = ' >> '.join(solution_temperatures)
+        layer.solvents = ' >> '.join(solvents)
+        layer.solvents_mixing_ratios = ' >> '.join(solvent_fractions)
         layer.quenching_induced_crystallisation = quenched
-        layer.quenching_media = '>>'.join(antisolvents)
-        layer.reaction_solutions_volumes = '>>'.join(volumes)
+        layer.quenching_media = ' >> '.join(antisolvents)
+        layer.reaction_solutions_volumes = ' >> '.join(volumes)
         if thermal_annealing_steps:
-            layer.thermal_annealing_temperature = '>>'.join(annealing_temperatures)
-            layer.thermal_annealing_time = '>>'.join(annealing_durations)
-            layer.thermal_annealing_atmosphere = '>>'.join(annealing_atmospheres)
+            layer.thermal_annealing_temperature = ' >> '.join(annealing_temperatures)
+            layer.thermal_annealing_time = ' >> '.join(annealing_durations)
+            layer.thermal_annealing_atmosphere = ' >> '.join(annealing_atmospheres)
 
 
 def llm_to_classic_schema(
@@ -855,7 +855,7 @@ def llm_to_classic_schema(
     cell.architecture = llm_cell.device_architecture
     cell.area_total = llm_cell.active_area
     # cell.stack_sequence = ' | '.join(llm_cell.layer_order.split(','))
-    cell.stack_sequence = '|'.join(
+    cell.stack_sequence = ' | '.join(
         'Perovskite' if layer.functionality == 'Absorber' else layer.name
         for layer in llm_cell.layers
     )
