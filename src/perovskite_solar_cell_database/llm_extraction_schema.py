@@ -865,7 +865,7 @@ def llm_to_classic_schema(
     jv.default_Jsc = llm_cell.jsc
     jv.default_Voc = llm_cell.voc
     ff = llm_cell.ff
-    if ff > 1:
+    if ff is not None and ff > 1:
         ff /= 100  # Convert percentage to fraction if needed
     jv.default_FF = ff
     # Use number of devices if reported
