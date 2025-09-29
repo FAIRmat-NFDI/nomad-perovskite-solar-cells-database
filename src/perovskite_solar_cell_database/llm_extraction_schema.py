@@ -459,6 +459,27 @@ class ExtractionMetadata(SectionRevision):
     )
 
 
+def split_layer_order(s) -> list[str]:
+    result = []
+    buf = ''
+    depth = 0
+    for i, c in enumerate(s):
+        if c == '(':
+            depth += 1
+            buf += c
+        elif c == ')':
+            depth -= 1
+            buf += c
+        elif c == ',' and depth == 0 and not (i > 0 and s[i-1].isdigit() and i+1 < len(s) and s[i+1].isdigit()):
+            result.append(buf)
+            buf = ''
+        else:
+            buf += c
+    if buf:
+        result.append(buf)
+    return result
+
+
 # PerovskiteSolarCell class
 class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Schema):
     m_def = Section(label='LLM Extracted Perovskite Solar Cell')
@@ -597,7 +618,7 @@ Sometimes several different PCE values are presented for the same device. It cou
             }
             ordered_names = [
                 SYNONYM_MAP.get(name.strip(), name.strip())
-                for name in self.layer_order.split(',')
+                for name in split_layer_order(self.layer_order)
             ]
             self.layer_order = ','.join(ordered_names)
 
@@ -667,7 +688,7 @@ def set_layer_properties(
     ]
     depositions = [step for step in depositions if step.method != 'Thermal-annealing']
     if isinstance(layer, PerovskiteDeposition):
-        layer.procedure = ' >> '.join(deposition.method for deposition in depositions)
+        layer.procedure = ' >> '.join(deposition.method if deposition.method is not None else 'Unknown' for deposition in depositions)
         layer.number_of_deposition_steps = len(depositions)
     elif not isinstance(layer, Perovskite):
         layer.stack_sequence = add_to_pipe_separated_list(
@@ -675,7 +696,7 @@ def set_layer_properties(
         )
         layer.deposition_procedure = add_to_pipe_separated_list(
             layer.deposition_procedure,
-            ' >> '.join(deposition.method for deposition in depositions),
+            ' >> '.join(deposition.method if deposition.method is not None else 'Unknown' for deposition in depositions),
         )
     if isinstance(layer, HTL | Backcontact):
         layer.thickness_list = add_to_pipe_separated_list(
@@ -893,20 +914,20 @@ def llm_to_classic_schema(
     x_ions: list[PerovskiteIonComponent] = sorted(
         llm_composition.ions_x_site, key=lambda ion: ion.abbreviation
     )
-    perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
-    perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
-    perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
+    perovskite.composition_a_ions = '; '.join(ion.abbreviation if ion.abbreviation is not None else 'Unknown' for ion in a_ions)
+    perovskite.composition_b_ions = '; '.join(ion.abbreviation if ion.abbreviation is not None else 'Unknown' for ion in b_ions)
+    perovskite.composition_c_ions = '; '.join(ion.abbreviation if ion.abbreviation is not None else 'Unknown' for ion in x_ions)
     if a_ions:
         perovskite.composition_a_ions_coefficients = '; '.join(
-            ion.coefficient for ion in a_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown' for ion in a_ions
         )
     if b_ions:
         perovskite.composition_b_ions_coefficients = '; '.join(
-            ion.coefficient for ion in b_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown' for ion in b_ions
         )
     if x_ions:
         perovskite.composition_c_ions_coefficients = '; '.join(
-            ion.coefficient for ion in x_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown' for ion in x_ions
         )
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:

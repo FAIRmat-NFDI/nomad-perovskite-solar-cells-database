@@ -219,4 +219,4 @@ class PerovskiteFormulaNormalizer:
                     'Perovskite formula with a cation abbreviation could not be parsed'
                 )
 
-            return None, None
+        return None, None
