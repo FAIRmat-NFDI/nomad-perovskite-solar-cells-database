@@ -36,7 +36,9 @@ def test_conversion(tmp_path):
     classic = llm_to_classic_schema(entry_archive.data)
     cell = classic.cell
     assert isinstance(cell, Cell)
-    assert cell.stack_sequence == 'FTO | TiO2-c | TiO2-mp | Perovskite | DTB(3%DEG) | Au'
+    assert (
+        cell.stack_sequence == 'FTO | TiO2-c | TiO2-mp | Perovskite | DTB(3%DEG) | Au'
+    )
 
     etl = classic.etl
     assert isinstance(etl, ETL)
@@ -72,7 +74,8 @@ def test_conversion(tmp_path):
     assert perovskite_deposition.solvents == 'DMF; DMSO'
     assert perovskite_deposition.solvents_mixing_ratios == '0.9; 0.1'
     assert (
-        perovskite_deposition.reaction_solutions_compounds == 'FAI; PbI2; MABr; PbBr2; CsI'
+        perovskite_deposition.reaction_solutions_compounds
+        == 'FAI; PbI2; MABr; PbBr2; CsI'
     )
     assert (
         perovskite_deposition.reaction_solutions_concentrations

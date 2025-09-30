@@ -667,7 +667,10 @@ def set_layer_properties(
     ]
     depositions = [step for step in depositions if step.method != 'Thermal-annealing']
     if isinstance(layer, PerovskiteDeposition):
-        layer.procedure = ' >> '.join(deposition.method if deposition.method is not None else 'Unknown' for deposition in depositions)
+        layer.procedure = ' >> '.join(
+            deposition.method if deposition.method is not None else 'Unknown'
+            for deposition in depositions
+        )
         layer.number_of_deposition_steps = len(depositions)
     elif not isinstance(layer, Perovskite):
         layer.stack_sequence = add_to_pipe_separated_list(
@@ -675,7 +678,10 @@ def set_layer_properties(
         )
         layer.deposition_procedure = add_to_pipe_separated_list(
             layer.deposition_procedure,
-            ' >> '.join(deposition.method if deposition.method is not None else 'Unknown' for deposition in depositions),
+            ' >> '.join(
+                deposition.method if deposition.method is not None else 'Unknown'
+                for deposition in depositions
+            ),
         )
     if isinstance(layer, HTL | Backcontact):
         layer.thickness_list = add_to_pipe_separated_list(
@@ -893,20 +899,32 @@ def llm_to_classic_schema(
     x_ions: list[PerovskiteIonComponent] = sorted(
         llm_composition.ions_x_site, key=lambda ion: ion.abbreviation
     )
-    perovskite.composition_a_ions = '; '.join(ion.abbreviation if ion.abbreviation is not None else 'Unknown' for ion in a_ions)
-    perovskite.composition_b_ions = '; '.join(ion.abbreviation if ion.abbreviation is not None else 'Unknown' for ion in b_ions)
-    perovskite.composition_c_ions = '; '.join(ion.abbreviation if ion.abbreviation is not None else 'Unknown' for ion in x_ions)
+    perovskite.composition_a_ions = '; '.join(
+        ion.abbreviation if ion.abbreviation is not None else 'Unknown'
+        for ion in a_ions
+    )
+    perovskite.composition_b_ions = '; '.join(
+        ion.abbreviation if ion.abbreviation is not None else 'Unknown'
+        for ion in b_ions
+    )
+    perovskite.composition_c_ions = '; '.join(
+        ion.abbreviation if ion.abbreviation is not None else 'Unknown'
+        for ion in x_ions
+    )
     if a_ions:
         perovskite.composition_a_ions_coefficients = '; '.join(
-            ion.coefficient if ion.coefficient is not None else 'Unknown' for ion in a_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown'
+            for ion in a_ions
         )
     if b_ions:
         perovskite.composition_b_ions_coefficients = '; '.join(
-            ion.coefficient if ion.coefficient is not None else 'Unknown' for ion in b_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown'
+            for ion in b_ions
         )
     if x_ions:
         perovskite.composition_c_ions_coefficients = '; '.join(
-            ion.coefficient if ion.coefficient is not None else 'Unknown' for ion in x_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown'
+            for ion in x_ions
         )
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:

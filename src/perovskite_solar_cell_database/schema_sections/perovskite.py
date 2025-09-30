@@ -6620,7 +6620,9 @@ Ozone
             try:
                 archive.results.material.elements = final_formula[1]
             except ValueError as e:
-                logger.warn(f'{final_formula[1]} is not a valid element list', exc_info=e)
+                logger.warn(
+                    f'{final_formula[1]} is not a valid element list', exc_info=e
+                )
 
         ions = []
         a_ions_names = []
