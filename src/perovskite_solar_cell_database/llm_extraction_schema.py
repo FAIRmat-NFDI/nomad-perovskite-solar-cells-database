@@ -459,27 +459,6 @@ class ExtractionMetadata(SectionRevision):
     )
 
 
-def split_layer_order(s) -> list[str]:
-    result = []
-    buf = ''
-    depth = 0
-    for i, c in enumerate(s):
-        if c == '(':
-            depth += 1
-            buf += c
-        elif c == ')':
-            depth -= 1
-            buf += c
-        elif c == ',' and depth == 0 and not (i > 0 and s[i-1].isdigit() and i+1 < len(s) and s[i+1].isdigit()):
-            result.append(buf)
-            buf = ''
-        else:
-            buf += c
-    if buf:
-        result.append(buf)
-    return result
-
-
 # PerovskiteSolarCell class
 class LLMExtractedPerovskiteSolarCell(PublicationReference, SectionRevision, Schema):
     m_def = Section(label='LLM Extracted Perovskite Solar Cell')
@@ -596,7 +575,7 @@ Sometimes several different PCE values are presented for the same device. It cou
 
     layer_order = Quantity(
         type=str,
-        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by commas. If you want to add a missing layer, please add it first to the Layers section below. Then make sure to add the name of the layer, as you list it below, in this field in the right order. When you hit save on the top right, the correct order will be set on the layers in the Layers section below.',
+        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by "|". If you want to add a missing layer, please add it first to the Layers section below. Then make sure to add the name of the layer, as you list it below, in this field in the right order. When you hit save on the top right, the correct order will be set on the layers in the Layers section below.',
         a_eln=ELNAnnotation(label='Layer Order', component='StringEditQuantity'),
     )
 
@@ -609,25 +588,25 @@ Sometimes several different PCE values are presented for the same device. It cou
         section_def=ExtractionMetadata,
     )
 
-    # normalizer that reorderes the layers according to the layer_order
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
+        layer_dict = {
+            SYNONYM_MAP.get(layer.name, layer.name): layer for layer in self.layers
+        }
         if self.layer_order:
-            layer_dict = {
-                SYNONYM_MAP.get(layer.name, layer.name): layer for layer in self.layers
-            }
             ordered_names = [
                 SYNONYM_MAP.get(name.strip(), name.strip())
-                for name in split_layer_order(self.layer_order)
+                for name in self.layer_order.split('|')
             ]
-            self.layer_order = ','.join(ordered_names)
+            self.layer_order = ' | '.join(ordered_names)
 
             if set(ordered_names) != set(layer_dict.keys()):
                 logger.warn('The names in layer_order does not match available layers')
-                return
-
-            # Reorder in single pass
-            self.layers = [layer_dict[name] for name in ordered_names]
+                self.layer_order = ' | '.join(layer_dict.keys())
+            else:
+                self.layers = [layer_dict[name] for name in ordered_names]
+        else:
+            self.layer_order = ' | '.join(layer_dict.keys())
         # Generate the classic schema entry
         mainfile_list = archive.metadata.mainfile.split('.')
         mainfile_list[-3] += '_classic'
