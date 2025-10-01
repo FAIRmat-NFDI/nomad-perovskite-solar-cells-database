@@ -200,7 +200,7 @@ def create_cell_stack_figure(  # noqa: PLR0913
             zaxis=dict(visible=False, showgrid=False, zeroline=False),
             camera=dict(eye=dict(x=1.75, y=1.75, z=1.25)),
             dragmode='turntable',
-            aspectmode='data',
+            # aspectmode='data',
         ),
         width=800,
         height=600,
