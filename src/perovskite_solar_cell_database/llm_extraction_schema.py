@@ -575,7 +575,7 @@ Sometimes several different PCE values are presented for the same device. It cou
 
     layer_order = Quantity(
         type=str,
-        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by commas. If you want to add a missing layer, please add it first to the Layers section below. Then make sure to add the name of the layer, as you list it below, in this field in the right order. When you hit save on the top right, the correct order will be set on the layers in the Layers section below.',
+        description='Order of the layers in the device stack. Use the layer names as they appear in the "Layers" section, separated by "|". If you want to add a missing layer, please add it first to the Layers section below. Then make sure to add the name of the layer, as you list it below, in this field in the right order. When you hit save on the top right, the correct order will be set on the layers in the Layers section below.',
         a_eln=ELNAnnotation(label='Layer Order', component='StringEditQuantity'),
     )
 
@@ -588,25 +588,25 @@ Sometimes several different PCE values are presented for the same device. It cou
         section_def=ExtractionMetadata,
     )
 
-    # normalizer that reorderes the layers according to the layer_order
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
+        layer_dict = {
+            SYNONYM_MAP.get(layer.name, layer.name): layer for layer in self.layers
+        }
         if self.layer_order:
-            layer_dict = {
-                SYNONYM_MAP.get(layer.name, layer.name): layer for layer in self.layers
-            }
             ordered_names = [
                 SYNONYM_MAP.get(name.strip(), name.strip())
-                for name in self.layer_order.split(',')
+                for name in self.layer_order.split('|')
             ]
-            self.layer_order = ','.join(ordered_names)
+            self.layer_order = ' | '.join(ordered_names)
 
             if set(ordered_names) != set(layer_dict.keys()):
                 logger.warn('The names in layer_order does not match available layers')
-                return
-
-            # Reorder in single pass
-            self.layers = [layer_dict[name] for name in ordered_names]
+                self.layer_order = ' | '.join(layer_dict.keys())
+            else:
+                self.layers = [layer_dict[name] for name in ordered_names]
+        else:
+            self.layer_order = ' | '.join(layer_dict.keys())
         # Generate the classic schema entry
         mainfile_list = archive.metadata.mainfile.split('.')
         mainfile_list[-3] += '_classic'
@@ -667,7 +667,10 @@ def set_layer_properties(
     ]
     depositions = [step for step in depositions if step.method != 'Thermal-annealing']
     if isinstance(layer, PerovskiteDeposition):
-        layer.procedure = ' >> '.join(deposition.method for deposition in depositions)
+        layer.procedure = ' >> '.join(
+            deposition.method if deposition.method is not None else 'Unknown'
+            for deposition in depositions
+        )
         layer.number_of_deposition_steps = len(depositions)
     elif not isinstance(layer, Perovskite):
         layer.stack_sequence = add_to_pipe_separated_list(
@@ -675,7 +678,10 @@ def set_layer_properties(
         )
         layer.deposition_procedure = add_to_pipe_separated_list(
             layer.deposition_procedure,
-            ' >> '.join(deposition.method for deposition in depositions),
+            ' >> '.join(
+                deposition.method if deposition.method is not None else 'Unknown'
+                for deposition in depositions
+            ),
         )
     if isinstance(layer, HTL | Backcontact):
         layer.thickness_list = add_to_pipe_separated_list(
@@ -865,7 +871,7 @@ def llm_to_classic_schema(
     jv.default_Jsc = llm_cell.jsc
     jv.default_Voc = llm_cell.voc
     ff = llm_cell.ff
-    if ff > 1:
+    if ff is not None and ff > 1:
         ff /= 100  # Convert percentage to fraction if needed
     jv.default_FF = ff
     # Use number of devices if reported
@@ -893,20 +899,32 @@ def llm_to_classic_schema(
     x_ions: list[PerovskiteIonComponent] = sorted(
         llm_composition.ions_x_site, key=lambda ion: ion.abbreviation
     )
-    perovskite.composition_a_ions = '; '.join(ion.abbreviation for ion in a_ions)
-    perovskite.composition_b_ions = '; '.join(ion.abbreviation for ion in b_ions)
-    perovskite.composition_c_ions = '; '.join(ion.abbreviation for ion in x_ions)
+    perovskite.composition_a_ions = '; '.join(
+        ion.abbreviation if ion.abbreviation is not None else 'Unknown'
+        for ion in a_ions
+    )
+    perovskite.composition_b_ions = '; '.join(
+        ion.abbreviation if ion.abbreviation is not None else 'Unknown'
+        for ion in b_ions
+    )
+    perovskite.composition_c_ions = '; '.join(
+        ion.abbreviation if ion.abbreviation is not None else 'Unknown'
+        for ion in x_ions
+    )
     if a_ions:
         perovskite.composition_a_ions_coefficients = '; '.join(
-            ion.coefficient for ion in a_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown'
+            for ion in a_ions
         )
     if b_ions:
         perovskite.composition_b_ions_coefficients = '; '.join(
-            ion.coefficient for ion in b_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown'
+            for ion in b_ions
         )
     if x_ions:
         perovskite.composition_c_ions_coefficients = '; '.join(
-            ion.coefficient for ion in x_ions
+            ion.coefficient if ion.coefficient is not None else 'Unknown'
+            for ion in x_ions
         )
     perovskite.band_gap = llm_composition.band_gap
     # Still needs to be read:

@@ -6617,7 +6617,12 @@ Ozone
                 )
             except Exception as e:
                 logger.warn('could not analyse chemical formula', exc_info=e)
-            archive.results.material.elements = final_formula[1]
+            try:
+                archive.results.material.elements = final_formula[1]
+            except ValueError as e:
+                logger.warn(
+                    f'{final_formula[1]} is not a valid element list', exc_info=e
+                )
 
         ions = []
         a_ions_names = []
@@ -6625,9 +6630,12 @@ Ozone
         if self.composition_a_ions is not None:
             a_ions_names = self.composition_a_ions.split('; ')
         if self.composition_a_ions_coefficients is not None:
-            a_ions_coefficients = [
-                float(c) for c in self.composition_a_ions_coefficients.split('; ')
-            ]
+            for c in self.composition_a_ions_coefficients.split('; '):
+                try:
+                    a_ions_coefficients.append(float(c))
+                except ValueError:
+                    logger.warn(f'Could not convert A-ion coefficient {c} to float.')
+                    a_ions_coefficients.append(None)
 
         if len(a_ions_names) != 0 and len(a_ions_names) == len(a_ions_coefficients):
             for i in range(len(a_ions_names)):
@@ -6644,9 +6652,12 @@ Ozone
         if self.composition_b_ions is not None:
             b_ions_names = self.composition_b_ions.split('; ')
         if self.composition_b_ions_coefficients is not None:
-            b_ions_coefficients = [
-                float(c) for c in self.composition_b_ions_coefficients.split('; ')
-            ]
+            for c in self.composition_b_ions_coefficients.split('; '):
+                try:
+                    b_ions_coefficients.append(float(c))
+                except ValueError:
+                    logger.warn(f'Could not convert B-ion coefficient {c} to float.')
+                    b_ions_coefficients.append(None)
 
         if len(b_ions_names) != 0 and len(b_ions_names) == len(b_ions_coefficients):
             for i in range(len(b_ions_names)):
@@ -6663,9 +6674,13 @@ Ozone
         if self.composition_c_ions is not None:
             c_ions_names = self.composition_c_ions.split('; ')
         if self.composition_c_ions_coefficients is not None:
-            c_ions_coefficients = [
-                float(c) for c in self.composition_c_ions_coefficients.split('; ')
-            ]
+            for c in self.composition_c_ions_coefficients.split('; '):
+                try:
+                    c_ions_coefficients.append(float(c))
+                except ValueError:
+                    logger.warn(f'Could not convert C-ion coefficient {c} to float.')
+                    c_ions_coefficients.append(None)
+
         if len(c_ions_names) != 0 and len(c_ions_names) == len(c_ions_coefficients):
             for i in range(len(c_ions_names)):
                 ion_c = Ion(
@@ -6715,7 +6730,9 @@ Ozone
                 atoms=atoms,
             )
 
-            if len(ase_atoms) == 1:
+            if ase_atoms is None:
+                pass
+            elif len(ase_atoms) == 1:
                 child_system.structural_type = 'atom'
             elif len(ase_atoms) > 1:
                 child_system.structural_type = 'molecule / cluster'
