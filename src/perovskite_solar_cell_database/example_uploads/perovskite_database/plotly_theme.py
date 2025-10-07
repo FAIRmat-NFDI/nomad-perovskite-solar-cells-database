@@ -11,11 +11,11 @@ def register_template(
     font_family: str = "Arial",
     font_size: int = 18,
     gridcolor: str = "lightgray",
-    plot_bgcolor: str = "white",
-    paper_bgcolor: str = "white",
+    plot_bgcolor: str = "rgba(0,0,0,0)",
+    paper_bgcolor: str = "rgba(0,0,0,0)",
     colorway: Sequence[str] = (
-        "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
-        "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+        "#1f77b4", "#ff0e5a", "#e9c821", "#86d9ea", "#ff9408",
+        "#ba78d6", "#4cd8a5", "#7f7f7f", "#bcbd22", "#17becf",
     ),
 ) -> str:
     tmpl = go.layout.Template(
@@ -25,6 +25,8 @@ def register_template(
             plot_bgcolor=plot_bgcolor,
             paper_bgcolor=paper_bgcolor,
             margin=dict(l=50, r=50, t=60, b=60),
+            # height=400, 
+            width=700,
             legend=dict(x=0.01, y=0.99, bgcolor="rgba(255,255,255,0.6)"),
             xaxis=dict(
                 showgrid=True, gridcolor=gridcolor, zeroline=False,
