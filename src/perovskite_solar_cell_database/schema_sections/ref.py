@@ -162,20 +162,21 @@ Unpublished
                 # make sure the doi has the prefix https://doi.org/
                 if self.DOI_number.startswith('10.'):
                     self.DOI_number = 'https://doi.org/' + self.DOI_number
-                given_name = temp_dict['message']['author'][0]['given']
-                familiy_name = temp_dict['message']['author'][0]['family']
-                self.journal = temp_dict['message']['container-title'][0]
+                message = temp_dict.get('message', {})
+                given_name = message.get('author', [{}])[0].get('given', '')
+                family_name = message.get('author', [{}])[0].get('family', '')
+                self.journal = message.get('container-title', [None])[0]
                 self.publication_date = dateutil.parser.parse(
-                    temp_dict['message']['created']['date-time']
+                    message.get('created', {}).get('date-time', None)
                 )
-                self.lead_author = given_name + ' ' + familiy_name
+                self.lead_author = given_name + ' ' + family_name
                 self.authors = [
                     Author(
-                        first_name=author['given'],
-                        last_name=author['family'],
-                        name=author['given'] + ' ' + author['family'],
+                        first_name=author.get('given', None),
+                        last_name=author.get('family', None),
+                        name=author.get('given', '') + ' ' + author.get('family', ''),
                     )
-                    for author in temp_dict['message']['author']
+                    for author in message.get('author', [])
                 ]
             if not archive.metadata:
                 archive.metadata = EntryMetadata()
