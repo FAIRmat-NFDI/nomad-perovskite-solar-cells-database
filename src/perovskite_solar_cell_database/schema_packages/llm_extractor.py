@@ -8,6 +8,7 @@ from nomad.datamodel.data import UseCaseElnCategory
 from nomad.datamodel.metainfo.annotations import ELNComponentEnum
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import Quantity, Section
+from nomad.metainfo.metainfo import MEnum
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
@@ -38,9 +39,9 @@ class LlmPerovskitePaperExtractor(Schema):
         description='DOI of the paper',
         a_eln=ELNAnnotation(component=ELNComponentEnum.URLEditQuantity),
     )
-    open_ai_token = Quantity(
+    api_token = Quantity(
         type=str,
-        description='OpenAI API token for LLM extraction',
+        description='API token for LLM extraction',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity, props=dict(type='password')
         ),
@@ -49,6 +50,18 @@ class LlmPerovskitePaperExtractor(Schema):
         type=LLMExtractedPerovskiteSolarCell,
         shape=['*'],
         description='List of extracted perovskite solar cells from the paper',
+    )
+    model = Quantity(
+        type=MEnum(
+            'gpt-4o',
+            'gpt-5',
+            'claude-3-5-sonnet-20241022',
+            'claude-4-sonnet-20250514',
+            'meta.llama3-70b-instruct-v1:0'
+        ),
+        description='LLM model to use for extraction',
+        default='claude-4-sonnet-20250514',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
 
     def delete_pdf(self):
@@ -68,17 +81,17 @@ class LlmPerovskitePaperExtractor(Schema):
         """
         if not self.doi:
             return 'unnamed'
-        return extract_doi(self.doi) or 'unnamed'
+        return extract_doi(self.doi).replace('/', '--', 1) or 'unnamed'
 
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
         extracted_cells = []
         try:
-            if not self.open_ai_token:
-                logger.warn('OpenAI token is required for LLM extraction')
+            if not self.api_token:
+                logger.warn('API token is required for LLM extraction')
                 return
-            _open_ai_token = self.open_ai_token
-            self.open_ai_token = None  # Hide token in the archive
+            _api_token = self.api_token
+            self.api_token = None  # Hide token in the archive
             if not self.doi:
                 logger.warn('DOI is required for LLM extraction')
                 return
@@ -88,7 +101,8 @@ class LlmPerovskitePaperExtractor(Schema):
             extracted_cells = pdf_to_solar_cells(
                 pdf=os.path.join(archive.m_context.raw_path(), self.pdf),
                 doi=self.doi,
-                open_ai_token=_open_ai_token,
+                api_token=_api_token,
+                model=self.model,
                 logger=logger,
             )
         finally:
@@ -107,7 +121,7 @@ class LlmPerovskitePaperExtractor(Schema):
             self.extracted_solar_cells = cell_references
 
 
-def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str, logger) -> list[dict]:
+def pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -> list[dict]:
     """
     Extract perovskite solar cells from a PDF using an LLM.
     """
@@ -115,9 +129,9 @@ def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str, logger) -> list[d
         from perovscribe.pipeline import ExtractionPipeline
 
         return ExtractionPipeline(
-            'gpt-4o', 'pymupdf', 'NONE', '', False
+            model, 'pymupdf', 'NONE', '', False
         ).extract_from_pdf_nomad(
-            pdf, doi, open_ai_token, LLMExtractedPerovskiteSolarCell, ureg)
+            pdf, extract_doi(doi), api_token, LLMExtractedPerovskiteSolarCell, ureg)
     except ImportError:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.'
@@ -127,13 +141,12 @@ def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str, logger) -> list[d
 
 def extract_doi(doi: str) -> str:
     """
-    Extracts the DOI prefix and suffix (10.xxxx/xxxx) from a DOI string,
-    and replaces the forward slash ("/") between the prefix and suffix with a double hyphen ("--").
+    Extracts the DOI prefix and suffix (10.xxxx/xxxx) from a DOI string.
     Returns None if no valid DOI is found.
     """
     match = re.search(r'10\.\d{4,9}/[-._;()/:\w\[\]]+', doi, re.IGNORECASE)
     if match:
-        return match.group(0).replace('/', '--', 1)
+        return match.group(0)
     return None
 
 
