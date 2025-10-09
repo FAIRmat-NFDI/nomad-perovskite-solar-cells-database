@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 from nomad.datamodel.data import Schema
 from nomad.metainfo import SchemaPackage
+from nomad.units import ureg
 
 from perovskite_solar_cell_database.llm_extraction_schema import (
     LLMExtractedPerovskiteSolarCell,
@@ -115,7 +116,8 @@ def pdf_to_solar_cells(pdf: str, doi: str, open_ai_token: str, logger) -> list[d
 
         return ExtractionPipeline(
             'gpt-4o', 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(pdf, doi, open_ai_token)
+        ).extract_from_pdf_nomad(
+            pdf, doi, open_ai_token, LLMExtractedPerovskiteSolarCell, ureg)
     except ImportError:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.'
