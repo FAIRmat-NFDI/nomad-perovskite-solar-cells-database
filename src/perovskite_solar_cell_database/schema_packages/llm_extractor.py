@@ -54,13 +54,13 @@ class LlmPerovskitePaperExtractor(Schema):
     model = Quantity(
         type=MEnum(
             'gpt-4o',
-            'gpt-5',
+            # 'gpt-5',  # Uncomment when temperature support is correct in LiteLLM
             'claude-3-5-sonnet-20241022',
-            'claude-4-sonnet-20250514',
-            'meta.llama3-70b-instruct-v1:0'
+            # 'claude-4-sonnet-20250514',  # Uncomment when max output tokens support is correct in LiteLLM
+            #  'meta.llama3-70b-instruct-v1:0',  # Uncomment when someone can test it
         ),
         description='LLM model to use for extraction',
-        default='claude-4-sonnet-20250514',
+        default='claude-3-5-sonnet-20241022',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
 
@@ -109,7 +109,7 @@ class LlmPerovskitePaperExtractor(Schema):
             self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
         cell_references = []
         for idx, cell in enumerate(extracted_cells):
-            name = f'{self.doi_to_name()}-cell-{idx + 1}.archive.json'
+            name = f'{self.model}-{self.doi_to_name()}-cell-{idx + 1}.archive.json'
             with archive.m_context.update_entry(
                 name, write=True, process=True
             ) as entry:
