@@ -1,11 +1,15 @@
 # pepe_plotly_theme.py
 from __future__ import annotations
-from typing import Iterable, Optional, Sequence
+
+from collections.abc import Iterable, Sequence
+from typing import Optional
+
 import plotly.graph_objects as go
 import plotly.io as pio
 
+
 # ---------- Template ----------
-def register_template(
+def register_template(  # noqa: PLR0913
     *,
     name: str = "pepe",
     font_family: str = "Arial",
@@ -50,60 +54,6 @@ def register_template(
     pio.templates[name] = tmpl
     pio.templates.default = name
     return name
-
-# ---------- Helper: generic scatter ----------
-def scatter_plot(
-    x: Iterable, y: Iterable, *,
-    name: str = "Data",
-    text: Optional[Sequence[str]] = None,
-    x_title: Optional[str] = None,
-    y_title: Optional[str] = None,
-    x_log: bool = False,
-    y_log: bool = False,
-    x_range: Optional[Sequence[float]] = None,
-    y_range: Optional[Sequence[float]] = None,
-    width: int = 800,
-    height: int = 500,
-    size: int = 10,
-    opacity: float = 0.9,
-    color: Optional[str] = None,
-    template: Optional[str] = "pepe",   # <- ensure our template is used
-    x_nticks: Optional[int] = 5,
-    y_nticks: Optional[int] = 5,
-    showlegend: bool = True,
-) -> go.Figure:
-    fig = go.Figure()
-    fig.update_layout(width=width, height=height, template=template, showlegend=showlegend)
-
-    fig.add_trace(go.Scatter(
-        x=list(x), y=list(y),
-        mode="markers", name=name,
-        marker=dict(size=size, color=color, line=dict(color="black", width=1)),
-        opacity=opacity, text=list(text) if text is not None else None,
-    ))
-
-    # Force axis styling (even if another template was active earlier)
-    fig.update_xaxes(
-        title=x_title, nticks=x_nticks,
-        showline=True, linecolor="black", linewidth=1,
-        mirror=True, ticks="inside", tickcolor="black",
-        showgrid=True, gridcolor="lightgray", zeroline=False,
-    )
-    fig.update_yaxes(
-        title=y_title, nticks=y_nticks,
-        showline=True, linecolor="black", linewidth=1,
-        mirror=True, ticks="inside", tickcolor="black",
-        showgrid=True, gridcolor="lightgray", zeroline=False,
-    )
-
-    if x_log: fig.update_xaxes(type="log")
-    if y_log: fig.update_yaxes(type="log")
-    if x_range is not None: fig.update_xaxes(range=list(x_range))
-    if y_range is not None: fig.update_yaxes(range=list(y_range))
-
-    return fig
-
-import plotly.io as pio
 
 
 def set_defaults(
