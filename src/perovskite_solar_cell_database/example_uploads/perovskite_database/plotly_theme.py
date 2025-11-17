@@ -4,48 +4,87 @@ from typing import Iterable, Optional, Sequence
 import plotly.graph_objects as go
 import plotly.io as pio
 
+
+# Standard journal column widths (in inches)
+SINGLE_COLUMN = 3.3  # inches (max 3.5 for single column)
+DOUBLE_COLUMN = 7.0  # inches
+
+DPI = 400  # Standard for publication
+SINGLE_COLUMN_PX = int(SINGLE_COLUMN * DPI)  # 990 px
+DOUBLE_COLUMN_PX = int(DOUBLE_COLUMN * DPI)  # 2100 px
+
 # ---------- Template ----------
 def register_template(
     *,
     name: str = "pepe",
-    font_family: str = "Arial",
-    font_size: int = 18,
-    gridcolor: str = "lightgray",
-    plot_bgcolor: str = "rgba(0,0,0,0)",
-    paper_bgcolor: str = "rgba(0,0,0,0)",
+    font_family: str = "CMU Sans Serif, IBM Plex Sans, Roboto, Helvetica, sans-serif",
+    font_size: int = 10,
+    gridcolor: str = "rgba(117, 141, 153, 0.2)",  # Light version of #758D99
+    plot_bgcolor: str = "white",
+    paper_bgcolor: str = "white",
     colorway: Sequence[str] = (
-        "#1f77b4", "#ff0e5a", "#e9c821", "#86d9ea", "#ff9408",
-        "#ba78d6", "#4cd8a5", "#7f7f7f", "#bcbd22", "#17becf",
+        "#0C5DA5", "#00B945", "#FF9500", "#FF2C00", "#845B97",
+        "#474747", "#9e9e9e", "#9A607F",
     ),
 ) -> str:
     tmpl = go.layout.Template(
         layout=go.Layout(
-            font=dict(family=font_family, size=font_size),
+            font=dict(family=font_family, size=font_size, color="#758D99"),
             colorway=list(colorway),
             plot_bgcolor=plot_bgcolor,
             paper_bgcolor=paper_bgcolor,
-            margin=dict(l=50, r=50, t=60, b=60),
+            margin=dict(l=60, r=10, t=40, b=50),  # Tighter margins
             # height=400, 
-            width=700,
-            legend=dict(x=0.01, y=0.99, bgcolor="rgba(255,255,255,0.6)"),
+            width=SINGLE_COLUMN_PX,  # Default to single column
+            legend=dict(
+                x=0.01, y=0.99, 
+                bgcolor="rgba(0,0,0,0)",  # Transparent background
+                bordercolor="rgba(0,0,0,0)",  # No border (frameon=False)
+                borderwidth=0,
+                font=dict(size=10)
+            ),
             xaxis=dict(
-                showgrid=True, gridcolor=gridcolor, zeroline=False,
-                showline=True, linecolor="black", linewidth=1,
-                mirror=True, ticks="inside", tickcolor="black",
-                automargin=True, title_standoff=10, exponentformat="power",
+                showgrid=False,  # No grid by default
+                gridcolor=gridcolor, 
+                zeroline=False,
+                showline=True, 
+                linecolor="#758D99", 
+                linewidth=0.5,
+                mirror=False,  # Only bottom spine
+                ticks="inside", 
+                tickcolor="#758D99",
+                tickwidth=0.5,
+                ticklen=3,
+                automargin=True, 
+                title_standoff=10, 
+                exponentformat="power",
+                tickfont=dict(size=10, color="#758D99"),
+                title=dict(font=dict(size=11, color="#758D99")),
             ),
             yaxis=dict(
-                showgrid=True, gridcolor=gridcolor, zeroline=False,
-                showline=True, linecolor="black", linewidth=1,
-                mirror=True, ticks="inside", tickcolor="black",
-                automargin=True, title_standoff=10, exponentformat="power",
+                showgrid=False,  # No grid by default
+                gridcolor=gridcolor, 
+                zeroline=False,
+                showline=True, 
+                linecolor="#758D99", 
+                linewidth=0.5,
+                mirror=False,  # Only left spine
+                ticks="inside", 
+                tickcolor="#758D99",
+                tickwidth=0.5,
+                ticklen=3,
+                automargin=True, 
+                title_standoff=10, 
+                exponentformat="power",
+                tickfont=dict(size=10, color="#758D99"),
+                title=dict(font=dict(size=11, color="#758D99")),
             ),
         )
     )
     # Default trace tweaks
     tmpl.data.scatter = [go.Scatter(
-        marker=dict(line=dict(color="black", width=1)),
-        line=dict(width=2),
+        marker=dict(size=3, line=dict(color="white", width=0.5)),
+        line=dict(width=1),
     )]
     pio.templates[name] = tmpl
     pio.templates.default = name
@@ -107,13 +146,14 @@ import plotly.io as pio
 
 
 def set_defaults(
-    format: str = "svg",
+    format: str = "pdf",
     filename: str = "plot",
     scale: int = 1,
 ):
     """
     Set global Plotly defaults for all .show() calls.
-    In particular, makes the modebar download button export SVG.
+    In particular, makes the modebar download button export PDF by default.
+    Scale is set to 1 since we're already sizing at target DPI.
     """
     pio.renderers.default = pio.renderers.default  # ensure current renderer stays
     pio.renderers[pio.renderers.default].config = {
