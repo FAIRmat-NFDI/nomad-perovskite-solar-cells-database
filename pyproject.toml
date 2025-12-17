@@ -36,6 +36,8 @@ dependencies = [
     "rdkit",
     "openpyxl",
     "lxml_html_clean",
+    "pyarrow>=22.0.0",
+    "nbformat>=5.10.4",
 ]
 license = { file = "LICENSE" }
 
