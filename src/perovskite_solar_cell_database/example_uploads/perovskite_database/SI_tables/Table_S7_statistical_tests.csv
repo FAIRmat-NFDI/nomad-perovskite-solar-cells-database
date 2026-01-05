@@ -1,3 +1,0 @@
-Test,Statistic,Value,SE,R_squared,p_value,Interpretation
-Entropy trend (Manual 2012-2019),Linear regression slope,4.9870e-01,5.1814e-02,9.4879e-01,2.0530e-04,Significant increasing trend
-Top-1 concentration trend (Manual 2012-2019),Linear regression slope,-7.9254e-02,1.0807e-02,9.1494e-01,7.3933e-04,Significant decreasing trend
