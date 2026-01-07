@@ -75,6 +75,15 @@ class LlmPerovskitePaperExtractor(Schema):
             except FileNotFoundError:
                 pass  # File already deleted or does not exist
 
+    def delete_token(self, archive: 'EntryArchive'):
+        """
+        Deletes the token from this archive, and also from the JSON file stored on disk.
+        """
+        self.api_token = None
+        mainfile = archive.metadata.mainfile
+        with archive.m_context.update_entry(mainfile, write=True, process=False) as entry:
+            del entry['data']['api_token']
+
     def doi_to_name(self) -> str:
         """
         Converts the DOI to a name suitable for the entry.
@@ -91,7 +100,7 @@ class LlmPerovskitePaperExtractor(Schema):
                 logger.warn('API token is required for LLM extraction')
                 return
             _api_token = self.api_token
-            self.api_token = None  # Hide token in the archive
+            self.delete_token(archive)
             if not self.doi:
                 logger.warn('DOI is required for LLM extraction')
                 return
