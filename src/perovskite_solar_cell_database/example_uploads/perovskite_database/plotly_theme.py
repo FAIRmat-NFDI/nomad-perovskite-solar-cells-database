@@ -1,10 +1,10 @@
 from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from typing import Optional
 
 import plotly.graph_objects as go
 import plotly.io as pio
-
 
 # ---------- Color Definitions (Single Source of Truth) ----------
 # Default colorway for all plots
