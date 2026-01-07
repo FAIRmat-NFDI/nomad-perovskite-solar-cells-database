@@ -65,7 +65,7 @@ dev = [
 ]
 extraction = [
     "perovscribe>=0.0.2",
-    'dabest"
+    "dabest"
 ]
 
 [tool.ruff]
