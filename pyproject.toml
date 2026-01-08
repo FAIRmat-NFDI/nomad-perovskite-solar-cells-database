@@ -54,7 +54,7 @@ dev = [
     "ruff",
     "structlog",
     "python-logstash",
-    "mkdocs", 
+    "mkdocs",
     "mkdocs-material>=9.0",
     "pymdown-extensions",
     "mkdocs-click",
@@ -66,6 +66,11 @@ dev = [
 extraction = [
     "perovscribe>=0.0.2",
     "dabest"
+]
+
+notebooks = [
+    "huggingface_hub>=0.20",
+    "nbformat"
 ]
 
 [tool.ruff]
