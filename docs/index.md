@@ -62,18 +62,18 @@ How-to guides provide step-by-step instructions for a wide range of tasks:
 Explore our collection of interactive Jupyter notebooks that demonstrate how to query, analyze, and work with perovskite solar cell data:
 
 **Getting Started:**
-- [Query the Perovskite Database](../src/perovskite_solar_cell_database/example_uploads/perla/query-perovskite-database.ipynb) - Retrieve data from NOMAD
-- [Query the Ion Database](../src/perovskite_solar_cell_database/example_uploads/ions_database/query-ion-database-api.ipynb) - Access perovskite ions
-- [Build Perovskite Structures](../src/perovskite_solar_cell_database/example_uploads/ions_database/build-perovskite-structure-from-ion-entry.ipynb) - Construct crystal structures
+- [Query the Perovskite Database](notebooks/perla/query-perovskite-database.ipynb) - Retrieve data from NOMAD
+- [Query the Ion Database](notebooks/ions_database/query-ion-database-api.ipynb) - Access perovskite ions
+- [Build Perovskite Structures](notebooks/ions_database/build-perovskite-structure-from-ion-entry.ipynb) - Construct crystal structures
 
 **Data Analysis:**
-- [Architecture Evolution](../src/perovskite_solar_cell_database/example_uploads/perla/architecture-evolution.ipynb) - Device architecture trends over time
-- [Bandgap Evolution](../src/perovskite_solar_cell_database/example_uploads/perla/bandgap-evolution.ipynb) - Bandgap distribution analysis
-- [Performance Evolution](../src/perovskite_solar_cell_database/example_uploads/perla/performance-evolution.ipynb) - Track efficiency improvements
+- [Architecture Evolution](notebooks/perla/architecture-evolution.ipynb) - Device architecture trends over time
+- [Bandgap Evolution](notebooks/perla/bandgap-evolution.ipynb) - Bandgap distribution analysis
+- [Performance Evolution](notebooks/perla/performance-evolution.ipynb) - Track efficiency improvements
 
 **Machine Learning:**
-- [CrabNet Bandgap Prediction](../src/perovskite_solar_cell_database/example_uploads/perla/crabnet-perovskite-bandgap-prediction.ipynb) - ML-based property prediction
-- [ML Distribution Shift Case Study](../src/perovskite_solar_cell_database/example_uploads/perla/ml-distribution-shift-case-study.ipynb) - Understanding data distribution challenges
+- [CrabNet Bandgap Prediction](notebooks/perla/crabnet-perovskite-bandgap-prediction.ipynb) - ML-based property prediction
+- [ML Distribution Shift Case Study](notebooks/perla/ml-distribution-shift-case-study.ipynb) - Understanding data distribution challenges
 
 [View all notebooks →](tutorial/index.md#interactive-notebooks)
 
