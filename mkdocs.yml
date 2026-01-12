@@ -5,7 +5,22 @@ repo_url: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 
 nav:
   - Home: index.md
-  - Tutorial: tutorial/sharing_a_perovskite_composition.md
+  - Tutorial:
+      - tutorial/index.md
+      - Sharing a Perovskite Composition: tutorial/sharing_a_perovskite_composition.md
+      - Notebooks:
+          - Query the Perovskite Database: ../src/perovskite_solar_cell_database/example_uploads/perla/query-perovskite-database.ipynb
+          - Query the Ion Database: ../src/perovskite_solar_cell_database/example_uploads/ions_database/query-ion-database-api.ipynb
+          - Query Perovskite Compositions: ../src/perovskite_solar_cell_database/example_uploads/ions_database/query-perovskite-composition.ipynb
+          - Build Perovskite Structures from Ions: ../src/perovskite_solar_cell_database/example_uploads/ions_database/build-perovskite-structure-from-ion-entry.ipynb
+          - Architecture Evolution Analysis: ../src/perovskite_solar_cell_database/example_uploads/perla/architecture-evolution.ipynb
+          - Bandgap Evolution Analysis: ../src/perovskite_solar_cell_database/example_uploads/perla/bandgap-evolution.ipynb
+          - Performance Evolution Analysis: ../src/perovskite_solar_cell_database/example_uploads/perla/performance-evolution.ipynb
+          - Diversity Evolution Analysis: ../src/perovskite_solar_cell_database/example_uploads/perla/diversity-analysis.ipynb
+          - PerovScribe Analysis: ../src/perovskite_solar_cell_database/example_uploads/perla/perovscribe-analysis.ipynb
+          - Perovskite Paperbot Plotting: ../src/perovskite_solar_cell_database/example_uploads/perla/perovskite-paperbot-plot.ipynb
+          - CrabNet Bandgap Prediction: ../src/perovskite_solar_cell_database/example_uploads/perla/crabnet-perovskite-bandgap-prediction.ipynb
+          - ML Distribution Shift Case Study: ../src/perovskite_solar_cell_database/example_uploads/perla/ml-distribution-shift-case-study.ipynb
   - How-to guides:
       - Install this plugin: how_to/install_this_plugin.md
       - Explore the databases: how_to/explore_the_databases.md
@@ -13,9 +28,6 @@ nav:
       - Add a new ion: how_to/add_a_new_ion.md
       - Export a structure: how_to/export_structures.md
       - Download data: how_to/download_data.md
-  - Notebooks:
-      - Query Perovskite Database: notebooks/query-perovskite-database.ipynb
-      - Performance Evolution: notebooks/performance-evolution.ipynb
   - Reference:
       - Composition and ion schema: reference/composition_and_ion_schema.md
       - Solar cells schema: reference/solar_cell_schema.md
