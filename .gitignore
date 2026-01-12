@@ -131,3 +131,7 @@ dmypy.json
 # macOS files
 .DS_Store
 .pyre/
+
+# Notebook copies and data files
+*copy.ipynb
+*.parquet
