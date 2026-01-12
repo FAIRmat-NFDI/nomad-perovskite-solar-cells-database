@@ -126,5 +126,8 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
+# Pyre type checker/
+
+# macOS files
+.DS_Store
 .pyre/

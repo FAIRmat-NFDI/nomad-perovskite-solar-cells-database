@@ -54,11 +54,12 @@ dev = [
     "ruff",
     "structlog",
     "python-logstash",
-    "mkdocs", 
+    "mkdocs",
     "mkdocs-material>=9.0",
     "pymdown-extensions",
     "mkdocs-click",
     "mkdocs-macros-plugin>=1.0",
+    "mkdocs-jupyter",
     "mkdocs-glightbox",
     "pydantic>=2.0",
     "nomad-docs>=0.1.3"

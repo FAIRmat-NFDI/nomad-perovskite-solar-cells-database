@@ -13,6 +13,9 @@ nav:
       - Add a new ion: how_to/add_a_new_ion.md
       - Export a structure: how_to/export_structures.md
       - Download data: how_to/download_data.md
+  - Notebooks:
+      - Query Perovskite Database: notebooks/query-perovskite-database.ipynb
+      - Performance Evolution: notebooks/performance-evolution.ipynb
   - Reference:
       - Composition and ion schema: reference/composition_and_ion_schema.md
       - Solar cells schema: reference/solar_cell_schema.md
@@ -20,6 +23,8 @@ nav:
 plugins:
   - search
   - glightbox
+  - mkdocs-jupyter:
+      ignore_h1_titles: true
   - macros:
       module_name: docs/main
 
@@ -62,6 +67,8 @@ use_directory_urls: false
 extra_css:
   - stylesheets/extra.css
 extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js
   - javascript.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.1/plotly.min.js
