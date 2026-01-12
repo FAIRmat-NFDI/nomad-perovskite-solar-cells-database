@@ -25,6 +25,9 @@ plugins:
   - glightbox
   - mkdocs-jupyter:
       ignore_h1_titles: true
+      include_source: true
+      execute: false
+      allow_errors: false
   - macros:
       module_name: docs/main
 
@@ -38,9 +41,15 @@ theme:
   logo: assets/nomad-plugin-logo.png
   favicon: assets/favicon.png
   features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
     - navigation.path
     - navigation.footer
     - navigation.top
+    - toc.follow
+    - content.code.copy
   icon:
     repo: fontawesome/brands/github
   custom_dir: docs/theme
