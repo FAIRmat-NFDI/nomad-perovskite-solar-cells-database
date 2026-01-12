@@ -2,38 +2,36 @@ site_name: nomad-perovskite-solar-cells-database
 site_description: This is a NOMAD plugin for the perovskite solar cells database.
 edit_uri: ""
 repo_url: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
-docs_dir: .
-site_dir: site
 
 nav:
-  - Home: docs/index.md
+  - Home: index.md
   - Tutorial:
-      - docs/tutorial/index.md
-      - Sharing a Perovskite Composition: docs/tutorial/sharing_a_perovskite_composition.md
+      - tutorial/index.md
+      - Sharing a Perovskite Composition: tutorial/sharing_a_perovskite_composition.md
       - Notebooks:
-          - Query the Perovskite Database: src/perovskite_solar_cell_database/example_uploads/perla/query-perovskite-database.ipynb
-          - Query the Ion Database: src/perovskite_solar_cell_database/example_uploads/ions_database/query-ion-database-api.ipynb
-          - Query Perovskite Compositions: src/perovskite_solar_cell_database/example_uploads/ions_database/query-perovskite-composition.ipynb
-          - Build Perovskite Structures from Ions: src/perovskite_solar_cell_database/example_uploads/ions_database/build-perovskite-structure-from-ion-entry.ipynb
-          - Architecture Evolution Analysis: src/perovskite_solar_cell_database/example_uploads/perla/architecture-evolution.ipynb
-          - Bandgap Evolution Analysis: src/perovskite_solar_cell_database/example_uploads/perla/bandgap-evolution.ipynb
-          - Performance Evolution Analysis: src/perovskite_solar_cell_database/example_uploads/perla/performance-evolution.ipynb
-          - Diversity Evolution Analysis: src/perovskite_solar_cell_database/example_uploads/perla/diversity-analysis.ipynb
-          - PerovScribe Analysis: src/perovskite_solar_cell_database/example_uploads/perla/perovscribe-analysis.ipynb
-          - Perovskite Paperbot Plotting: src/perovskite_solar_cell_database/example_uploads/perla/perovskite-paperbot-plot.ipynb
-          - CrabNet Bandgap Prediction: src/perovskite_solar_cell_database/example_uploads/perla/crabnet-perovskite-bandgap-prediction.ipynb
-          - ML Distribution Shift Case Study: src/perovskite_solar_cell_database/example_uploads/perla/ml-distribution-shift-case-study.ipynb
+          - Query the Perovskite Database: notebooks/perla/query-perovskite-database.ipynb
+          - Query the Ion Database: notebooks/ions_database/query-ion-database-api.ipynb
+          - Query Perovskite Compositions: notebooks/ions_database/query-perovskite-composition.ipynb
+          - Build Perovskite Structures from Ions: notebooks/ions_database/build-perovskite-structure-from-ion-entry.ipynb
+          - Architecture Evolution Analysis: notebooks/perla/architecture-evolution.ipynb
+          - Bandgap Evolution Analysis: notebooks/perla/bandgap-evolution.ipynb
+          - Performance Evolution Analysis: notebooks/perla/performance-evolution.ipynb
+          - Diversity Evolution Analysis: notebooks/perla/diversity-analysis.ipynb
+          - PerovScribe Analysis: notebooks/perla/perovscribe-analysis.ipynb
+          - Perovskite Paperbot Plotting: notebooks/perla/perovskite-paperbot-plot.ipynb
+          - CrabNet Bandgap Prediction: notebooks/perla/crabnet-perovskite-bandgap-prediction.ipynb
+          - ML Distribution Shift Case Study: notebooks/perla/ml-distribution-shift-case-study.ipynb
   - How-to guides:
-      - Install this plugin: docs/how_to/install_this_plugin.md
-      - Explore the databases: docs/how_to/explore_the_databases.md
-      - Create a perovskite compostion: docs/how_to/create_a_perovskite_composition.md
-      - Add a new ion: docs/how_to/add_a_new_ion.md
-      - Export a structure: docs/how_to/export_structures.md
-      - Download data: docs/how_to/download_data.md
+      - Install this plugin: how_to/install_this_plugin.md
+      - Explore the databases: how_to/explore_the_databases.md
+      - Create a perovskite compostion: how_to/create_a_perovskite_composition.md
+      - Add a new ion: how_to/add_a_new_ion.md
+      - Export a structure: how_to/export_structures.md
+      - Download data: how_to/download_data.md
   - Reference:
-      - Composition and ion schema: docs/reference/composition_and_ion_schema.md
-      - Solar cells schema: docs/reference/solar_cell_schema.md
-      - Tandem schema: docs/reference/tandem_schema.md
+      - Composition and ion schema: reference/composition_and_ion_schema.md
+      - Solar cells schema: reference/solar_cell_schema.md
+      - Tandem schema: reference/tandem_schema.md
 plugins:
   - search
   - glightbox
@@ -88,10 +86,10 @@ extra:
   homepage: https://github.com/FAIRmat-NFDI/nomad-perovskite-solar-cells-database
 use_directory_urls: false
 extra_css:
-  - docs/stylesheets/extra.css
+  - stylesheets/extra.css
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js
-  - docs/javascript.js
+  - javascript.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.1/plotly.min.js
