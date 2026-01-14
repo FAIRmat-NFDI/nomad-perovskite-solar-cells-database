@@ -55,12 +55,11 @@ class LlmPerovskitePaperExtractor(Schema):
         type=MEnum(
             'gpt-4o',
             # 'gpt-5',  # Uncomment when temperature support is correct in LiteLLM
-            'claude-3-5-sonnet-20241022',
             'claude-4-sonnet-20250514',
             #  'meta.llama3-70b-instruct-v1:0',  # Uncomment when someone can test it
         ),
         description='LLM model to use for extraction',
-        default='claude-3-5-sonnet-20241022',
+        default='claude-4-sonnet-20250514',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
 
