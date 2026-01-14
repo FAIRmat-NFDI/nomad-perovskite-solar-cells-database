@@ -1,4 +1,0 @@
-# References
-
-!!! note "Attention"
-    TODO
