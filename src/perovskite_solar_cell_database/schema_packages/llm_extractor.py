@@ -55,12 +55,11 @@ class LlmPerovskitePaperExtractor(Schema):
         type=MEnum(
             'gpt-4o',
             # 'gpt-5',  # Uncomment when temperature support is correct in LiteLLM
-            'claude-3-5-sonnet-20241022',
             'claude-4-sonnet-20250514',
             #  'meta.llama3-70b-instruct-v1:0',  # Uncomment when someone can test it
         ),
         description='LLM model to use for extraction',
-        default='claude-3-5-sonnet-20241022',
+        default='claude-4-sonnet-20250514',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
 
@@ -74,6 +73,15 @@ class LlmPerovskitePaperExtractor(Schema):
                 self.pdf = None  # Clear the reference to the deleted file
             except FileNotFoundError:
                 pass  # File already deleted or does not exist
+
+    def delete_token(self, archive: 'EntryArchive'):
+        """
+        Deletes the token from this archive, and also from the JSON file stored on disk.
+        """
+        self.api_token = None
+        mainfile = archive.metadata.mainfile
+        with archive.m_context.update_entry(mainfile, write=True, process=False) as entry:
+            del entry['data']['api_token']
 
     def doi_to_name(self) -> str:
         """
@@ -91,7 +99,7 @@ class LlmPerovskitePaperExtractor(Schema):
                 logger.warn('API token is required for LLM extraction')
                 return
             _api_token = self.api_token
-            self.api_token = None  # Hide token in the archive
+            self.delete_token(archive)
             if not self.doi:
                 logger.warn('DOI is required for LLM extraction')
                 return
@@ -131,10 +139,11 @@ def pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -
         return ExtractionPipeline(
             model, 'pymupdf', 'NONE', '', False
         ).extract_from_pdf_nomad(
-            pdf, extract_doi(doi), api_token, LLMExtractedPerovskiteSolarCell, ureg)
-    except ImportError:
+            pdf, extract_doi(doi), api_token, ureg)
+    except ImportError as e:
         logger.error(
-            'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.'
+            'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
+            exc_info=e
         )
         return []
 
