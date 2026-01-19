@@ -16,7 +16,7 @@ Our collection of Jupyter notebooks provides hands-on examples demonstrating var
 
 Start with these notebooks to learn how to retrieve data from the NOMAD databases:
 
-- **[Query the Perovskite Database](../notebooks/perla/query-perovskite-database.ipynb)** - Retrieve perovskite solar cell data from NOMAD
+- **[Query the Perovskite Database](../notebooks/perla_notebooks/query-perovskite-database.ipynb)** - Retrieve perovskite solar cell data from NOMAD
 - **[Query the Ion Database](../notebooks/ions_database/query-ion-database-api.ipynb)** - Access the perovskite ion database
 - **[Query Perovskite Compositions](../notebooks/ions_database/query-perovskite-composition.ipynb)** - Search for specific perovskite compositions
 
@@ -30,24 +30,24 @@ Learn how to construct perovskite structures:
 
 Explore how the field has evolved over time:
 
-- **[Architecture Evolution Analysis](../notebooks/perla/architecture-evolution.ipynb)** - Analyze device architecture trends
-- **[Bandgap Evolution Analysis](../notebooks/perla/bandgap-evolution.ipynb)** - Study bandgap distribution changes
-- **[Performance Evolution Analysis](../notebooks/perla/performance-evolution.ipynb)** - Track device performance improvements
-- **[Diversity Evolution Analysis](../notebooks/perla/diversity-analysis.ipynb)** - Examine material composition diversity
+- **[Architecture Evolution Analysis](../notebooks/perla_notebooks/architecture-evolution.ipynb)** - Analyze device architecture trends
+- **[Bandgap Evolution Analysis](../notebooks/perla_notebooks/bandgap-evolution.ipynb)** - Study bandgap distribution changes
+- **[Performance Evolution Analysis](../notebooks/perla_notebooks/performance-evolution.ipynb)** - Track device performance improvements
+- **[Diversity Evolution Analysis](../notebooks/perla_notebooks/diversity-analysis.ipynb)** - Examine material composition diversity
 
 ### Specialized Tools
 
 Discover advanced analysis tools:
 
-- **[PerovScribe Analysis](../notebooks/perla/perovscribe-analysis.ipynb)** - Use PerovScribe for automated data extraction
-- **[Perovskite Paperbot Plotting](../notebooks/perla/perovskite-paperbot-plot.ipynb)** - Visualize data from automated literature mining
+- **[PerovScribe Analysis](../notebooks/perla_notebooks/perovscribe-analysis.ipynb)** - Use PerovScribe for automated data extraction
+- **[Perovskite Paperbot Plotting](../notebooks/perla_notebooks/perovskite-paperbot-plot.ipynb)** - Visualize data from automated literature mining
 
 ### Machine Learning
 
 Apply machine learning techniques to perovskite data:
 
-- **[CrabNet Bandgap Prediction](../notebooks/perla/crabnet-perovskite-bandgap-prediction.ipynb)** - Predict bandgaps using CrabNet
-- **[ML Distribution Shift Case Study](../notebooks/perla/ml-distribution-shift-case-study.ipynb)** - Understand distribution shift in ML models
+- **[CrabNet Bandgap Prediction](../notebooks/perla_notebooks/crabnet-perovskite-bandgap-prediction.ipynb)** - Predict bandgaps using CrabNet
+- **[ML Distribution Shift Case Study](../notebooks/perla_notebooks/ml-distribution-shift-case-study.ipynb)** - Understand distribution shift in ML models
 
 ## Next Steps
 
