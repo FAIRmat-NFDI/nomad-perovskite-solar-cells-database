@@ -1,6 +1,7 @@
-from temporalio import workflow
 from pydantic import Field
+from temporalio import workflow
 
+# currently, imports inside workflow.unsafe.imports_passed_through() to avoid issues with temporalio workflow checks at the start of cpu-worker. TODO: move this init and related files to a dedicated folder, take care of m_def of the old files
 with workflow.unsafe.imports_passed_through():
     from nomad.config.models.plugins import (
         ParserEntryPoint,
