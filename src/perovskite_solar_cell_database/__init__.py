@@ -1,9 +1,11 @@
-from nomad.config.models.plugins import (
-    ParserEntryPoint,
-    SchemaPackageEntryPoint,
-)
+from temporalio import workflow
 from pydantic import Field
 
+with workflow.unsafe.imports_passed_through():
+    from nomad.config.models.plugins import (
+        ParserEntryPoint,
+        SchemaPackageEntryPoint,
+    )
 
 class PerovskiteDatabasePackageEntryPoint(SchemaPackageEntryPoint):
     # parameter: int = Field(0, description='Custom configuration parameter')
