@@ -75,7 +75,9 @@ class LlmPerovskitePaperExtractor(Schema):
         """
         self.api_token = None
         mainfile = archive.metadata.mainfile
-        with archive.m_context.update_entry(mainfile, write=True, process=False) as entry:
+        with archive.m_context.update_entry(
+            mainfile, write=True, process=False
+        ) as entry:
             del entry['data']['api_token']
 
     def normalize(self, archive: 'EntryArchive', logger):
@@ -100,7 +102,10 @@ class LlmPerovskitePaperExtractor(Schema):
             self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
         cell_references = []
         for idx, cell in enumerate(extracted_cells):
-            doi_name = extract_doi(cell['data']['DOI_number']).replace('/', '--', 1) or 'unnamed'
+            doi_name = (
+                extract_doi(cell['data']['DOI_number']).replace('/', '--', 1)
+                or 'unnamed'
+            )
             name = f'{self.model}-{doi_name}-cell-{idx + 1}.archive.json'
             with archive.m_context.update_entry(
                 name, write=True, process=True
@@ -118,16 +123,15 @@ def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dic
     Extract perovskite solar cells from a PDF using an LLM.
     """
     try:
-        from perovscribe.pipeline import ExtractionPipeline
+        from perla_extract.pipeline import ExtractionPipeline
 
         return ExtractionPipeline(
             model, 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(
-            pdf, api_token, ureg=ureg)
+        ).extract_from_pdf_nomad(pdf, api_token, ureg=ureg)
     except ImportError as e:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
-            exc_info=e
+            exc_info=e,
         )
         return []
 
