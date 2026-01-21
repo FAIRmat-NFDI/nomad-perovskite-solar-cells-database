@@ -15,7 +15,8 @@ class LLMExtractorActionEntryPoint(ActionEntryPoint):
         from nomad.actions import Action
 
         from perovskite_solar_cell_database.actions.llm_extractor.activities import (
-            greet,
+            extract_from_pdf,
+            get_list_of_pdfs,
         )
         from perovskite_solar_cell_database.actions.llm_extractor.workflows import (
             ExtractWorkflow,
@@ -24,7 +25,7 @@ class LLMExtractorActionEntryPoint(ActionEntryPoint):
         return Action(
             task_queue=self.task_queue,
             workflow=ExtractWorkflow,
-            activities=[greet],
+            activities=[extract_from_pdf, get_list_of_pdfs],
         )
 
 
