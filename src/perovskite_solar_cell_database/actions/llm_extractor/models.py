@@ -1,4 +1,13 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
+ModelName = Literal[
+    'gpt-4o',
+    # 'gpt-5',  # Uncomment when temperature support is correct in LiteLLM
+    'claude-4-sonnet-20250514',
+    #  'meta.llama3-70b-instruct-v1:0',  # Uncomment when someone can test it
+]  # Restricted set of LLM model names supported.
 
 
 class ExtractWorkflowInput(BaseModel):
@@ -12,7 +21,9 @@ class ExtractWorkflowInput(BaseModel):
         ..., description='Unique identifier for the user who initiated the workflow.'
     )
     api_token: str = Field(..., description='API token for LLM access.')
-    model: str = Field(..., description='LLM model to be used for extraction.')
+    model: ModelName = Field(
+        'gpt-4o', description='LLM model to be used for extraction.'
+    )
 
 
 class SingleExtractionInput(BaseModel):
@@ -28,7 +39,9 @@ class SingleExtractionInput(BaseModel):
     pdf: str = Field(..., description='Path to the PDF file to be processed.')
     doi: str = Field(..., description='DOI of the document.')
     api_token: str = Field(..., description='API token for LLM access.')
-    model: str = Field(..., description='LLM model to be used for extraction.')
+    model: ModelName = Field(
+        'gpt-4o', description='LLM model to be used for extraction.'
+    )
 
 
 class ProcessNewFilesInput(BaseModel):
