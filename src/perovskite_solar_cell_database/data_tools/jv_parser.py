@@ -16,48 +16,42 @@
 # limitations under the License.
 #
 
+from io import StringIO
+
 import pandas as pd
 
 
 def jv_dict_generator(filename):
-    # Block to clean up some bad characters found in the file which gives trouble reading.
-    f = open(filename, encoding='cp1252')
-    filedata = f.read()
-    f.close()
+    # Read file content and clean up bad characters (e.g., '²' -> '^2')
+    with open(filename, encoding='cp1252') as f:
+        filedata = f.read()
+    cleaned_data = filedata.replace('²', '^2')
 
-    newdata = filedata.replace('²', '^2')
-
-    f = open(filename, 'w')
-    f.write(newdata)
-    f.close()
-
-    with open(filename, encoding='unicode_escape') as f:
-        df = pd.read_csv(
-            f,
-            skiprows=8,
-            nrows=9,
-            sep='\t',
-            index_col=0,
-            engine='python',
-        )
-    with open(filename, encoding='unicode_escape') as f:
-        df_header = pd.read_csv(
-            f,
-            skiprows=0,
-            nrows=6,
-            sep=':|\t',
-            index_col=0,
-            engine='python',
-        )
-    with open(filename, encoding='unicode_escape') as f:
-        df_curves = pd.read_csv(
-            f,
-            header=19,
-            skiprows=[20],
-            sep='\t',
-            engine='python',
-        )
-        df_curves = df_curves.dropna(how='all', axis=1)
+    # Parse different sections from the cleaned data
+    df = pd.read_csv(
+        StringIO(cleaned_data),
+        skiprows=8,
+        nrows=9,
+        sep='\t',
+        index_col=0,
+        engine='python',
+    )
+    df_header = pd.read_csv(
+        StringIO(cleaned_data),
+        skiprows=0,
+        nrows=6,
+        sep=':|\t',
+        index_col=0,
+        engine='python',
+    )
+    df_curves = pd.read_csv(
+        StringIO(cleaned_data),
+        header=19,
+        skiprows=[20],
+        sep='\t',
+        engine='python',
+    )
+    df_curves = df_curves.dropna(how='all', axis=1)
 
     list_columns = list(df.columns[0:-1])
     jv_dict = {}
