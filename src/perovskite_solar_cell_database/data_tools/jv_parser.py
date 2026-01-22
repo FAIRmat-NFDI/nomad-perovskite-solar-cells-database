@@ -31,7 +31,7 @@ def jv_dict_generator(filename):
     f.write(newdata)
     f.close()
 
-    with open(filename) as f:
+    with open(filename, encoding='unicode_escape') as f:
         df = pd.read_csv(
             f,
             skiprows=8,
@@ -39,25 +39,22 @@ def jv_dict_generator(filename):
             sep='\t',
             index_col=0,
             engine='python',
-            encoding='unicode_escape',
         )
-    with open(filename) as f:
+    with open(filename, encoding='unicode_escape') as f:
         df_header = pd.read_csv(
             f,
             skiprows=0,
             nrows=6,
             sep=':|\t',
             index_col=0,
-            encoding='unicode_escape',
             engine='python',
         )
-    with open(filename) as f:
+    with open(filename, encoding='unicode_escape') as f:
         df_curves = pd.read_csv(
             f,
             header=19,
             skiprows=[20],
             sep='\t',
-            encoding='unicode_escape',
             engine='python',
         )
         df_curves = df_curves.dropna(how='all', axis=1)
