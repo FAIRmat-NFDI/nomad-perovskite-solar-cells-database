@@ -49,7 +49,42 @@ def pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -
 
 
 def test_pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -> list[dict]:
-    return []
+    """
+    Test function for extracting perovskite solar cells from a PDF.
+    """
+    import json
+    import time
+
+    m = re.search(r'^(.*)(?=/src/)', os.path.abspath(__file__))
+    if m:
+        path_to_plugin = m.group(1)
+    else:
+        return []
+    print(f'#### path_to_plugin: {path_to_plugin}')
+    try:
+        open(pdf, 'rb')
+    except FileNotFoundError:
+        logger.error(f'PDF file not found: {pdf}')
+        return []
+    
+    with open(
+        f'{path_to_plugin}/tests/data/claude-4-sonnet-20250514-10.1002--aenm.201900555-cell-1.archive.json'
+    ) as f:
+        try:
+            cell_1 = json.load(f)
+        except Exception as e:
+            logger.error('Error loading test extraction result.', exc_info=e)
+
+    with open(
+        f'{path_to_plugin}/tests/data/claude-4-sonnet-20250514-10.1002--aenm.201900555-cell-2.archive.json'
+    ) as f:
+        try:
+            cell_2 = json.load(f)
+        except Exception as e:
+            logger.error('Error loading test extraction result.', exc_info=e)
+
+    time.sleep(5)  # Simulate some processing time
+    return [cell_1, cell_2]
 
 
 def extract_doi(doi: str) -> str|None:

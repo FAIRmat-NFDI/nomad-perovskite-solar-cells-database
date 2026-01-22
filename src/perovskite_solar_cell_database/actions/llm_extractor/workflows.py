@@ -7,9 +7,11 @@ with workflow.unsafe.imports_passed_through():
     from perovskite_solar_cell_database.actions.llm_extractor.activities import (
         extract_from_pdf,
         get_list_of_pdfs,
+        process_new_files,
     )
     from perovskite_solar_cell_database.actions.llm_extractor.models import (
         ExtractWorkflowInput,
+        ProcessNewFilesInput,
         SingleExtractionInput,
     )
 
@@ -27,6 +29,7 @@ class ExtractWorkflow:
             start_to_close_timeout=timedelta(seconds=60),
             retry_policy=retry_policy,
         )
+        all_saved_cells = []
         for pdf, doi in zip(list_of_pdfs['pdfs'], list_of_pdfs['dois']):
             single_input = SingleExtractionInput(
                 upload_id=data.upload_id,
@@ -36,9 +39,22 @@ class ExtractWorkflow:
                 api_token=data.api_token,
                 model=data.model,
             )
-            await workflow.execute_activity(
+            saved_cells = await workflow.execute_activity(
                 extract_from_pdf,
                 single_input,
                 start_to_close_timeout=timedelta(seconds=600),
                 retry_policy=retry_policy,
             )
+            all_saved_cells.extend(saved_cells or [])
+
+        input_for_processing = ProcessNewFilesInput(
+            upload_id=data.upload_id,
+            user_id=data.user_id,
+            result_path=all_saved_cells,
+        )
+        await workflow.execute_activity(
+            process_new_files,
+            input_for_processing,
+            start_to_close_timeout=timedelta(seconds=60),
+            retry_policy=retry_policy,
+        )
