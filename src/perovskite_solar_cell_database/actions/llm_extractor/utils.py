@@ -10,7 +10,6 @@ def delete_pdf(pdf: str) -> None:
         """
         if pdf:
             try:
-                # os.remove(os.path.join(self.m_context.raw_path(), pdf))
                 os.remove(pdf)
             except FileNotFoundError:
                 pass  # File already deleted or does not exist

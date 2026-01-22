@@ -22,7 +22,7 @@ class ExtractWorkflowInput(BaseModel):
     )
     api_token: str = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
-        'gpt-4o', description='LLM model to be used for extraction.'
+        'claude-4-sonnet-20250514', description='LLM model to be used for extraction.'
     )
 
 
@@ -40,7 +40,7 @@ class SingleExtractionInput(BaseModel):
     doi: str = Field(..., description='DOI of the document.')
     api_token: str = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
-        'gpt-4o', description='LLM model to be used for extraction.'
+        'claude-4-sonnet-20250514', description='LLM model to be used for extraction.'
     )
 
 
