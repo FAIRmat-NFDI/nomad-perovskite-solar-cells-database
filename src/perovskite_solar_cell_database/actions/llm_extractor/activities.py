@@ -61,7 +61,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
         if not isinstance(input_data.pdf, str) or not input_data.pdf.endswith('.pdf'):
             activity.logger.warning('PDF file is required for LLM extraction')
             return
-        extracted_cells = test_pdf_to_solar_cells(
+        extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
             api_token=input_data.api_token,
             model=input_data.model,
