@@ -24,7 +24,7 @@ def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dic
 
         return ExtractionPipeline(
             model, 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(pdf, api_token, ureg)
+        ).extract_from_pdf_nomad(pdf, api_token, ureg) # pyright: ignore[reportReturnType]
     except ImportError as e:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
@@ -33,7 +33,7 @@ def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dic
         return []
 
 
-def test_pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -> list[dict]:
+def test_pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dict]:
     """
     Test function for extracting perovskite solar cells from a PDF.
     """
