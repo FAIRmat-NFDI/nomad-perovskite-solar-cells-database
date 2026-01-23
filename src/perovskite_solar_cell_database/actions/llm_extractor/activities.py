@@ -20,7 +20,6 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput):
     from nomad.files import UploadFiles
 
     pdfs = []
-    dois = []
     upload_files = get_upload_files(        #use this in all activities, then raw_file() instead of open()
         input_data.upload_id,
         input_data.user_id,
@@ -36,8 +35,6 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput):
                 print(f'#### found pdf: {file_info.path}')
                 pdfs.append(f'.volumes/fs/staging/{input_data.upload_id[0:2]}/{input_data.upload_id}'
                     + f'/raw/{file_info.path}')
-                # TODO: replace with actual doi extraction
-                dois.append('10.0000/placeholder-doi')
     # upload_files = UploadFiles.get(input_data.upload_id)
     # if upload_files is not None:
     #     raw_files = upload_files.raw_directory_list(
@@ -54,10 +51,9 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput):
     #             # TODO: replace with actual doi extraction
     #             dois.append('10.0000/placeholder-doi')
     print(f'#### raw_files: {raw_files}')
-    print(f'#### pdfs: {pdfs}, dois: {dois}')
+    print(f'#### pdfs: {pdfs}')
     return {
         'pdfs': pdfs,
-        'dois': dois,
     }
 
 
@@ -65,7 +61,7 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput):
 def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
     from perovskite_solar_cell_database.actions.llm_extractor.utils import (
         delete_pdf,
-        doi_to_name,
+        extract_doi,
         pdf_to_solar_cells,
         test_pdf_to_solar_cells,
     )
@@ -74,15 +70,11 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
         if not input_data.api_token:
             activity.logger.warning('API token is required for LLM extraction')
             return
-        if not input_data.doi:
-            activity.logger.warning('DOI is required for LLM extraction')
-            return
         if not isinstance(input_data.pdf, str) or not input_data.pdf.endswith('.pdf'):
             activity.logger.warning('PDF file is required for LLM extraction')
             return
         extracted_cells = test_pdf_to_solar_cells(
             pdf=input_data.pdf,
-            doi=input_data.doi,
             api_token=input_data.api_token,
             model=input_data.model,
             logger=activity.logger,
@@ -100,7 +92,12 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
 
     saved_cells = []
     for idx, cell in enumerate(extracted_cells):
-        fname = f'{input_data.model}-{doi_to_name(input_data.doi)}-cell-{idx + 1}.archive.json'
+        doi_name = (
+            extract_doi(cell['data']['DOI_number'])
+            or 'unnamed'
+        ).replace('/', '--', 1)
+        fname = f'{input_data.model}-{doi_name}-cell-{idx + 1}.archive.json'
+        # fname = f'{input_data.model}-{doi_to_name(input_data.doi)}-cell-{idx + 1}.archive.json'
         fpath = upload_path + '/' + fname
         with open(fpath, 'w', encoding='utf-8') as f:
             json.dump({'data': cell['data']}, f, indent=4)

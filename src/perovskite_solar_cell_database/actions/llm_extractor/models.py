@@ -37,7 +37,6 @@ class SingleExtractionInput(BaseModel):
         ..., description='Unique identifier for the user who initiated the workflow.'
     )
     pdf: str = Field(..., description='Path to the PDF file to be processed.')
-    doi: str = Field(..., description='DOI of the document.')
     api_token: str = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
         'claude-4-sonnet-20250514', description='LLM model to be used for extraction.'

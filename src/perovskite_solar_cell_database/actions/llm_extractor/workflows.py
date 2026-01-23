@@ -30,12 +30,11 @@ class ExtractWorkflow:
             retry_policy=retry_policy,
         )
         all_saved_cells = []
-        for pdf, doi in zip(list_of_pdfs['pdfs'], list_of_pdfs['dois']):
+        for pdf in list_of_pdfs['pdfs']:
             single_input = SingleExtractionInput(
                 upload_id=data.upload_id,
                 user_id=data.user_id,
                 pdf=pdf,
-                doi=doi,
                 api_token=data.api_token,
                 model=data.model,
             )

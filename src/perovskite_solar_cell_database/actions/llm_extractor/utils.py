@@ -15,34 +15,20 @@ def delete_pdf(pdf: str) -> None:
                 pass  # File already deleted or does not exist
 
 
-def doi_to_name(doi: str) -> str:
-    """
-    Converts the DOI to a name suitable for the entry.
-    """
-    if not doi:
-        return 'unnamed'
-    doi_parsed = extract_doi(doi)
-    if doi_parsed is None:
-        return 'unnamed'
-    else:
-        return doi_parsed.replace('/', '--', 1) or 'unnamed'
-
-
-def pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -> list[dict]:
+def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dict]:
     """
     Extract perovskite solar cells from a PDF using an LLM.
     """
     try:
-        from perovscribe.pipeline import ExtractionPipeline
+        from perla_extract.pipeline import ExtractionPipeline
 
         return ExtractionPipeline(
             model, 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(
-            pdf, extract_doi(doi), api_token, ureg)
+        ).extract_from_pdf_nomad(pdf, api_token, ureg)
     except ImportError as e:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
-            exc_info=e
+            exc_info=e,
         )
         return []
 
