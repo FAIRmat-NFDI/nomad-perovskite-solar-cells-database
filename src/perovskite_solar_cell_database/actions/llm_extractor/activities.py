@@ -16,11 +16,15 @@ MAX_ATTEMPT_NUM = 100  # attempts to reprocess upload with new entries
 
 @activity.defn
 def get_list_of_pdfs(input_data: ExtractWorkflowInput):
+    from nomad.actions.manager import get_upload_files
     from nomad.files import UploadFiles
 
     pdfs = []
     dois = []
-    upload_files = UploadFiles.get(input_data.upload_id)
+    upload_files = get_upload_files(        #use this in all activities, then raw_file() instead of open()
+        input_data.upload_id,
+        input_data.user_id,
+    )
     if upload_files is not None:
         raw_files = upload_files.raw_directory_list(
             path='',
@@ -29,12 +33,26 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput):
         )
         for file_info in raw_files:
             if file_info.path.lower().endswith('.pdf'):
-                print('#### found pdf:', file_info.path)
-                #TODO: not only staging?
+                print(f'#### found pdf: {file_info.path}')
                 pdfs.append(f'.volumes/fs/staging/{input_data.upload_id[0:2]}/{input_data.upload_id}'
                     + f'/raw/{file_info.path}')
                 # TODO: replace with actual doi extraction
                 dois.append('10.0000/placeholder-doi')
+    # upload_files = UploadFiles.get(input_data.upload_id)
+    # if upload_files is not None:
+    #     raw_files = upload_files.raw_directory_list(
+    #         path='',
+    #         recursive=True,
+    #         files_only=True,
+    #     )
+    #     for file_info in raw_files:
+    #         if file_info.path.lower().endswith('.pdf'):
+    #             print('#### found pdf:', file_info.path)
+    #             #TODO: not only staging?
+    #             pdfs.append(f'.volumes/fs/staging/{input_data.upload_id[0:2]}/{input_data.upload_id}'
+    #                 + f'/raw/{file_info.path}')
+    #             # TODO: replace with actual doi extraction
+    #             dois.append('10.0000/placeholder-doi')
     print(f'#### raw_files: {raw_files}')
     print(f'#### pdfs: {pdfs}, dois: {dois}')
     return {
