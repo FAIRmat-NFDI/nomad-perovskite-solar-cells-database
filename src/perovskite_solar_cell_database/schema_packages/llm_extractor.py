@@ -34,11 +34,6 @@ class LlmPerovskitePaperExtractor(Schema):
         type=str,
         a_eln=ELNAnnotation(component=ELNComponentEnum.FileEditQuantity),
     )
-    doi = Quantity(
-        type=str,
-        description='DOI of the paper',
-        a_eln=ELNAnnotation(component=ELNComponentEnum.URLEditQuantity),
-    )
     api_token = Quantity(
         type=str,
         description='API token for LLM extraction',
@@ -80,16 +75,10 @@ class LlmPerovskitePaperExtractor(Schema):
         """
         self.api_token = None
         mainfile = archive.metadata.mainfile
-        with archive.m_context.update_entry(mainfile, write=True, process=False) as entry:
+        with archive.m_context.update_entry(
+            mainfile, write=True, process=False
+        ) as entry:
             del entry['data']['api_token']
-
-    def doi_to_name(self) -> str:
-        """
-        Converts the DOI to a name suitable for the entry.
-        """
-        if not self.doi:
-            return 'unnamed'
-        return extract_doi(self.doi).replace('/', '--', 1) or 'unnamed'
 
     def normalize(self, archive: 'EntryArchive', logger):
         super().normalize(archive, logger)
@@ -100,15 +89,11 @@ class LlmPerovskitePaperExtractor(Schema):
                 return
             _api_token = self.api_token
             self.delete_token(archive)
-            if not self.doi:
-                logger.warn('DOI is required for LLM extraction')
-                return
             if not isinstance(self.pdf, str) or not self.pdf.endswith('.pdf'):
                 logger.warn('PDF file is required for LLM extraction')
                 return
             extracted_cells = pdf_to_solar_cells(
                 pdf=os.path.join(archive.m_context.raw_path(), self.pdf),
-                doi=self.doi,
                 api_token=_api_token,
                 model=self.model,
                 logger=logger,
@@ -117,7 +102,11 @@ class LlmPerovskitePaperExtractor(Schema):
             self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
         cell_references = []
         for idx, cell in enumerate(extracted_cells):
-            name = f'{self.model}-{self.doi_to_name()}-cell-{idx + 1}.archive.json'
+            doi_name = (
+                extract_doi(cell['data']['DOI_number']).replace('/', '--', 1)
+                or 'unnamed'
+            )
+            name = f'{self.model}-{doi_name}-cell-{idx + 1}.archive.json'
             with archive.m_context.update_entry(
                 name, write=True, process=True
             ) as entry:
@@ -129,21 +118,20 @@ class LlmPerovskitePaperExtractor(Schema):
             self.extracted_solar_cells = cell_references
 
 
-def pdf_to_solar_cells(pdf: str, doi: str, api_token: str, model: str, logger) -> list[dict]:
+def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dict]:
     """
     Extract perovskite solar cells from a PDF using an LLM.
     """
     try:
-        from perovscribe.pipeline import ExtractionPipeline
+        from perla_extract.pipeline import ExtractionPipeline
 
         return ExtractionPipeline(
             model, 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(
-            pdf, extract_doi(doi), api_token, ureg)
+        ).extract_from_pdf_nomad(pdf, api_token, ureg=ureg)
     except ImportError as e:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
-            exc_info=e
+            exc_info=e,
         )
         return []
 
