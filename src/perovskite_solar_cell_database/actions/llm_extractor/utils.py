@@ -4,17 +4,6 @@ import re
 from nomad.units import ureg
 
 
-def delete_pdf(pdf: str) -> None:
-        """
-        Deletes the PDF file from the upload.
-        """
-        if pdf:
-            try:
-                os.remove(pdf)
-            except FileNotFoundError:
-                pass  # File already deleted or does not exist
-
-
 def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dict]:
     """
     Extract perovskite solar cells from a PDF using an LLM.
@@ -45,7 +34,7 @@ def test_pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> lis
         path_to_plugin = m.group(1)
     else:
         return []
-    print(f'#### path_to_plugin: {path_to_plugin}')
+    print('#### Running test extraction mock-up, no real API call.')
     try:
         open(pdf, 'rb')
     except FileNotFoundError:
