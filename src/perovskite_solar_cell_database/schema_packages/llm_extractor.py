@@ -129,6 +129,8 @@ class LlmPerovskitePaperExtractor(Schema):
                         'LLM Extraction action completed but no results were found.'
                     )
 
+        self.trigger_get_status = False
+
     def delete_token(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
         Deletes the token from this archive, and also from the JSON file stored on disk.
