@@ -1,0 +1,59 @@
+from datetime import timedelta
+
+from temporalio import workflow
+from temporalio.common import RetryPolicy
+
+with workflow.unsafe.imports_passed_through():
+    from perovskite_solar_cell_database.actions.llm_extractor.activities import (
+        extract_from_pdf,
+        get_list_of_pdfs,
+        process_new_files,
+    )
+    from perovskite_solar_cell_database.actions.llm_extractor.models import (
+        ExtractWorkflowInput,
+        ProcessNewFilesInput,
+        SingleExtractionInput,
+    )
+
+
+@workflow.defn
+class ExtractWorkflow:
+    @workflow.run
+    async def run(self, data: ExtractWorkflowInput) -> None:
+        retry_policy = RetryPolicy(
+            maximum_attempts=3,
+        )
+        list_of_pdfs = await workflow.execute_activity(
+            get_list_of_pdfs,
+            data,
+            start_to_close_timeout=timedelta(seconds=60),
+            retry_policy=retry_policy,
+        )
+        all_saved_cells = []
+        for pdf in list_of_pdfs['pdfs']:
+            single_input = SingleExtractionInput(
+                upload_id=data.upload_id,
+                user_id=data.user_id,
+                pdf=pdf,
+                api_token=data.api_token,
+                model=data.model,
+            )
+            saved_cells = await workflow.execute_activity(
+                extract_from_pdf,
+                single_input,
+                start_to_close_timeout=timedelta(seconds=600),
+                retry_policy=retry_policy,
+            )
+            all_saved_cells.extend(saved_cells or [])
+
+        input_for_processing = ProcessNewFilesInput(
+            upload_id=data.upload_id,
+            user_id=data.user_id,
+            result_path=all_saved_cells,
+        )
+        await workflow.execute_activity(
+            process_new_files,
+            input_for_processing,
+            start_to_close_timeout=timedelta(seconds=60),
+            retry_policy=retry_policy,
+        )

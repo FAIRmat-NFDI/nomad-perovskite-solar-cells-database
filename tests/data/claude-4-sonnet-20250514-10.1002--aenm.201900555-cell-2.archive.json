@@ -1,0 +1,151 @@
+{
+  "data": {
+    "m_def": "perovskite_solar_cell_database.llm_extraction_schema.LLMExtractedPerovskiteSolarCell",
+    "DOI_number": "https://www.doi.org/10.1002/aenm.201900555",
+    "layer_order": "ITO,PTAA,CsPbI3,C60,BCP,Cu",
+    "perovskite_composition": {
+      "formula": "CsPbI3",
+      "sample_type": "Polycrystalline film",
+      "dimensionality": "3D",
+      "ions_a_site": [
+        {
+          "abbreviation": "Cs",
+          "common_name": "Cesium",
+          "molecular_formula": "Cs+",
+          "coefficient": "1"
+        }
+      ],
+      "ions_b_site": [
+        {
+          "abbreviation": "Pb",
+          "common_name": "Lead",
+          "molecular_formula": "Pb2+",
+          "coefficient": "1"
+        }
+      ],
+      "ions_x_site": [
+        {
+          "abbreviation": "I",
+          "common_name": "Iodide",
+          "molecular_formula": "I-",
+          "coefficient": "3"
+        }
+      ],
+      "band_gap": 1.76
+    },
+    "device_architecture": "pin",
+    "pce": 10.7,
+    "active_area": 0.16,
+    "light_source": {
+      "type": "AM 1.5G",
+      "description": "Oriel LCS-100 class ABB solar simulator",
+      "light_intensity": 100.0
+    },
+    "additional_notes": "Stabilized efficiency measured by maximum power point tracking over 3 min. Same champion device as above but measured under stabilized conditions.",
+    "layers": [
+      {
+        "name": "ITO",
+        "functionality": "Substrate"
+      },
+      {
+        "name": "PTAA",
+        "functionality": "Hole-transport",
+        "deposition": [
+          {
+            "method": "Spin-coating",
+            "atmosphere": "Ambient air",
+            "solution": {
+              "solutes": [
+                {
+                  "name": "PTAA",
+                  "concentration": 2.0,
+                  "concentration_unit": "mg/mL"
+                }
+              ],
+              "solvents": [
+                {
+                  "name": "toluene"
+                }
+              ]
+            },
+            "additional_parameters": {
+              "spin_speed": "4000 rpm",
+              "spin_time": "35 s",
+              "acceleration": "5 s"
+            }
+          },
+          {
+            "method": "Thermal-annealing",
+            "atmosphere": "Ambient air",
+            "temperature": 100.0,
+            "duration": 600.0
+          }
+        ]
+      },
+      {
+        "name": "CsPbI3",
+        "thickness": 500.0,
+        "functionality": "Absorber",
+        "deposition": [
+          {
+            "method": "Co-evaporation",
+            "atmosphere": "Vacuum",
+            "temperature": 50.0,
+            "additional_parameters": {
+              "CsI_evaporation_temperature": "460\u00b0C",
+              "PbI2_evaporation_temperature": "230\u00b0C",
+              "PbI2_evaporation_rate": "1 nmol (cm2 10 s)\u22121",
+              "molar_ratio": "1.2:1 CsI:PbI2",
+              "base_pressure": "\u224810\u22127 hPa"
+            }
+          }
+        ]
+      },
+      {
+        "name": "C60",
+        "thickness": 23.0,
+        "functionality": "Electron-transport",
+        "deposition": [
+          {
+            "method": "Evaporation",
+            "atmosphere": "Vacuum",
+            "additional_parameters": {
+              "evaporation_rate": "\u22480.1\u20130.4 \u00c5 s\u22121",
+              "base_pressure": "under 1E-6 mbar"
+            }
+          }
+        ]
+      },
+      {
+        "name": "BCP",
+        "thickness": 8.0,
+        "functionality": "Other",
+        "deposition": [
+          {
+            "method": "Evaporation",
+            "atmosphere": "Vacuum",
+            "additional_parameters": {
+              "evaporation_rate": "\u22480.1\u20130.4 \u00c5 s\u22121",
+              "base_pressure": "under 1E-6 mbar"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cu",
+        "thickness": 100.0,
+        "functionality": "Contact",
+        "deposition": [
+          {
+            "method": "Evaporation",
+            "atmosphere": "Vacuum",
+            "additional_parameters": {
+              "evaporation_rate": "\u22480.1\u20130.4 \u00c5 s\u22121",
+              "base_pressure": "under 1E-6 mbar"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -30,7 +30,7 @@ maintainers = [
     ]
 requires-python = ">=3.10"
 dependencies = [
-    "nomad-lab>=1.3.11.dev29",
+    "nomad-lab>=1.4.0",
     "nomad-schema-plugin-run>=1.0.1",
     "nomad-schema-plugin-simulation-workflow>=1.0.1",
     "rdkit",
@@ -173,3 +173,4 @@ tandem_app = "perovskite_solar_cell_database.apps:tandem_cells"
 llm_extraction_schema = "perovskite_solar_cell_database:llm_extraction_schema"
 llm_extractor_schema = "perovskite_solar_cell_database.schema_packages:llm_extractor"
 llm_extracted_solar_cells = "perovskite_solar_cell_database.apps:llm_extracted_solar_cells"
+llm_extractor_action = "perovskite_solar_cell_database.actions:llm_extractor_action_entry_point"
