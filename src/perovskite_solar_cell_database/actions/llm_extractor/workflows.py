@@ -19,7 +19,7 @@ with workflow.unsafe.imports_passed_through():
 @workflow.defn
 class ExtractWorkflow:
     @workflow.run
-    async def run(self, data: ExtractWorkflowInput) -> None:
+    async def run(self, data: ExtractWorkflowInput) -> dict:
         retry_policy = RetryPolicy(
             maximum_attempts=3,
         )
@@ -51,9 +51,11 @@ class ExtractWorkflow:
             user_id=data.user_id,
             result_path=all_saved_cells,
         )
-        await workflow.execute_activity(
+        result_entry_refs = await workflow.execute_activity(
             process_new_files,
             input_for_processing,
             start_to_close_timeout=timedelta(seconds=60),
             retry_policy=retry_policy,
         )
+
+        return {'refs': result_entry_refs}

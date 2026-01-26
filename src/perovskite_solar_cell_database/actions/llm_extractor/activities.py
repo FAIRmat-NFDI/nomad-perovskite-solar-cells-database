@@ -11,8 +11,9 @@ from perovskite_solar_cell_database.actions.llm_extractor.models import (
 
 MAX_ATTEMPT_NUM = 100  # attempts to reprocess upload with new entries
 
+
 @activity.defn
-def get_list_of_pdfs(input_data: ExtractWorkflowInput):
+def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
     from nomad.actions.manager import get_upload_files
 
     pdfs = []
@@ -36,7 +37,7 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput):
 
 
 @activity.defn
-def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
+def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
     from nomad.actions.manager import get_upload_files
 
     from perovskite_solar_cell_database.actions.llm_extractor.utils import (
@@ -50,9 +51,11 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
         input_data.user_id,
     )
     if upload_files is None:
-        activity.logger.error(f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}')
+        activity.logger.error(
+            f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}'
+        )
         return
-    
+
     extracted_cells = []
     try:
         if not input_data.api_token:
@@ -68,14 +71,15 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
             logger=activity.logger,
         )
     finally:
-        upload_files.delete_rawfiles(path=input_data.pdf)  # Delete the PDF after extraction for copyright reasons
+        upload_files.delete_rawfiles(
+            path=input_data.pdf
+        )  # Delete the PDF after extraction for copyright reasons
 
     saved_cells = []
     for idx, cell in enumerate(extracted_cells):
-        doi_name = (
-            extract_doi(cell['data']['DOI_number'])
-            or 'unnamed'
-        ).replace('/', '--', 1)
+        doi_name = (extract_doi(cell['data']['DOI_number']) or 'unnamed').replace(
+            '/', '--', 1
+        )
         fname = f'{input_data.model}-{doi_name}-cell-{idx + 1}.archive.json'
         with upload_files.raw_file(file_path=fname, mode='w', encoding='utf-8') as f:
             json.dump({'data': cell['data']}, f, indent=4)
@@ -85,24 +89,32 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str]|None:
 
 
 @activity.defn
-async def process_new_files(data: ProcessNewFilesInput) -> None:
+async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
     from nomad.actions.manager import get_upload_files
     from nomad.app.v1.routers.uploads import get_upload_with_read_access
     from nomad.datamodel import User
+    from nomad.utils import generate_entry_id
 
     upload_files = get_upload_files(
         data.upload_id,
         data.user_id,
     )
     if upload_files is None:
-        activity.logger.error(f'Upload files not found or can not be accessed for upload ID: {data.upload_id}')
-        return
+        activity.logger.error(
+            f'Upload files not found or can not be accessed for upload ID: {data.upload_id}'
+        )
+        return []
 
     file_operations = []
 
     for path in data.result_path:
         file_operations.append(
-            dict(op='ADD', path=upload_files.raw_file_object(path).os_path, target_dir='', temporary=False)
+            dict(
+                op='ADD',
+                path=upload_files.raw_file_object(path).os_path,
+                target_dir='',
+                temporary=False,
+            )
         )
 
     for i in range(MAX_ATTEMPT_NUM):
@@ -125,3 +137,13 @@ async def process_new_files(data: ProcessNewFilesInput) -> None:
     )
 
     await handle.result()  # type: ignore
+
+    result_entry_refs = []
+
+    for path in data.result_path:
+        if upload_files.raw_path_exists(path) and upload_files.raw_path_is_file(path):
+            result_entry_refs.append(
+                f'../uploads/{upload.upload_id}/archive/{generate_entry_id(str(upload.upload_id), path)}#/data'
+            )
+
+    return result_entry_refs

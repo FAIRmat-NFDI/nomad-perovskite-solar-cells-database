@@ -1,38 +1,53 @@
-import os
-import re
 from typing import (
     TYPE_CHECKING,
+    get_args,
 )
 
+from nomad.actions.manager import get_action_result, get_action_status, start_action
 from nomad.datamodel.data import UseCaseElnCategory
 from nomad.datamodel.metainfo.annotations import ELNComponentEnum
 from nomad.datamodel.metainfo.eln import ELNAnnotation
-from nomad.metainfo import Quantity, Section
+from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.metainfo import MEnum
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import EntryArchive
+    from structlog.stdlib import BoundLogger
 
-from nomad.datamodel.data import Schema
+from nomad.datamodel.data import ArchiveSection, Schema
 from nomad.metainfo import SchemaPackage
-from nomad.units import ureg
 
+from perovskite_solar_cell_database.actions.llm_extractor.models import (
+    ExtractWorkflowInput,
+    ModelName,
+)
 from perovskite_solar_cell_database.llm_extraction_schema import (
     LLMExtractedPerovskiteSolarCell,
-    get_reference,
 )
 
 m_package = SchemaPackage()
+
+
+class ActionStatus(ArchiveSection):
+    """Section to fetch the status of an LLM Extraction action."""
+
+    action_id = Quantity(
+        type=str,
+        description='ID of the LLM Extraction action.',
+    )
+    status = Quantity(
+        type=str,
+        description='Status of the LLM Extraction action.',
+    )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        super().normalize(archive, logger)
 
 
 class LlmPerovskitePaperExtractor(Schema):
     m_def = Section(
         label='LLM Perovskite Paper Extractor',
         categories=[UseCaseElnCategory],
-    )
-    pdf = Quantity(
-        type=str,
-        a_eln=ELNAnnotation(component=ELNComponentEnum.FileEditQuantity),
     )
     api_token = Quantity(
         type=str,
@@ -48,103 +63,117 @@ class LlmPerovskitePaperExtractor(Schema):
     )
     model = Quantity(
         type=MEnum(
-            'gpt-4o',
-            # 'gpt-5',  # Uncomment when temperature support is correct in LiteLLM
-            'claude-4-sonnet-20250514',
-            #  'meta.llama3-70b-instruct-v1:0',  # Uncomment when someone can test it
-        ),
+            *get_args(ModelName)
+        ),  # an enum of supported model names - better way of defining model and ModelName from one constant does not work in python 3.10
         description='LLM model to use for extraction',
         default='claude-4-sonnet-20250514',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
+    trigger_run_action = Quantity(
+        type=bool,
+        default=False,
+        description='Starts an asynchronous action for running the LLM Extraction.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.ActionEditQuantity,
+            label='Run LLM Extraction Action',
+        ),
+    )
+    trigger_get_status = Quantity(
+        type=bool,
+        default=False,
+        description='Retrieve the current status of the LLM Extraction action.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.ActionEditQuantity,
+            label='Get Action Status',
+        ),
+    )
+    triggered_action = SubSection(
+        section_def=ActionStatus,
+        description='A section for storing the status of the triggered action.',
+    )
 
-    def delete_pdf(self):
-        """
-        Deletes the PDF file from the upload.
-        """
-        if self.pdf:
+    def check_results(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        if (
+            self.trigger_get_status
+            and self.triggered_action
+            and self.triggered_action.action_id
+            and self.triggered_action.status != 'COMPLETED'
+        ):
+            self.trigger_get_status = False
+
             try:
-                os.remove(os.path.join(self.m_context.raw_path(), self.pdf))
-                self.pdf = None  # Clear the reference to the deleted file
-            except FileNotFoundError:
-                pass  # File already deleted or does not exist
+                status = get_action_status(
+                    self.triggered_action.action_id,  # pyright: ignore[reportArgumentType]
+                    archive.metadata.authors[0].user_id,  # type: ignore
+                )
+                if status:
+                    self.triggered_action.status = status.name
+            except Exception as e:
+                logger.error(
+                    'Error retrieving LLM Extraction action status.', exc_info=e
+                )
 
-    def delete_token(self, archive: 'EntryArchive'):
+            if self.triggered_action.status == 'COMPLETED':
+                result_refs = get_action_result(
+                    self.triggered_action.action_id,  # pyright: ignore[reportArgumentType]
+                    archive.metadata.authors[0].user_id,  # type: ignore
+                )
+                if result_refs is not None:
+                    self.extracted_solar_cells = result_refs['refs']
+                else:
+                    self.extracted_solar_cells = []
+                    self.triggered_action.status = (
+                        'COMPLETED // FAILED TO RETRIEVE RESULTS'
+                    )
+                    logger.warning(
+                        'LLM Extraction action completed but no results were found.'
+                    )
+
+    def delete_token(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
         Deletes the token from this archive, and also from the JSON file stored on disk.
         """
         self.api_token = None
         mainfile = archive.metadata.mainfile
         with archive.m_context.update_entry(
-            mainfile, write=True, process=False
+            mainfile,  # pyright: ignore[reportArgumentType]
+            write=True,
+            process=False,
         ) as entry:
-            del entry['data']['api_token']
+            try:
+                del entry['data']['api_token']
+            except KeyError:
+                logger.warning('API token not found in the archive during deletion.')
 
-    def normalize(self, archive: 'EntryArchive', logger):
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        api_token = self.api_token
+        if self.api_token is not None:
+            self.delete_token(archive, logger)
         super().normalize(archive, logger)
-        extracted_cells = []
-        try:
-            if not self.api_token:
-                logger.warn('API token is required for LLM extraction')
-                return
-            _api_token = self.api_token
-            self.delete_token(archive)
-            if not isinstance(self.pdf, str) or not self.pdf.endswith('.pdf'):
-                logger.warn('PDF file is required for LLM extraction')
-                return
-            extracted_cells = pdf_to_solar_cells(
-                pdf=os.path.join(archive.m_context.raw_path(), self.pdf),
-                api_token=_api_token,
-                model=self.model,
-                logger=logger,
+
+        if self.trigger_run_action:
+            self.trigger_run_action = False
+
+            input_data = ExtractWorkflowInput(
+                upload_id=archive.metadata.upload_id,  # pyright: ignore[reportArgumentType]
+                user_id=archive.metadata.authors[0].user_id,  # type: ignore
+                api_token=api_token,  # pyright: ignore[reportArgumentType]
+                model=self.model,  # pyright: ignore[reportArgumentType]
             )
-        finally:
-            self.delete_pdf()  # Delete the PDF after extraction for copyright reasons
-        cell_references = []
-        for idx, cell in enumerate(extracted_cells):
-            doi_name = (
-                extract_doi(cell['data']['DOI_number']).replace('/', '--', 1)
-                or 'unnamed'
-            )
-            name = f'{self.model}-{doi_name}-cell-{idx + 1}.archive.json'
-            with archive.m_context.update_entry(
-                name, write=True, process=True
-            ) as entry:
-                entry['data'] = cell['data']
-            cell_references.append(
-                get_reference(upload_id=archive.metadata.upload_id, mainfile=name)
-            )
-        if cell_references:
-            self.extracted_solar_cells = cell_references
 
+            try:
+                action_id = start_action(
+                    action_id='perovskite_solar_cell_database.actions:llm_extractor_action_entry_point',
+                    data=input_data,
+                )
+                self.triggered_action = ActionStatus(
+                    action_id=action_id,
+                    status='RUNNING',
+                )
+            except Exception as e:
+                logger.error('Error starting LLM Extraction action.', exc_info=e)
 
-def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dict]:
-    """
-    Extract perovskite solar cells from a PDF using an LLM.
-    """
-    try:
-        from perla_extract.pipeline import ExtractionPipeline
-
-        return ExtractionPipeline(
-            model, 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(pdf, api_token, ureg=ureg)
-    except ImportError as e:
-        logger.error(
-            'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
-            exc_info=e,
-        )
-        return []
-
-
-def extract_doi(doi: str) -> str:
-    """
-    Extracts the DOI prefix and suffix (10.xxxx/xxxx) from a DOI string.
-    Returns None if no valid DOI is found.
-    """
-    match = re.search(r'10\.\d{4,9}/[-._;()/:\w\[\]]+', doi, re.IGNORECASE)
-    if match:
-        return match.group(0)
-    return None
+        self.check_results(archive, logger)
 
 
 m_package.__init_metainfo__()
