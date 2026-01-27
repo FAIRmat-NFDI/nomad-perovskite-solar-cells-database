@@ -10,16 +10,19 @@ PERLA is a continuously updated database of perovskite solar cell performance da
 
 ### Prerequisites
 
-1. **Query the database first**: Start with the query notebook to generate the required data file
-2. **Install dependencies**: Ensure you have the necessary Python packages installed from the souce repositroy. uv is recommended to be used.
+1. **Data Access**: The required `perovskite_solar_cell_database.parquet` file is automatically included when this example upload is loaded in NOMAD
+   - Alternatively, you can download it manually from: https://box.hu-berlin.de/f/62464f5f1e7b415ea697/
+   - Or generate it yourself using [query-perovskite-database.ipynb](query-perovskite-database.ipynb) (takes ~1 hour due to API rate limits)
+2. **Install dependencies**: Ensure you have the necessary Python packages installed from the source repository. uv is recommended to be used.
 
 ### Workflow
 
-1. **Generate the dataset** (required first step):
+1. **Optional: Generate the dataset yourself**:
    - Run [query-perovskite-database.ipynb](query-perovskite-database.ipynb) to download data from NOMAD and create `perovskite_solar_cell_database.parquet`
    - ⚠️ **Note**: This query may take up to 1 hour due to API rate limits
+   - Skip this step if using the pre-generated parquet file included in the example upload
 
-2. **Analyze the data**: Once you have the parquet file, you can run any of the analysis notebooks
+2. **Analyze the data**: Run any of the analysis notebooks below
 
 ## Notebooks
 

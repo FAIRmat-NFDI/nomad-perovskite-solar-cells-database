@@ -19,5 +19,9 @@ perla_notebooks = ExampleUploadEntryPoint(
     performance evolution, diversity analysis, and machine learning applications.
     """),
     path='example_uploads/perla_notebooks/*',
+    resources=[
+        'example_uploads/perla_notebooks/*',
+        'https://box.hu-berlin.de/f/62464f5f1e7b415ea697/?dl=1',
+    ],
     category='PERLA (Perovskite Living Archive)',
 )
