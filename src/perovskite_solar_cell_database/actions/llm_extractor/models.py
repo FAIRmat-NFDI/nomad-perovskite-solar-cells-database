@@ -11,14 +11,22 @@ ModelName = Literal[
 
 
 class ExtractWorkflowInput(BaseModel):
-    """Input model for the simple workflow."""
+    """
+    Run this action to extract perovskite solar cells information from all PDFs in a
+    project/upload.
+
+    First, upload the research papers as PDF files to the project. Then, submit this action
+    providing the project ID (upload ID) and api token for the chosen LLM. The action will
+    find and process all PDF files in the project using the specified LLM, then create and
+    process new entries for each detected solar cell and delete the source PDF files.
+    """
 
     upload_id: str = Field(
         ...,
-        description='Unique identifier for the upload associated with the workflow.',
+        description='Unique identifier for the project associated with the action.',
     )
     user_id: str = Field(
-        ..., description='Unique identifier for the user who initiated the workflow.'
+        ..., description='Unique identifier for the user who initiated the action.'
     )
     api_token: SecretStr = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
@@ -35,10 +43,10 @@ class SingleExtractionInput(BaseModel):
 
     upload_id: str = Field(
         ...,
-        description='Unique identifier for the upload associated with the workflow.',
+        description='Unique identifier for the project associated with the action.',
     )
     user_id: str = Field(
-        ..., description='Unique identifier for the user who initiated the workflow.'
+        ..., description='Unique identifier for the user who initiated the action.'
     )
     pdf: str = Field(..., description='Path to the PDF file to be processed.')
     api_token: SecretStr = Field(..., description='API token for LLM access.')
@@ -56,10 +64,10 @@ class ProcessNewFilesInput(BaseModel):
 
     upload_id: str = Field(
         ...,
-        description='Unique identifier for the upload associated with the workflow.',
+        description='Unique identifier for the project associated with the action.',
     )
     user_id: str = Field(
-        ..., description='Unique identifier for the user who initiated the workflow.'
+        ..., description='Unique identifier for the user who initiated the action.'
     )
     result_path: list[str] = Field(
         ..., description='Paths to the new entries to be processed.'
@@ -71,9 +79,9 @@ class CleanupInput(BaseModel):
 
     upload_id: str = Field(
         ...,
-        description='Unique identifier for the upload associated with the workflow.',
+        description='Unique identifier for the project associated with the action.',
     )
     user_id: str = Field(
-        ..., description='Unique identifier for the user who initiated the workflow.'
+        ..., description='Unique identifier for the user who initiated the action.'
     )
     pdfs: list[str] = Field(..., description='Paths to the PDF files to be removed.')
