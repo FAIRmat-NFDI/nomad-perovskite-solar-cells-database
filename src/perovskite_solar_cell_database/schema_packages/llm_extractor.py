@@ -94,6 +94,15 @@ class LlmPerovskitePaperExtractor(Schema):
         section_def=ActionStatus,
         description='A section for storing the status of the triggered action.',
     )
+    pdfs = Quantity(
+        type=str,
+        shape=['*'],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.FileEditQuantity,
+            label='Upload PDF files here or directly in the associated upload/project',
+        ),
+        description='Upload PDF files for the extraction here or directly in the associated upload/project.',
+    )
 
     def check_results(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         if (
@@ -151,10 +160,27 @@ class LlmPerovskitePaperExtractor(Schema):
                 logger.warning('API token not found in the archive during deletion.')
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        from nomad.actions.manager import get_upload_files
+
         api_token = self.api_token
         if self.api_token is not None:
             self.delete_token(archive, logger)
         super().normalize(archive, logger)
+
+        self.pdfs = []
+        upload_files = get_upload_files(
+            archive.metadata.upload_id, # pyright: ignore[reportArgumentType]
+            archive.metadata.authors[0].user_id, # type: ignore
+        )
+        if upload_files is not None:
+            raw_files = upload_files.raw_directory_list(
+                path='',
+                recursive=True,
+                files_only=True,
+            )
+            for file_info in raw_files:
+                if file_info.path.lower().endswith('.pdf'):
+                    self.pdfs.append(file_info.path)
 
         if self.trigger_run_action:
             self.trigger_run_action = False
