@@ -23,6 +23,8 @@ authors = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
     {name = "Yaru Wang", email = "wangyaru@physik.hu-berlin.de"},
     {name = "Hampus Näsström", email = "hampus.naesstroem@physik.hu-berlin.de"},
+    {name = "Lev Ginzburg", email = "ginzburl@physik.hu-berlin.de"},
+    {name = "Sherjeel Shabih", email = "sshabih@physik.hu-berlin.de"},
     ]
 maintainers = [
     {name = "Jose Marquez", email = "jose.marquez@physik.hu-berlin.de"},
@@ -30,7 +32,7 @@ maintainers = [
     ]
 requires-python = ">=3.10"
 dependencies = [
-    "nomad-lab>=1.3.11.dev29",
+    "nomad-lab>=1.4.0",
     "nomad-schema-plugin-run>=1.0.1",
     "nomad-schema-plugin-simulation-workflow>=1.0.1",
     "rdkit",
@@ -65,13 +67,13 @@ dev = [
     "nomad-docs>=0.1.3"
 ]
 extraction = [
-    "perla-extract>=0.0.2",
-    "dabest"
+    "perla-extract>=0.0.3"
 ]
 
 notebooks = [
     "huggingface_hub>=0.20",
-    "nbformat"
+    "nbformat",
+    "dabest"
 ]
 
 [tool.ruff]
@@ -175,3 +177,4 @@ llm_extractor_schema = "perovskite_solar_cell_database.schema_packages:llm_extra
 llm_extracted_solar_cells = "perovskite_solar_cell_database.apps:llm_extracted_solar_cells"
 ions_database_example = "perovskite_solar_cell_database.example_uploads:ions_database"
 perla_notebooks_example = "perovskite_solar_cell_database.example_uploads:perla_notebooks"
+llm_extractor_action = "perovskite_solar_cell_database.actions:llm_extractor_action_entry_point"
