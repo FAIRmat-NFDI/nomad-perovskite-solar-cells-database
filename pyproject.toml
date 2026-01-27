@@ -65,14 +65,13 @@ dev = [
     "nomad-docs>=0.1.3"
 ]
 extraction = [
-    "pdf2doi @ git+https://github.com/sherjeelshabih/pdf2doi.git@fix-missing-config-in-wheel",
-    "perla-extract>=0.0.2",
-    "dabest"
+    "perla-extract>=0.0.2"
 ]
 
 notebooks = [
     "huggingface_hub>=0.20",
-    "nbformat"
+    "nbformat",
+    "dabest"
 ]
 
 [tool.ruff]
