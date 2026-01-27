@@ -64,7 +64,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
     try:
         extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
-            api_token=input_data.api_token,
+            api_token=input_data.api_token.get_secret_value(),
             model=input_data.model,
             logger=activity.logger,
         )
