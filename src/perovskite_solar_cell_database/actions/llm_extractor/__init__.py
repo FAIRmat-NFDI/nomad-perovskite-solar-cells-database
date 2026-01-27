@@ -18,6 +18,7 @@ class LLMExtractorActionEntryPoint(ActionEntryPoint):
             extract_from_pdf,
             get_list_of_pdfs,
             process_new_files,
+            remove_source_pdfs,
         )
         from perovskite_solar_cell_database.actions.llm_extractor.workflows import (
             ExtractWorkflow,
@@ -26,7 +27,12 @@ class LLMExtractorActionEntryPoint(ActionEntryPoint):
         return Action(
             task_queue=self.task_queue,
             workflow=ExtractWorkflow,
-            activities=[extract_from_pdf, get_list_of_pdfs, process_new_files],
+            activities=[
+                extract_from_pdf,
+                get_list_of_pdfs,
+                process_new_files,
+                remove_source_pdfs,
+            ],
         )
 
 

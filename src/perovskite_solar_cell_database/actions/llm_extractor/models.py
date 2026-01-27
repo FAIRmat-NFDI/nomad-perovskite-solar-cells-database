@@ -56,3 +56,16 @@ class ProcessNewFilesInput(BaseModel):
     result_path: list[str] = Field(
         ..., description='Paths to the new entries to be processed.'
     )
+
+
+class CleanupInput(BaseModel):
+    """Data for cleanup activity."""
+
+    upload_id: str = Field(
+        ...,
+        description='Unique identifier for the upload associated with the workflow.',
+    )
+    user_id: str = Field(
+        ..., description='Unique identifier for the user who initiated the workflow.'
+    )
+    pdfs: list[str] = Field(..., description='Paths to the PDF files to be removed.')

@@ -4,6 +4,7 @@ import time
 from temporalio import activity
 
 from perovskite_solar_cell_database.actions.llm_extractor.models import (
+    CleanupInput,
     ExtractWorkflowInput,
     ProcessNewFilesInput,
     SingleExtractionInput,
@@ -57,23 +58,18 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
         return
 
     extracted_cells = []
+    if not input_data.api_token:
+        activity.logger.warning('API token is required for LLM extraction')
+        return
     try:
-        if not input_data.api_token:
-            activity.logger.warning('API token is required for LLM extraction')
-            return
-        if not isinstance(input_data.pdf, str) or not input_data.pdf.endswith('.pdf'):
-            activity.logger.warning('PDF file is required for LLM extraction')
-            return
         extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
             api_token=input_data.api_token,
             model=input_data.model,
             logger=activity.logger,
         )
-    finally:
-        upload_files.delete_rawfiles(
-            path=input_data.pdf
-        )  # Delete the PDF after extraction for copyright reasons
+    except Exception as e:
+        activity.logger.error('Error during LLM extraction from PDF.', exc_info=e)
 
     saved_cells = []
     for idx, cell in enumerate(extracted_cells):
@@ -147,3 +143,23 @@ async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
             )
 
     return result_entry_refs
+
+
+@activity.defn
+def remove_source_pdfs(input_data: CleanupInput) -> None:
+    from nomad.actions.manager import get_upload_files
+
+    upload_files = get_upload_files(
+        input_data.upload_id,
+        input_data.user_id,
+    )
+    if upload_files is None:
+        activity.logger.error(
+            f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}'
+        )
+        return
+
+    for pdf in input_data.pdfs:
+        upload_files.delete_rawfiles(
+            path=pdf
+        )  # Delete the PDF after extraction for copyright reasons
