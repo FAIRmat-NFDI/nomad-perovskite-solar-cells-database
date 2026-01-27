@@ -72,7 +72,10 @@ class LlmPerovskitePaperExtractor(Schema):
     trigger_run_action = Quantity(
         type=bool,
         default=False,
-        description='Starts an asynchronous action for running the LLM Extraction.',
+        description="""Starts an asynchronous action for running the LLM Extraction. 
+        It will search for all PDF files in the associated upload/project, extract perovskite 
+        solar cells information using the specified LLM model, create and process new entries 
+        for each detected solar cell, and finally delete the source PDF files.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ActionEditQuantity,
             label='Run LLM Extraction Action',
