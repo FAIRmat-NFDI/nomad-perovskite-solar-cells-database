@@ -15,6 +15,9 @@ MAX_ATTEMPT_NUM = 100  # attempts to reprocess upload with new entries
 
 @activity.defn
 def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
+    """
+    Find all PDF files in the upload if authorized user has access to the upload.
+    """
     from nomad.actions.manager import get_upload_files
 
     pdfs = []
@@ -39,6 +42,11 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
 
 @activity.defn
 def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
+    """
+    Extract perovskite solar cell data from a single PDF file using LLM,
+    save the extracted data as new entries in the upload, and return the
+    list of saved entries.
+    """
     from nomad.actions.manager import get_upload_files
 
     from perovskite_solar_cell_database.actions.llm_extractor.utils import (
@@ -46,6 +54,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
         pdf_to_solar_cells,
         test_pdf_to_solar_cells,
     )
+    # For testing without LLM calls, use test_pdf_to_solar_cells instead of pdf_to_solar_cells
 
     upload_files = get_upload_files(
         input_data.upload_id,
@@ -86,6 +95,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
 
 @activity.defn
 async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
+    """Process newly created entries in the upload, then return their references."""
     from nomad.actions.manager import get_upload_files
     from nomad.app.v1.routers.uploads import get_upload_with_read_access
     from nomad.datamodel import User
@@ -113,6 +123,7 @@ async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
             )
         )
 
+    # Wait until the upload is not busy
     for i in range(MAX_ATTEMPT_NUM):
         upload = get_upload_with_read_access(
             data.upload_id,
@@ -147,6 +158,9 @@ async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
 
 @activity.defn
 def remove_source_pdfs(input_data: CleanupInput) -> None:
+    """
+    Remove source PDF files from the upload after extraction.
+    """
     from nomad.actions.manager import get_upload_files
 
     upload_files = get_upload_files(

@@ -105,6 +105,9 @@ class LlmPerovskitePaperExtractor(Schema):
     )
 
     def check_results(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+        """
+        Checks the status of the triggered action and retrieves results if completed
+        """
         if (
             self.trigger_get_status
             and self.triggered_action
@@ -162,15 +165,17 @@ class LlmPerovskitePaperExtractor(Schema):
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         from nomad.actions.manager import get_upload_files
 
+        # read and delete api token for security reasons
         api_token = self.api_token
         if self.api_token is not None:
             self.delete_token(archive, logger)
         super().normalize(archive, logger)
 
+        # find all pdf files already in the upload
         self.pdfs = []
         upload_files = get_upload_files(
-            archive.metadata.upload_id, # pyright: ignore[reportArgumentType]
-            archive.metadata.authors[0].user_id, # type: ignore
+            archive.metadata.upload_id,  # pyright: ignore[reportArgumentType]
+            archive.metadata.authors[0].user_id,  # type: ignore
         )
         if upload_files is not None:
             raw_files = upload_files.raw_directory_list(
@@ -182,6 +187,7 @@ class LlmPerovskitePaperExtractor(Schema):
                 if file_info.path.lower().endswith('.pdf'):
                     self.pdfs.append(file_info.path)
 
+        # trigger LLM Extraction action, create ActionStatus subsection to track it
         if self.trigger_run_action:
             self.trigger_run_action = False
 
