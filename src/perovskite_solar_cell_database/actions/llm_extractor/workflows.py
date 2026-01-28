@@ -62,7 +62,11 @@ class ExtractWorkflow:
                 retry_policy=retry_policy,
             )
         except ActivityError as e:
-            workflow.logger.error(f'Extraction activity failed: {e}')
+            error_msg = f'Extraction activity failed: {e}'
+            workflow.logger.error(error_msg)
+            if len(error_msg) > 10000:
+                error_msg = error_msg[:10000] + '... [truncated]'
+            return {'refs': [], 'extraction_successful': False, 'errors': [error_msg]}
 
         finally:
             await workflow.execute_activity(
@@ -76,4 +80,4 @@ class ExtractWorkflow:
                 retry_policy=retry_policy,
             )
 
-        return {'refs': result_entry_refs}
+        return {'refs': result_entry_refs, 'extraction_successful': True, 'errors': []}
