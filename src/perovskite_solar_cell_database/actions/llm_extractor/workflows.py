@@ -88,4 +88,4 @@ class ExtractWorkflow:
                 retry_policy=retry_policy,
             )
 
-        return {'refs': result_entry_refs, 'success': True, 'errors': errors}
+        return {'refs': result_entry_refs, 'success': errors == [], 'errors': errors}
