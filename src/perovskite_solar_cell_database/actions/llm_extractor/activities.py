@@ -41,7 +41,7 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
 
 
 @activity.defn
-def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
+def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
     """
     Extract perovskite solar cell data from a single PDF file using LLM,
     save the extracted data as new entries in the upload, and return the
@@ -61,15 +61,15 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
         input_data.user_id,
     )
     if upload_files is None:
-        activity.logger.error(
-            f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}'
-        )
-        return
+        error_msg = f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}'
+        activity.logger.error(error_msg)
+        return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
 
     extracted_cells = []
     if not input_data.api_token:
-        activity.logger.warning('API token is required for LLM extraction')
-        return
+        error_msg = 'API token is required for LLM extraction'
+        activity.logger.warning(error_msg)
+        return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
     try:
         extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
@@ -78,7 +78,11 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
             logger=activity.logger,
         )
     except Exception as e:
+        error_msg = f'Error during LLM extraction from PDF: {e}'
         activity.logger.error('Error during LLM extraction from PDF.', exc_info=e)
+        if len(error_msg) > 10000:
+            error_msg = error_msg[:10000] + '... [truncated]'
+        return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
 
     saved_cells = []
     for idx, cell in enumerate(extracted_cells):
@@ -90,11 +94,11 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> list[str] | None:
             json.dump({'data': cell['data']}, f, indent=4)
         saved_cells.append(fname)
 
-    return saved_cells
+    return {'saved_cells': saved_cells, 'success': True, 'errors': []}
 
 
 @activity.defn
-async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
+async def process_new_files(data: ProcessNewFilesInput) -> dict:
     """Process newly created entries in the upload, then return their references."""
     from nomad.actions.manager import get_upload_files
     from nomad.app.v1.routers.uploads import get_upload_with_read_access
@@ -106,10 +110,9 @@ async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
         data.user_id,
     )
     if upload_files is None:
-        activity.logger.error(
-            f'Upload files not found or can not be accessed for upload ID: {data.upload_id}'
-        )
-        return []
+        error_msg = f'Upload files not found or can not be accessed for upload ID: {data.upload_id}'
+        activity.logger.error(error_msg)
+        return {'refs': [], 'success': False, 'errors': [error_msg]}
 
     file_operations = []
 
@@ -137,6 +140,10 @@ async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
             # reload if upload is busy
             time.sleep(0.5)
             activity.logger.warning('Upload is currently being processed. Waiting...')
+    else:
+        error_msg = f'Upload {data.upload_id} is busy for too long. Cannot process new files.'
+        activity.logger.error(error_msg)
+        return {'refs': [], 'success': False, 'errors': [error_msg]}
 
     handle = upload.process_upload(
         file_operations=file_operations,
@@ -153,7 +160,7 @@ async def process_new_files(data: ProcessNewFilesInput) -> list[str]:
                 f'../uploads/{upload.upload_id}/archive/{generate_entry_id(str(upload.upload_id), path)}#/data'
             )
 
-    return result_entry_refs
+    return {'refs': result_entry_refs, 'success': True, 'errors': []}
 
 
 @activity.defn
