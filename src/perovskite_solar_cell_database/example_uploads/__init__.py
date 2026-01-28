@@ -1,4 +1,5 @@
 import os
+
 import httpx
 from nomad.config.models.plugins import ExampleUploadEntryPoint
 from nomad.utils import strip
