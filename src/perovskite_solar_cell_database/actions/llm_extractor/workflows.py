@@ -33,6 +33,11 @@ class ExtractWorkflow:
             start_to_close_timeout=timedelta(seconds=60),
             retry_policy=retry_policy,
         )
+        if not list_of_pdfs['pdfs']:
+            error_msg = 'No PDF files found in the upload.'
+            workflow.logger.error(error_msg)
+            errors.append(error_msg)
+            return {'refs': [], 'success': False, 'errors': errors}
         try:
             all_saved_cells = []
             for pdf in list_of_pdfs['pdfs']:

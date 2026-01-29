@@ -66,7 +66,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
         return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
 
     extracted_cells = []
-    if not input_data.api_token:
+    if not input_data.api_token or input_data.api_token.get_secret_value() == '':
         error_msg = 'API token is required for LLM extraction'
         activity.logger.warning(error_msg)
         return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
@@ -89,7 +89,9 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
         doi_name = (extract_doi(cell['data']['DOI_number']) or 'unnamed').replace(
             '/', '--', 1
         )
-        fname = f'{input_data.model}-{doi_name}-cell-{idx + 1}.archive.json'
+        fname = f'results/{input_data.model}-{doi_name}-cell-{idx + 1}.archive.json'
+        if not upload_files.raw_path_exists('results'):
+            upload_files.raw_create_directory('results')
         with upload_files.raw_file(file_path=fname, mode='w', encoding='utf-8') as f:
             json.dump({'data': cell['data']}, f, indent=4)
         saved_cells.append(fname)
@@ -121,7 +123,7 @@ async def process_new_files(data: ProcessNewFilesInput) -> dict:
             dict(
                 op='ADD',
                 path=upload_files.raw_file_object(path).os_path,
-                target_dir='',
+                target_dir='results',
                 temporary=False,
             )
         )
@@ -147,6 +149,7 @@ async def process_new_files(data: ProcessNewFilesInput) -> dict:
 
     handle = upload.process_upload(
         file_operations=file_operations,
+        path_filter='results',
         only_updated_files=True,
     )
 

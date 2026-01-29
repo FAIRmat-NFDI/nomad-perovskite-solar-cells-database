@@ -169,6 +169,8 @@ class LlmPerovskitePaperExtractor(Schema):
         api_token = self.api_token
         if self.api_token is not None:
             self.delete_token(archive, logger)
+        else:
+            self.api_token = ''
         super().normalize(archive, logger)
 
         # find all pdf files already in the upload
@@ -188,8 +190,19 @@ class LlmPerovskitePaperExtractor(Schema):
                     self.pdfs.append(file_info.path)
 
         # trigger LLM Extraction action, create ActionStatus subsection to track it
-        if self.trigger_run_action:
+        if self.trigger_run_action and (self.triggered_action is None or self.triggered_action.status != 'RUNNING'):
             self.trigger_run_action = False
+            # avoiding multiple triggers due to possible race conditions
+            mainfile = archive.metadata.mainfile
+            with archive.m_context.update_entry(
+                mainfile,  # pyright: ignore[reportArgumentType]
+                write=True,
+                process=False,
+            ) as entry:
+                try:
+                    entry['data']['trigger_run_action'] = False
+                except KeyError:
+                    logger.warning('trigger_run_action not found in the archive during reset.')
 
             input_data = ExtractWorkflowInput(
                 upload_id=archive.metadata.upload_id,  # pyright: ignore[reportArgumentType]
@@ -207,6 +220,7 @@ class LlmPerovskitePaperExtractor(Schema):
                     action_id=action_id,
                     status='RUNNING',
                 )
+                self.triggered_action.normalize(archive, logger)
             except Exception as e:
                 logger.error('Error starting LLM Extraction action.', exc_info=e)
 
