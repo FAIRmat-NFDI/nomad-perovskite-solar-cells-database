@@ -170,7 +170,7 @@ class LlmPerovskitePaperExtractor(Schema):
         if self.api_token is not None:
             self.delete_token(archive, logger)
         else:
-            self.api_token = ''
+            api_token = ''
         super().normalize(archive, logger)
 
         # find all pdf files already in the upload
