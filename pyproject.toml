@@ -67,7 +67,7 @@ dev = [
     "nomad-docs>=0.1.3"
 ]
 extraction = [
-    "perla-extract>=0.0.3"
+    "perla-extract>=0.0.4"
 ]
 
 notebooks = [
