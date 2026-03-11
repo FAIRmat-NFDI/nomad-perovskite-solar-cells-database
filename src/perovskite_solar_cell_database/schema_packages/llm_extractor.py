@@ -5,7 +5,7 @@ from typing import (
 
 from nomad.actions.manager import get_action_result, get_action_status, start_action
 from nomad.datamodel.data import UseCaseElnCategory
-from nomad.datamodel.metainfo.annotations import ELNComponentEnum
+from nomad.datamodel.metainfo.annotations import ELNComponentEnum, SectionProperties
 from nomad.datamodel.metainfo.eln import ELNAnnotation
 from nomad.metainfo import Quantity, Section, SubSection
 from nomad.metainfo.metainfo import MEnum
@@ -28,26 +28,24 @@ from perovskite_solar_cell_database.llm_extraction_schema import (
 m_package = SchemaPackage()
 
 
-class ActionStatus(ArchiveSection):
-    """Section to fetch the status of an LLM Extraction action."""
-
-    action_id = Quantity(
-        type=str,
-        description='ID of the LLM Extraction action.',
-    )
-    status = Quantity(
-        type=str,
-        description='Status of the LLM Extraction action.',
-    )
-
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
-        super().normalize(archive, logger)
-
-
 class LlmPerovskitePaperExtractor(Schema):
     m_def = Section(
         label='LLM Perovskite Paper Extractor',
         categories=[UseCaseElnCategory],
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'api_token',
+                    'model',
+                    'trigger_run_action',
+                    'trigger_get_status',
+                    'action_id',
+                    'action_status',
+                    'pdfs',
+                    'extracted_solar_cells',
+                ]
+            )
+        ),
     )
     api_token = Quantity(
         type=str,
@@ -90,9 +88,13 @@ class LlmPerovskitePaperExtractor(Schema):
             label='Get Action Status',
         ),
     )
-    triggered_action = SubSection(
-        section_def=ActionStatus,
-        description='A section for storing the status of the triggered action.',
+    action_id = Quantity(
+        type=str,
+        description='ID of the LLM Extraction action.',
+    )
+    action_status = Quantity(
+        type=str,
+        description='Status of the LLM Extraction action.',
     )
     pdfs = Quantity(
         type=str,
@@ -110,41 +112,40 @@ class LlmPerovskitePaperExtractor(Schema):
         """
         if (
             self.trigger_get_status
-            and self.triggered_action
-            and self.triggered_action.action_id
-            and self.triggered_action.status != 'COMPLETED'
+            and self.action_id is not None
+            and self.action_status == 'RUNNING'
         ):
-            self.trigger_get_status = False
-
             try:
                 status = get_action_status(
-                    self.triggered_action.action_id,  # pyright: ignore[reportArgumentType]
+                    self.action_id,  # pyright: ignore[reportArgumentType]
                     archive.metadata.authors[0].user_id,  # type: ignore
                 )
                 if status:
-                    self.triggered_action.status = status.name
+                    self.action_status = status.name
             except Exception as e:
                 logger.error(
                     'Error retrieving LLM Extraction action status.', exc_info=e
                 )
 
-            if self.triggered_action.status == 'COMPLETED':
+            if self.action_status == 'COMPLETED':
                 result_refs = get_action_result(
-                    self.triggered_action.action_id,  # pyright: ignore[reportArgumentType]
+                    self.action_id,  # pyright: ignore[reportArgumentType]
                     archive.metadata.authors[0].user_id,  # type: ignore
                 )
                 if result_refs is not None:
-                    self.extracted_solar_cells = result_refs['refs']
+                    if result_refs.get('success'):
+                        self.extracted_solar_cells = result_refs['refs']
+                    else:
+                        self.action_status = 'FAILED'
+                        logger.error(
+                            f'LLM Extraction action completed with errors: {result_refs.get("errors")}'
+                        )
                 else:
                     self.extracted_solar_cells = []
-                    self.triggered_action.status = (
-                        'COMPLETED // FAILED TO RETRIEVE RESULTS'
-                    )
-                    logger.warning(
+                    self.action_status = 'FAILED'
+                    logger.error(
                         'LLM Extraction action completed but no results were found.'
                     )
-
-        self.trigger_get_status = False
 
     def delete_token(self, archive: 'EntryArchive', logger: 'BoundLogger'):
         """
@@ -189,9 +190,13 @@ class LlmPerovskitePaperExtractor(Schema):
                 if file_info.path.lower().endswith('.pdf'):
                     self.pdfs.append(file_info.path)
 
-        # trigger LLM Extraction action, create ActionStatus subsection to track it
-        if self.trigger_run_action and (self.triggered_action is None or self.triggered_action.status != 'RUNNING'):
+        # trigger LLM Extraction action, fill in action_id and action_status
+        if self.trigger_run_action and (
+            self.action_status is None
+            or (self.action_id is not None and self.action_status != 'RUNNING')
+        ):
             self.trigger_run_action = False
+            self.action_status = 'RUNNING'
             # avoiding multiple triggers due to possible race conditions
             mainfile = archive.metadata.mainfile
             with archive.m_context.update_entry(
@@ -201,8 +206,11 @@ class LlmPerovskitePaperExtractor(Schema):
             ) as entry:
                 try:
                     entry['data']['trigger_run_action'] = False
+                    entry['data']['action_status'] = 'RUNNING'
                 except KeyError:
-                    logger.warning('trigger_run_action not found in the archive during reset.')
+                    logger.warning(
+                        'trigger_run_action not found in the archive during reset.'
+                    )
 
             input_data = ExtractWorkflowInput(
                 upload_id=archive.metadata.upload_id,  # pyright: ignore[reportArgumentType]
@@ -216,15 +224,15 @@ class LlmPerovskitePaperExtractor(Schema):
                     action_id='perovskite_solar_cell_database.actions:llm_extractor_action_entry_point',
                     data=input_data,
                 )
-                self.triggered_action = ActionStatus(
-                    action_id=action_id,
-                    status='RUNNING',
-                )
-                self.triggered_action.normalize(archive, logger)
+                self.action_id = action_id
+                logger.info(f'LLM Extraction action started with ID: {action_id}')
             except Exception as e:
+                self.action_status = 'FAILED'
                 logger.error('Error starting LLM Extraction action.', exc_info=e)
 
         self.check_results(archive, logger)
+        self.trigger_get_status = False
+        self.trigger_run_action = False
 
 
 m_package.__init_metainfo__()
