@@ -95,6 +95,11 @@ class LlmPerovskitePaperExtractor(Schema):
     action_status = Quantity(
         type=str,
         description='Status of the LLM Extraction action.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='LLM Extraction Action Status',
+        ),
+        a_display={'editable': False},
     )
     pdfs = Quantity(
         type=str,
