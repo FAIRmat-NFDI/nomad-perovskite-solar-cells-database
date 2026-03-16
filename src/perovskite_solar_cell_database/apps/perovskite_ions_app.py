@@ -14,27 +14,34 @@ schemas = [
     '*#perovskite_solar_cell_database.composition.PerovskiteAIon',
     '*#perovskite_solar_cell_database.composition.PerovskiteBIon',
     '*#perovskite_solar_cell_database.composition.PerovskiteXIon',
+    '*#perovskite_solar_cell_database.composition.PerovskiteIonSection',
+    '*#perovskite_solar_cell_database.composition.PerovskiteChemicalSection',
 ]
 # noqa: E501
 perovskite_ions_app = App(
     label='Halide Perovskite Ions Database',
     path='perovskite-ions',
     category='Solar cells',
-    description='Search ions used in halide perovskites compunds',
+    description='Search ions used in halide perovskite compounds',
     search_quantities=SearchQuantities(include=schemas),
     columns=[
+        Column(
+            quantity='data.abbreviation#perovskite_solar_cell_database.composition.PerovskiteIonSection',
+            selected=True,
+            title='Abbreviation',
+        ),
         Column(quantity='results.material.elements', selected=True),
         Column(
             quantity='results.material.chemical_formula_iupac',
             selected=True,
         ),
         Column(
-            quantity='data.iupac_name#perovskite_solar_cell_database.composition.PerovskiteAIon',
+            quantity='data.iupac_name#perovskite_solar_cell_database.composition.PerovskiteChemicalSection',
             selected=True,
             title='IUPAC Name',
         ),
         Column(
-            quantity='data.smiles#perovskite_solar_cell_database.composition.PerovskiteAIon',
+            quantity='data.smiles#perovskite_solar_cell_database.composition.PerovskiteChemicalSection',
             selected=True,
             title='SMILES',
         ),
@@ -43,18 +50,19 @@ perovskite_ions_app = App(
         title='Ions Database',
         items=[
             MenuItemTerms(
-                quantity='data.abbreviation#perovskite_solar_cell_database.composition.PerovskiteAIon',
+                quantity='data.abbreviation#perovskite_solar_cell_database.composition.PerovskiteIonSection',
                 show_input=True,
-                title='A cation Abbreviation',
+                title='Cation Abbreviation',
             ),
             MenuItemTerms(
-                quantity='data.smiles#perovskite_solar_cell_database.composition.PerovskiteAIon',
+                quantity='data.smiles#perovskite_solar_cell_database.composition.PerovskiteChemicalSection',
                 show_input=True,
-                title='A cation SMILES',
+                title='Cation SMILES',
             ),
             MenuItemTerms(
-                quantity='data.iupac_name#perovskite_solar_cell_database.composition.PerovskiteAIon',
+                quantity='data.iupac_name#perovskite_solar_cell_database.composition.PerovskiteChemicalSection',
                 show_input=True,
+                title='Cation IUPAC Name',
             ),
             MenuItemHistogram(
                 x=Axis(
@@ -65,7 +73,7 @@ perovskite_ions_app = App(
             MenuItemHistogram(x=Axis(search_quantity='results.material.n_elements')),
         ],
     ),
-    dashboard=Dashboard.parse_obj(
+    dashboard=Dashboard.model_validate(
         yaml.safe_load(
             """
             widgets:
