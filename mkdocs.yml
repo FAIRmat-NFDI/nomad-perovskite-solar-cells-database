@@ -90,6 +90,5 @@ extra_css:
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js
   - javascript.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.1/plotly.min.js
