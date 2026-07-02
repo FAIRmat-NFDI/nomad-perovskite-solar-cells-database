@@ -10,10 +10,11 @@ from perovskite_solar_cell_database.actions.llm_extractor.models import (
     SingleExtractionInput,
 )
 
+ACTION_NAME = 'perovskite_solar_cell_database_llm_extractor'
 MAX_ATTEMPT_NUM = 100  # attempts to reprocess upload with new entries
 
 
-@activity.defn
+@activity.defn(name=ACTION_NAME + '.get_list_of_pdfs')
 def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
     """
     Find all PDF files in the upload if authorized user has access to the upload.
@@ -40,7 +41,7 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
     }
 
 
-@activity.defn
+@activity.defn(name=ACTION_NAME + '.extract_from_pdf')
 def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
     """
     Extract perovskite solar cell data from a single PDF file using LLM,
@@ -99,7 +100,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
     return {'saved_cells': saved_cells, 'success': True, 'errors': []}
 
 
-@activity.defn
+@activity.defn(name=ACTION_NAME + '.process_new_files')
 async def process_new_files(data: ProcessNewFilesInput) -> dict:
     """Process newly created entries in the upload, then return their references."""
     from nomad.actions.manager import get_upload_files
@@ -166,7 +167,7 @@ async def process_new_files(data: ProcessNewFilesInput) -> dict:
     return {'refs': result_entry_refs, 'success': True, 'errors': []}
 
 
-@activity.defn
+@activity.defn(name=ACTION_NAME + '.remove_source_pdfs')
 def remove_source_pdfs(input_data: CleanupInput) -> None:
     """
     Remove source PDF files from the upload after extraction.
