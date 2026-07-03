@@ -1,6 +1,7 @@
 import json
 import time
 
+from nomad.processing.data import Upload
 from temporalio import activity
 
 from perovskite_solar_cell_database.actions.llm_extractor.models import (
@@ -36,6 +37,11 @@ def get_list_of_pdfs(input_data: ExtractWorkflowInput) -> dict:
             if file_info.path.lower().endswith('.pdf'):
                 pdfs.append(file_info.path)
 
+    if not pdfs:
+        activity.logger.error(
+            f'No PDF files found in the upload ID: {input_data.upload_id}'
+        )
+
     return {
         'pdfs': pdfs,
     }
@@ -62,15 +68,15 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
         input_data.user_id,
     )
     if upload_files is None:
-        error_msg = f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}'
-        activity.logger.error(error_msg)
-        return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
+        activity.logger.error(
+            f'Upload files not found or can not be accessed for upload ID: {input_data.upload_id}'
+        )
+        return {'saved_cells': []}
 
     extracted_cells = []
     if not input_data.api_token or input_data.api_token.get_secret_value() == '':
-        error_msg = 'API token is required for LLM extraction'
-        activity.logger.warning(error_msg)
-        return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
+        activity.logger.error('API token is required for LLM extraction')
+        return {'saved_cells': []}
     try:
         extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
@@ -79,11 +85,8 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
             logger=activity.logger,
         )
     except Exception as e:
-        error_msg = f'Error during LLM extraction from PDF: {e}'
         activity.logger.error('Error during LLM extraction from PDF.', exc_info=e)
-        if len(error_msg) > 10000:
-            error_msg = error_msg[:10000] + '... [truncated]'
-        return {'saved_cells': [], 'success': False, 'errors': [error_msg]}
+        return {'saved_cells': []}
 
     saved_cells = []
     for idx, cell in enumerate(extracted_cells):
@@ -97,15 +100,13 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
             json.dump({'data': cell['data']}, f, indent=4)
         saved_cells.append(fname)
 
-    return {'saved_cells': saved_cells, 'success': True, 'errors': []}
+    return {'saved_cells': saved_cells}
 
 
 @activity.defn(name=ACTION_NAME + '.process_new_files')
 async def process_new_files(data: ProcessNewFilesInput) -> dict:
     """Process newly created entries in the upload, then return their references."""
     from nomad.actions.manager import get_upload_files
-    from nomad.app.v1.routers.uploads import get_upload_with_read_access
-    from nomad.datamodel import User
     from nomad.utils import generate_entry_id
 
     upload_files = get_upload_files(
@@ -113,29 +114,15 @@ async def process_new_files(data: ProcessNewFilesInput) -> dict:
         data.user_id,
     )
     if upload_files is None:
-        error_msg = f'Upload files not found or can not be accessed for upload ID: {data.upload_id}'
-        activity.logger.error(error_msg)
-        return {'refs': [], 'success': False, 'errors': [error_msg]}
-
-    file_operations = []
-
-    for path in data.result_path:
-        file_operations.append(
-            dict(
-                op='ADD',
-                path=upload_files.raw_file_object(path).os_path,
-                target_dir='results',
-                temporary=False,
-            )
+        activity.logger.error(
+            f'Upload files not found or can not be accessed for upload ID: {data.upload_id}'
         )
+        return {'refs': []}
 
     # Wait until the upload is not busy
     for i in range(MAX_ATTEMPT_NUM):
-        upload = get_upload_with_read_access(
-            data.upload_id,
-            User(user_id=data.user_id),
-            include_others=True,
-        )
+        # authorization already checked with get_upload_files, so we can directly access the upload
+        upload = Upload.get(data.upload_id)
 
         if not upload.process_running:
             break
@@ -144,12 +131,12 @@ async def process_new_files(data: ProcessNewFilesInput) -> dict:
             time.sleep(0.5)
             activity.logger.warning('Upload is currently being processed. Waiting...')
     else:
-        error_msg = f'Upload {data.upload_id} is busy for too long. Cannot process new files.'
-        activity.logger.error(error_msg)
-        return {'refs': [], 'success': False, 'errors': [error_msg]}
+        activity.logger.error(
+            f'Upload {data.upload_id} is busy for too long. Cannot process new files.'
+        )
+        return {'refs': []}
 
     handle = upload.process_upload(
-        file_operations=file_operations,
         path_filter='results',
         only_updated_files=True,
     )
@@ -164,7 +151,7 @@ async def process_new_files(data: ProcessNewFilesInput) -> dict:
                 f'../uploads/{upload.upload_id}/archive/{generate_entry_id(str(upload.upload_id), path)}#/data'
             )
 
-    return {'refs': result_entry_refs, 'success': True, 'errors': []}
+    return {'refs': result_entry_refs}
 
 
 @activity.defn(name=ACTION_NAME + '.remove_source_pdfs')

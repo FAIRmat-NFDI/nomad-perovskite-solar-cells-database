@@ -1,9 +1,15 @@
+import json
 from typing import (
     TYPE_CHECKING,
     get_args,
 )
 
-from nomad.actions.manager import get_action_result, get_action_status, start_action
+from nomad.actions.manager import (
+    action_log_file_path,
+    get_action_result,
+    get_action_status,
+    start_action,
+)
 from nomad.datamodel.data import UseCaseElnCategory
 from nomad.datamodel.metainfo.annotations import ELNComponentEnum, SectionProperties
 from nomad.datamodel.metainfo.eln import ELNAnnotation
@@ -64,7 +70,7 @@ class LlmPerovskitePaperExtractor(Schema):
             *get_args(ModelName)
         ),  # an enum of supported model names - better way of defining model and ModelName from one constant does not work in python 3.10
         description='LLM model to use for extraction',
-        default='claude-4-sonnet-20250514',
+        default='claude-sonnet-4-6',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
     trigger_run_action = Quantity(
@@ -138,12 +144,26 @@ class LlmPerovskitePaperExtractor(Schema):
                     archive.metadata.authors[0].user_id,  # type: ignore
                 )
                 if result_refs is not None:
-                    if result_refs.get('success'):
+                    action_log_path = action_log_file_path(self.action_id)  # pyright: ignore[reportArgumentType]
+                    success_flag = True
+                    with open(action_log_path) as f:
+                        for line in f:
+                            if line.strip():
+                                try:
+                                    # some log entries might be non-JSON, skip them for now
+                                    log_entry = json.loads(line)
+                                    if log_entry.get('level') == 'ERROR':
+                                        success_flag = False
+                                        break
+                                except json.JSONDecodeError:
+                                    pass
+
+                    if success_flag:
                         self.extracted_solar_cells = result_refs['refs']
                     else:
                         self.action_status = 'FAILED'
                         logger.error(
-                            f'LLM Extraction action completed with errors: {result_refs.get("errors")}'
+                            'LLM Extraction action completed with errors. See action logs for details.'
                         )
                 else:
                     self.extracted_solar_cells = []

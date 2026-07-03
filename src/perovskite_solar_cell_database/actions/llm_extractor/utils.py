@@ -13,7 +13,7 @@ def pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> list[dic
 
         return ExtractionPipeline(
             model, 'pymupdf', 'NONE', '', False
-        ).extract_from_pdf_nomad(filepath=pdf, api_key=api_token, ureg=ureg) # pyright: ignore[reportReturnType]
+        ).extract_from_pdf_nomad(filepath=pdf, api_key=api_token, ureg=ureg)  # pyright: ignore[reportReturnType]
     except ImportError as e:
         logger.error(
             'The perovskite-solar-cell-database plugin needs to be installed with the "extraction" extra to use LLM extraction.',
@@ -34,13 +34,13 @@ def test_pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> lis
         path_to_plugin = m.group(1)
     else:
         return []
-    print('#### Running test extraction mock-up, no real API call.')
+    logger.warning('#### Running test extraction mock-up, no real API call.')
     try:
         open(pdf, 'rb')
     except FileNotFoundError:
         logger.error(f'PDF file not found: {pdf}')
         return []
-    
+
     with open(
         f'{path_to_plugin}/tests/data/claude-4-sonnet-20250514-10.1002--aenm.201900555-cell-1.archive.json'
     ) as f:
@@ -58,10 +58,11 @@ def test_pdf_to_solar_cells(pdf: str, api_token: str, model: str, logger) -> lis
             logger.error('Error loading test extraction result.', exc_info=e)
 
     time.sleep(5)  # Simulate some processing time
+    logger.warning('Test warning.')
     return [cell_1, cell_2]
 
 
-def extract_doi(doi: str) -> str|None:
+def extract_doi(doi: str) -> str | None:
     """
     Extracts the DOI prefix and suffix (10.xxxx/xxxx) from a DOI string.
     Returns None if no valid DOI is found.
