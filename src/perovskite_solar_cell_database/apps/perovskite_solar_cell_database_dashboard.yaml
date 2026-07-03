@@ -18,17 +18,17 @@
     xxl:
       minH: 3
       minW: 3
-      h: 6
-      w: 9
+      h: 7
+      w: 11
       y: 0
-      x: 18
+      x: 0
     xl:
       minH: 3
       minW: 3
-      h: 6
-      w: 7
+      h: 7
+      w: 10
       y: 0
-      x: 14
+      x: 0
     lg:
       minH: 3
       minW: 3
@@ -40,14 +40,14 @@
       minH: 3
       minW: 3
       h: 5
-      w: 9
+      w: 8
       y: 0
       x: 0
     sm:
       minH: 3
       minW: 3
-      h: 4
-      w: 6
+      h: 5
+      w: 12
       y: 0
       x: 0
 - type: box_plot
@@ -66,17 +66,17 @@
     xxl:
       minH: 3
       minW: 3
-      h: 6
-      w: 9
+      h: 7
+      w: 25
       y: 0
-      x: Infinity
+      x: 11
     xl:
       minH: 3
       minW: 3
-      h: 6
-      w: 9
+      h: 7
+      w: 20
       y: 0
-      x: Infinity
+      x: 10
     lg:
       minH: 3
       minW: 3
@@ -87,14 +87,14 @@
     md:
       minH: 3
       minW: 3
-      h: 6
-      w: 9
+      h: 5
+      w: 10
       y: 0
-      x: Infinity
+      x: 8
     sm:
       minH: 3
       minW: 3
-      h: 6
-      w: 9
-      y: 0
-      x: Infinity
+      h: 5
+      w: 12
+      y: 5
+      x: 0
