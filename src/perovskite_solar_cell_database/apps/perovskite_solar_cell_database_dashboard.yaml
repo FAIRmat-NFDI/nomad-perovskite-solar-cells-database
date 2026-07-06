@@ -1,100 +1,101 @@
-- type: scatter_plot
-  autorange: true
-  sample_size: 1000
-  markers:
-    color:
-      search_quantity: results.properties.optoelectronic.solar_cell.device_architecture
+widgets:
+  - type: scatter_plot
+    autorange: true
+    sample_size: 1000
+    markers:
+      color:
+        search_quantity: results.properties.optoelectronic.solar_cell.device_architecture
+        scale: linear
+    y:
+      title: Efficiency (%)
+      search_quantity: results.properties.optoelectronic.solar_cell.efficiency
       scale: linear
-  y:
-    title: Efficiency (%)
-    search_quantity: results.properties.optoelectronic.solar_cell.efficiency
-    scale: linear
-  x:
-    title: Bandgap
-    search_quantity: results.properties.electronic.band_gap[0].value
-    scale: linear
-  title: Efficiency vs Bandgap (1k random samples)
-  layout:
-    xxl:
-      minH: 3
-      minW: 3
-      h: 7
-      w: 11
-      y: 0
-      x: 0
-    xl:
-      minH: 3
-      minW: 3
-      h: 7
-      w: 10
-      y: 0
-      x: 0
-    lg:
-      minH: 3
-      minW: 3
-      h: 6
-      w: 9
-      y: 0
-      x: 0
-    md:
-      minH: 3
-      minW: 3
-      h: 5
-      w: 8
-      y: 0
-      x: 0
-    sm:
-      minH: 3
-      minW: 3
-      h: 5
-      w: 12
-      y: 0
-      x: 0
-- type: box_plot
-  autorange: true
-  subgroup_by_size: 5
-  subgroup_by: data.perovskite.composition_c_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell
-  group_by_size: 5
-  group_by: data.perovskite.composition_a_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell
-  show_points: true
-  sample_size: 1000
-  y:
-    search_quantity: data.jv.default_Voc#perovskite_solar_cell_database.schema.PerovskiteSolarCell
-    title: Open Circuit Voltage
-  title: Open Circuit Voltage Statistics (1k random samples)
-  layout:
-    xxl:
-      minH: 3
-      minW: 3
-      h: 7
-      w: 25
-      y: 0
-      x: 11
-    xl:
-      minH: 3
-      minW: 3
-      h: 7
-      w: 20
-      y: 0
-      x: 10
-    lg:
-      minH: 3
-      minW: 3
-      h: 6
-      w: 15
-      y: 0
-      x: 9
-    md:
-      minH: 3
-      minW: 3
-      h: 5
-      w: 10
-      y: 0
-      x: 8
-    sm:
-      minH: 3
-      minW: 3
-      h: 5
-      w: 12
-      y: 5
-      x: 0
+    x:
+      title: Bandgap
+      search_quantity: results.properties.electronic.band_gap[0].value
+      scale: linear
+    title: Efficiency vs Bandgap (1k random samples)
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 11
+        y: 0
+        x: 0
+      xl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 10
+        y: 0
+        x: 0
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 9
+        y: 0
+        x: 0
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 8
+        y: 0
+        x: 0
+      sm:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 12
+        y: 0
+        x: 0
+  - type: box_plot
+    autorange: true
+    subgroup_by_size: 5
+    subgroup_by: data.perovskite.composition_c_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell
+    group_by_size: 5
+    group_by: data.perovskite.composition_a_ions#perovskite_solar_cell_database.schema.PerovskiteSolarCell
+    show_points: true
+    sample_size: 1000
+    y:
+      search_quantity: data.jv.default_Voc#perovskite_solar_cell_database.schema.PerovskiteSolarCell
+      title: Open Circuit Voltage
+    title: Open Circuit Voltage Statistics (1k random samples)
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 25
+        y: 0
+        x: 11
+      xl:
+        minH: 3
+        minW: 3
+        h: 7
+        w: 20
+        y: 0
+        x: 10
+      lg:
+        minH: 3
+        minW: 3
+        h: 6
+        w: 15
+        y: 0
+        x: 9
+      md:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 10
+        y: 0
+        x: 8
+      sm:
+        minH: 3
+        minW: 3
+        h: 5
+        w: 12
+        y: 5
+        x: 0
