@@ -23,7 +23,6 @@ with workflow.unsafe.imports_passed_through():
 class ExtractWorkflow:
     @workflow.run
     async def run(self, data: ExtractWorkflowInput) -> dict:
-        errors = []
         retry_policy = RetryPolicy(
             maximum_attempts=3,
         )
@@ -34,10 +33,7 @@ class ExtractWorkflow:
             retry_policy=retry_policy,
         )
         if not list_of_pdfs['pdfs']:
-            error_msg = 'No PDF files found in the upload.'
-            workflow.logger.error(error_msg)
-            errors.append(error_msg)
-            return {'refs': [], 'success': False, 'errors': errors}
+            return {'refs': []}
         try:
             all_saved_cells = []
             for pdf in list_of_pdfs['pdfs']:
@@ -56,8 +52,6 @@ class ExtractWorkflow:
                 )
                 saved_cells = extraction_result['saved_cells']
                 all_saved_cells.extend(saved_cells)
-                if not extraction_result['success']:
-                    errors.extend(extraction_result['errors'])
 
             input_for_processing = ProcessNewFilesInput(
                 upload_id=data.upload_id,
@@ -71,15 +65,9 @@ class ExtractWorkflow:
                 retry_policy=retry_policy,
             )
             result_entry_refs = processing_result['refs']
-            if not processing_result['success']:
-                errors.extend(processing_result['errors'])
         except ActivityError as e:
-            error_msg = f'Extraction activity failed: {e}'
-            workflow.logger.error(error_msg)
-            if len(error_msg) > 10000:
-                error_msg = error_msg[:10000] + '... [truncated]'
-            errors.append(error_msg)
-            return {'refs': [], 'success': False, 'errors': errors}
+            workflow.logger.error(f'Extraction activity failed: {e}')
+            return {'refs': []}
 
         finally:
             await workflow.execute_activity(
@@ -93,4 +81,4 @@ class ExtractWorkflow:
                 retry_policy=retry_policy,
             )
 
-        return {'refs': result_entry_refs, 'success': errors == [], 'errors': errors}
+        return {'refs': result_entry_refs}
