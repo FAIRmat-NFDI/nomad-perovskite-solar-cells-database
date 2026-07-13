@@ -1,0 +1,211 @@
+Extracting: 10.1002/-adfm.202212698-si.pdf
+pdf_text: 59099
+128000 max_tokens
+characters: 78208
+Total Instructor retries: 0
+prompt tokens used for this: 43388 completion 6897
+Extracted: 10.1002--adfm.202212698-SI.pdf
+1
+Extracting: 10.1038/-nmat4014-si.pdf
+pdf_text: 44761
+128000 max_tokens
+characters: 63870
+Total Instructor retries: 0
+prompt tokens used for this: 36786 completion 6704
+Extracted: 10.1038--nmat4014-SI.pdf
+2
+Extracting: 10.1016/-j.jmst.2021.03.045-si.pdf
+pdf_text: 45907
+128000 max_tokens
+characters: 65016
+Total Instructor retries: 0
+prompt tokens used for this: 85985 completion 10427
+Extracted: 10.1016--j.jmst.2021.03.045-SI.pdf
+3
+Extracting: 10.1002/-solr.202100879-si.pdf
+pdf_text: 46506
+128000 max_tokens
+characters: 65615
+Total Instructor retries: 0
+prompt tokens used for this: 40595 completion 6367
+Extracted: 10.1002--solr.202100879-SI.pdf
+4
+Extracting: 10.1021/-acsaem.9b01928-si.pdf
+pdf_text: 66107
+128000 max_tokens
+characters: 85216
+Total Instructor retries: 0
+prompt tokens used for this: 49306 completion 8324
+Extracted: 10.1021--acsaem.9b01928-SI.pdf
+5
+Extracting: 10.1016/-j.jallcom.2023.170970-si.pdf
+pdf_text: 67930
+128000 max_tokens
+characters: 87039
+Total Instructor retries: 0
+prompt tokens used for this: 104777 completion 12903
+Extracted: 10.1016--j.jallcom.2023.170970-SI.pdf
+6
+Extracting: 10.1002/-adma.202302143-si.pdf
+pdf_text: 73947
+128000 max_tokens
+characters: 93056
+Total Instructor retries: 0
+prompt tokens used for this: 113060 completion 8960
+Extracted: 10.1002--adma.202302143-SI.pdf
+7
+Extracting: 10.1039/-c5dt02388b-si.pdf
+pdf_text: 45110
+128000 max_tokens
+characters: 64219
+Total Instructor retries: 0
+prompt tokens used for this: 38875 completion 6631
+Extracted: 10.1039--c5dt02388b-SI.pdf
+8
+Extracting: 10.1016/-j.nanoen.2016.05.023-si.pdf
+pdf_text: 42181
+128000 max_tokens
+characters: 61290
+Total Instructor retries: 0
+prompt tokens used for this: 35638 completion 6626
+Extracted: 10.1016--j.nanoen.2016.05.023-SI.pdf
+9
+Extracting: 10.1021/-acs.chemmater.8b01521-si.pdf
+pdf_text: 37501
+128000 max_tokens
+characters: 56610
+Total Instructor retries: 0
+prompt tokens used for this: 34852 completion 2736
+Extracted: 10.1021--acs.chemmater.8b01521-SI.pdf
+10
+Extracting: 10.1002/-adfm.201904856-si.pdf
+pdf_text: 48011
+128000 max_tokens
+characters: 67120
+Total Instructor retries: 0
+Error converting 14.3 wt%: 'wt' is not defined in the unit registry
+Error converting 14.3 wt%: 'wt' is not defined in the unit registry
+Error converting 14.3 wt%: 'wt' is not defined in the unit registry
+prompt tokens used for this: 91390 completion 15490
+Extracted: 10.1002--adfm.201904856-SI.pdf
+11
+Extracting: 10.1002/-solr.202300817-si.pdf
+pdf_text: 56273
+128000 max_tokens
+characters: 75382
+Total Instructor retries: 0
+prompt tokens used for this: 46784 completion 5943
+Extracted: 10.1002--solr.202300817-SI.pdf
+12
+Extracting: 10.1038/-s41467-023-36141-8-si.pdf
+pdf_text: 105420
+128000 max_tokens
+characters: 124529
+Total Instructor retries: 0
+prompt tokens used for this: 62229 completion 11138
+Extracted: 10.1038--s41467-023-36141-8-SI.pdf
+13
+Extracting: 10.1021/-acsaem.4c02660-si.pdf
+pdf_text: 62561
+128000 max_tokens
+characters: 81670
+Total Instructor retries: 0
+prompt tokens used for this: 100082 completion 16362
+Extracted: 10.1021--acsaem.4c02660-SI.pdf
+14
+Extracting: 10.1038/-s41563-025-02163-4-si.pdf
+pdf_text: 106789
+128000 max_tokens
+characters: 125898
+Total Instructor retries: 0
+prompt tokens used for this: 72426 completion 7758
+Extracted: 10.1038--s41563-025-02163-4-SI.pdf
+15
+Extracting: 10.1038/-s41560-022-01102-w-si.pdf
+pdf_text: 80583
+128000 max_tokens
+characters: 99692
+Total Instructor retries: 0
+prompt tokens used for this: 51726 completion 12997
+Extracted: 10.1038--s41560-022-01102-w-SI.pdf
+16
+Extracting: 10.1016/-j.nanoen.2022.107416-si.pdf
+pdf_text: 51560
+128000 max_tokens
+characters: 70669
+Total Instructor retries: 0
+prompt tokens used for this: 41372 completion 5824
+Extracted: 10.1016--j.nanoen.2022.107416-SI.pdf
+17
+Extracting: 10.1039/-c7nr04692h-si.pdf
+pdf_text: 47162
+128000 max_tokens
+characters: 66271
+Total Instructor retries: 0
+prompt tokens used for this: 40649 completion 7496
+Extracted: 10.1039--c7nr04692h-SI.pdf
+18
+Extracting: 10.1038/-s41467-020-20272-3-si.pdf
+pdf_text: 68773
+128000 max_tokens
+characters: 87882
+Total Instructor retries: 0
+prompt tokens used for this: 48253 completion 8893
+Extracted: 10.1038--s41467-020-20272-3-SI.pdf
+19
+Extracting: 10.1002/-adma.202305822-si.pdf
+pdf_text: 67378
+128000 max_tokens
+characters: 86487
+Total Instructor retries: 0
+Error converting 2.5 wt%: 'wt' is not defined in the unit registry
+prompt tokens used for this: 108408 completion 19602
+Extracted: 10.1002--adma.202305822-SI.pdf
+20
+Extracting: 10.1002/-solr.201900370-si.pdf
+pdf_text: 38795
+128000 max_tokens
+characters: 57904
+Total Instructor retries: 0
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+prompt tokens used for this: 34533 completion 13890
+Extracted: 10.1002--solr.201900370-SI.pdf
+21
+Extracting: 10.1126/-science.adf0194-si.pdf
+pdf_text: 70780
+128000 max_tokens
+characters: 89889
+Total Instructor retries: 0
+prompt tokens used for this: 50028 completion 5228
+Extracted: 10.1126--science.adf0194-SI.pdf
+22
+Extracting: 10.1016/-j.matt.2023.09.006-si.pdf
+pdf_text: 104738
+128000 max_tokens
+characters: 123847
+Total Instructor retries: 0
+Error converting 11.0 wt%: 'wt' is not defined in the unit registry
+Error converting 11.0 wt%: 'wt' is not defined in the unit registry
+Error converting 11.0 wt%: 'wt' is not defined in the unit registry
+Error converting 11.0 wt%: 'wt' is not defined in the unit registry
+Error converting 11.0 wt%: 'wt' is not defined in the unit registry
+prompt tokens used for this: 65477 completion 8726
+Extracted: 10.1016--j.matt.2023.09.006-SI.pdf
+23
+Extracting: 10.1038/-s41467-021-27740-4-si.pdf
+pdf_text: 91960
+128000 max_tokens
+characters: 111069
+Total Instructor retries: 0
+prompt tokens used for this: 58135 completion 12832
+Extracted: 10.1038--s41467-021-27740-4-SI.pdf
+24
+Prompt Tokens: 1454754
+Completion Tokens: 228754
