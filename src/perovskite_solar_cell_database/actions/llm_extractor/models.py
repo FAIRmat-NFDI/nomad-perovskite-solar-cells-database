@@ -63,7 +63,7 @@ class ExtractWorkflowInput(BaseModel):
     )
     api_token: SecretStr = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
-        'Claude Sonnet 4.6', description='LLM model to be used for extraction.'
+        'Claude Sonnet 5', description='LLM model to be used for extraction.'
     )
     api_base_url: str | None = Field(
         None,
@@ -96,7 +96,7 @@ class SingleExtractionInput(BaseModel):
     pdf: str = Field(..., description='Path to the PDF file to be processed.')
     api_token: SecretStr = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
-        'Claude Sonnet 4.6', description='LLM model to be used for extraction.'
+        'Claude Sonnet 5', description='LLM model to be used for extraction.'
     )
     api_base_url: str | None = Field(
         None,

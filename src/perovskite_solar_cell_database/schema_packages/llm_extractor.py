@@ -70,7 +70,7 @@ class LlmPerovskitePaperExtractor(Schema):
             *get_args(ModelName)
         ),  # an enum of supported model names - better way of defining model and ModelName from one constant does not work in python 3.10
         description='LLM model to use for extraction',
-        default='Claude Sonnet 4.6',
+        default='Claude Sonnet 5',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
     )
     api_base_url = Quantity(
