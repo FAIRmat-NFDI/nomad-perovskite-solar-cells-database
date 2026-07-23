@@ -3,10 +3,14 @@ from typing import Literal
 from pydantic import BaseModel, Field, SecretStr, field_serializer
 
 ModelName = Literal[
+    'Claude Sonnet 5',
+    'GPT OSS 20b',
+    'Llama 4 Scout',
+    'LLama 4 Maverick',
+    'LLama 3.3',
     'GPT 4o',
     'Claude Sonnet 4.6',
     'Claude Sonnet 4.v20250514',
-    'Claude Sonnet 5',
     'Claude Fable 5',
     'Claude Opus 4.8',
     'GPT 5.6 Sol',
@@ -19,10 +23,14 @@ ModelName = Literal[
 ]  # Restricted set of LLM model names supported.
 
 ModelAliases = {
+    'Claude Sonnet 5': 'claude-sonnet-5',
+    'GPT OSS 20b': 'gpt-oss-20b',
+    'Llama 4 Scout': 'Llama-4-Scout-17B-16E-Instruct-FP8',
+    'LLama 4 Maverick': 'Llama-4-Maverick-17B-128E-Instruct-FP8',
+    'LLama 3.3': 'Llama-3.3-70B-Instruct',
     'GPT 4o': 'gpt-4o',
     'Claude Sonnet 4.6': 'claude-sonnet-4-6',
     'Claude Sonnet 4.v20250514': 'claude-4-sonnet-20250514',
-    'Claude Sonnet 5': 'claude-sonnet-5',
     'Claude Fable 5': 'claude-fable-5',
     'Claude Opus 4.8': 'claude-opus-4-8',
     'GPT 5.6 Sol': 'gpt-5.6-sol',
