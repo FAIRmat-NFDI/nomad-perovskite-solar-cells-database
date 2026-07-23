@@ -4,10 +4,18 @@ from pydantic import BaseModel, Field, SecretStr, field_serializer
 
 ModelName = Literal[
     'gpt-4o',
-    # 'gpt-5',  # Uncomment when temperature support is correct in LiteLLM
     'claude-sonnet-4-6',
     'claude-4-sonnet-20250514',  # retired; keep here so that old entries are not broken
-    #  'meta.llama3-70b-instruct-v1:0',  # Uncomment when someone can test it
+    'claude-sonnet-5',
+    'claude-fable-5',
+    'claude-opus-4-8',
+    'gpt-5.6-sol',
+    'gpt-5.6-terra',
+    'gpt-5.6-luna',
+    'gemini-pro-latest',
+    'gemini-3-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
 ]  # Restricted set of LLM model names supported.
 
 
@@ -33,6 +41,14 @@ class ExtractWorkflowInput(BaseModel):
     model: ModelName = Field(
         'claude-sonnet-4-6', description='LLM model to be used for extraction.'
     )
+    api_base_url: str = Field(
+        ...,
+        description='Optional: Base URL for the LLM API; can use https://openrouter.ai/',
+    )
+    model_name: str = Field(
+        ...,
+        description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
+    )
 
     @field_serializer('api_token', when_used='json')
     def dump_secret(self, v):
@@ -53,6 +69,14 @@ class SingleExtractionInput(BaseModel):
     api_token: SecretStr = Field(..., description='API token for LLM access.')
     model: ModelName = Field(
         'claude-sonnet-4-6', description='LLM model to be used for extraction.'
+    )
+    api_base_url: str = Field(
+        ...,
+        description='Optional: Base URL for the LLM API; can use https://openrouter.ai/',
+    )
+    model_name: str = Field(
+        ...,
+        description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
     )
 
     @field_serializer('api_token', when_used='json')

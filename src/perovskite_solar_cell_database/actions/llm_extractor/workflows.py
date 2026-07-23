@@ -43,6 +43,8 @@ class ExtractWorkflow:
                     pdf=pdf,
                     api_token=data.api_token,
                     model=data.model,
+                    api_base_url=data.api_base_url,
+                    model_name=data.model_name,
                 )
                 extraction_result = await workflow.execute_activity(
                     extract_from_pdf,

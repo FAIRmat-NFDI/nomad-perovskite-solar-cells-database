@@ -78,10 +78,15 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
         activity.logger.error('API token is required for LLM extraction')
         return {'saved_cells': []}
     try:
+        if input_data.model_name is None or input_data.model_name.strip() == '':
+            model_name = input_data.model
+        else:
+            model_name = input_data.model_name.strip()
         extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
             api_token=input_data.api_token.get_secret_value(),
-            model=input_data.model,
+            model=model_name,
+            api_base_url=input_data.api_base_url,
             logger=activity.logger,
         )
     except Exception as e:
@@ -93,7 +98,7 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
         doi_name = (extract_doi(cell['data']['DOI_number']) or 'unnamed').replace(
             '/', '--', 1
         )
-        fname = f'results/{input_data.model}-{doi_name}-cell-{idx + 1}.archive.json'
+        fname = f'results/{model_name}-{doi_name}-cell-{idx + 1}.archive.json'
         if not upload_files.raw_path_exists('results'):
             upload_files.raw_create_directory('results')
         with upload_files.raw_file(file_path=fname, mode='w', encoding='utf-8') as f:
