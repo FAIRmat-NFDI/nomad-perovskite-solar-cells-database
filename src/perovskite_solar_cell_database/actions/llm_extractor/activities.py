@@ -79,9 +79,16 @@ def extract_from_pdf(input_data: SingleExtractionInput) -> dict:
         return {'saved_cells': []}
     try:
         if input_data.model_name is None or input_data.model_name.strip() == '':
-            model_name = input_data.model
+            model_name = input_data.model_technical_name
         else:
             model_name = input_data.model_name.strip()
+        if (
+            input_data.api_base_url is not None
+            and input_data.api_base_url.strip() != ''
+        ):
+            model_name = 'openai/' + model_name
+
+        print(f'###### {model_name}')
         extracted_cells = pdf_to_solar_cells(
             pdf=upload_files.raw_file_object(input_data.pdf).os_path,
             api_token=input_data.api_token.get_secret_value(),
