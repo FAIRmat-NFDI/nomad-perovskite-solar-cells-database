@@ -49,8 +49,10 @@ class ExtractWorkflowInput(BaseModel):
     project/upload.
 
     First, upload the research papers as PDF files to the project. Then, submit this action
-    providing the project ID (upload ID) and api token for the chosen LLM. The action will
-    find and process all PDF files in the project using the specified LLM, then create and
+    providing the project ID (upload ID) and api token for the LLM selected from the list.
+    Alternatively, you can use optional "Api Base Url" and "Model Name" fields to use custom end points.
+
+    The action will find and process all PDF files in the project using the specified LLM, then create and
     process new entries for each detected solar cell and delete the source PDF files.
     """
 
@@ -67,10 +69,15 @@ class ExtractWorkflowInput(BaseModel):
     )
     api_base_url: str | None = Field(
         None,
-        description='Optional: Base URL for the LLM API; can use https://openrouter.ai/',
+        title='(Optional) API Base URL',
+        description="""
+        Optional: Base URL for the LLM API; for example, https://openrouter.ai/.
+        If you are from an academic institution, you can probably access open models via Blablador.
+        """,
     )
     model_name: str | None = Field(
         None,
+        title='(Optional) Model Name',
         description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
     )
 
@@ -100,10 +107,15 @@ class SingleExtractionInput(BaseModel):
     )
     api_base_url: str | None = Field(
         None,
-        description='Optional: Base URL for the LLM API; can use https://openrouter.ai/',
+        title='(Optional) API Base URL',
+        description="""
+        Optional: Base URL for the LLM API; for example, https://openrouter.ai/.
+        If you are from an academic institution, you can probably access open models via Blablador.
+        """,
     )
     model_name: str | None = Field(
         None,
+        title='(Optional) Model Name',
         description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
     )
 
