@@ -63,22 +63,25 @@ class ExtractWorkflowInput(BaseModel):
     user_id: str = Field(
         ..., description='Unique identifier for the user who initiated the action.'
     )
-    api_token: SecretStr = Field(..., description='API token for LLM access.')
+    api_token: SecretStr = Field(
+        ..., title='API Token', description='API token for LLM access.'
+    )
     model: ModelName = Field(
         'Claude Sonnet 5', description='LLM model to be used for extraction.'
     )
     api_base_url: str | None = Field(
         None,
-        title='(Optional) API Base URL',
+        title='API Base URL (Optional)',
         description="""
-        Optional: Base URL for the LLM API; for example, https://openrouter.ai/.
-        If you are from an academic institution, you can probably access open models via Blablador.
+        Base URL for the LLM API; for example, https://openrouter.ai/.
+        If you are from an academic institution, you can probably access open models via
+        Blablador (API: https://api.blablador.fz-juelich.de/v1/ User guide: https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/).
         """,
     )
     model_name: str | None = Field(
         None,
-        title='(Optional) Model Name',
-        description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
+        title='Model Name (Optional)',
+        description='LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
     )
 
     @field_serializer('api_token', when_used='json')
@@ -101,22 +104,25 @@ class SingleExtractionInput(BaseModel):
         ..., description='Unique identifier for the user who initiated the action.'
     )
     pdf: str = Field(..., description='Path to the PDF file to be processed.')
-    api_token: SecretStr = Field(..., description='API token for LLM access.')
+    api_token: SecretStr = Field(
+        ..., title='API Token', description='API token for LLM access.'
+    )
     model: ModelName = Field(
         'Claude Sonnet 5', description='LLM model to be used for extraction.'
     )
     api_base_url: str | None = Field(
         None,
-        title='(Optional) API Base URL',
+        title='API Base URL (Optional)',
         description="""
-        Optional: Base URL for the LLM API; for example, https://openrouter.ai/.
-        If you are from an academic institution, you can probably access open models via Blablador.
+        Base URL for the LLM API; for example, https://openrouter.ai/.
+        If you are from an academic institution, you can probably access open models via
+        Blablador (API: https://api.blablador.fz-juelich.de/v1/ User guide: https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/).
         """,
     )
     model_name: str | None = Field(
         None,
-        title='(Optional) Model Name',
-        description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
+        title='Model Name (Optional)',
+        description='LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
     )
 
     @field_serializer('api_token', when_used='json')
