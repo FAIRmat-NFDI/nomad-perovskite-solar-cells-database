@@ -130,6 +130,7 @@ ignore = [
     "PLR0915", # Too many statements
     "UP008",  # Use `super()` instead of `super(__class__, self)`
     "PLC0415", # `import` should be at the top-level of a file
+    "PLR0917", # Too many positional arguments
 ]
 
 fixable = ["ALL"]
