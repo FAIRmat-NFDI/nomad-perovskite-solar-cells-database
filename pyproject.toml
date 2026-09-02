@@ -67,7 +67,7 @@ dev = [
     "nomad-docs>=0.1.3"
 ]
 extraction = [
-    "perla-extract>=0.0.6"
+    "perla-extract @ git+https://github.com/lamalab-org/perla-extract.git@main"
 ]
 
 notebooks = [
