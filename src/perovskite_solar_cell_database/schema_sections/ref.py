@@ -162,6 +162,10 @@ Unpublished
                 # make sure the doi has the prefix https://doi.org/
                 if self.DOI_number.startswith('10.'):
                     self.DOI_number = 'https://doi.org/' + self.DOI_number
+                if self.DOI_number.startswith('https://www.doi.org/'):
+                    self.DOI_number = self.DOI_number.replace(
+                        'https://www.doi.org/', 'https://doi.org/', 1
+                    )
                 message = temp_dict.get('message', {})
                 given_name = message.get('author', [{}])[0].get('given', '')
                 family_name = message.get('author', [{}])[0].get('family', '')

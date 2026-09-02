@@ -1,4 +1,45 @@
 widgets:
+  - type: terms
+    show_input: true
+    scale: linear
+    search_quantity: data.ref.DOI_number#perovskite_solar_cell_database.schema.PerovskiteSolarCell
+    title: Search by DOI (please enter DOI as https://www.doi.org/...)
+    layout:
+      xxl:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 50
+        y: 0
+        x: 0
+      xl:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 50
+        y: 0
+        x: 0
+      lg:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 50
+        y: 0
+        x: 0
+      md:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 50
+        y: 0
+        x: 0
+      sm:
+        minH: 3
+        minW: 3
+        h: 4
+        w: 50
+        y: 0
+        x: 0
   - type: scatter_plot
     autorange: true
     sample_size: 1000
@@ -21,35 +62,35 @@ widgets:
         minW: 3
         h: 7
         w: 11
-        y: 0
+        y: 4
         x: 0
       xl:
         minH: 3
         minW: 3
         h: 7
         w: 10
-        y: 0
+        y: 4
         x: 0
       lg:
         minH: 3
         minW: 3
         h: 6
         w: 9
-        y: 0
+        y: 4
         x: 0
       md:
         minH: 3
         minW: 3
         h: 5
         w: 8
-        y: 0
+        y: 4
         x: 0
       sm:
         minH: 3
         minW: 3
         h: 5
         w: 12
-        y: 0
+        y: 4
         x: 0
   - type: box_plot
     autorange: true
@@ -60,8 +101,9 @@ widgets:
     show_points: true
     sample_size: 1000
     y:
-      search_quantity: data.jv.default_Voc#perovskite_solar_cell_database.schema.PerovskiteSolarCell
       title: Open Circuit Voltage
+      search_quantity: data.jv.default_Voc#perovskite_solar_cell_database.schema.PerovskiteSolarCell
+      scale: linear
     title: Open Circuit Voltage Statistics (1k random samples)
     layout:
       xxl:
@@ -69,33 +111,33 @@ widgets:
         minW: 3
         h: 7
         w: 25
-        y: 0
+        y: 4
         x: 11
       xl:
         minH: 3
         minW: 3
         h: 7
         w: 20
-        y: 0
+        y: 4
         x: 10
       lg:
         minH: 3
         minW: 3
         h: 6
         w: 15
-        y: 0
+        y: 4
         x: 9
       md:
         minH: 3
         minW: 3
         h: 5
         w: 10
-        y: 0
+        y: 4
         x: 8
       sm:
         minH: 3
         minW: 3
         h: 5
         w: 12
-        y: 5
+        y: 9
         x: 0
