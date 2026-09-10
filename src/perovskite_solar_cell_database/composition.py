@@ -863,7 +863,7 @@ class PerovskiteCompositionSection(ArchiveSection):
             coefficient_str = re.sub(r'(\.\d*?)0+$', r'\1', ion.coefficient)
             # Remove trailing dot if it is the last character
             coefficient_str = re.sub(r'\.$', '', coefficient_str)
-            if ion.coefficient == '1':
+            if coefficient_str == '1':
                 coefficient_str = ''
             self.long_form += f'{ion.abbreviation}{coefficient_str}'
             if not isinstance(ion.molecular_formula, str):
