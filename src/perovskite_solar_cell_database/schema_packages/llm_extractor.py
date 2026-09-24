@@ -70,15 +70,25 @@ class LlmPerovskitePaperExtractor(Schema):
             *get_args(ModelName)
         ),  # an enum of supported model names - better way of defining model and ModelName from one constant does not work in python 3.10
         description='LLM model to use for extraction',
-        default='claude-sonnet-4-6',
+        default='Claude Sonnet 5',
         a_eln=ELNAnnotation(component=ELNComponentEnum.EnumEditQuantity),
+    )
+    api_base_url = Quantity(
+        type=str,
+        description='Optional: Base URL for the LLM API.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
+    )
+    model_name = Quantity(
+        type=str,
+        description='Optional: LLM model to be used for extraction as a free text. If filled, the model from the drop-down menu will be ignored.',
+        a_eln=ELNAnnotation(component=ELNComponentEnum.StringEditQuantity),
     )
     trigger_run_action = Quantity(
         type=bool,
         default=False,
-        description="""Starts an asynchronous action for running the LLM Extraction. 
-        It will search for all PDF files in the associated upload/project, extract perovskite 
-        solar cells information using the specified LLM model, create and process new entries 
+        description="""Starts an asynchronous action for running the LLM Extraction.
+        It will search for all PDF files in the associated upload/project, extract perovskite
+        solar cells information using the specified LLM model, create and process new entries
         for each detected solar cell, and finally delete the source PDF files.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ActionEditQuantity,
@@ -242,6 +252,8 @@ class LlmPerovskitePaperExtractor(Schema):
                 user_id=archive.metadata.authors[0].user_id,  # type: ignore
                 api_token=api_token,  # pyright: ignore[reportArgumentType]
                 model=self.model,  # pyright: ignore[reportArgumentType]
+                api_base_url=self.api_base_url,  # pyright: ignore[reportArgumentType]
+                model_name=self.model_name,  # pyright: ignore[reportArgumentType]
             )
 
             try:
