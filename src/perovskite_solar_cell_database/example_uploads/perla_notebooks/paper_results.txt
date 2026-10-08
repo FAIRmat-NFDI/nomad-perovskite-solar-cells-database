@@ -1,0 +1,251 @@
+Extracting: 10.1002/adfm.201904856
+pdf_text: 36393
+128000 max_tokens
+characters: 55502
+Total Instructor retries: 0
+Error converting 14.3 wt%: 'wt' is not defined in the unit registry
+prompt tokens used for this: 35204 completion 6718
+Extracted: 10.1002--adfm.201904856.pdf
+1
+Extracting: 10.1038/s41467-020-20272-3
+pdf_text: 58403
+128000 max_tokens
+characters: 77512
+Total Instructor retries: 0
+prompt tokens used for this: 42240 completion 7643
+Extracted: 10.1038--s41467-020-20272-3.pdf
+2
+Extracting: 10.1021/acsaem.4c02660
+pdf_text: 59594
+128000 max_tokens
+characters: 78703
+Total Instructor retries: 0
+prompt tokens used for this: 44463 completion 8747
+Extracted: 10.1021--acsaem.4c02660.pdf
+3
+Extracting: 10.1002/solr.201900370
+pdf_text: 36868
+128000 max_tokens
+characters: 55977
+Total Instructor retries: 0
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+Error converting 2.0 vol%: 'vol' is not defined in the unit registry
+prompt tokens used for this: 33475 completion 14607
+Extracted: 10.1002--solr.201900370.pdf
+4
+Extracting: 10.1002/solr.202300438
+pdf_text: 126931
+128000 max_tokens
+characters: 146040
+Total Instructor retries: 0
+prompt tokens used for this: 76353 completion 34
+Extracted: 10.1002--solr.202300438.pdf
+5
+Extracting: 10.1016/j.nanoen.2022.107416
+pdf_text: 35965
+128000 max_tokens
+characters: 55074
+Total Instructor retries: 0
+prompt tokens used for this: 33197 completion 2641
+Extracted: 10.1016--j.nanoen.2022.107416.pdf
+6
+Extracting: 10.1016/j.jmst.2021.03.045
+pdf_text: 36054
+128000 max_tokens
+characters: 55163
+Total Instructor retries: 0
+prompt tokens used for this: 34949 completion 5932
+Extracted: 10.1016--j.jmst.2021.03.045.pdf
+7
+Extracting: 10.1021/-acsaem.9b01928.pdf
+pdf_text: 44889
+128000 max_tokens
+characters: 63998
+Total Instructor retries: 0
+prompt tokens used for this: 38725 completion 2216
+Extracted: 10.1021--acsaem.9b01928.pdf
+8
+Extracting: 10.1016/j.nanoen.2016.05.023
+pdf_text: 38175
+128000 max_tokens
+characters: 57284
+Total Instructor retries: 0
+prompt tokens used for this: 74779 completion 12823
+Extracted: 10.1016--j.nanoen.2016.05.023.pdf
+9
+Extracting: 10.1126/-science.adf0194.pdf
+pdf_text: 32653
+128000 max_tokens
+characters: 51762
+Total Instructor retries: 0
+prompt tokens used for this: 31104 completion 4739
+Extracted: 10.1126--science.adf0194.pdf
+10
+Extracting: 10.1016/j.matt.2023.09.006
+pdf_text: 69076
+128000 max_tokens
+characters: 88185
+Total Instructor retries: 0
+prompt tokens used for this: 48300 completion 7292
+Extracted: 10.1016--j.matt.2023.09.006.pdf
+11
+Extracting: 10.1002/solr.202100879
+pdf_text: 37073
+128000 max_tokens
+characters: 56182
+Total Instructor retries: 0
+prompt tokens used for this: 35253 completion 2066
+Extracted: 10.1002--solr.202100879.pdf
+12
+Extracting: 10.1038/s41560-022-01061-2
+pdf_text: 7842
+128000 max_tokens
+characters: 26951
+Total Instructor retries: 0
+prompt tokens used for this: 20576 completion 946
+Extracted: 10.1038--s41560-022-01061-2.pdf
+13
+Extracting: 10.1038/s41560-022-01102-w
+pdf_text: 59300
+128000 max_tokens
+characters: 78409
+Total Instructor retries: 0
+prompt tokens used for this: 42371 completion 12153
+Extracted: 10.1038--s41560-022-01102-w.pdf
+14
+Extracting: 10.1038/s41467-023-36141-8
+pdf_text: 70795
+128000 max_tokens
+characters: 89904
+Total Instructor retries: 0
+prompt tokens used for this: 45620 completion 6032
+Extracted: 10.1038--s41467-023-36141-8.pdf
+15
+Extracting: 10.1002/adma.202305822
+pdf_text: 45013
+128000 max_tokens
+characters: 64122
+Total Instructor retries: 0
+prompt tokens used for this: 37921 completion 18404
+Extracted: 10.1002--adma.202305822.pdf
+16
+Extracting: 10.1016/j.matlet.2016.07.004
+pdf_text: 18043
+128000 max_tokens
+characters: 37152
+Total Instructor retries: 0
+prompt tokens used for this: 24533 completion 5858
+Extracted: 10.1016--j.matlet.2016.07.004.pdf
+17
+Extracting: 10.1038/s41563-025-02163-4
+pdf_text: 50773
+128000 max_tokens
+characters: 69882
+Total Instructor retries: 0
+prompt tokens used for this: 40863 completion 8711
+Extracted: 10.1038--s41563-025-02163-4.pdf
+18
+Extracting: 10.1039/-c5dt02388b.pdf
+pdf_text: 42866
+128000 max_tokens
+characters: 61975
+Total Instructor retries: 0
+prompt tokens used for this: 82799 completion 13693
+Extracted: 10.1039--c5dt02388b.pdf
+19
+Extracting: 10.1021/acs.chemmater.8b01521
+pdf_text: 25169
+128000 max_tokens
+characters: 44278
+Total Instructor retries: 0
+prompt tokens used for this: 29094 completion 805
+Extracted: 10.1021--acs.chemmater.8b01521.pdf
+20
+Extracting: 10.1002/adfm.201500335
+pdf_text: 38287
+128000 max_tokens
+characters: 57396
+Total Instructor retries: 0
+prompt tokens used for this: 36176 completion 1773
+Extracted: 10.1002--adfm.201500335.pdf
+21
+Extracting: 10.1039/-c7nr04692h.pdf
+pdf_text: 42160
+128000 max_tokens
+characters: 61269
+Total Instructor retries: 0
+prompt tokens used for this: 84228 completion 17258
+Extracted: 10.1039--c7nr04692h.pdf
+22
+Extracting: 10.1038/s41467-021-27740-4
+pdf_text: 77809
+128000 max_tokens
+characters: 96918
+Total Instructor retries: 0
+prompt tokens used for this: 50441 completion 10077
+Extracted: 10.1038--s41467-021-27740-4.pdf
+23
+Extracting: 10.1016/j.jallcom.2023.170970
+pdf_text: 58353
+128000 max_tokens
+characters: 77462
+Total Instructor retries: 0
+prompt tokens used for this: 94450 completion 15338
+Extracted: 10.1016--j.jallcom.2023.170970.pdf
+24
+Extracting: 10.1039/-c5ta00568j.pdf
+pdf_text: 12359
+128000 max_tokens
+characters: 31468
+Total Instructor retries: 0
+prompt tokens used for this: 23007 completion 765
+Extracted: 10.1039--c5ta00568j.pdf
+25
+Extracting: 10.1002/solr.202300817
+pdf_text: 44422
+128000 max_tokens
+characters: 63531
+Total Instructor retries: 0
+prompt tokens used for this: 39321 completion 6530
+Extracted: 10.1002--solr.202300817.pdf
+26
+Extracting: 10.1002/adfm.202212698
+pdf_text: 55488
+128000 max_tokens
+characters: 74597
+Total Instructor retries: 0
+prompt tokens used for this: 88178 completion 9186
+Extracted: 10.1002--adfm.202212698.pdf
+27
+Extracting: 10.1021/acsaelm.4c02297
+pdf_text: 57760
+128000 max_tokens
+characters: 76869
+Total Instructor retries: 0
+prompt tokens used for this: 41586 completion 4838
+Extracted: 10.1021--acsaelm.4c02297.pdf
+28
+Extracting: 10.1002/adma.202302143
+pdf_text: 59580
+128000 max_tokens
+characters: 78689
+Total Instructor retries: 0
+prompt tokens used for this: 96301 completion 10163
+Extracted: 10.1002--adma.202302143.pdf
+29
+Extracting: 10.1038/nmat4014
+pdf_text: 40422
+128000 max_tokens
+characters: 59531
+Total Instructor retries: 0
+prompt tokens used for this: 34422 completion 11411
+Extracted: 10.1038--nmat4014.pdf
+30
+Prompt Tokens: 1439929
+Completion Tokens: 229399
