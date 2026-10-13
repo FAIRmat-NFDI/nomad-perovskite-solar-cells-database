@@ -107,114 +107,421 @@ filter_menus:
       size: m
 dashboard:
   widgets:
-  - layout:
-      lg: {h: 8, minH: 8, minW: 12, w: 12, x: 0, y: 0}
-      md: {h: 8, minH: 8, minW: 12, w: 12, x: 0, y: 0}
-      sm: {h: 8, minH: 8, minW: 12, w: 12, x: 0, y: 16}
-      xl: {h: 8, minH: 8, minW: 12, w: 12, x: 0, y: 0}
-      xxl: {h: 8, minH: 8, minW: 12, w: 13, x: 0, y: 0}
-    quantity: results.material.elements
-    scale: linear
-    type: periodictable
-  - autorange: true
-    layout:
-      lg: {h: 6, minH: 3, minW: 3, w: 12, x: 0, y: 8}
-      md: {h: 6, minH: 3, minW: 3, w: 9, x: 0, y: 8}
-      sm: {h: 5, minH: 3, minW: 3, w: 6, x: 0, y: 0}
-      xl: {h: 8, minH: 3, minW: 3, w: 9, x: 12, y: 0}
-      xxl: {h: 8, minH: 3, minW: 3, w: 12, x: 24, y: 0}
-    markers:
-      color:
-        quantity: results.properties.optoelectronic.solar_cell.short_circuit_current_density
-        unit: 'mA/cm^2'
-    size: 1000
-    type: scatterplot
-    x:
-      quantity: results.properties.optoelectronic.solar_cell.open_circuit_voltage
-    y:
-      quantity: results.properties.optoelectronic.solar_cell.efficiency
-      title: 'Efficiency (%)'
-  - autorange: true
-    layout:
-      lg: {h: 6, minH: 3, minW: 3, w: 12, x: 0, y: 14}
-      md: {h: 6, minH: 3, minW: 3, w: 9, x: 9, y: 8}
-      sm: {h: 5, minH: 3, minW: 3, w: 6, x: 6, y: 0}
-      xl: {h: 8, minH: 3, minW: 3, w: 9, x: 21, y: 0}
-      xxl: {h: 8, minH: 3, minW: 3, w: 11, x: 13, y: 0}
-    markers:
-      color:
-        quantity: results.properties.optoelectronic.solar_cell.device_architecture
-    size: 1000
-    type: scatterplot
-    x:
-      quantity: results.properties.optoelectronic.solar_cell.open_circuit_voltage
-    y:
-      quantity: results.properties.optoelectronic.solar_cell.efficiency
-      title: 'Efficiency (%)'
-  - layout:
-      lg: {h: 6, minH: 3, minW: 3, w: 6, x: 12, y: 0}
-      md: {h: 4, minH: 3, minW: 3, w: 6, x: 12, y: 4}
-      sm: {h: 6, minH: 3, minW: 3, w: 4, x: 0, y: 10}
-      xl: {h: 6, minH: 3, minW: 3, w: 6, x: 14, y: 8}
-      xxl: {h: 6, minH: 3, minW: 3, w: 6, x: 14, y: 8}
-    quantity: results.properties.optoelectronic.solar_cell.device_stack
-    scale: linear
-    showinput: true
-    type: terms
-  - autorange: true
-    layout:
-      lg: {h: 4, minH: 3, minW: 3, w: 12, x: 12, y: 12}
-      md: {h: 3, minH: 3, minW: 3, w: 8, x: 10, y: 17}
-      sm: {h: 3, minH: 3, minW: 3, w: 8, x: 4, y: 13}
-      xl: {h: 3, minH: 3, minW: 3, w: 8, x: 0, y: 11}
-      xxl: {h: 3, minH: 3, minW: 3, w: 8, x: 0, y: 8}
-    nbins: 30
-    quantity: results.properties.optoelectronic.solar_cell.illumination_intensity
-    scale: 1/4
-    showinput: true
-    type: histogram
-  - layout:
-      lg: {h: 6, minH: 3, minW: 3, w: 6, x: 18, y: 0}
-      md: {h: 4, minH: 3, minW: 3, w: 6, x: 12, y: 0}
-      sm: {h: 5, minH: 3, minW: 3, w: 4, x: 0, y: 5}
-      xl: {h: 6, minH: 3, minW: 3, w: 6, x: 8, y: 8}
-      xxl: {h: 6, minH: 3, minW: 3, w: 6, x: 8, y: 8}
-    quantity: results.properties.optoelectronic.solar_cell.absorber_fabrication
-    scale: linear
-    showinput: true
-    type: terms
-  - autorange: false
-    layout:
-      lg: {h: 4, minH: 3, minW: 8, w: 12, x: 12, y: 16}
-      md: {h: 3, minH: 3, minW: 8, w: 8, x: 10, y: 14}
-      sm: {h: 3, minH: 3, minW: 8, w: 8, x: 4, y: 10}
-      xl: {h: 3, minH: 3, minW: 8, w: 8, x: 0, y: 8}
-      xxl: {h: 3, minH: 3, minW: 8, w: 8, x: 0, y: 11}
-    nbins: 30
-    quantity: results.properties.electronic.band_structure_electronic.band_gap.value
-    title: 'Band gap'
-    scale: 1/4
-    showinput: false
-    type: histogram
-  - layout:
-      lg: {h: 6, minH: 3, minW: 3, w: 6, x: 18, y: 6}
-      md: {h: 6, minH: 3, minW: 3, w: 5, x: 0, y: 14}
-      sm: {h: 5, minH: 3, minW: 3, w: 4, x: 4, y: 5}
-      xl: {h: 6, minH: 3, minW: 3, w: 5, x: 25, y: 8}
-      xxl: {h: 6, minH: 3, minW: 3, w: 6, x: 20, y: 8}
-    quantity: results.properties.optoelectronic.solar_cell.electron_transport_layer
-    scale: linear
-    showinput: true
-    type: terms
-  - layout:
-      lg: {h: 6, minH: 3, minW: 3, w: 6, x: 12, y: 6}
-      md: {h: 6, minH: 3, minW: 3, w: 5, x: 5, y: 14}
-      sm: {h: 5, minH: 3, minW: 3, w: 4, x: 8, y: 5}
-      xl: {h: 6, minH: 3, minW: 3, w: 5, x: 20, y: 8}
-      xxl: {h: 6, minH: 3, minW: 3, w: 6, x: 26, y: 8}
-    quantity: results.properties.optoelectronic.solar_cell.hole_transport_layer
-    scale: linear
-    showinput: true
-    type: terms
+    - type: periodictable
+      scale: linear
+      search_quantity: results.material.elements
+      title: null
+      layout:
+        xxl:
+          minH: 8
+          minW: 12
+          h: 8
+          w: 13
+          y: 0
+          x: 0
+        xl:
+          minH: 8
+          minW: 12
+          h: 8
+          w: 12
+          y: 0
+          x: 0
+        lg:
+          minH: 8
+          minW: 12
+          h: 8
+          w: 12
+          y: 0
+          x: 0
+        md:
+          minH: 8
+          minW: 12
+          h: 8
+          w: 12
+          y: 0
+          x: 0
+        sm:
+          minH: 8
+          minW: 12
+          h: 8
+          w: 12
+          y: 48
+          x: 0
+    - type: scatterplot
+      autorange: true
+      size: 1000
+      markers:
+        color:
+          scale: linear
+          title: null
+          unit: mA/cm^2
+          search_quantity: results.properties.optoelectronic.solar_cell.short_circuit_current_density
+      y:
+        scale: linear
+        title: Efficiency (%)
+        unit: null
+        search_quantity: results.properties.optoelectronic.solar_cell.efficiency
+      x:
+        scale: linear
+        title: null
+        unit: null
+        search_quantity: results.properties.optoelectronic.solar_cell.open_circuit_voltage
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 8
+          w: 12
+          y: 0
+          x: 24
+        xl:
+          minH: 3
+          minW: 3
+          h: 8
+          w: 9
+          y: 0
+          x: 12
+        lg:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 12
+          y: 8
+          x: 0
+        md:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 9
+          y: 8
+          x: 0
+        sm:
+          minH: 3
+          minW: 3
+          h: 10
+          w: 12
+          y: 0
+          x: 0
+    - type: scatterplot
+      autorange: true
+      size: 1000
+      markers:
+        color:
+          scale: linear
+          title: null
+          unit: null
+          search_quantity: results.properties.optoelectronic.solar_cell.device_architecture
+      y:
+        scale: linear
+        title: Efficiency (%)
+        unit: null
+        search_quantity: results.properties.optoelectronic.solar_cell.efficiency
+      x:
+        scale: linear
+        title: null
+        unit: null
+        search_quantity: results.properties.optoelectronic.solar_cell.open_circuit_voltage
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 8
+          w: 11
+          y: 0
+          x: 13
+        xl:
+          minH: 3
+          minW: 3
+          h: 8
+          w: 9
+          y: 0
+          x: 21
+        lg:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 12
+          y: 14
+          x: 0
+        md:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 9
+          y: 8
+          x: 9
+        sm:
+          minH: 3
+          minW: 3
+          h: 11
+          w: 12
+          y: 10
+          x: 0
+    - type: terms
+      query_mode: null
+      show_input: true
+      scale: linear
+      search_quantity: results.properties.optoelectronic.solar_cell.device_stack
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 8
+          x: 18
+        xl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 8
+          x: 14
+        lg:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 0
+          x: 12
+        md:
+          minH: 3
+          minW: 3
+          h: 4
+          w: 6
+          y: 4
+          x: 12
+        sm:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 42
+          x: 6
+    - type: histogram
+      show_input: true
+      autorange: true
+      nbins: 30
+      y:
+        scale: 1/4
+      x:
+        scale: linear
+        title: null
+        unit: null
+        search_quantity: results.properties.optoelectronic.solar_cell.illumination_intensity
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 3
+          w: 12
+          y: 8
+          x: 0
+        xl:
+          minH: 3
+          minW: 3
+          h: 3
+          w: 8
+          y: 11
+          x: 0
+        lg:
+          minH: 3
+          minW: 3
+          h: 4
+          w: 12
+          y: 12
+          x: 12
+        md:
+          minH: 3
+          minW: 3
+          h: 3
+          w: 8
+          y: 17
+          x: 10
+        sm:
+          minH: 3
+          minW: 3
+          h: 7
+          w: 12
+          y: 21
+          x: 0
+    - type: terms
+      query_mode: null
+      show_input: true
+      scale: linear
+      search_quantity: results.properties.optoelectronic.solar_cell.absorber_fabrication
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 8
+          x: 12
+        xl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 8
+          x: 8
+        lg:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 0
+          x: 18
+        md:
+          minH: 3
+          minW: 3
+          h: 4
+          w: 6
+          y: 0
+          x: 12
+        sm:
+          minH: 3
+          minW: 3
+          h: 8
+          w: 6
+          y: 34
+          x: 6
+    - type: histogram
+      show_input: false
+      autorange: false
+      nbins: 30
+      y:
+        scale: 1/4
+      x:
+        scale: linear
+        title: null
+        unit: null
+        search_quantity: results.properties.electronic.band_structure_electronic.band_gap.value
+      title: Band gap
+      layout:
+        xxl:
+          minH: 3
+          minW: 8
+          h: 3
+          w: 12
+          y: 11
+          x: 0
+        xl:
+          minH: 3
+          minW: 8
+          h: 3
+          w: 8
+          y: 8
+          x: 0
+        lg:
+          minH: 3
+          minW: 8
+          h: 4
+          w: 12
+          y: 16
+          x: 12
+        md:
+          minH: 3
+          minW: 8
+          h: 3
+          w: 8
+          y: 14
+          x: 10
+        sm:
+          minH: 3
+          minW: 8
+          h: 6
+          w: 12
+          y: 28
+          x: 0
+    - type: terms
+      query_mode: null
+      show_input: true
+      scale: linear
+      search_quantity: results.properties.optoelectronic.solar_cell.electron_transport_layer
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 8
+          x: 24
+        xl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 5
+          y: 8
+          x: 25
+        lg:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 6
+          x: 18
+        md:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 5
+          y: 14
+          x: 0
+        sm:
+          minH: 3
+          minW: 3
+          h: 8
+          w: 6
+          y: 34
+          x: 0
+    - type: terms
+      query_mode: null
+      show_input: true
+      scale: linear
+      search_quantity: results.properties.optoelectronic.solar_cell.hole_transport_layer
+      title: null
+      layout:
+        xxl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 8
+          x: 30
+        xl:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 5
+          y: 8
+          x: 20
+        lg:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 6
+          x: 12
+        md:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 5
+          y: 14
+          x: 5
+        sm:
+          minH: 3
+          minW: 3
+          h: 6
+          w: 6
+          y: 42
+          x: 0
 """
 )
