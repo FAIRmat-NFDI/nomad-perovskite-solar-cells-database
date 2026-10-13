@@ -69,102 +69,102 @@ perovskite_ions_app = App(
         yaml.safe_load(
             """
             widgets:
-              - type: periodictable
-                scale: linear
-                search_quantity: results.material.elements
-                title: Elements
-                layout:
-                  xxl:
-                    minH: 8
-                    minW: 12
-                    h: 8
-                    w: 12
-                    y: 0
-                    x: 0
-                  xl:
-                    minH: 8
-                    minW: 12
-                    h: 8
-                    w: 12
-                    y: 0
-                    x: 0
-                  lg:
-                    minH: 8
-                    minW: 12
-                    h: 8
-                    w: 12
-                    y: 0
-                    x: 0
-                  md:
-                    minH: 8
-                    minW: 12
-                    h: 8
-                    w: 12
-                    y: 0
-                    x: 0
-                  sm:
-                    minH: 8
-                    minW: 12
-                    h: 8
-                    w: 12
-                    y: 0
-                    x: 0
-              - type: scatter_plot
-                autorange: true
-                size: 1000
-                markers:
-                  color:
+                - type: periodictable
+                  scale: linear
+                  search_quantity: results.material.elements
+                  title: Elements
+                  layout:
+                    xxl:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                    xl:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                    lg:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                    md:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                    sm:
+                      minH: 8
+                      minW: 12
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 0
+                - type: scatter_plot
+                  autorange: true
+                  size: 1000
+                  markers:
+                    color:
+                      scale: linear
+                      title: Molecule or atom
+                      unit: dimensionless
+                      search_quantity: results.material.topology[0].structural_type
+                  y:
                     scale: linear
-                    title: Molecule or atom
+                    title: A cation molar mass
+                    unit: g/mol
+                    search_quantity: data.pure_substance.molar_mass#perovskite_solar_cell_database.composition.PerovskiteAIon
+                  x:
+                    scale: linear
+                    title: Number of atoms
                     unit: dimensionless
-                    search_quantity: results.material.topology[0].structural_type
-                y:
-                  scale: linear
-                  title: A cation molar mass
-                  unit: g/mol
-                  search_quantity: data.pure_substance.molar_mass#perovskite_solar_cell_database.composition.PerovskiteAIon
-                x:
-                  scale: linear
-                  title: Number of atoms
-                  unit: dimensionless
-                  search_quantity: results.material.topology[0].n_atoms
-                title: Molar mass
-                layout:
-                  xxl:
-                    minH: 3
-                    minW: 3
-                    h: 8
-                    w: 24
-                    y: 0
-                    x: 12
-                  xl:
-                    minH: 3
-                    minW: 3
-                    h: 8
-                    w: 18
-                    y: 0
-                    x: 12
-                  lg:
-                    minH: 3
-                    minW: 3
-                    h: 8
-                    w: 12
-                    y: 0
-                    x: 12
-                  md:
-                    minH: 3
-                    minW: 3
-                    h: 7
-                    w: 12
-                    y: 8
-                    x: 0
-                  sm:
-                    minH: 3
-                    minW: 3
-                    h: 8
-                    w: 12
-                    y: 8
-                    x: 0
+                    search_quantity: results.material.topology[0].n_atoms
+                  title: Molar mass
+                  layout:
+                    xxl:
+                      minH: 3
+                      minW: 3
+                      h: 8
+                      w: 24
+                      y: 0
+                      x: 12
+                    xl:
+                      minH: 3
+                      minW: 3
+                      h: 8
+                      w: 18
+                      y: 0
+                      x: 12
+                    lg:
+                      minH: 3
+                      minW: 3
+                      h: 8
+                      w: 12
+                      y: 0
+                      x: 12
+                    md:
+                      minH: 3
+                      minW: 3
+                      h: 7
+                      w: 12
+                      y: 8
+                      x: 0
+                    sm:
+                      minH: 3
+                      minW: 3
+                      h: 8
+                      w: 12
+                      y: 8
+                      x: 0
             """
         )
     ),
