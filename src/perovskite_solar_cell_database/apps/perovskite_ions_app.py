@@ -65,25 +65,26 @@ perovskite_ions_app = App(
             MenuItemHistogram(x=Axis(search_quantity='results.material.n_elements')),
         ],
     ),
-    dashboard=Dashboard.parse_obj(
+    dashboard=Dashboard.model_validate(
         yaml.safe_load(
             """
             widgets:
                 - type: periodictable
                   scale: linear
                   search_quantity: results.material.elements
+                  title: Elements
                   layout:
                     xxl:
                       minH: 8
                       minW: 12
-                      h: 9
-                      w: 13
+                      h: 8
+                      w: 12
                       y: 0
                       x: 0
                     xl:
                       minH: 8
                       minW: 12
-                      h: 9
+                      h: 8
                       w: 12
                       y: 0
                       x: 0
@@ -113,25 +114,33 @@ perovskite_ions_app = App(
                   size: 1000
                   markers:
                     color:
+                      scale: linear
+                      title: Molecule or atom
+                      unit: dimensionless
                       search_quantity: results.material.topology[0].structural_type
                   y:
-                    search_quantity: data.pure_substance.molar_mass#perovskite_solar_cell_database.composition.PerovskiteAIon
+                    scale: linear
                     title: A cation molar mass
+                    unit: g/mol
+                    search_quantity: data.pure_substance.molar_mass#perovskite_solar_cell_database.composition.PerovskiteAIon
                   x:
-                    search_quantity: results.material.topology[0].n_atoms
+                    scale: linear
                     title: Number of atoms
+                    unit: dimensionless
+                    search_quantity: results.material.topology[0].n_atoms
+                  title: Molar mass
                   layout:
                     xxl:
                       minH: 3
                       minW: 3
-                      h: 6
-                      w: 9
+                      h: 8
+                      w: 24
                       y: 0
                       x: 12
                     xl:
                       minH: 3
                       minW: 3
-                      h: 9
+                      h: 8
                       w: 18
                       y: 0
                       x: 12
@@ -145,15 +154,15 @@ perovskite_ions_app = App(
                     md:
                       minH: 3
                       minW: 3
-                      h: 8
-                      w: 6
-                      y: 0
-                      x: 12
+                      h: 7
+                      w: 12
+                      y: 8
+                      x: 0
                     sm:
                       minH: 3
                       minW: 3
-                      h: 6
-                      w: 9
+                      h: 8
+                      w: 12
                       y: 8
                       x: 0
             """
