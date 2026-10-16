@@ -3,46 +3,46 @@ widgets:
     show_input: true
     scale: linear
     search_quantity: data.ref.DOI_number#perovskite_solar_cell_database.schema.PerovskiteSolarCell
-    title: Search by DOI (please enter DOI as https://www.doi.org/...)
+    title: Search by DOI (enter as https://www.doi.org/...)
     layout:
       xxl:
-        minH: 3
+        minH: 2
         minW: 3
-        h: 4
-        w: 50
+        h: 2
+        w: 36
         y: 0
         x: 0
       xl:
         minH: 3
         minW: 3
-        h: 4
-        w: 50
+        h: 3
+        w: 30
         y: 0
         x: 0
       lg:
         minH: 3
         minW: 3
-        h: 4
-        w: 50
+        h: 3
+        w: 24
         y: 0
         x: 0
       md:
         minH: 3
         minW: 3
-        h: 4
-        w: 50
+        h: 3
+        w: 18
         y: 0
         x: 0
       sm:
         minH: 3
         minW: 3
         h: 4
-        w: 50
+        w: 12
         y: 0
         x: 0
   - type: scatter_plot
     autorange: true
-    sample_size: 1000
+    size: 1000
     markers:
       color:
         search_quantity: results.properties.optoelectronic.solar_cell.device_architecture
@@ -62,33 +62,33 @@ widgets:
         minW: 3
         h: 7
         w: 11
-        y: 4
+        y: 2
         x: 0
       xl:
         minH: 3
         minW: 3
         h: 7
         w: 10
-        y: 4
+        y: 3
         x: 0
       lg:
         minH: 3
         minW: 3
         h: 6
         w: 9
-        y: 4
+        y: 3
         x: 0
       md:
         minH: 3
         minW: 3
         h: 5
         w: 8
-        y: 4
+        y: 3
         x: 0
       sm:
         minH: 3
         minW: 3
-        h: 5
+        h: 7
         w: 12
         y: 4
         x: 0
@@ -111,33 +111,33 @@ widgets:
         minW: 3
         h: 7
         w: 25
-        y: 4
+        y: 2
         x: 11
       xl:
         minH: 3
         minW: 3
         h: 7
         w: 20
-        y: 4
+        y: 3
         x: 10
       lg:
         minH: 3
         minW: 3
         h: 6
         w: 15
-        y: 4
+        y: 3
         x: 9
       md:
         minH: 3
         minW: 3
         h: 5
         w: 10
-        y: 4
+        y: 3
         x: 8
       sm:
         minH: 3
         minW: 3
-        h: 5
+        h: 7
         w: 12
-        y: 9
+        y: 11
         x: 0
